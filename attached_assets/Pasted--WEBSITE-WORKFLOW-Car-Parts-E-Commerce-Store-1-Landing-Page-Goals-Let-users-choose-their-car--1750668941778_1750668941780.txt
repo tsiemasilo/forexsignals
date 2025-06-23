@@ -1,0 +1,172 @@
+🔧 WEBSITE WORKFLOW: Car Parts E-Commerce Store
+1. Landing Page
+✅ Goals:
+Let users choose their car brand.
+
+Build trust with recognizable car logos.
+
+🧩 Features:
+Hero banner (optional: promo, banner ad, or a "Shop Now" CTA).
+
+Car Brand Grid (logos of Toyota, BMW, Ford, etc. as buttons).
+
+Search Bar (optional: for direct search).
+
+➕ Action:
+When a user clicks a car brand logo, they are redirected to /parts?brand=Toyota.
+
+2. Part Category Selection
+✅ Goals:
+Let user choose a part category.
+
+🧩 Features:
+Display categories like:
+
+Engine Parts
+
+Suspension
+
+Brake System
+
+Interior Accessories
+
+Exterior Body
+
+Electronics
+
+Use icons or images for better UX.
+
+➕ Action:
+User selects "Brake System" → Redirect to:
+/parts?brand=Toyota&category=Brakes
+
+3. Parts Listing Page
+✅ Goals:
+Show available car parts with prices and pictures.
+
+🧩 Features:
+Product cards (image, title, price, short desc).
+
+"Add to Cart" and "Add to Wishlist" buttons.
+
+Sorting and filtering (optional: by price, rating).
+
+➕ Actions:
+"Add to Cart" increases cart count badge.
+
+"Add to Wishlist" saves item (must log in to view wishlist).
+
+4. Cart System
+✅ Goals:
+Let users manage their selected items.
+
+🧩 Features:
+Cart icon (always visible, shows item count).
+
+/cart page:
+
+List of selected products.
+
+Quantity selector.
+
+Remove button.
+
+Total price displayed.
+
+➕ Action:
+Clicking “Checkout” on the cart page:
+
+If user is not logged in → redirect to /login?next=checkout
+
+5. Authentication (Login / Signup)
+✅ Goals:
+Secure user accounts before purchasing.
+
+🧩 Features:
+/login page:
+
+Email + password
+
+Forgot password link
+
+/signup page:
+
+Name, Email, Password, Confirm Password
+
+➕ Action:
+If logging in from checkout redirect, continue to /checkout
+
+6. Checkout Process
+✅ Goals:
+Finalize the order
+
+🧩 Features:
+Shipping Address
+
+Delivery method (optional)
+
+Payment Method (Card, EFT, Cash on Delivery)
+
+Confirm Order button
+
+➕ Action:
+After placing order → redirect to /thank-you?order=12345
+
+7. Other Essential Pages
+📄 Pages:
+/wishlist (for saved items, requires login)
+
+/my-account (order history, update password, etc.)
+
+/about and /contact (trust & support)
+
+Admin Panel (for managing brands, parts, and orders)
+
+🛠 Backend Functionality Required
+1. Database Models
+Users
+
+Brands
+
+Part Categories
+
+Products
+
+Cart Items
+
+Wishlist Items
+
+Orders
+
+2. APIs to Create
+GET /brands
+
+GET /parts?brand&category
+
+POST /cart/add
+
+POST /wishlist/add
+
+POST /auth/login
+
+POST /auth/signup
+
+POST /orders/create
+
+💡 Tech Stack Suggestion
+Layer	Tools/Languages
+Frontend	HTML, CSS, JS, Bootstrap / React
+Backend	Node.js + Express OR PHP / Laravel
+Database	MySQL or MongoDB
+Hosting	Afrihost / Hostinger / Netlify (frontend only)
+Auth	JWT or Session-based
+Payments	PayFast / Yoco / PayPal
+
+📲 Optional Advanced Features
+Email confirmation after sign-up
+
+Admin dashboard for stock management
+
+Reviews and ratings
+
+Discount coupons
