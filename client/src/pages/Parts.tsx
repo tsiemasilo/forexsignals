@@ -17,15 +17,15 @@ export default function Parts() {
   const { toast } = useToast();
   const { addToCart } = useCart();
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [selectedBrand, setSelectedBrand] = useState<string>('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [selectedBrand, setSelectedBrand] = useState<string>('all');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
   // Parse URL parameters
   useEffect(() => {
     const params = new URLSearchParams(location.split('?')[1] || '');
-    setSelectedBrand(params.get('brand') || '');
-    setSelectedCategory(params.get('category') || '');
+    setSelectedBrand(params.get('brand') || 'all');
+    setSelectedCategory(params.get('category') || 'all');
     setSearchQuery(params.get('search') || '');
   }, [location]);
 
@@ -41,8 +41,8 @@ export default function Parts() {
     queryKey: ['/api/products', selectedBrand, selectedCategory, searchQuery],
     queryFn: async () => {
       const params = new URLSearchParams();
-      if (selectedBrand) params.append('brand', selectedBrand);
-      if (selectedCategory) params.append('category', selectedCategory);
+      if (selectedBrand && selectedBrand !== 'all') params.append('brand', selectedBrand);
+      if (selectedCategory && selectedCategory !== 'all') params.append('category', selectedCategory);
       if (searchQuery) params.append('search', searchQuery);
       
       const response = await fetch(`/api/products?${params.toString()}`);
@@ -89,8 +89,8 @@ export default function Parts() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams();
-    if (selectedBrand) params.append('brand', selectedBrand);
-    if (selectedCategory) params.append('category', selectedCategory);
+    if (selectedBrand && selectedBrand !== 'all') params.append('brand', selectedBrand);
+    if (selectedCategory && selectedCategory !== 'all') params.append('category', selectedCategory);
     if (searchQuery) params.append('search', searchQuery);
     
     window.history.pushState({}, '', `/parts?${params.toString()}`);
@@ -120,7 +120,7 @@ export default function Parts() {
                 <SelectValue placeholder="All Brands" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Brands</SelectItem>
+                <SelectItem value="all">All Brands</SelectItem>
                 {brands.map((brand) => (
                   <SelectItem key={brand.id} value={brand.slug}>
                     {brand.name}
@@ -133,7 +133,7 @@ export default function Parts() {
                 <SelectValue placeholder="All Categories" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Categories</SelectItem>
+                <SelectItem value="all">All Categories</SelectItem>
                 {categories.map((category) => (
                   <SelectItem key={category.id} value={category.slug}>
                     {category.name}
