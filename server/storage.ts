@@ -172,7 +172,11 @@ export class MemStorage implements IStorage {
 
   async createBrand(insertBrand: InsertBrand): Promise<Brand> {
     const id = this.currentBrandId++;
-    const brand: Brand = { ...insertBrand, id };
+    const brand: Brand = { 
+      ...insertBrand, 
+      id,
+      logoUrl: insertBrand.logoUrl || null
+    };
     this.brands.set(id, brand);
     return brand;
   }
@@ -192,7 +196,12 @@ export class MemStorage implements IStorage {
 
   async createCategory(insertCategory: InsertCategory): Promise<Category> {
     const id = this.currentCategoryId++;
-    const category: Category = { ...insertCategory, id };
+    const category: Category = { 
+      ...insertCategory, 
+      id,
+      description: insertCategory.description || null,
+      iconName: insertCategory.iconName || null
+    };
     this.categories.set(id, category);
     return category;
   }
@@ -237,7 +246,17 @@ export class MemStorage implements IStorage {
 
   async createProduct(insertProduct: InsertProduct): Promise<Product> {
     const id = this.currentProductId++;
-    const product: Product = { ...insertProduct, id };
+    const product: Product = { 
+      ...insertProduct, 
+      id,
+      description: insertProduct.description || null,
+      imageUrl: insertProduct.imageUrl || null,
+      brandId: insertProduct.brandId || null,
+      categoryId: insertProduct.categoryId || null,
+      inStock: insertProduct.inStock ?? true,
+      rating: insertProduct.rating || null,
+      reviewCount: insertProduct.reviewCount || null
+    };
     this.products.set(id, product);
     return product;
   }
@@ -254,7 +273,7 @@ export class MemStorage implements IStorage {
 
     const cartItemsWithProducts: CartItemWithProduct[] = [];
     for (const item of items) {
-      const product = await this.getProduct(item.productId);
+      const product = await this.getProduct(item.productId!);
       if (product) {
         cartItemsWithProducts.push({
           ...item,
@@ -279,12 +298,19 @@ export class MemStorage implements IStorage {
     if (existingItems.length > 0) {
       // Update existing item quantity
       const existingItem = existingItems[0];
-      existingItem.quantity += insertCartItem.quantity;
+      existingItem.quantity += insertCartItem.quantity || 1;
       return existingItem;
     } else {
       // Create new item
       const id = this.currentCartItemId++;
-      const cartItem: CartItem = { ...insertCartItem, id };
+      const cartItem: CartItem = { 
+        ...insertCartItem,
+        id,
+        userId: insertCartItem.userId || null,
+        productId: insertCartItem.productId || null,
+        quantity: insertCartItem.quantity || 1,
+        sessionId: insertCartItem.sessionId || null
+      };
       this.cartItems.set(id, cartItem);
       return cartItem;
     }
@@ -332,7 +358,7 @@ export class MemStorage implements IStorage {
       .filter(item => item.orderId === id)
       .map(item => ({
         ...item,
-        product: this.products.get(item.productId)!,
+        product: this.products.get(item.productId!)!,
       }));
 
     return {
@@ -346,7 +372,9 @@ export class MemStorage implements IStorage {
     const order: Order = { 
       ...insertOrder, 
       id: orderId, 
-      createdAt: new Date() 
+      createdAt: new Date(),
+      status: insertOrder.status || 'pending',
+      userId: insertOrder.userId || null
     };
     this.orders.set(orderId, order);
 
@@ -356,7 +384,8 @@ export class MemStorage implements IStorage {
       const orderItem: OrderItem = { 
         ...insertItem, 
         id: itemId, 
-        orderId 
+        orderId,
+        productId: insertItem.productId || null
       };
       this.orderItems.set(itemId, orderItem);
     });
