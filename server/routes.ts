@@ -40,7 +40,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/login", async (req: Request, res: Response) => {
     try {
       const { email } = req.body;
+      console.log('Login attempt for email:', email);
+      
       const user = await storage.getUserByEmail(email);
+      console.log('User found:', user ? `ID: ${user.id}, Email: ${user.email}` : 'No user found');
       
       if (!user) {
         return res.status(401).json({ message: "Invalid credentials" });
@@ -48,6 +51,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const sessionId = crypto.randomUUID();
       sessions.set(sessionId, { userId: user.id, isAdmin: user.isAdmin || false });
+      console.log('Session created:', sessionId, 'for user:', user.id);
 
       res.json({
         sessionId,
@@ -60,6 +64,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       });
     } catch (error) {
+      console.error('Login error:', error);
       res.status(500).json({ message: "Login failed" });
     }
   });
@@ -67,13 +72,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/register", async (req: Request, res: Response) => {
     try {
       const validatedData = insertUserSchema.parse(req.body);
+      console.log('Registration attempt for email:', validatedData.email);
+      
       const existingUser = await storage.getUserByEmail(validatedData.email);
       
       if (existingUser) {
+        console.log('User already exists:', validatedData.email);
         return res.status(400).json({ message: "User already exists" });
       }
 
       const user = await storage.createUser(validatedData);
+      console.log('User created:', user.id, user.email);
+      
       res.json({
         id: user.id,
         email: user.email,
@@ -81,6 +91,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         lastName: user.lastName
       });
     } catch (error) {
+      console.error('Registration error:', error);
       if (error instanceof z.ZodError) {
         return res.status(400).json({ message: "Invalid request data", errors: error.errors });
       }
