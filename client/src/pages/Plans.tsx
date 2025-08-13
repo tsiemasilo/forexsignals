@@ -1,21 +1,25 @@
-import { CheckCircle, Star } from 'lucide-react';
+import { CheckCircle, Star, CreditCard, Building } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { Link } from 'wouter';
+import { useState } from 'react';
 
 export default function Plans() {
   const { user, sessionId } = useAuth();
   const { toast } = useToast();
+  const [selectedPlan, setSelectedPlan] = useState<any>(null);
+  const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
 
   const { data: plans = [] } = useQuery<any[]>({
     queryKey: ['/api/plans'],
   });
 
-  const handleSubscribe = async (planId: number) => {
+  const handleSubscribe = (plan: any) => {
     if (!user) {
       toast({
         title: "Authentication required",
@@ -25,6 +29,11 @@ export default function Plans() {
       return;
     }
 
+    setSelectedPlan(plan);
+    setIsPaymentDialogOpen(true);
+  };
+
+  const handleOzowPayment = async () => {
     try {
       const response = await fetch('/api/ozow/payment', {
         method: 'POST',
@@ -32,7 +41,7 @@ export default function Plans() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${sessionId}`
         },
-        body: JSON.stringify({ planId })
+        body: JSON.stringify({ planId: selectedPlan.id })
       });
 
       if (!response.ok) {
@@ -59,6 +68,7 @@ export default function Plans() {
       
       document.body.appendChild(form);
       form.submit();
+      setIsPaymentDialogOpen(false);
     } catch (error) {
       toast({
         title: "Payment failed",
@@ -66,6 +76,14 @@ export default function Plans() {
         variant: "destructive",
       });
     }
+  };
+
+  const handleBankTransfer = () => {
+    toast({
+      title: "Bank Transfer Details",
+      description: "Bank transfer instructions will be sent to your email.",
+    });
+    setIsPaymentDialogOpen(false);
   };
 
   const getPopularPlan = () => {
@@ -132,12 +150,12 @@ export default function Plans() {
                   {user ? (
                     <Button 
                       className={`w-full ${isPopular ? 'bg-green-600 hover:bg-green-700' : 'bg-slate-600 hover:bg-slate-700'}`}
-                      onClick={() => handleSubscribe(plan.id)}
+                      onClick={() => handleSubscribe(plan)}
                     >
                       Subscribe Now
                     </Button>
                   ) : (
-                    <Link href="/register" className="block">
+                    <Link href="/auth" className="block">
                       <Button className={`w-full ${isPopular ? 'bg-green-600 hover:bg-green-700' : 'bg-slate-600 hover:bg-slate-700'}`}>
                         Get Started
                       </Button>
@@ -166,6 +184,64 @@ export default function Plans() {
             </div>
           </div>
         </div>
+
+        {/* Payment Method Selection Dialog */}
+        <Dialog open={isPaymentDialogOpen} onOpenChange={setIsPaymentDialogOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Choose Payment Method</DialogTitle>
+              <DialogDescription>
+                Select how you'd like to pay for your {selectedPlan?.name} subscription
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-4 mt-6">
+              {/* Plan Summary */}
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h3 className="font-semibold">{selectedPlan?.name}</h3>
+                <p className="text-2xl font-bold text-green-600">R{selectedPlan?.price}</p>
+                <p className="text-sm text-gray-600">{selectedPlan?.duration} days access</p>
+              </div>
+
+              {/* Payment Options */}
+              <div className="space-y-3">
+                <Button 
+                  onClick={handleOzowPayment}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white p-4 h-auto"
+                >
+                  <div className="flex items-center justify-between w-full">
+                    <div className="flex items-center">
+                      <CreditCard className="w-5 h-5 mr-3" />
+                      <div className="text-left">
+                        <div className="font-semibold">Pay with Ozow</div>
+                        <div className="text-xs opacity-90">Instant online payment</div>
+                      </div>
+                    </div>
+                    <div className="text-xs bg-green-500 px-2 py-1 rounded">Recommended</div>
+                  </div>
+                </Button>
+
+                <Button 
+                  onClick={handleBankTransfer}
+                  variant="outline"
+                  className="w-full p-4 h-auto border-2"
+                >
+                  <div className="flex items-center">
+                    <Building className="w-5 h-5 mr-3" />
+                    <div className="text-left">
+                      <div className="font-semibold">Bank Transfer</div>
+                      <div className="text-xs text-gray-600">Manual bank transfer</div>
+                    </div>
+                  </div>
+                </Button>
+              </div>
+
+              <p className="text-xs text-gray-500 text-center mt-4">
+                Your subscription will be activated once payment is confirmed
+              </p>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
