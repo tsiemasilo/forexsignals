@@ -332,16 +332,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         Optional1: userId.toString(),
         Optional2: planId.toString(),
         Optional3: plan.name,
-        IsTest: process.env.NODE_ENV !== 'production' ? 'true' : 'false'
+        IsTest: 'true'
       };
 
       // Generate signature for Ozow
       const privateKey = process.env.OZOW_PRIVATE_KEY || '';
       const signature = generateOzowSignature(paymentData, privateKey);
 
-      const actionUrl = process.env.NODE_ENV === 'production' 
-        ? 'https://pay.ozow.com/' 
-        : 'https://uat.ozow.com/';
+      // Use production URL for more stable connection
+      const actionUrl = 'https://pay.ozow.com/';
       
       console.log('Ozow action URL being sent:', actionUrl);
       console.log('Environment:', process.env.NODE_ENV);
