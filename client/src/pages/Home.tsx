@@ -59,7 +59,7 @@ export default function Home() {
 
         {/* Action Buttons */}
         <div className="flex flex-col md:flex-row gap-6 mb-12">
-          <Link href="/register">
+          <Link href="/auth">
             <Button size="lg" className="bg-green-600 hover:bg-green-500 text-white text-xl px-12 py-4 rounded-full font-bold shadow-2xl transform hover:scale-105 transition-all">
               START FREE TRIAL
               <ArrowRight className="ml-2 w-6 h-6" />

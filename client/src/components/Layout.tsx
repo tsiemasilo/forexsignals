@@ -21,8 +21,7 @@ export default function Layout({ children }: LayoutProps) {
   const publicNavigationItems = [
     { href: '/', label: 'Home' },
     { href: '/plans', label: 'Pricing' },
-    { href: '/login', label: 'Login' },
-    { href: '/register', label: 'Register' },
+    { href: '/auth', label: 'Sign In' },
   ];
 
   const customerNavigationItems = [

@@ -6,8 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import Layout from "@/components/Layout";
 import Home from "@/pages/Home";
-import Login from "@/pages/Login";
-import Register from "@/pages/Register";
+import Auth from "@/pages/Auth";
 import Signals from "@/pages/Signals";
 import Plans from "@/pages/Plans";
 import AdminDashboard from "@/pages/AdminDashboard";
@@ -32,8 +31,9 @@ function Router() {
         {!user ? (
           <>
             <Route path="/" component={Home} />
-            <Route path="/login" component={Login} />
-            <Route path="/register" component={Register} />
+            <Route path="/login" component={Auth} />
+            <Route path="/register" component={Auth} />
+            <Route path="/auth" component={Auth} />
             <Route path="/plans" component={Plans} />
           </>
         ) : user.isAdmin ? (
