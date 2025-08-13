@@ -19,16 +19,16 @@ export default function Home() {
 
         {/* Header Badge */}
         <Badge className="mb-8 bg-green-600 text-white px-6 py-2 text-lg font-semibold rounded-full">
-          #1 FOREX SIGNALS PLATFORM
+          #1 TRADING PLATFORM
         </Badge>
 
         {/* Main Title */}
         <div className="text-center mb-12 max-w-6xl">
           <h1 className="text-6xl md:text-8xl lg:text-9xl font-black leading-none mb-6">
-            <span className="block text-white">FOREX</span>
-            <span className="block text-green-400 drop-shadow-2xl">SIGNALS</span>
+            <span className="block text-white">TRADING</span>
+            <span className="block text-green-400 drop-shadow-2xl">INSIGHTS</span>
             <span className="block text-2xl md:text-3xl lg:text-4xl font-bold text-gray-300 mt-4">
-              THAT ACTUALLY WORK
+              PROFESSIONAL ANALYSIS
             </span>
           </h1>
         </div>
@@ -45,15 +45,15 @@ export default function Home() {
           </div>
           <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-green-400/20">
             <div className="text-4xl md:text-5xl font-black text-green-400 mb-2">50+</div>
-            <div className="text-sm md:text-base font-semibold">SIGNALS/MONTH</div>
+            <div className="text-sm md:text-base font-semibold">INSIGHTS/MONTH</div>
           </div>
         </div>
 
         {/* Value Proposition */}
         <div className="text-center mb-12 max-w-4xl">
           <p className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-200 leading-relaxed">
-            Stop Losing Money on Bad Trades.<br/>
-            <span className="text-green-400">Start Following Expert Signals</span> That Actually Make Profits.
+            Transform Your Trading Strategy.<br/>
+            <span className="text-green-400">Get Expert Market Analysis</span> That Delivers Real Results.
           </p>
         </div>
 
@@ -76,19 +76,19 @@ export default function Home() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12 max-w-6xl">
           <div className="text-center bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
             <TrendingUp className="w-8 h-8 text-green-400 mx-auto mb-2" />
-            <div className="font-bold text-sm">REAL-TIME ALERTS</div>
+            <div className="font-bold text-sm">MARKET INSIGHTS</div>
           </div>
           <div className="text-center bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
             <Award className="w-8 h-8 text-green-400 mx-auto mb-2" />
-            <div className="font-bold text-sm">EXPERT ANALYSIS</div>
+            <div className="font-bold text-sm">EXPERT GUIDANCE</div>
           </div>
           <div className="text-center bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
             <DollarSign className="w-8 h-8 text-green-400 mx-auto mb-2" />
-            <div className="font-bold text-sm">PROFIT TARGETS</div>
+            <div className="font-bold text-sm">STRATEGIC PLANNING</div>
           </div>
           <div className="text-center bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
             <Activity className="w-8 h-8 text-green-400 mx-auto mb-2" />
-            <div className="font-bold text-sm">RISK MANAGEMENT</div>
+            <div className="font-bold text-sm">PORTFOLIO MANAGEMENT</div>
           </div>
         </div>
 
@@ -101,9 +101,9 @@ export default function Home() {
             <span className="ml-2 text-lg font-semibold">4.9/5</span>
           </div>
           <p className="text-gray-300 text-lg">
-            "Best forex signals I've ever used. Made my first $1000 in profit within 2 weeks!"
+            "Amazing platform with professional insights. Completely transformed my trading approach!"
             <br />
-            <span className="text-green-400 font-semibold">- Sarah J., Professional Trader</span>
+            <span className="text-green-400 font-semibold">- Sarah J., Investment Manager</span>
           </p>
         </div>
 
