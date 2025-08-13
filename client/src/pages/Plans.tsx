@@ -258,8 +258,12 @@ export default function Plans() {
                 >
                   <div className="flex items-center justify-between w-full">
                     <div className="flex items-center">
-                      <div className="bg-white bg-opacity-20 p-2 rounded-lg mr-4">
-                        <CreditCard className="w-6 h-6" />
+                      <div className="bg-white p-2 rounded-lg mr-4 w-12 h-12 flex items-center justify-center">
+                        <img 
+                          src="https://cdn.brandfetch.io/idGqhiL13o/theme/dark/logo.svg?c=1bxid64Mup7aczewSAYMX&t=1667785033148" 
+                          alt="Yoco" 
+                          className="max-w-full max-h-full object-contain"
+                        />
                       </div>
                       <div className="text-left">
                         <div className="font-bold text-lg">Yoco Payments</div>
