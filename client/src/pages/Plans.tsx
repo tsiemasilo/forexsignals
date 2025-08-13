@@ -225,58 +225,90 @@ export default function Plans() {
 
         {/* Payment Method Selection Dialog */}
         <Dialog open={isPaymentDialogOpen} onOpenChange={setIsPaymentDialogOpen}>
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle>Choose Payment Method</DialogTitle>
-              <DialogDescription>
-                Select how you'd like to pay for your {selectedPlan?.name} subscription
+          <DialogContent className="max-w-lg">
+            <DialogHeader className="text-center space-y-3">
+              <DialogTitle className="text-2xl font-bold">Complete Your Subscription</DialogTitle>
+              <DialogDescription className="text-base">
+                Choose your preferred payment method to get instant access
               </DialogDescription>
             </DialogHeader>
             
-            <div className="space-y-4 mt-6">
-              {/* Plan Summary */}
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h3 className="font-semibold">{selectedPlan?.name}</h3>
-                <p className="text-2xl font-bold text-green-600">R{selectedPlan?.price}</p>
-                <p className="text-sm text-gray-600">{selectedPlan?.duration} days access</p>
+            <div className="space-y-6 mt-8">
+              {/* Plan Summary Card */}
+              <div className="bg-gradient-to-r from-green-50 to-blue-50 p-6 rounded-xl border border-green-200">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900">{selectedPlan?.name}</h3>
+                    <p className="text-sm text-gray-600 mt-1">{selectedPlan?.duration} days of premium access</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-3xl font-bold text-green-600">R{selectedPlan?.price}</p>
+                    <p className="text-xs text-gray-500">One-time payment</p>
+                  </div>
+                </div>
               </div>
 
               {/* Payment Options */}
-              <div className="space-y-3">
+              <div className="space-y-4">
+                <h4 className="text-lg font-semibold text-gray-900 mb-3">Select Payment Method</h4>
+                
                 <Button 
                   onClick={handleYocoPayment}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white p-4 h-auto"
+                  className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white p-6 h-auto rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
                 >
                   <div className="flex items-center justify-between w-full">
                     <div className="flex items-center">
-                      <CreditCard className="w-5 h-5 mr-3" />
+                      <div className="bg-white bg-opacity-20 p-2 rounded-lg mr-4">
+                        <CreditCard className="w-6 h-6" />
+                      </div>
                       <div className="text-left">
-                        <div className="font-semibold">Pay with Yoco</div>
-                        <div className="text-xs opacity-90">Card payments & mobile money</div>
+                        <div className="font-bold text-lg">Yoco Payments</div>
+                        <div className="text-sm opacity-90">Credit card, debit card & mobile money</div>
                       </div>
                     </div>
-                    <div className="text-xs bg-green-500 px-2 py-1 rounded">Recommended</div>
+                    <div className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                      Recommended
+                    </div>
                   </div>
                 </Button>
 
                 <Button 
                   onClick={handleOzowPayment}
                   variant="outline"
-                  className="w-full p-4 h-auto border-2"
+                  className="w-full p-6 h-auto border-2 border-gray-200 hover:border-gray-300 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 bg-white"
                 >
-                  <div className="flex items-center">
-                    <Smartphone className="w-5 h-5 mr-3" />
-                    <div className="text-left">
-                      <div className="font-semibold">Pay with Ozow</div>
-                      <div className="text-xs text-gray-600">Instant online payment</div>
+                  <div className="flex items-center justify-between w-full">
+                    <div className="flex items-center">
+                      <div className="bg-gray-100 p-2 rounded-lg mr-4 w-12 h-12 flex items-center justify-center">
+                        <img 
+                          src="https://cdn.brandfetch.io/idy9gzLXq0/w/358/h/100/theme/dark/logo.png?c=1bxid64Mup7aczewSAYMX&t=1672151446656" 
+                          alt="Ozow" 
+                          className="max-w-full max-h-full object-contain"
+                        />
+                      </div>
+                      <div className="text-left">
+                        <div className="font-bold text-lg text-gray-900">Ozow</div>
+                        <div className="text-sm text-gray-600">Instant bank-to-bank transfer</div>
+                      </div>
+                    </div>
+                    <div className="text-gray-400">
+                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                      </svg>
                     </div>
                   </div>
                 </Button>
               </div>
 
-              <p className="text-xs text-gray-500 text-center mt-4">
-                Your subscription will be activated once payment is confirmed
-              </p>
+              {/* Security Note */}
+              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <div className="flex items-center text-sm text-gray-600">
+                  <svg className="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                  </svg>
+                  Your payment information is secured with bank-level encryption. Subscription activates immediately upon successful payment.
+                </div>
+              </div>
             </div>
           </DialogContent>
         </Dialog>
