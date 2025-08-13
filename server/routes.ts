@@ -324,14 +324,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         Amount: (parseFloat(plan.price) * 100).toString(), // Ozow expects amount in cents
         TransactionReference: transactionReference,
         BankReference: plan.name,
-        SuccessUrl: `${req.protocol}://${req.get('host')}/payment/success`,
-        CancelUrl: `${req.protocol}://${req.get('host')}/payment/cancel`,
-        ErrorUrl: `${req.protocol}://${req.get('host')}/payment/error`,
-        NotifyUrl: `${req.protocol}://${req.get('host')}/api/ozow/notify`,
         Customer: user.email,
         Optional1: userId.toString(),
         Optional2: planId.toString(),
         Optional3: plan.name,
+        NotifyUrl: `${req.protocol}://${req.get('host')}/api/ozow/notify`,
+        SuccessUrl: `${req.protocol}://${req.get('host')}/payment/success`,
+        ErrorUrl: `${req.protocol}://${req.get('host')}/payment/error`,
+        CancelUrl: `${req.protocol}://${req.get('host')}/payment/cancel`,
         IsTest: 'true'
       };
 
@@ -469,23 +469,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 // Helper function to generate Ozow signature
 function generateOzowSignature(data: Record<string, any>, privateKey: string): string {
-  // Ozow signature generation - concatenate fields in the correct order
-  // According to Ozow documentation, include all fields in order (excluding HashCheck)
-  const fieldsToInclude = [
-    'SiteCode', 'CountryCode', 'CurrencyCode', 'Amount', 'TransactionReference',
-    'BankReference', 'Customer', 'Optional1', 'Optional2', 'Optional3', 
-    'NotifyUrl', 'SuccessUrl', 'ErrorUrl', 'CancelUrl', 'IsTest'
+  // Ozow signature generation - based on working PHP examples and documentation
+  // Order must match exactly: SiteCode, CountryCode, CurrencyCode, Amount, TransactionReference, 
+  // BankReference, CancelUrl, ErrorUrl, SuccessUrl, NotifyUrl, IsTest
+  const fieldsInOrder = [
+    data.SiteCode,
+    data.CountryCode, 
+    data.CurrencyCode,
+    data.Amount,
+    data.TransactionReference,
+    data.BankReference,
+    data.CancelUrl,
+    data.ErrorUrl,
+    data.SuccessUrl,
+    data.NotifyUrl,
+    data.IsTest
   ];
   
-  // Build the concatenation string, only including fields that exist and have values
-  const inputString = fieldsToInclude
-    .filter(field => data[field] !== undefined && data[field] !== null && data[field] !== '')
-    .map(field => data[field])
-    .join('');
-
-  // Append private key and convert to lowercase
-  const stringToHash = (inputString + privateKey).toLowerCase();
+  // Join all fields and append private key, then convert to lowercase
+  const inputString = fieldsInOrder.join('') + privateKey;
+  const stringToHash = inputString.toLowerCase();
   
+  console.log('Hash fields in order:', fieldsInOrder);
   console.log('Hash input string:', stringToHash);
   const hash = crypto.createHash('sha512').update(stringToHash).digest('hex');
   console.log('Generated hash:', hash);
