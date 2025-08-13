@@ -52,6 +52,15 @@ export default function Plans() {
         return;
       }
 
+      if (!sessionId) {
+        toast({
+          title: "Authentication Error",
+          description: "Please sign in again to continue with payment.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const response = await fetch('/api/yoco/payment', {
         method: 'POST',
         headers: {
@@ -62,7 +71,8 @@ export default function Plans() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to initiate Yoco payment');
+        const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
+        throw new Error(errorData.message || 'Failed to initiate Yoco payment');
       }
 
       const paymentData = await response.json();
@@ -81,6 +91,15 @@ export default function Plans() {
 
   const handleOzowPayment = async () => {
     try {
+      if (!sessionId) {
+        toast({
+          title: "Authentication Error",
+          description: "Please sign in again to continue with payment.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const response = await fetch('/api/ozow/payment', {
         method: 'POST',
         headers: {
@@ -91,7 +110,8 @@ export default function Plans() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to initiate payment');
+        const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
+        throw new Error(errorData.message || 'Failed to initiate payment');
       }
 
       const paymentData = await response.json();
@@ -116,9 +136,10 @@ export default function Plans() {
       form.submit();
       setIsPaymentDialogOpen(false);
     } catch (error) {
+      console.error('Ozow payment error:', error);
       toast({
         title: "Payment failed",
-        description: "Unable to process payment. Please try again.",
+        description: error instanceof Error ? error.message : "Unable to process payment. Please try again.",
         variant: "destructive",
       });
     }
