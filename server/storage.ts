@@ -3,6 +3,8 @@ import {
   type User, type InsertUser, type SubscriptionPlan, type InsertSubscriptionPlan,
   type Subscription, type InsertSubscription, type ForexSignal, type InsertForexSignal
 } from "@shared/schema";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 
 export interface IStorage {
   // Users
@@ -260,4 +262,98 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export class DatabaseStorage implements IStorage {
+  // Users
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user || undefined;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db.insert(users).values(insertUser).returning();
+    return user;
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    const allUsers = await db.select().from(users).where(eq(users.isAdmin, false));
+    return allUsers;
+  }
+
+  // Subscription Plans
+  async getAllPlans(): Promise<SubscriptionPlan[]> {
+    return await db.select().from(subscriptionPlans);
+  }
+
+  async getPlan(id: number): Promise<SubscriptionPlan | undefined> {
+    const [plan] = await db.select().from(subscriptionPlans).where(eq(subscriptionPlans.id, id));
+    return plan || undefined;
+  }
+
+  async createPlan(insertPlan: InsertSubscriptionPlan): Promise<SubscriptionPlan> {
+    const [plan] = await db.insert(subscriptionPlans).values(insertPlan).returning();
+    return plan;
+  }
+
+  // Subscriptions
+  async getUserSubscription(userId: number): Promise<Subscription | undefined> {
+    const [subscription] = await db.select().from(subscriptions)
+      .where(eq(subscriptions.userId, userId));
+    return subscription || undefined;
+  }
+
+  async createSubscription(insertSubscription: InsertSubscription): Promise<Subscription> {
+    const [subscription] = await db.insert(subscriptions).values(insertSubscription).returning();
+    return subscription;
+  }
+
+  async updateSubscriptionStatus(id: number, status: string): Promise<Subscription | undefined> {
+    const [subscription] = await db.update(subscriptions)
+      .set({ status })
+      .where(eq(subscriptions.id, id))
+      .returning();
+    return subscription || undefined;
+  }
+
+  async getAllSubscriptions(): Promise<Subscription[]> {
+    return await db.select().from(subscriptions);
+  }
+
+  // Forex Signals
+  async getAllSignals(): Promise<ForexSignal[]> {
+    return await db.select().from(forexSignals)
+      .where(eq(forexSignals.isActive, true));
+  }
+
+  async getSignal(id: number): Promise<ForexSignal | undefined> {
+    const [signal] = await db.select().from(forexSignals).where(eq(forexSignals.id, id));
+    return signal || undefined;
+  }
+
+  async createSignal(insertSignal: InsertForexSignal): Promise<ForexSignal> {
+    const [signal] = await db.insert(forexSignals).values(insertSignal).returning();
+    return signal;
+  }
+
+  async updateSignal(id: number, updates: Partial<InsertForexSignal>): Promise<ForexSignal | undefined> {
+    const [signal] = await db.update(forexSignals)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(forexSignals.id, id))
+      .returning();
+    return signal || undefined;
+  }
+
+  async deleteSignal(id: number): Promise<boolean> {
+    const [signal] = await db.update(forexSignals)
+      .set({ isActive: false, updatedAt: new Date() })
+      .where(eq(forexSignals.id, id))
+      .returning();
+    return !!signal;
+  }
+}
+
+export const storage = new DatabaseStorage();

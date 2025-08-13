@@ -9,6 +9,7 @@ import {
 } from "@shared/schema";
 import { z } from "zod";
 import crypto from "crypto";
+import { seedDatabase } from "./seed";
 
 // Simple session store for demo (in production, use a proper session store)
 const sessions = new Map<string, { userId: number; isAdmin: boolean }>();
@@ -36,6 +37,8 @@ const requireAdmin = (req: Request, res: Response, next: any) => {
 };
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Seed database on startup
+  await seedDatabase();
   // Auth endpoints
   app.post("/api/login", async (req: Request, res: Response) => {
     try {
