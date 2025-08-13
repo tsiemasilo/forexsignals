@@ -1,4 +1,4 @@
-import { CheckCircle, Star, CreditCard, Smartphone } from 'lucide-react';
+import { CheckCircle, Star, CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -33,53 +33,17 @@ export default function Plans() {
     setIsPaymentDialogOpen(true);
   };
 
-  const handleOzowPayment = async () => {
-    try {
-      const response = await fetch('/api/ozow/payment', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${sessionId}`
-        },
-        body: JSON.stringify({ planId: selectedPlan.id })
-      });
 
-      if (!response.ok) {
-        throw new Error('Failed to initiate payment');
-      }
-
-      const paymentData = await response.json();
-      
-      // Create and submit Ozow form
-      const form = document.createElement('form');
-      form.method = 'POST';
-      form.action = paymentData.action_url;
-      
-      // Add all Ozow fields
-      Object.entries(paymentData).forEach(([key, value]) => {
-        if (key !== 'action_url') {
-          const input = document.createElement('input');
-          input.type = 'hidden';
-          input.name = key;
-          input.value = value as string;
-          form.appendChild(input);
-        }
-      });
-      
-      document.body.appendChild(form);
-      form.submit();
-      setIsPaymentDialogOpen(false);
-    } catch (error) {
-      toast({
-        title: "Payment failed",
-        description: "Unable to process payment. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
 
   const handleYocoPayment = async () => {
     try {
+      // For Basic Plan, redirect to specific Yoco checkout URL
+      if (selectedPlan.name === "Basic Plan") {
+        window.location.href = "https://c.yoco.com/checkout/ch_PLmQ2BJ7wp8h3Qu4Z9F1l6Lm";
+        setIsPaymentDialogOpen(false);
+        return;
+      }
+
       const response = await fetch('/api/yoco/payment', {
         method: 'POST',
         headers: {
@@ -227,31 +191,14 @@ export default function Plans() {
               {/* Payment Options */}
               <div className="space-y-3">
                 <Button 
-                  onClick={handleOzowPayment}
+                  onClick={handleYocoPayment}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white p-4 h-auto"
                 >
-                  <div className="flex items-center justify-between w-full">
-                    <div className="flex items-center">
-                      <CreditCard className="w-5 h-5 mr-3" />
-                      <div className="text-left">
-                        <div className="font-semibold">Pay with Ozow</div>
-                        <div className="text-xs opacity-90">Instant online payment</div>
-                      </div>
-                    </div>
-                    <div className="text-xs bg-green-500 px-2 py-1 rounded">Recommended</div>
-                  </div>
-                </Button>
-
-                <Button 
-                  onClick={handleYocoPayment}
-                  variant="outline"
-                  className="w-full p-4 h-auto border-2"
-                >
-                  <div className="flex items-center">
-                    <Smartphone className="w-5 h-5 mr-3" />
-                    <div className="text-left">
-                      <div className="font-semibold">Pay with Yoco</div>
-                      <div className="text-xs text-gray-600">Card payments & mobile money</div>
+                  <div className="flex items-center justify-center w-full">
+                    <CreditCard className="w-5 h-5 mr-3" />
+                    <div className="text-center">
+                      <div className="font-semibold">Pay Securely with Yoco</div>
+                      <div className="text-xs opacity-90">Card payments & mobile money</div>
                     </div>
                   </div>
                 </Button>
