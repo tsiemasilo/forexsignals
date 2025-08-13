@@ -1,197 +1,148 @@
-import { TrendingUp, Shield, Users, Clock, Star, CheckCircle } from 'lucide-react';
+import { TrendingUp, ArrowRight, Star, CheckCircle, Users, DollarSign, Award, Activity } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Link } from 'wouter';
 
 export default function Home() {
-  const features = [
-    {
-      icon: TrendingUp,
-      title: "Professional Signals",
-      description: "Get accurate forex signals from expert traders with proven track records."
-    },
-    {
-      icon: Clock,
-      title: "Real-Time Updates",
-      description: "Receive instant notifications when new trading opportunities arise."
-    },
-    {
-      icon: Shield,
-      title: "Risk Management",
-      description: "Every signal includes stop loss and take profit levels for proper risk control."
-    },
-    {
-      icon: Users,
-      title: "Expert Analysis",
-      description: "Detailed market analysis and reasoning behind each trading signal."
-    }
-  ];
-
-  const testimonials = [
-    {
-      name: "Sarah Johnson",
-      role: "Professional Trader",
-      content: "ForexSignals Pro has transformed my trading. The accuracy rate is impressive!",
-      rating: 5
-    },
-    {
-      name: "Michael Chen",
-      role: "Forex Enthusiast",
-      content: "Great signals with detailed analysis. Helped me become a more confident trader.",
-      rating: 5
-    },
-    {
-      name: "Emma Davis",
-      role: "Investment Manager",
-      content: "The best forex signal service I've used. Professional and reliable.",
-      rating: 5
-    }
-  ];
-
   return (
-    <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-slate-900 via-slate-800 to-green-900 text-white py-20">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6">
-            Professional <span className="text-green-400">Forex Signals</span>
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-green-950 text-white overflow-hidden">
+      {/* Main Poster Content */}
+      <div className="relative min-h-screen flex flex-col justify-center items-center px-4 py-8">
+        
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute top-20 left-20 text-6xl font-bold transform rotate-12">📈</div>
+          <div className="absolute top-40 right-32 text-4xl font-bold transform -rotate-12">💎</div>
+          <div className="absolute bottom-32 left-32 text-5xl font-bold transform rotate-45">💰</div>
+          <div className="absolute bottom-20 right-20 text-3xl font-bold transform -rotate-45">🚀</div>
+        </div>
+
+        {/* Header Badge */}
+        <Badge className="mb-8 bg-green-600 text-white px-6 py-2 text-lg font-semibold rounded-full">
+          #1 FOREX SIGNALS PLATFORM
+        </Badge>
+
+        {/* Main Title */}
+        <div className="text-center mb-12 max-w-6xl">
+          <h1 className="text-6xl md:text-8xl lg:text-9xl font-black leading-none mb-6">
+            <span className="block text-white">FOREX</span>
+            <span className="block text-green-400 drop-shadow-2xl">SIGNALS</span>
+            <span className="block text-2xl md:text-3xl lg:text-4xl font-bold text-gray-300 mt-4">
+              THAT ACTUALLY WORK
+            </span>
           </h1>
-          <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-gray-300">
-            Get accurate trading signals from expert traders. 
-            Boost your forex trading performance with our professional analysis.
+        </div>
+
+        {/* Stats Banner */}
+        <div className="grid grid-cols-3 gap-8 mb-12 text-center">
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-green-400/20">
+            <div className="text-4xl md:text-5xl font-black text-green-400 mb-2">85%</div>
+            <div className="text-sm md:text-base font-semibold">WIN RATE</div>
+          </div>
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-green-400/20">
+            <div className="text-4xl md:text-5xl font-black text-green-400 mb-2">1.5K+</div>
+            <div className="text-sm md:text-base font-semibold">TRADERS</div>
+          </div>
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-green-400/20">
+            <div className="text-4xl md:text-5xl font-black text-green-400 mb-2">50+</div>
+            <div className="text-sm md:text-base font-semibold">SIGNALS/MONTH</div>
+          </div>
+        </div>
+
+        {/* Value Proposition */}
+        <div className="text-center mb-12 max-w-4xl">
+          <p className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-200 leading-relaxed">
+            Stop Losing Money on Bad Trades.<br/>
+            <span className="text-green-400">Start Following Expert Signals</span> That Actually Make Profits.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/register">
-              <Button size="lg" className="bg-green-600 hover:bg-green-700 text-lg px-8 py-3">
-                Start Free Trial
-              </Button>
-            </Link>
-            <Link href="/plans">
-              <Button size="lg" variant="outline" className="text-lg px-8 py-3 border-green-400 text-green-400 hover:bg-green-400 hover:text-slate-900">
-                View Pricing
-              </Button>
-            </Link>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex flex-col md:flex-row gap-6 mb-12">
+          <Link href="/register">
+            <Button size="lg" className="bg-green-600 hover:bg-green-500 text-white text-xl px-12 py-4 rounded-full font-bold shadow-2xl transform hover:scale-105 transition-all">
+              START FREE TRIAL
+              <ArrowRight className="ml-2 w-6 h-6" />
+            </Button>
+          </Link>
+          <Link href="/plans">
+            <Button size="lg" variant="outline" className="border-2 border-green-400 text-green-400 hover:bg-green-400 hover:text-slate-900 text-xl px-12 py-4 rounded-full font-bold">
+              VIEW PRICING
+            </Button>
+          </Link>
+        </div>
+
+        {/* Features Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12 max-w-6xl">
+          <div className="text-center bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
+            <TrendingUp className="w-8 h-8 text-green-400 mx-auto mb-2" />
+            <div className="font-bold text-sm">REAL-TIME ALERTS</div>
+          </div>
+          <div className="text-center bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
+            <Award className="w-8 h-8 text-green-400 mx-auto mb-2" />
+            <div className="font-bold text-sm">EXPERT ANALYSIS</div>
+          </div>
+          <div className="text-center bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
+            <DollarSign className="w-8 h-8 text-green-400 mx-auto mb-2" />
+            <div className="font-bold text-sm">PROFIT TARGETS</div>
+          </div>
+          <div className="text-center bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
+            <Activity className="w-8 h-8 text-green-400 mx-auto mb-2" />
+            <div className="font-bold text-sm">RISK MANAGEMENT</div>
           </div>
         </div>
-      </section>
 
-      {/* Features Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">Why Choose ForexSignals Pro?</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              We provide professional forex trading signals with comprehensive analysis to help you make informed trading decisions.
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => (
-              <Card key={index} className="text-center hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                    <feature.icon className="w-8 h-8 text-green-600" />
-                  </div>
-                  <CardTitle className="text-xl">{feature.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-gray-600">
-                    {feature.description}
-                  </CardDescription>
-                </CardContent>
-              </Card>
+        {/* Social Proof */}
+        <div className="text-center mb-8">
+          <div className="flex justify-center items-center mb-4">
+            {[...Array(5)].map((_, i) => (
+              <Star key={i} className="w-6 h-6 text-yellow-400 fill-current" />
             ))}
+            <span className="ml-2 text-lg font-semibold">4.9/5</span>
           </div>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="py-20 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            <div>
-              <h3 className="text-4xl font-bold text-green-600 mb-2">85%</h3>
-              <p className="text-xl text-gray-600">Signal Accuracy Rate</p>
-            </div>
-            <div>
-              <h3 className="text-4xl font-bold text-green-600 mb-2">1,500+</h3>
-              <p className="text-xl text-gray-600">Active Subscribers</p>
-            </div>
-            <div>
-              <h3 className="text-4xl font-bold text-green-600 mb-2">50+</h3>
-              <p className="text-xl text-gray-600">Signals Per Month</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">What Our Traders Say</h2>
-            <p className="text-xl text-gray-600">
-              Join thousands of successful traders who trust ForexSignals Pro
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <Card key={index} className="hover:shadow-lg transition-shadow">
-                <CardContent className="pt-6">
-                  <div className="flex mb-4">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
-                    ))}
-                  </div>
-                  <p className="text-gray-600 mb-4 italic">"{testimonial.content}"</p>
-                  <div>
-                    <p className="font-semibold">{testimonial.name}</p>
-                    <p className="text-sm text-gray-500">{testimonial.role}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 bg-slate-900 text-white">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-4">Ready to Start Trading Like a Pro?</h2>
-          <p className="text-xl mb-8 text-gray-300">
-            Join our community of successful traders and start receiving professional forex signals today.
+          <p className="text-gray-300 text-lg">
+            "Best forex signals I've ever used. Made my first $1000 in profit within 2 weeks!"
+            <br />
+            <span className="text-green-400 font-semibold">- Sarah J., Professional Trader</span>
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/register">
-              <Button size="lg" className="bg-green-600 hover:bg-green-700 text-lg px-8 py-3">
-                Get Started Now
-              </Button>
-            </Link>
-            <Link href="/plans">
-              <Button size="lg" variant="outline" className="text-lg px-8 py-3 border-green-400 text-green-400 hover:bg-green-400 hover:text-slate-900">
-                View All Plans
-              </Button>
-            </Link>
+        </div>
+
+        {/* Trust Indicators */}
+        <div className="flex flex-wrap justify-center items-center gap-8 text-sm text-gray-400">
+          <div className="flex items-center">
+            <CheckCircle className="w-4 h-4 mr-2 text-green-400" />
+            NO SETUP FEES
           </div>
-          
-          <div className="flex items-center justify-center mt-8 space-x-4 text-sm text-gray-400">
-            <div className="flex items-center">
-              <CheckCircle className="w-4 h-4 mr-2 text-green-400" />
-              No Setup Fees
-            </div>
-            <div className="flex items-center">
-              <CheckCircle className="w-4 h-4 mr-2 text-green-400" />
-              Cancel Anytime
-            </div>
-            <div className="flex items-center">
-              <CheckCircle className="w-4 h-4 mr-2 text-green-400" />
-              24/5 Support
-            </div>
+          <div className="flex items-center">
+            <CheckCircle className="w-4 h-4 mr-2 text-green-400" />
+            CANCEL ANYTIME
+          </div>
+          <div className="flex items-center">
+            <CheckCircle className="w-4 h-4 mr-2 text-green-400" />
+            24/5 SUPPORT
+          </div>
+          <div className="flex items-center">
+            <CheckCircle className="w-4 h-4 mr-2 text-green-400" />
+            MONEY BACK GUARANTEE
           </div>
         </div>
-      </section>
+
+        {/* Demo Accounts Notice */}
+        <div className="mt-8 bg-green-600/20 border border-green-400/30 rounded-xl p-4 max-w-md">
+          <p className="text-sm text-center text-green-300">
+            <strong>Try Demo Accounts:</strong><br/>
+            Admin: admin@forexsignals.com<br/>
+            Customer: customer@example.com
+          </p>
+        </div>
+
+        {/* Urgency Element */}
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 animate-bounce">
+          <Badge className="bg-red-600 text-white px-4 py-2 text-sm font-bold rounded-full animate-pulse">
+            ⚡ LIMITED TIME: 7-DAY FREE TRIAL
+          </Badge>
+        </div>
+      </div>
     </div>
   );
 }

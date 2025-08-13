@@ -108,8 +108,10 @@ This is a full-stack e-commerce application for automotive parts built with a mo
 ## Changelog
 
 Changelog:
+- August 13, 2025. Redesigned home page as one-page poster-style website with bold typography, visual elements, and enhanced call-to-action design
 - June 23, 2025. Initial setup
 
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+Design preference: One-page poster-style layouts with bold visual impact.
