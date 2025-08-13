@@ -109,6 +109,7 @@ This is a full-stack e-commerce application for automotive parts built with a mo
 
 Changelog:
 - August 13, 2025. Fixed Ozow payment integration DNS issue - switched from UAT server (uat.ozow.com) to production server (pay.ozow.com) due to UAT server being inaccessible
+- August 13, 2025. Resolved Ozow HashCheck signature validation by correcting field order and concatenation logic
 - August 13, 2025. Implemented PostgreSQL database storage to replace in-memory storage, ensuring persistent user accounts and sessions
 - August 13, 2025. Replaced PayFast payment integration with Ozow for South African market
 - August 13, 2025. Updated pricing to South African Rands (R49.99, R99.99, R179.99) and standardized all plans with same features but different durations (5, 14, 30 days)
