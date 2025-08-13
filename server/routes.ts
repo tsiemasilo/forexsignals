@@ -339,12 +339,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const privateKey = process.env.OZOW_PRIVATE_KEY || '';
       const signature = generateOzowSignature(paymentData, privateKey);
 
+      const actionUrl = process.env.NODE_ENV === 'production' 
+        ? 'https://pay.ozow.com/' 
+        : 'https://uat.ozow.com/';
+      
+      console.log('Ozow action URL being sent:', actionUrl);
+      console.log('Environment:', process.env.NODE_ENV);
+      
       res.json({
         ...paymentData,
         HashCheck: signature,
-        action_url: process.env.NODE_ENV === 'production' 
-          ? 'https://pay.ozow.com/' 
-          : 'https://uat.ozow.com/payment'
+        action_url: actionUrl
       });
     } catch (error) {
       res.status(500).json({ message: "Failed to generate payment" });

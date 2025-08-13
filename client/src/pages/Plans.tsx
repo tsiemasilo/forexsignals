@@ -150,6 +150,8 @@ export default function Plans() {
       }
 
       const paymentData = await response.json();
+      console.log('Ozow payment data received:', paymentData);
+      console.log('Form action URL:', paymentData.action_url);
       
       // Create and submit Ozow form
       const form = document.createElement('form');
