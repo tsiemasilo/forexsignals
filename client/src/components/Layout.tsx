@@ -1,139 +1,158 @@
 import { Link, useLocation } from 'wouter';
-import { Car, Search, ShoppingCart, Menu, X } from 'lucide-react';
-import { useState } from 'react';
+import { TrendingUp, User, LogOut, Settings, Users, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Badge } from '@/components/ui/badge';
-import { useCart } from '@/contexts/CartContext';
-import { CartSidebar } from './CartSidebar';
+import { useAuth } from '@/contexts/AuthContext';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
-export function Layout({ children }: LayoutProps) {
-  const [location, navigate] = useLocation();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isCartOpen, setIsCartOpen] = useState(false);
-  const { cartCount } = useCart();
+export default function Layout({ children }: LayoutProps) {
+  const [location] = useLocation();
+  const { user, logout } = useAuth();
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/parts?search=${encodeURIComponent(searchQuery.trim())}`);
-    }
+  const publicNavigationItems = [
+    { href: '/', label: 'Home' },
+    { href: '/plans', label: 'Pricing' },
+    { href: '/login', label: 'Login' },
+    { href: '/register', label: 'Register' },
+  ];
+
+  const customerNavigationItems = [
+    { href: '/', label: 'Signals' },
+    { href: '/plans', label: 'Pricing' },
+  ];
+
+  const adminNavigationItems = [
+    { href: '/', label: 'Dashboard' },
+    { href: '/admin/signals', label: 'Manage Signals' },
+    { href: '/admin/users', label: 'Manage Users' },
+  ];
+
+  const getNavigationItems = () => {
+    if (!user) return publicNavigationItems;
+    if (user.isAdmin) return adminNavigationItems;
+    return customerNavigationItems;
   };
 
-  const navigationItems = [
-    { href: '/', label: 'Home' },
-    { href: '/parts', label: 'Parts' },
-    { href: '/about', label: 'About' },
-    { href: '/contact', label: 'Contact' },
-  ];
+  const handleLogout = () => {
+    logout();
+  };
 
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation Header */}
-      <nav className="bg-auto-gray text-white sticky top-0 z-50 shadow-lg">
-        <div className="max-w-6xl mx-auto px-4">
+      <nav className="bg-slate-900 text-white sticky top-0 z-50 shadow-lg">
+        <div className="max-w-7xl mx-auto px-4">
           <div className="flex justify-between items-center py-4">
             {/* Logo */}
-            <Link href="/" className="flex items-center space-x-4 hover:opacity-80 transition-opacity">
-              <Car className="text-auto-red text-2xl" size={28} />
-              <h1 className="text-xl font-bold">AutoParts Pro</h1>
+            <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
+              <TrendingUp className="text-green-400" size={32} />
+              <div>
+                <h1 className="text-xl font-bold">ForexSignals Pro</h1>
+                <p className="text-xs text-gray-400">Professional Trading Signals</p>
+              </div>
             </Link>
 
-            {/* Desktop Navigation */}
+            {/* Navigation */}
             <div className="hidden md:flex items-center space-x-6">
-              {navigationItems.map((item) => (
+              {getNavigationItems().map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="hover:text-auto-red transition-colors"
+                  className={`hover:text-green-400 transition-colors ${
+                    location === item.href ? 'text-green-400' : ''
+                  }`}
                 >
                   {item.label}
                 </Link>
               ))}
             </div>
 
-            {/* Search and Actions */}
+            {/* User Menu */}
             <div className="flex items-center space-x-4">
-              {/* Search */}
-              <form onSubmit={handleSearch} className="hidden md:block">
-                <div className="relative">
-                  <Input
-                    type="search"
-                    placeholder="Search parts..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="bg-gray-700 text-white border-gray-600 w-64 pr-10 placeholder:text-gray-400 focus:ring-auto-blue focus:border-auto-blue"
-                  />
-                  <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              {user ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm" className="text-white hover:text-green-400">
+                      <User size={20} className="mr-2" />
+                      {user.firstName || user.email}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <div className="px-2 py-1.5 text-sm">
+                      <p className="font-medium">{user.firstName} {user.lastName}</p>
+                      <p className="text-xs text-muted-foreground">{user.email}</p>
+                      {user.isAdmin && (
+                        <p className="text-xs text-green-600 font-medium">Administrator</p>
+                      )}
+                    </div>
+                    <DropdownMenuSeparator />
+                    {user.isAdmin ? (
+                      <>
+                        <DropdownMenuItem asChild>
+                          <Link href="/" className="flex items-center">
+                            <BarChart3 size={16} className="mr-2" />
+                            Dashboard
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link href="/admin/signals" className="flex items-center">
+                            <Settings size={16} className="mr-2" />
+                            Manage Signals
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link href="/admin/users" className="flex items-center">
+                            <Users size={16} className="mr-2" />
+                            Manage Users
+                          </Link>
+                        </DropdownMenuItem>
+                      </>
+                    ) : (
+                      <>
+                        <DropdownMenuItem asChild>
+                          <Link href="/" className="flex items-center">
+                            <TrendingUp size={16} className="mr-2" />
+                            Signals
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link href="/plans" className="flex items-center">
+                            <BarChart3 size={16} className="mr-2" />
+                            Pricing
+                          </Link>
+                        </DropdownMenuItem>
+                      </>
+                    )}
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleLogout} className="text-red-600">
+                      <LogOut size={16} className="mr-2" />
+                      Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <div className="flex items-center space-x-2">
+                  <Link href="/login">
+                    <Button size="sm" variant="ghost" className="text-white hover:text-green-400">
+                      Login
+                    </Button>
+                  </Link>
+                  <Link href="/register">
+                    <Button size="sm" className="bg-green-600 hover:bg-green-700">
+                      Get Started
+                    </Button>
+                  </Link>
                 </div>
-              </form>
-
-              {/* Cart */}
-              <Button
-                variant="ghost"
-                size="sm"
-                className="relative text-white hover:text-auto-red"
-                onClick={() => setIsCartOpen(true)}
-              >
-                <ShoppingCart size={20} />
-                {cartCount > 0 && (
-                  <Badge
-                    variant="destructive"
-                    className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs bg-auto-red"
-                  >
-                    {cartCount}
-                  </Badge>
-                )}
-              </Button>
-
-              {/* Login Button */}
-              <Link href="/login">
-                <Button size="sm" className="bg-auto-blue hover:bg-blue-700">
-                  Login
-                </Button>
-              </Link>
-
-              {/* Mobile Menu */}
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button variant="ghost" size="sm" className="md:hidden text-white">
-                    <Menu size={20} />
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="right" className="w-[300px] bg-auto-gray text-white border-gray-600">
-                  <div className="flex flex-col space-y-4 mt-6">
-                    {/* Mobile Search */}
-                    <form onSubmit={handleSearch}>
-                      <div className="relative">
-                        <Input
-                          type="search"
-                          placeholder="Search parts..."
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          className="bg-gray-700 text-white border-gray-600 pr-10 placeholder:text-gray-400"
-                        />
-                        <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                      </div>
-                    </form>
-
-                    {/* Mobile Navigation */}
-                    {navigationItems.map((item) => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className="text-white hover:text-auto-red transition-colors py-2"
-                      >
-                        {item.label}
-                      </Link>
-                    ))}
-                  </div>
-                </SheetContent>
-              </Sheet>
+              )}
             </div>
           </div>
         </div>
@@ -145,51 +164,54 @@ export function Layout({ children }: LayoutProps) {
       </main>
 
       {/* Footer */}
-      <footer className="bg-auto-gray text-white py-12">
-        <div className="max-w-6xl mx-auto px-4">
+      <footer className="bg-slate-900 text-white py-12">
+        <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <Car className="text-auto-red text-2xl" size={28} />
-                <h3 className="text-xl font-bold">AutoParts Pro</h3>
+              <div className="flex items-center space-x-3 mb-4">
+                <TrendingUp className="text-green-400" size={28} />
+                <div>
+                  <h3 className="text-xl font-bold">ForexSignals Pro</h3>
+                  <p className="text-xs text-gray-400">Professional Trading Signals</p>
+                </div>
               </div>
-              <p className="text-gray-400 mb-4">Your trusted partner for genuine car parts and accessories.</p>
+              <p className="text-gray-400 mb-4">
+                Get professional forex trading signals from expert traders. 
+                Boost your trading performance with our accurate market analysis.
+              </p>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Quick Links</h4>
+              <h4 className="font-semibold mb-4">Services</h4>
               <ul className="space-y-2 text-gray-400">
-                <li><Link href="/" className="hover:text-white">Home</Link></li>
-                <li><Link href="/parts" className="hover:text-white">All Products</Link></li>
-                <li><Link href="/about" className="hover:text-white">About</Link></li>
-                <li><Link href="/contact" className="hover:text-white">Contact</Link></li>
+                <li><Link href="/plans" className="hover:text-white">Trading Plans</Link></li>
+                <li><Link href="/" className="hover:text-white">Live Signals</Link></li>
+                <li><a href="#" className="hover:text-white">Market Analysis</a></li>
+                <li><a href="#" className="hover:text-white">Expert Support</a></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Customer Service</h4>
+              <h4 className="font-semibold mb-4">Support</h4>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white">Order Status</a></li>
-                <li><a href="#" className="hover:text-white">Returns</a></li>
-                <li><a href="#" className="hover:text-white">Shipping Info</a></li>
-                <li><a href="#" className="hover:text-white">FAQ</a></li>
+                <li><a href="#" className="hover:text-white">Help Center</a></li>
+                <li><a href="#" className="hover:text-white">Contact Us</a></li>
+                <li><a href="#" className="hover:text-white">Trading Guide</a></li>
+                <li><a href="#" className="hover:text-white">Risk Disclaimer</a></li>
               </ul>
             </div>
             <div>
               <h4 className="font-semibold mb-4">Contact Info</h4>
               <div className="text-gray-400 space-y-2">
-                <p>+1 (555) 123-4567</p>
-                <p>info@autopartspro.com</p>
-                <p>123 Auto Street, Parts City</p>
+                <p>+1 (555) 987-6543</p>
+                <p>support@forexsignalspro.com</p>
+                <p>Trading signals available 24/5</p>
               </div>
             </div>
           </div>
           <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 AutoParts Pro. All rights reserved.</p>
+            <p>&copy; 2024 ForexSignals Pro. All rights reserved. Trading involves risk.</p>
           </div>
         </div>
       </footer>
-
-      {/* Cart Sidebar */}
-      <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </div>
   );
 }

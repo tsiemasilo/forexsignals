@@ -1,216 +1,380 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertUserSchema, insertCartItemSchema, insertOrderSchema, insertOrderItemSchema } from "@shared/schema";
+import { 
+  insertUserSchema, 
+  insertSubscriptionPlanSchema, 
+  insertSubscriptionSchema, 
+  insertForexSignalSchema 
+} from "@shared/schema";
 import { z } from "zod";
+import crypto from "crypto";
+
+// Simple session store for demo (in production, use a proper session store)
+const sessions = new Map<string, { userId: number; isAdmin: boolean }>();
+
+// Middleware to check authentication
+const requireAuth = (req: Request, res: Response, next: any) => {
+  const sessionId = req.headers.authorization?.replace('Bearer ', '');
+  if (!sessionId || !sessions.has(sessionId)) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  
+  const session = sessions.get(sessionId)!;
+  (req as any).userId = session.userId;
+  (req as any).isAdmin = session.isAdmin;
+  next();
+};
+
+// Middleware to check admin privileges
+const requireAdmin = (req: Request, res: Response, next: any) => {
+  if (!(req as any).isAdmin) {
+    return res.status(403).json({ message: "Admin access required" });
+  }
+  next();
+};
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Brands
-  app.get("/api/brands", async (req: Request, res: Response) => {
+  // Auth endpoints
+  app.post("/api/login", async (req: Request, res: Response) => {
     try {
-      const brands = await storage.getAllBrands();
-      res.json(brands);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to fetch brands" });
-    }
-  });
-
-  app.get("/api/brands/:slug", async (req: Request, res: Response) => {
-    try {
-      const brand = await storage.getBrandBySlug(req.params.slug);
-      if (!brand) {
-        return res.status(404).json({ message: "Brand not found" });
-      }
-      res.json(brand);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to fetch brand" });
-    }
-  });
-
-  // Categories
-  app.get("/api/categories", async (req: Request, res: Response) => {
-    try {
-      const categories = await storage.getAllCategories();
-      res.json(categories);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to fetch categories" });
-    }
-  });
-
-  app.get("/api/categories/:slug", async (req: Request, res: Response) => {
-    try {
-      const category = await storage.getCategoryBySlug(req.params.slug);
-      if (!category) {
-        return res.status(404).json({ message: "Category not found" });
-      }
-      res.json(category);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to fetch category" });
-    }
-  });
-
-  // Products
-  app.get("/api/products", async (req: Request, res: Response) => {
-    try {
-      const { brand, category, search } = req.query;
-      let brandId: number | undefined;
-      let categoryId: number | undefined;
-
-      if (brand && typeof brand === 'string') {
-        const brandData = await storage.getBrandBySlug(brand);
-        brandId = brandData?.id;
+      const { email } = req.body;
+      const user = await storage.getUserByEmail(email);
+      
+      if (!user) {
+        return res.status(401).json({ message: "Invalid credentials" });
       }
 
-      if (category && typeof category === 'string') {
-        const categoryData = await storage.getCategoryBySlug(category);
-        categoryId = categoryData?.id;
-      }
+      const sessionId = crypto.randomUUID();
+      sessions.set(sessionId, { userId: user.id, isAdmin: user.isAdmin || false });
 
-      const products = await storage.getAllProducts({
-        brandId,
-        categoryId,
-        search: typeof search === 'string' ? search : undefined,
+      res.json({
+        sessionId,
+        user: {
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          isAdmin: user.isAdmin
+        }
       });
-
-      res.json(products);
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch products" });
+      res.status(500).json({ message: "Login failed" });
     }
   });
 
-  app.get("/api/products/:id", async (req: Request, res: Response) => {
-    try {
-      const id = parseInt(req.params.id);
-      const product = await storage.getProduct(id);
-      if (!product) {
-        return res.status(404).json({ message: "Product not found" });
-      }
-      res.json(product);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to fetch product" });
-    }
-  });
-
-  // Cart
-  app.get("/api/cart", async (req: Request, res: Response) => {
-    try {
-      const { sessionId } = req.query;
-      const cartItems = await storage.getCartItems(
-        undefined, // userId not implemented for now
-        typeof sessionId === 'string' ? sessionId : undefined
-      );
-      res.json(cartItems);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to fetch cart items" });
-    }
-  });
-
-  app.post("/api/cart", async (req: Request, res: Response) => {
-    try {
-      const validatedData = insertCartItemSchema.parse(req.body);
-      const cartItem = await storage.addCartItem(validatedData);
-      res.json(cartItem);
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        return res.status(400).json({ message: "Invalid request data", errors: error.errors });
-      }
-      res.status(500).json({ message: "Failed to add item to cart" });
-    }
-  });
-
-  app.put("/api/cart/:id", async (req: Request, res: Response) => {
-    try {
-      const id = parseInt(req.params.id);
-      const { quantity } = req.body;
-      
-      if (typeof quantity !== 'number' || quantity < 1) {
-        return res.status(400).json({ message: "Invalid quantity" });
-      }
-
-      const cartItem = await storage.updateCartItem(id, quantity);
-      if (!cartItem) {
-        return res.status(404).json({ message: "Cart item not found" });
-      }
-      res.json(cartItem);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to update cart item" });
-    }
-  });
-
-  app.delete("/api/cart/:id", async (req: Request, res: Response) => {
-    try {
-      const id = parseInt(req.params.id);
-      const success = await storage.removeCartItem(id);
-      if (!success) {
-        return res.status(404).json({ message: "Cart item not found" });
-      }
-      res.json({ message: "Item removed from cart" });
-    } catch (error) {
-      res.status(500).json({ message: "Failed to remove cart item" });
-    }
-  });
-
-  app.delete("/api/cart", async (req: Request, res: Response) => {
-    try {
-      const { sessionId } = req.query;
-      const success = await storage.clearCart(
-        undefined, // userId not implemented for now
-        typeof sessionId === 'string' ? sessionId : undefined
-      );
-      res.json({ message: "Cart cleared" });
-    } catch (error) {
-      res.status(500).json({ message: "Failed to clear cart" });
-    }
-  });
-
-  // Orders
-  app.post("/api/orders", async (req: Request, res: Response) => {
-    try {
-      const { order, items } = req.body;
-      const validatedOrder = insertOrderSchema.parse(order);
-      const validatedItems = z.array(insertOrderItemSchema).parse(items);
-      
-      const newOrder = await storage.createOrder(validatedOrder, validatedItems);
-      res.json(newOrder);
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        return res.status(400).json({ message: "Invalid request data", errors: error.errors });
-      }
-      res.status(500).json({ message: "Failed to create order" });
-    }
-  });
-
-  app.get("/api/orders/:id", async (req: Request, res: Response) => {
-    try {
-      const id = parseInt(req.params.id);
-      const order = await storage.getOrder(id);
-      if (!order) {
-        return res.status(404).json({ message: "Order not found" });
-      }
-      res.json(order);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to fetch order" });
-    }
-  });
-
-  // Users
-  app.post("/api/users", async (req: Request, res: Response) => {
+  app.post("/api/register", async (req: Request, res: Response) => {
     try {
       const validatedData = insertUserSchema.parse(req.body);
       const existingUser = await storage.getUserByEmail(validatedData.email);
+      
       if (existingUser) {
         return res.status(400).json({ message: "User already exists" });
       }
+
       const user = await storage.createUser(validatedData);
-      res.json({ id: user.id, name: user.name, email: user.email });
+      res.json({
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName
+      });
     } catch (error) {
       if (error instanceof z.ZodError) {
         return res.status(400).json({ message: "Invalid request data", errors: error.errors });
       }
-      res.status(500).json({ message: "Failed to create user" });
+      res.status(500).json({ message: "Registration failed" });
+    }
+  });
+
+  app.post("/api/logout", requireAuth, (req: Request, res: Response) => {
+    const sessionId = req.headers.authorization?.replace('Bearer ', '');
+    if (sessionId) {
+      sessions.delete(sessionId);
+    }
+    res.json({ message: "Logged out successfully" });
+  });
+
+  // Subscription Plans endpoints
+  app.get("/api/plans", async (req: Request, res: Response) => {
+    try {
+      const plans = await storage.getAllPlans();
+      res.json(plans);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch plans" });
+    }
+  });
+
+  app.post("/api/plans", requireAuth, requireAdmin, async (req: Request, res: Response) => {
+    try {
+      const validatedData = insertSubscriptionPlanSchema.parse(req.body);
+      const plan = await storage.createPlan(validatedData);
+      res.json(plan);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid request data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to create plan" });
+    }
+  });
+
+  // Subscriptions endpoints
+  app.get("/api/subscription", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const userId = (req as any).userId;
+      const subscription = await storage.getUserSubscription(userId);
+      res.json(subscription);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch subscription" });
+    }
+  });
+
+  app.post("/api/subscribe", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const userId = (req as any).userId;
+      const { planId } = req.body;
+      
+      const plan = await storage.getPlan(planId);
+      if (!plan) {
+        return res.status(404).json({ message: "Plan not found" });
+      }
+
+      // Create subscription
+      const endDate = new Date();
+      endDate.setDate(endDate.getDate() + plan.duration);
+
+      const subscriptionData = {
+        userId,
+        planId,
+        status: "active" as const,
+        startDate: new Date(),
+        endDate
+      };
+
+      const subscription = await storage.createSubscription(subscriptionData);
+      res.json(subscription);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to create subscription" });
+    }
+  });
+
+  // Forex Signals endpoints
+  app.get("/api/signals", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const userId = (req as any).userId;
+      const isAdmin = (req as any).isAdmin;
+
+      // Check if user has active subscription (unless admin)
+      if (!isAdmin) {
+        const subscription = await storage.getUserSubscription(userId);
+        if (!subscription || subscription.status !== "active" || new Date() > subscription.endDate) {
+          return res.status(403).json({ message: "Active subscription required" });
+        }
+      }
+
+      const signals = await storage.getAllSignals();
+      res.json(signals);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch signals" });
+    }
+  });
+
+  app.get("/api/signals/:id", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const userId = (req as any).userId;
+      const isAdmin = (req as any).isAdmin;
+      const signalId = parseInt(req.params.id);
+
+      // Check if user has active subscription (unless admin)
+      if (!isAdmin) {
+        const subscription = await storage.getUserSubscription(userId);
+        if (!subscription || subscription.status !== "active" || new Date() > subscription.endDate) {
+          return res.status(403).json({ message: "Active subscription required" });
+        }
+      }
+
+      const signal = await storage.getSignal(signalId);
+      if (!signal) {
+        return res.status(404).json({ message: "Signal not found" });
+      }
+
+      res.json(signal);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch signal" });
+    }
+  });
+
+  app.post("/api/signals", requireAuth, requireAdmin, async (req: Request, res: Response) => {
+    try {
+      const createdBy = (req as any).userId;
+      const validatedData = insertForexSignalSchema.parse({
+        ...req.body,
+        createdBy
+      });
+
+      const signal = await storage.createSignal(validatedData);
+      res.json(signal);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid request data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to create signal" });
+    }
+  });
+
+  app.put("/api/signals/:id", requireAuth, requireAdmin, async (req: Request, res: Response) => {
+    try {
+      const signalId = parseInt(req.params.id);
+      const updates = req.body;
+
+      const signal = await storage.updateSignal(signalId, updates);
+      if (!signal) {
+        return res.status(404).json({ message: "Signal not found" });
+      }
+
+      res.json(signal);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update signal" });
+    }
+  });
+
+  app.delete("/api/signals/:id", requireAuth, requireAdmin, async (req: Request, res: Response) => {
+    try {
+      const signalId = parseInt(req.params.id);
+      const success = await storage.deleteSignal(signalId);
+      
+      if (!success) {
+        return res.status(404).json({ message: "Signal not found" });
+      }
+
+      res.json({ message: "Signal deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete signal" });
+    }
+  });
+
+  // Admin endpoints
+  app.get("/api/admin/users", requireAuth, requireAdmin, async (req: Request, res: Response) => {
+    try {
+      const users = await storage.getAllUsers();
+      const subscriptions = await storage.getAllSubscriptions();
+      const plans = await storage.getAllPlans();
+
+      // Combine user data with subscription info
+      const usersWithSubscriptions = users.map(user => {
+        const userSubscription = subscriptions.find(sub => 
+          sub.userId === user.id && sub.status === "active"
+        );
+        const plan = userSubscription ? plans.find(p => p.id === userSubscription.planId) : null;
+
+        return {
+          ...user,
+          subscription: userSubscription ? {
+            ...userSubscription,
+            plan: plan
+          } : null
+        };
+      });
+
+      res.json(usersWithSubscriptions);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch users" });
+    }
+  });
+
+  // PayFast payment integration
+  app.post("/api/payfast/payment", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const { planId } = req.body;
+      const userId = (req as any).userId;
+
+      const plan = await storage.getPlan(planId);
+      if (!plan) {
+        return res.status(404).json({ message: "Plan not found" });
+      }
+
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Generate PayFast payment form data
+      const paymentData = {
+        merchant_id: process.env.PAYFAST_MERCHANT_ID,
+        merchant_key: process.env.PAYFAST_MERCHANT_KEY,
+        return_url: `${req.protocol}://${req.get('host')}/payment/success`,
+        cancel_url: `${req.protocol}://${req.get('host')}/payment/cancel`,
+        notify_url: `${req.protocol}://${req.get('host')}/api/payfast/notify`,
+        name_first: user.firstName || '',
+        name_last: user.lastName || '',
+        email_address: user.email,
+        item_name: plan.name,
+        item_description: plan.description || '',
+        amount: plan.price,
+        custom_str1: userId.toString(),
+        custom_str2: planId.toString(),
+      };
+
+      // Generate signature for PayFast
+      const passphrase = process.env.PAYFAST_PASSPHRASE || '';
+      const signature = generatePayFastSignature(paymentData, passphrase);
+
+      res.json({
+        ...paymentData,
+        signature,
+        action_url: 'https://sandbox.payfast.co.za/eng/process' // Use live URL for production
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to generate payment" });
+    }
+  });
+
+  // PayFast notification handler
+  app.post("/api/payfast/notify", async (req: Request, res: Response) => {
+    try {
+      const data = req.body;
+      
+      // Verify the payment notification
+      if (data.payment_status === 'COMPLETE') {
+        const userId = parseInt(data.custom_str1);
+        const planId = parseInt(data.custom_str2);
+
+        const plan = await storage.getPlan(planId);
+        if (plan) {
+          // Create subscription
+          const endDate = new Date();
+          endDate.setDate(endDate.getDate() + plan.duration);
+
+          await storage.createSubscription({
+            userId,
+            planId,
+            status: "active",
+            startDate: new Date(),
+            endDate
+          });
+        }
+      }
+
+      res.status(200).send('OK');
+    } catch (error) {
+      res.status(500).send('Error');
     }
   });
 
   const httpServer = createServer(app);
   return httpServer;
+}
+
+// Helper function to generate PayFast signature
+function generatePayFastSignature(data: Record<string, any>, passphrase: string): string {
+  // Remove signature and empty values
+  const filteredData = Object.entries(data)
+    .filter(([key, value]) => key !== 'signature' && value !== '' && value != null)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+    .join('&');
+
+  const stringToHash = passphrase ? `${filteredData}&passphrase=${passphrase}` : filteredData;
+  
+  return crypto.createHash('md5').update(stringToHash).digest('hex');
 }

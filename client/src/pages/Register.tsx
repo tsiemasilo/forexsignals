@@ -8,10 +8,14 @@ import { useToast } from '@/hooks/use-toast';
 import { Link, useLocation } from 'wouter';
 import { TrendingUp } from 'lucide-react';
 
-export default function Login() {
-  const [email, setEmail] = useState('');
+export default function Register() {
+  const [formData, setFormData] = useState({
+    email: '',
+    firstName: '',
+    lastName: ''
+  });
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
+  const { register } = useAuth();
   const { toast } = useToast();
   const [, navigate] = useLocation();
 
@@ -20,21 +24,28 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      await login(email);
+      await register(formData);
       toast({
-        title: "Login successful",
-        description: "Welcome back!",
+        title: "Registration successful",
+        description: "Your account has been created. You can now sign in.",
       });
-      navigate('/');
+      navigate('/login');
     } catch (error) {
       toast({
-        title: "Login failed",
-        description: "Please check your email address.",
+        title: "Registration failed",
+        description: "Please try again or contact support.",
         variant: "destructive",
       });
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
   };
 
   return (
@@ -45,9 +56,9 @@ export default function Login() {
             <TrendingUp className="text-green-600" size={32} />
             <h1 className="text-2xl font-bold">ForexSignals Pro</h1>
           </div>
-          <CardTitle>Welcome Back</CardTitle>
+          <CardTitle>Create Account</CardTitle>
           <CardDescription>
-            Enter your email to access your trading signals
+            Join thousands of traders getting professional signals
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -56,11 +67,36 @@ export default function Login() {
               <Label htmlFor="email">Email Address</Label>
               <Input
                 id="email"
+                name="email"
                 type="email"
                 placeholder="your@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={formData.email}
+                onChange={handleChange}
                 required
+                disabled={isLoading}
+              />
+            </div>
+            <div>
+              <Label htmlFor="firstName">First Name</Label>
+              <Input
+                id="firstName"
+                name="firstName"
+                type="text"
+                placeholder="John"
+                value={formData.firstName}
+                onChange={handleChange}
+                disabled={isLoading}
+              />
+            </div>
+            <div>
+              <Label htmlFor="lastName">Last Name</Label>
+              <Input
+                id="lastName"
+                name="lastName"
+                type="text"
+                placeholder="Doe"
+                value={formData.lastName}
+                onChange={handleChange}
                 disabled={isLoading}
               />
             </div>
@@ -69,23 +105,17 @@ export default function Login() {
               className="w-full bg-green-600 hover:bg-green-700"
               disabled={isLoading}
             >
-              {isLoading ? 'Signing In...' : 'Sign In'}
+              {isLoading ? 'Creating Account...' : 'Create Account'}
             </Button>
           </form>
 
           <div className="mt-6 text-center text-sm">
             <p className="text-gray-600">
-              Don't have an account?{' '}
-              <Link href="/register" className="text-green-600 hover:underline">
-                Sign up here
+              Already have an account?{' '}
+              <Link href="/login" className="text-green-600 hover:underline">
+                Sign in here
               </Link>
             </p>
-          </div>
-
-          <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-            <p className="text-sm text-gray-600 mb-2"><strong>Demo Accounts:</strong></p>
-            <p className="text-xs text-gray-500">Admin: admin@forexsignals.com</p>
-            <p className="text-xs text-gray-500">Customer: customer@example.com</p>
           </div>
         </CardContent>
       </Card>

@@ -3,29 +3,52 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { CartProvider } from "@/contexts/CartContext";
-import { Layout } from "@/components/Layout";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import Layout from "@/components/Layout";
 import Home from "@/pages/Home";
-import Parts from "@/pages/Parts";
-import Cart from "@/pages/Cart";
-import Checkout from "@/pages/Checkout";
 import Login from "@/pages/Login";
-import About from "@/pages/About";
-import Contact from "@/pages/Contact";
+import Register from "@/pages/Register";
+import Signals from "@/pages/Signals";
+import Plans from "@/pages/Plans";
+import AdminDashboard from "@/pages/AdminDashboard";
+import AdminSignals from "@/pages/AdminSignals";
+import AdminUsers from "@/pages/AdminUsers";
 import NotFound from "@/pages/not-found";
 
 function Router() {
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    );
+  }
+
   return (
     <Layout>
       <Switch>
-        <Route path="/" component={Home} />
-        <Route path="/parts" component={Parts} />
-        <Route path="/cart" component={Cart} />
-        <Route path="/checkout" component={Checkout} />
-        <Route path="/login" component={Login} />
-        <Route path="/about" component={About} />
-        <Route path="/contact" component={Contact} />
-        {/* Fallback to 404 */}
+        {!user ? (
+          <>
+            <Route path="/" component={Home} />
+            <Route path="/login" component={Login} />
+            <Route path="/register" component={Register} />
+            <Route path="/plans" component={Plans} />
+          </>
+        ) : user.isAdmin ? (
+          <>
+            <Route path="/" component={AdminDashboard} />
+            <Route path="/admin/signals" component={AdminSignals} />
+            <Route path="/admin/users" component={AdminUsers} />
+          </>
+        ) : (
+          <>
+            <Route path="/" component={Signals} />
+            <Route path="/signals" component={Signals} />
+            <Route path="/plans" component={Plans} />
+          </>
+        )}
         <Route component={NotFound} />
       </Switch>
     </Layout>
@@ -36,10 +59,10 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <CartProvider>
+        <AuthProvider>
           <Toaster />
           <Router />
-        </CartProvider>
+        </AuthProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );
