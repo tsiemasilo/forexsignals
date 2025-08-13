@@ -108,6 +108,7 @@ This is a full-stack e-commerce application for automotive parts built with a mo
 ## Changelog
 
 Changelog:
+- August 13, 2025. Updated pricing to South African Rands (R49.99, R99.99, R179.99) and standardized all plans with same features but different durations (5, 14, 30 days)
 - August 13, 2025. Redesigned home page as one-page poster-style website with bold typography, visual elements, and enhanced call-to-action design
 - June 23, 2025. Initial setup
 

@@ -104,7 +104,7 @@ export default function Plans() {
                     {plan.description}
                   </CardDescription>
                   <div className="text-center">
-                    <span className="text-4xl font-bold">${plan.price}</span>
+                    <span className="text-4xl font-bold">R{plan.price}</span>
                     <span className="text-gray-500 ml-1">/{plan.duration} days</span>
                   </div>
                 </CardHeader>
@@ -127,24 +127,6 @@ export default function Plans() {
                       <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
                       <span>Expert market analysis</span>
                     </div>
-                    {plan.name.includes('Premium') && (
-                      <div className="flex items-center">
-                        <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                        <span>Weekly market reports</span>
-                      </div>
-                    )}
-                    {plan.name.includes('VIP') && (
-                      <>
-                        <div className="flex items-center">
-                          <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                          <span>Personal consultation</span>
-                        </div>
-                        <div className="flex items-center">
-                          <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                          <span>Priority support</span>
-                        </div>
-                      </>
-                    )}
                   </div>
                   
                   {user ? (

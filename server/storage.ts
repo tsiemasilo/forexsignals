@@ -80,9 +80,9 @@ export class MemStorage implements IStorage {
 
     // Create subscription plans
     const plans = [
-      { name: "Basic Plan", description: "Get 5 signals per week", price: "29.99", duration: 30 },
-      { name: "Premium Plan", description: "Get 15 signals per week + market analysis", price: "79.99", duration: 30 },
-      { name: "VIP Plan", description: "Unlimited signals + personal consultation", price: "199.99", duration: 30 }
+      { name: "Basic Plan", description: "One quality signal per day + market analysis", price: "49.99", duration: 5 },
+      { name: "Premium Plan", description: "One quality signal per day + market analysis", price: "99.99", duration: 14 },
+      { name: "VIP Plan", description: "One quality signal per day + market analysis", price: "179.99", duration: 30 }
     ];
 
     plans.forEach(planData => {
