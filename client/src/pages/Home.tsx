@@ -127,21 +127,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Demo Accounts Notice */}
-        <div className="mt-8 bg-green-600/20 border border-green-400/30 rounded-xl p-4 max-w-md">
-          <p className="text-sm text-center text-green-300">
-            <strong>Try Demo Accounts:</strong><br/>
-            Admin: admin@forexsignals.com<br/>
-            Customer: customer@example.com
-          </p>
-        </div>
 
-        {/* Urgency Element */}
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <Badge className="bg-red-600 text-white px-4 py-2 text-sm font-bold rounded-full animate-pulse">
-            ⚡ LIMITED TIME: 7-DAY FREE TRIAL
-          </Badge>
-        </div>
       </div>
     </div>
   );
