@@ -16,13 +16,18 @@ const sessions = new Map<string, { userId: number; isAdmin: boolean }>();
 // Middleware to check authentication
 const requireAuth = (req: Request, res: Response, next: any) => {
   const sessionId = req.headers.authorization?.replace('Bearer ', '');
+  console.log('Auth check - SessionId:', sessionId);
+  console.log('Available sessions:', Array.from(sessions.keys()));
+  
   if (!sessionId || !sessions.has(sessionId)) {
+    console.log('Authentication failed - invalid or missing session');
     return res.status(401).json({ message: "Unauthorized" });
   }
   
   const session = sessions.get(sessionId)!;
   (req as any).userId = session.userId;
   (req as any).isAdmin = session.isAdmin;
+  console.log('Auth successful for user:', session.userId);
   next();
 };
 

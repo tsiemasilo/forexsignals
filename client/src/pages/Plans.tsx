@@ -100,6 +100,9 @@ export default function Plans() {
         return;
       }
 
+      console.log('Making Ozow payment request with sessionId:', sessionId);
+      console.log('Selected plan:', selectedPlan);
+
       const response = await fetch('/api/ozow/payment', {
         method: 'POST',
         headers: {
