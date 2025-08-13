@@ -258,7 +258,7 @@ export default function Plans() {
                 >
                   <div className="flex items-center justify-between w-full">
                     <div className="flex items-center">
-                      <div className="bg-white p-2 rounded-lg mr-4 w-12 h-12 flex items-center justify-center">
+                      <div className="bg-white p-3 rounded-lg mr-4 w-16 h-16 flex items-center justify-center">
                         <img 
                           src="https://cdn.brandfetch.io/idGqhiL13o/theme/dark/logo.svg?c=1bxid64Mup7aczewSAYMX&t=1667785033148" 
                           alt="Yoco" 
@@ -283,7 +283,7 @@ export default function Plans() {
                 >
                   <div className="flex items-center justify-between w-full">
                     <div className="flex items-center">
-                      <div className="bg-gray-100 p-2 rounded-lg mr-4 w-12 h-12 flex items-center justify-center">
+                      <div className="bg-gray-100 p-3 rounded-lg mr-4 w-16 h-16 flex items-center justify-center">
                         <img 
                           src="https://cdn.brandfetch.io/idy9gzLXq0/w/358/h/100/theme/dark/logo.png?c=1bxid64Mup7aczewSAYMX&t=1672151446656" 
                           alt="Ozow" 
