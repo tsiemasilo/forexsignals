@@ -469,19 +469,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 // Helper function to generate Ozow signature
 function generateOzowSignature(data: Record<string, any>, privateKey: string): string {
-  // Ozow signature generation
+  // Ozow signature generation - concatenate fields in the correct order
+  // According to Ozow documentation, include all fields in order (excluding HashCheck)
   const fieldsToInclude = [
     'SiteCode', 'CountryCode', 'CurrencyCode', 'Amount', 'TransactionReference',
-    'BankReference', 'Customer', 'Optional1', 'Optional2', 'Optional3', 'IsTest'
+    'BankReference', 'Customer', 'Optional1', 'Optional2', 'Optional3', 
+    'NotifyUrl', 'SuccessUrl', 'ErrorUrl', 'CancelUrl', 'IsTest'
   ];
   
+  // Build the concatenation string, only including fields that exist and have values
   const inputString = fieldsToInclude
     .filter(field => data[field] !== undefined && data[field] !== null && data[field] !== '')
     .map(field => data[field])
-    .join('')
-    .toLowerCase();
+    .join('');
 
-  const stringToHash = inputString + privateKey.toLowerCase();
+  // Append private key and convert to lowercase
+  const stringToHash = (inputString + privateKey).toLowerCase();
   
-  return crypto.createHash('sha512').update(stringToHash).digest('hex');
+  console.log('Hash input string:', stringToHash);
+  const hash = crypto.createHash('sha512').update(stringToHash).digest('hex');
+  console.log('Generated hash:', hash);
+  
+  return hash;
 }
