@@ -72,6 +72,22 @@ export default function Plans() {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
+        
+        // If unauthorized, the session has expired
+        if (response.status === 401) {
+          toast({
+            title: "Session Expired",
+            description: "Please sign in again to continue with payment.",
+            variant: "destructive",
+          });
+          // Clear invalid session data
+          localStorage.removeItem("sessionId");
+          localStorage.removeItem("user");
+          // Refresh the page to show login
+          window.location.reload();
+          return;
+        }
+        
         throw new Error(errorData.message || 'Failed to initiate Yoco payment');
       }
 
@@ -114,6 +130,22 @@ export default function Plans() {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
+        
+        // If unauthorized, the session has expired
+        if (response.status === 401) {
+          toast({
+            title: "Session Expired",
+            description: "Please sign in again to continue with payment.",
+            variant: "destructive",
+          });
+          // Clear invalid session data
+          localStorage.removeItem("sessionId");
+          localStorage.removeItem("user");
+          // Refresh the page to show login
+          window.location.reload();
+          return;
+        }
+        
         throw new Error(errorData.message || 'Failed to initiate payment');
       }
 
