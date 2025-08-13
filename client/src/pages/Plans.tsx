@@ -26,7 +26,7 @@ export default function Plans() {
     }
 
     try {
-      const response = await fetch('/api/payfast/payment', {
+      const response = await fetch('/api/ozow/payment', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -41,12 +41,12 @@ export default function Plans() {
 
       const paymentData = await response.json();
       
-      // Create and submit PayFast form
+      // Create and submit Ozow form
       const form = document.createElement('form');
       form.method = 'POST';
       form.action = paymentData.action_url;
       
-      // Add all PayFast fields
+      // Add all Ozow fields
       Object.entries(paymentData).forEach(([key, value]) => {
         if (key !== 'action_url') {
           const input = document.createElement('input');

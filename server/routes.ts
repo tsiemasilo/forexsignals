@@ -282,8 +282,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // PayFast payment integration
-  app.post("/api/payfast/payment", requireAuth, async (req: Request, res: Response) => {
+  // Ozow payment integration
+  app.post("/api/ozow/payment", requireAuth, async (req: Request, res: Response) => {
     try {
       const { planId } = req.body;
       const userId = (req as any).userId;
@@ -298,46 +298,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "User not found" });
       }
 
-      // Generate PayFast payment form data
+      // Generate unique transaction reference
+      const transactionReference = `TXN_${userId}_${planId}_${Date.now()}`;
+
+      // Generate Ozow payment form data
       const paymentData = {
-        merchant_id: process.env.PAYFAST_MERCHANT_ID,
-        merchant_key: process.env.PAYFAST_MERCHANT_KEY,
-        return_url: `${req.protocol}://${req.get('host')}/payment/success`,
-        cancel_url: `${req.protocol}://${req.get('host')}/payment/cancel`,
-        notify_url: `${req.protocol}://${req.get('host')}/api/payfast/notify`,
-        name_first: user.firstName || '',
-        name_last: user.lastName || '',
-        email_address: user.email,
-        item_name: plan.name,
-        item_description: plan.description || '',
-        amount: plan.price,
-        custom_str1: userId.toString(),
-        custom_str2: planId.toString(),
+        SiteCode: process.env.OZOW_SITE_CODE,
+        CountryCode: 'ZA',
+        CurrencyCode: 'ZAR',
+        Amount: (parseFloat(plan.price) * 100).toString(), // Ozow expects amount in cents
+        TransactionReference: transactionReference,
+        BankReference: plan.name,
+        SuccessUrl: `${req.protocol}://${req.get('host')}/payment/success`,
+        CancelUrl: `${req.protocol}://${req.get('host')}/payment/cancel`,
+        ErrorUrl: `${req.protocol}://${req.get('host')}/payment/error`,
+        NotifyUrl: `${req.protocol}://${req.get('host')}/api/ozow/notify`,
+        Customer: user.email,
+        Optional1: userId.toString(),
+        Optional2: planId.toString(),
+        Optional3: plan.name,
+        IsTest: process.env.NODE_ENV !== 'production' ? 'true' : 'false'
       };
 
-      // Generate signature for PayFast
-      const passphrase = process.env.PAYFAST_PASSPHRASE || '';
-      const signature = generatePayFastSignature(paymentData, passphrase);
+      // Generate signature for Ozow
+      const privateKey = process.env.OZOW_PRIVATE_KEY || '';
+      const signature = generateOzowSignature(paymentData, privateKey);
 
       res.json({
         ...paymentData,
-        signature,
-        action_url: 'https://sandbox.payfast.co.za/eng/process' // Use live URL for production
+        HashCheck: signature,
+        action_url: process.env.NODE_ENV === 'production' 
+          ? 'https://pay.ozow.com/' 
+          : 'https://uat.ozow.com/payment'
       });
     } catch (error) {
       res.status(500).json({ message: "Failed to generate payment" });
     }
   });
 
-  // PayFast notification handler
-  app.post("/api/payfast/notify", async (req: Request, res: Response) => {
+  // Ozow notification handler
+  app.post("/api/ozow/notify", async (req: Request, res: Response) => {
     try {
       const data = req.body;
       
       // Verify the payment notification
-      if (data.payment_status === 'COMPLETE') {
-        const userId = parseInt(data.custom_str1);
-        const planId = parseInt(data.custom_str2);
+      if (data.Status === 'Complete' || data.Status === 'PendingInvestigation') {
+        const userId = parseInt(data.Optional1);
+        const planId = parseInt(data.Optional2);
 
         const plan = await storage.getPlan(planId);
         if (plan) {
@@ -365,16 +372,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   return httpServer;
 }
 
-// Helper function to generate PayFast signature
-function generatePayFastSignature(data: Record<string, any>, passphrase: string): string {
-  // Remove signature and empty values
-  const filteredData = Object.entries(data)
-    .filter(([key, value]) => key !== 'signature' && value !== '' && value != null)
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
-    .join('&');
-
-  const stringToHash = passphrase ? `${filteredData}&passphrase=${passphrase}` : filteredData;
+// Helper function to generate Ozow signature
+function generateOzowSignature(data: Record<string, any>, privateKey: string): string {
+  // Ozow signature generation
+  const fieldsToInclude = [
+    'SiteCode', 'CountryCode', 'CurrencyCode', 'Amount', 'TransactionReference',
+    'BankReference', 'Customer', 'Optional1', 'Optional2', 'Optional3', 'IsTest'
+  ];
   
-  return crypto.createHash('md5').update(stringToHash).digest('hex');
+  const inputString = fieldsToInclude
+    .filter(field => data[field] !== undefined && data[field] !== null && data[field] !== '')
+    .map(field => data[field])
+    .join('')
+    .toLowerCase();
+
+  const stringToHash = inputString + privateKey.toLowerCase();
+  
+  return crypto.createHash('sha512').update(stringToHash).digest('hex');
 }
