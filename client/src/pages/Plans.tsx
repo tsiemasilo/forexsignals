@@ -11,7 +11,7 @@ export default function Plans() {
   const { user, sessionId } = useAuth();
   const { toast } = useToast();
 
-  const { data: plans = [] } = useQuery({
+  const { data: plans = [] } = useQuery<any[]>({
     queryKey: ['/api/plans'],
   });
 

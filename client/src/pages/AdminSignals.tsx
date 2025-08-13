@@ -27,7 +27,7 @@ export default function AdminSignals() {
     imageUrl: ''
   });
 
-  const { data: signals = [], isLoading } = useQuery({
+  const { data: signals = [], isLoading } = useQuery<any[]>({
     queryKey: ['/api/signals'],
     enabled: !!sessionId,
     meta: {

@@ -6,7 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 export default function AdminDashboard() {
   const { sessionId } = useAuth();
 
-  const { data: users = [] } = useQuery({
+  const { data: users = [] } = useQuery<any[]>({
     queryKey: ['/api/admin/users'],
     enabled: !!sessionId,
     meta: {
@@ -16,7 +16,7 @@ export default function AdminDashboard() {
     }
   });
 
-  const { data: signals = [] } = useQuery({
+  const { data: signals = [] } = useQuery<any[]>({
     queryKey: ['/api/signals'],
     enabled: !!sessionId,
     meta: {

@@ -7,7 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 export default function AdminUsers() {
   const { sessionId } = useAuth();
 
-  const { data: users = [], isLoading } = useQuery({
+  const { data: users = [], isLoading } = useQuery<any[]>({
     queryKey: ['/api/admin/users'],
     enabled: !!sessionId,
     meta: {
@@ -101,7 +101,7 @@ export default function AdminUsers() {
               <CardTitle className="text-sm font-medium">Monthly Revenue</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${totalRevenue.toFixed(2)}</div>
+              <div className="text-2xl font-bold">R{totalRevenue.toFixed(2)}</div>
               <p className="text-xs text-muted-foreground">
                 From active subscriptions
               </p>
@@ -165,7 +165,7 @@ export default function AdminUsers() {
                           </TableCell>
                           <TableCell>
                             {user.subscription && user.subscription.plan ? 
-                              `$${user.subscription.plan.price}` : '$0.00'
+                              `R${user.subscription.plan.price}` : 'R0.00'
                             }
                           </TableCell>
                         </TableRow>
