@@ -368,6 +368,82 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Yoco payment integration
+  app.post("/api/yoco/payment", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const { planId } = req.body;
+      const userId = (req as any).userId;
+
+      const plan = await storage.getPlan(planId);
+      if (!plan) {
+        return res.status(404).json({ message: "Plan not found" });
+      }
+
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Generate unique transaction reference
+      const transactionReference = `YOCO_${userId}_${planId}_${Date.now()}`;
+
+      // For Yoco integration, we'll create a simple redirect URL
+      // In production, you would integrate with Yoco's API to create checkout sessions
+      const checkoutData = {
+        amount: parseFloat(plan.price) * 100, // Amount in cents
+        currency: 'ZAR',
+        reference: transactionReference,
+        description: plan.name,
+        successUrl: `${req.protocol}://${req.get('host')}/payment/success`,
+        cancelUrl: `${req.protocol}://${req.get('host')}/payment/cancel`,
+        metadata: {
+          userId: userId.toString(),
+          planId: planId.toString(),
+          planName: plan.name
+        }
+      };
+
+      // For demo purposes, return a mock redirect URL
+      // In production, you would make an API call to Yoco to create the checkout session
+      res.json({
+        redirectUrl: `https://checkout.yoco.com/demo?amount=${checkoutData.amount}&currency=${checkoutData.currency}&reference=${transactionReference}`
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to generate Yoco payment" });
+    }
+  });
+
+  // Yoco webhook handler (for production integration)
+  app.post("/api/yoco/webhook", async (req: Request, res: Response) => {
+    try {
+      const { status, metadata } = req.body;
+      
+      if (status === 'successful') {
+        const userId = parseInt(metadata.userId);
+        const planId = parseInt(metadata.planId);
+
+        const plan = await storage.getPlan(planId);
+        if (plan) {
+          // Create subscription
+          const endDate = new Date();
+          endDate.setDate(endDate.getDate() + plan.duration);
+
+          await storage.createSubscription({
+            userId,
+            planId,
+            status: "active",
+            startDate: new Date(),
+            endDate
+          });
+        }
+      }
+
+      res.status(200).send('OK');
+    } catch (error) {
+      res.status(500).send('Error');
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

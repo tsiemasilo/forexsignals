@@ -1,4 +1,4 @@
-import { CheckCircle, Star, CreditCard, Building } from 'lucide-react';
+import { CheckCircle, Star, CreditCard, Smartphone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -78,12 +78,33 @@ export default function Plans() {
     }
   };
 
-  const handleBankTransfer = () => {
-    toast({
-      title: "Bank Transfer Details",
-      description: "Bank transfer instructions will be sent to your email.",
-    });
-    setIsPaymentDialogOpen(false);
+  const handleYocoPayment = async () => {
+    try {
+      const response = await fetch('/api/yoco/payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${sessionId}`
+        },
+        body: JSON.stringify({ planId: selectedPlan.id })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to initiate Yoco payment');
+      }
+
+      const paymentData = await response.json();
+      
+      // Redirect to Yoco payment page
+      window.location.href = paymentData.redirectUrl;
+      setIsPaymentDialogOpen(false);
+    } catch (error) {
+      toast({
+        title: "Payment failed",
+        description: "Unable to process Yoco payment. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const getPopularPlan = () => {
@@ -222,15 +243,15 @@ export default function Plans() {
                 </Button>
 
                 <Button 
-                  onClick={handleBankTransfer}
+                  onClick={handleYocoPayment}
                   variant="outline"
                   className="w-full p-4 h-auto border-2"
                 >
                   <div className="flex items-center">
-                    <Building className="w-5 h-5 mr-3" />
+                    <Smartphone className="w-5 h-5 mr-3" />
                     <div className="text-left">
-                      <div className="font-semibold">Bank Transfer</div>
-                      <div className="text-xs text-gray-600">Manual bank transfer</div>
+                      <div className="font-semibold">Pay with Yoco</div>
+                      <div className="text-xs text-gray-600">Card payments & mobile money</div>
                     </div>
                   </div>
                 </Button>
