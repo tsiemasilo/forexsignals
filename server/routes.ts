@@ -1,4 +1,5 @@
 import type { Express, Request, Response } from "express";
+import "express-session";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { 
@@ -10,21 +11,17 @@ import {
 import { z } from "zod";
 import crypto from "crypto";
 import { seedDatabase } from "./seed";
+import session from "express-session";
+import connectPgSimple from "connect-pg-simple";
 
-// Simple session store for demo (in production, use a proper session store)
-const sessions = new Map<string, { userId: number; isAdmin: boolean }>();
-
-// Middleware to check authentication
+// Middleware to check authentication using express-session
 const requireAuth = (req: Request, res: Response, next: any) => {
-  const sessionId = req.headers.authorization?.replace('Bearer ', '');
-  
-  if (!sessionId || !sessions.has(sessionId)) {
+  if (!(req as any).session?.userId) {
     return res.status(401).json({ message: "Session expired. Please sign in again." });
   }
   
-  const session = sessions.get(sessionId)!;
-  (req as any).userId = session.userId;
-  (req as any).isAdmin = session.isAdmin;
+  (req as any).userId = (req as any).session.userId;
+  (req as any).isAdmin = (req as any).session.isAdmin || false;
   next();
 };
 
@@ -37,6 +34,24 @@ const requireAdmin = (req: Request, res: Response, next: any) => {
 };
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Configure session middleware with PostgreSQL store
+  const PgSession = connectPgSimple(session);
+  app.use(session({
+    store: new PgSession({
+      conString: process.env.DATABASE_URL,
+      tableName: 'sessions',
+      createTableIfMissing: true
+    }),
+    secret: 'forex-signals-secret-key-2025',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: false, // Set to true in production with HTTPS
+      httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days for payment redirects
+    }
+  }));
+
   // Seed database on startup
   await seedDatabase();
   // Auth endpoints
@@ -52,8 +67,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
-      const sessionId = crypto.randomUUID();
-      sessions.set(sessionId, { userId: user.id, isAdmin: user.isAdmin || false });
+      // Store user data in session
+      (req as any).session.userId = user.id;
+      (req as any).session.isAdmin = user.isAdmin || false;
+      const sessionId = (req as any).session.id;
       console.log('Session created:', sessionId, 'for user:', user.id);
 
       res.json({
@@ -102,12 +119,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/logout", requireAuth, (req: Request, res: Response) => {
-    const sessionId = req.headers.authorization?.replace('Bearer ', '');
-    if (sessionId) {
-      sessions.delete(sessionId);
+  app.post("/api/logout", (req: Request, res: Response) => {
+    if ((req as any).session) {
+      (req as any).session.destroy((err: any) => {
+        if (err) {
+          console.error('Session destroy error:', err);
+          return res.status(500).json({ message: "Logout failed" });
+        }
+        console.log('Session destroyed successfully');
+        res.json({ message: "Logged out successfully" });
+      });
+    } else {
+      res.json({ message: "Logged out successfully" });
     }
-    res.json({ message: "Logged out successfully" });
   });
 
   // Subscription Plans endpoints

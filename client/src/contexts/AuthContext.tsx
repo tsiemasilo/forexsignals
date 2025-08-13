@@ -68,16 +68,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = () => {
-    if (sessionId) {
-      // Call logout endpoint
-      apiRequest("POST", "/api/logout", {}, {
-        headers: {
-          Authorization: `Bearer ${sessionId}`
-        }
-      }).catch(() => {
-        // Ignore errors for logout
-      });
-    }
+    // Call logout endpoint (no authorization header needed with session cookies)
+    apiRequest("POST", "/api/logout", {}).catch(() => {
+      // Ignore errors for logout
+    });
     
     setUser(null);
     setSessionId(null);
