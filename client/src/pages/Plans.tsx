@@ -37,9 +37,13 @@ export default function Plans() {
 
   const handleYocoPayment = async () => {
     try {
-      // For Basic Plan, redirect to specific Yoco checkout URL
+      // Redirect to specific Yoco checkout URLs based on plan
       if (selectedPlan.name === "Basic Plan") {
         window.location.href = "https://c.yoco.com/checkout/ch_PLmQ2BJ7wp8h3Qu4Z9F1l6Lm";
+        setIsPaymentDialogOpen(false);
+        return;
+      } else if (selectedPlan.name === "Premium Plan") {
+        window.location.href = "https://c.yoco.com/checkout/ch_QLOBkND8RDvfb3Vh207tyk0x";
         setIsPaymentDialogOpen(false);
         return;
       }
