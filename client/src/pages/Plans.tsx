@@ -46,6 +46,10 @@ export default function Plans() {
         window.location.href = "https://c.yoco.com/checkout/ch_QLOBkND8RDvfb3Vh207tyk0x";
         setIsPaymentDialogOpen(false);
         return;
+      } else if (selectedPlan.name === "VIP Plan") {
+        window.location.href = "https://pay.yoco.com/r/mEQXAD";
+        setIsPaymentDialogOpen(false);
+        return;
       }
 
       const response = await fetch('/api/yoco/payment', {
