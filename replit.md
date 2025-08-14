@@ -108,6 +108,7 @@ This is a full-stack e-commerce application for automotive parts built with a mo
 ## Changelog
 
 Changelog:
+- August 14, 2025. Successfully deployed Watchlist Fx platform to GitHub repository with complete codebase upload including all critical files for Netlify deployment
 - August 14, 2025. Implemented subscription extension functionality - purchasing new plans now extends existing subscriptions instead of replacing them, with proper trial-to-active upgrades
 - August 14, 2025. Fixed trial user access to signals - users with free trial subscriptions can now properly view trading signals
 - August 14, 2025. Added subscription status badge for logged-in users showing status (Free Trial/Active/Inactive/Expired) with remaining days and color coding
