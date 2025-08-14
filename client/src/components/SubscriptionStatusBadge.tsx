@@ -38,19 +38,11 @@ export function SubscriptionStatusBadge() {
         {getIcon()}
         {subscriptionStatus.statusDisplay}
       </Badge>
-      {subscriptionStatus.status === 'expired' ? (
-        <span className="text-xs font-medium text-red-600">
-          Expired
-        </span>
-      ) : subscriptionStatus.status === 'inactive' ? (
-        <span className="text-xs font-medium text-yellow-600">
-          Inactive
-        </span>
-      ) : subscriptionStatus.daysLeft > 0 ? (
+      {subscriptionStatus.daysLeft > 0 && (
         <span className={`text-xs font-medium text-white ${getDaysLeftColor()}`}>
           {subscriptionStatus.daysLeft} days left
         </span>
-      ) : null}
+      )}
     </div>
   );
 }
