@@ -1,59 +1,73 @@
-// Database synchronization script to create missing signals table
-const { Pool } = require('@neondatabase/serverless');
+import { neon } from '@neondatabase/serverless';
 
-async function createSignalsTable() {
-    const DATABASE_URL = process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL;
+// Use the correct database URL provided by user
+const DATABASE_URL = 'postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
+const sql = neon(DATABASE_URL);
+
+async function fixAdminUser() {
+  console.log('🔍 Checking current admin user status...');
+  
+  try {
+    // Check current admin user
+    const adminCheck = await sql`
+      SELECT id, email, first_name, last_name, is_admin 
+      FROM users 
+      WHERE email = 'admin@forexsignals.com'
+    `;
     
-    if (!DATABASE_URL) {
-        console.error('No database URL found');
-        return;
+    console.log('Current admin user:', adminCheck[0]);
+    
+    if (adminCheck.length === 0) {
+      console.log('❌ Admin user not found, creating...');
+      
+      // Create admin user if not exists
+      const newAdmin = await sql`
+        INSERT INTO users (email, first_name, last_name, is_admin)
+        VALUES ('admin@forexsignals.com', 'Admin', 'User', true)
+        RETURNING id, email, first_name, last_name, is_admin
+      `;
+      
+      console.log('✅ Admin user created:', newAdmin[0]);
+    } else if (!adminCheck[0].is_admin) {
+      console.log('❌ Admin user exists but is_admin is false, fixing...');
+      
+      // Update admin flag
+      const updatedAdmin = await sql`
+        UPDATE users 
+        SET is_admin = true 
+        WHERE email = 'admin@forexsignals.com'
+        RETURNING id, email, first_name, last_name, is_admin
+      `;
+      
+      console.log('✅ Admin user updated:', updatedAdmin[0]);
+    } else {
+      console.log('✅ Admin user is correctly configured');
     }
-
-    const pool = new Pool({
-        connectionString: DATABASE_URL,
-        ssl: { rejectUnauthorized: false }
-    });
-
-    try {
-        console.log('Creating signals table...');
-        
-        // Create table
-        await pool.query(`
-            CREATE TABLE IF NOT EXISTS signals (
-                id SERIAL PRIMARY KEY,
-                title VARCHAR(255) NOT NULL,
-                content TEXT,
-                trade_action VARCHAR(10) DEFAULT 'Buy',
-                image_url TEXT,
-                image_urls JSON,
-                created_by INTEGER DEFAULT 1,
-                is_active BOOLEAN DEFAULT true,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        `);
-
-        // Insert NAS100 and other signals
-        await pool.query(`
-            INSERT INTO signals (id, title, content, trade_action, image_url, created_by, is_active, created_at, updated_at) VALUES
-            (1, 'EUR/USD Buy Signal', 'Strong bullish momentum on EUR/USD. Entry at 1.0850, Stop Loss at 1.0820, Take Profit at 1.0920. Risk-reward ratio 1:2.3', 'Buy', 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200', 1, true, '2025-08-13 13:42:42.000', '2025-08-13 13:42:42.000'),
-            (2, 'GBP/JPY Sell Signal', 'Bearish reversal pattern confirmed on GBP/JPY. Entry at 165.50, Stop Loss at 166.00, Take Profit at 164.50. Watch for break below support.', 'Sell', 'https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200', 1, true, '2025-08-13 13:42:42.133', '2025-08-13 13:42:42.133'),
-            (3, 'USD/CHF Hold Position', 'Sideways consolidation on USD/CHF. Wait for clear breakout above 0.9200 or below 0.9100 before entering new positions.', 'Hold', 'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200', 1, true, '2025-08-13 13:42:42.265', '2025-08-13 13:42:42.265'),
-            (4, 'nas100', $1, 'Buy', '', 1, true, '2025-08-14 08:33:08.364', '2025-08-14 08:33:08.364')
-            ON CONFLICT (id) DO NOTHING
-        `, ['Entry:\nSL:\nTP:']);
-
-        // Set sequence
-        await pool.query('SELECT setval(\'signals_id_seq\', 4, true)');
-
-        const result = await pool.query('SELECT id, title FROM signals ORDER BY created_at');
-        console.log('Signals created:', result.rows);
-        
-        return { success: true, signals: result.rows };
-    } catch (error) {
-        console.error('Database error:', error);
-        return { success: false, error: error.message };
+    
+    // Check Almeerah user
+    const almeerahCheck = await sql`
+      SELECT id, email, first_name, last_name, is_admin 
+      FROM users 
+      WHERE email = 'almeerahlosper@gmail.com'
+    `;
+    
+    console.log('Almeerah user:', almeerahCheck[0]);
+    
+    // Ensure Almeerah is NOT admin
+    if (almeerahCheck.length > 0 && almeerahCheck[0].is_admin) {
+      await sql`
+        UPDATE users 
+        SET is_admin = false 
+        WHERE email = 'almeerahlosper@gmail.com'
+      `;
+      console.log('✅ Almeerah set as regular user');
     }
+    
+    console.log('🎉 Database admin configuration complete!');
+    
+  } catch (error) {
+    console.error('❌ Database fix error:', error);
+  }
 }
 
-module.exports = { createSignalsTable };
+fixAdminUser();

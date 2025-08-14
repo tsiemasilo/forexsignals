@@ -1,7 +1,7 @@
 import { neon } from '@neondatabase/serverless';
 
-// Use direct HTTP connection - COMPLETE VERSION WITH ADMIN BYPASS
-const DATABASE_URL = process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
+// Use direct HTTP connection - ADMIN BYPASS VERSION WITH CORRECT DATABASE
+const DATABASE_URL = 'postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
 const sql = neon(DATABASE_URL);
 
 // Helper function to get user from session
