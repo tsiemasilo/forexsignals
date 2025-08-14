@@ -2,8 +2,44 @@ import { TrendingUp, ArrowRight, Star, CheckCircle, Users, DollarSign, Award, Ac
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'wouter';
+import { useEffect } from 'react';
+import { useToast } from '@/hooks/use-toast';
 
 export default function Home() {
+  const { toast } = useToast();
+
+  useEffect(() => {
+    // Check for payment status in URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentStatus = urlParams.get('payment');
+
+    if (paymentStatus === 'success') {
+      toast({
+        title: "Payment Successful!",
+        description: "Your subscription has been activated. Welcome to ForexSignals Pro!",
+        variant: "default",
+      });
+      // Clean up URL
+      window.history.replaceState({}, '', '/');
+    } else if (paymentStatus === 'cancelled') {
+      toast({
+        title: "Payment Cancelled",
+        description: "Your payment was cancelled. You can try again anytime.",
+        variant: "destructive",
+      });
+      // Clean up URL
+      window.history.replaceState({}, '', '/');
+    } else if (paymentStatus === 'error') {
+      toast({
+        title: "Payment Error",
+        description: "There was an issue processing your payment. Please try again.",
+        variant: "destructive",
+      });
+      // Clean up URL
+      window.history.replaceState({}, '', '/');
+    }
+  }, [toast]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-green-950 text-white overflow-hidden">
       {/* Main Poster Content */}

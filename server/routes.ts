@@ -489,6 +489,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Payment callback routes for Ozow redirects
+  app.get("/payment/success", (req: Request, res: Response) => {
+    console.log('Payment success callback:', req.query);
+    res.redirect('/?payment=success');
+  });
+
+  app.get("/payment/cancel", (req: Request, res: Response) => {
+    console.log('Payment cancelled:', req.query);
+    res.redirect('/?payment=cancelled');
+  });
+
+  app.get("/payment/error", (req: Request, res: Response) => {
+    console.log('Payment error:', req.query);
+    res.redirect('/?payment=error');
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
