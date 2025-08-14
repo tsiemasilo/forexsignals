@@ -38,7 +38,7 @@
 
 [[redirects]]
   from = "/api/admin/users/*/subscription"
-  to = "/.netlify/functions/admin-user-subscription"
+  to = "/.netlify/functions/admin-subscription"
   status = 200
 
 [[redirects]]
