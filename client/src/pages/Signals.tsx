@@ -11,12 +11,7 @@ export default function Signals() {
 
   const { data: signals = [], isLoading, error } = useQuery({
     queryKey: ['/api/signals'],
-    enabled: !!sessionId,
-    meta: {
-      headers: {
-        Authorization: `Bearer ${sessionId}`
-      }
-    }
+    enabled: !!sessionId
   });
 
   const getTradeActionIcon = (action: string) => {
@@ -69,6 +64,7 @@ export default function Signals() {
 
   if (error) {
     const errorMessage = (error as any)?.message || 'Unknown error';
+    console.error('Signals loading error:', errorMessage);
     
     if (errorMessage.includes('subscription')) {
       return (

@@ -156,6 +156,7 @@ export class MemStorage implements IStorage {
       const signal: ForexSignal = {
         ...signalData,
         id: this.currentSignalId++,
+        imageUrls: null,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
