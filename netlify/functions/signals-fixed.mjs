@@ -1,8 +1,7 @@
 import { neon } from '@neondatabase/serverless';
 
-// Use direct HTTP connection instead of pooling for Netlify
-const DATABASE_URL = process.env.NETLIFY_DATABASE_URL_UNPOOLED || process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
-
+// Use direct HTTP connection - FIXED VERSION WITH CORRECT SCHEMA
+const DATABASE_URL = process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
 const sql = neon(DATABASE_URL);
 
 // Helper function to get user from session
@@ -51,7 +50,7 @@ export const handler = async (event, context) => {
       };
     }
 
-    const { httpMethod, path, queryStringParameters } = event;
+    const { httpMethod } = event;
 
     if (httpMethod === 'GET') {
       // Check subscription for non-admin users
@@ -77,7 +76,7 @@ export const handler = async (event, context) => {
         }
       }
 
-      // Get all signals
+      // Get all signals using CORRECT database schema
       const signalsResult = await sql`
         SELECT id, title, content, trade_action, 
                image_url, image_urls, 
@@ -131,120 +130,30 @@ export const handler = async (event, context) => {
       const result = await sql`
         INSERT INTO signals (title, content, trade_action, image_url, image_urls, created_by, is_active)
         VALUES (${title}, ${content}, ${tradeAction}, ${imageUrl || null}, ${imageUrls ? JSON.stringify(imageUrls) : null}, ${user.id}, true)
-        RETURNING id, title, content, trade_action as "tradeAction", 
-                  image_url as "imageUrl", image_urls as "imageUrls",
-                  created_by as "createdBy", is_active as "isActive",
-                  created_at as "createdAt", updated_at as "updatedAt"
+        RETURNING id, title, content, trade_action, 
+                  image_url, image_urls,
+                  created_by, is_active,
+                  created_at, updated_at
       `;
 
-      return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify(result[0])
+      // Format response
+      const formattedSignal = {
+        id: result[0].id,
+        title: result[0].title,
+        content: result[0].content,
+        tradeAction: result[0].trade_action,
+        imageUrl: result[0].image_url,
+        imageUrls: result[0].image_urls ? JSON.parse(result[0].image_urls) : [],
+        createdBy: result[0].created_by,
+        isActive: result[0].is_active,
+        createdAt: result[0].created_at,
+        updatedAt: result[0].updated_at
       };
 
-    } else if (httpMethod === 'PUT') {
-      // Update signal - admin only
-      if (!user.is_admin) {
-        return {
-          statusCode: 403,
-          headers,
-          body: JSON.stringify({ message: 'Admin access required' })
-        };
-      }
-
-      // Extract signal ID from path or query parameters
-      const pathParts = event.path?.split('/') || [];
-      let signalId = pathParts[pathParts.length - 1];
-      
-      // If the last part isn't a number, check query params
-      if (isNaN(signalId) || signalId === 'signals') {
-        signalId = event.queryStringParameters?.id;
-      }
-      
-      if (!signalId) {
-        return {
-          statusCode: 400,
-          headers,
-          body: JSON.stringify({ message: 'Signal ID is required for update' })
-        };
-      }
-      
-      const updates = JSON.parse(event.body);
-
-      const result = await sql`
-        UPDATE signals 
-        SET title = COALESCE(${updates.title}, title),
-            content = COALESCE(${updates.content}, content),
-            trade_action = COALESCE(${updates.tradeAction}, trade_action),
-            image_url = COALESCE(${updates.imageUrl}, image_url),
-            image_urls = COALESCE(${updates.imageUrls ? JSON.stringify(updates.imageUrls) : null}, image_urls),
-            updated_at = NOW()
-        WHERE id = ${signalId}
-        RETURNING id, title, content, trade_action as "tradeAction", 
-                  image_url as "imageUrl", image_urls as "imageUrls",
-                  created_by as "createdBy", is_active as "isActive",
-                  created_at as "createdAt", updated_at as "updatedAt"
-      `;
-
-      if (result.length === 0) {
-        return {
-          statusCode: 404,
-          headers,
-          body: JSON.stringify({ message: 'Signal not found' })
-        };
-      }
-
       return {
         statusCode: 200,
         headers,
-        body: JSON.stringify(result[0])
-      };
-
-    } else if (httpMethod === 'DELETE') {
-      // Delete signal - admin only  
-      if (!user.is_admin) {
-        return {
-          statusCode: 403,
-          headers,
-          body: JSON.stringify({ message: 'Admin access required' })
-        };
-      }
-
-      // Extract signal ID from path or query parameters
-      const pathParts = event.path?.split('/') || [];
-      let signalId = pathParts[pathParts.length - 1];
-      
-      // If the last part isn't a number, check query params
-      if (isNaN(signalId) || signalId === 'signals') {
-        signalId = event.queryStringParameters?.id;
-      }
-      
-      if (!signalId) {
-        return {
-          statusCode: 400,
-          headers,
-          body: JSON.stringify({ message: 'Signal ID is required for deletion' })
-        };
-      }
-
-      const result = await sql`
-        DELETE FROM signals WHERE id = ${signalId}
-        RETURNING id
-      `;
-
-      if (result.length === 0) {
-        return {
-          statusCode: 404,
-          headers,
-          body: JSON.stringify({ message: 'Signal not found' })
-        };
-      }
-
-      return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify({ message: 'Signal deleted successfully' })
+        body: JSON.stringify(formattedSignal)
       };
 
     } else {
@@ -260,7 +169,11 @@ export const handler = async (event, context) => {
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ message: 'Internal server error' })
+      body: JSON.stringify({ 
+        message: 'Internal server error',
+        error: error.message,
+        timestamp: new Date().toISOString()
+      })
     };
   }
 };

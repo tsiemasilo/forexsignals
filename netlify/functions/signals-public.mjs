@@ -22,10 +22,11 @@ export const handler = async (event, context) => {
     // For demo/emergency access - return signals without strict auth
     if (event.httpMethod === 'GET') {
       const result = await sql`
-        SELECT id, title, content, currency_pair, signal_type, entry_price, 
-               stop_loss, take_profit, status, created_at, updated_at
+        SELECT id, title, content, trade_action, 
+               image_url, image_urls, created_by, is_active, 
+               created_at, updated_at
         FROM signals 
-        WHERE status = 'active'
+        WHERE is_active = true
         ORDER BY created_at DESC
       `;
       
@@ -33,14 +34,11 @@ export const handler = async (event, context) => {
         id: signal.id,
         title: signal.title,
         content: signal.content,
-        currencyPair: signal.currency_pair,
-        signal: signal.signal_type,
-        tradeAction: signal.signal_type,
-        entryPrice: signal.entry_price,
-        stopLoss: signal.stop_loss,
-        takeProfit: signal.take_profit,
-        status: signal.status,
-        imageUrls: ["/api/placeholder/400/300"],
+        tradeAction: signal.trade_action,
+        imageUrl: signal.image_url,
+        imageUrls: signal.image_urls ? JSON.parse(signal.image_urls) : ["/api/placeholder/400/300"],
+        createdBy: signal.created_by,
+        isActive: signal.is_active,
         createdAt: signal.created_at,
         updatedAt: signal.updated_at
       }));
