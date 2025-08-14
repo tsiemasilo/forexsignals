@@ -1,9 +1,10 @@
-// Shared subscription state (same as in admin function)
-let globalSubscriptionState = {
-  '1': { status: 'inactive', plan: null, planId: null, expiryDate: null, statusDisplay: 'No Subscription' },
-  '2': { status: 'inactive', plan: null, planId: null, expiryDate: null, statusDisplay: 'No Subscription' },
-  '3': { status: 'trial', plan: 'Free Trial', planId: null, expiryDate: '2025-08-28T13:42:41.604Z', statusDisplay: 'Free Trial' }
-};
+import { neonConfig, Pool } from '@neondatabase/serverless';
+import ws from 'ws';
+
+neonConfig.webSocketConstructor = ws;
+
+const DATABASE_URL = process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL;
+const pool = new Pool({ connectionString: DATABASE_URL });
 
 // User subscription status API function
 export const handler = async (event, context) => {
@@ -31,20 +32,6 @@ export const handler = async (event, context) => {
     userId = 3;
     userEmail = 'almeerahlosper@gmail.com';
     
-    // Check for admin override parameters (to simulate real-time updates)
-    const queryParams = event.queryStringParameters || {};
-    if (queryParams.forceStatus) {
-      console.log('Admin override detected, status:', queryParams.forceStatus);
-      globalSubscriptionState['3'].status = queryParams.forceStatus;
-      globalSubscriptionState['3'].statusDisplay = queryParams.forceStatus === 'trial' ? 'Free Trial' :
-                                                   queryParams.forceStatus === 'active' ? 'Active' :
-                                                   queryParams.forceStatus === 'inactive' ? 'No Subscription' :
-                                                   queryParams.forceStatus === 'expired' ? 'Expired' : 'No Subscription';
-      if (queryParams.forcePlan) {
-        globalSubscriptionState['3'].plan = queryParams.forcePlan;
-      }
-    }
-    
     // Override for specific sessions if provided
     if (sessionId && sessionId.includes('emergency')) {
       // Extract user info from emergency session
@@ -56,8 +43,23 @@ export const handler = async (event, context) => {
       // Keep default trial user for other sessions
     }
 
-    // Get current subscription status from global state
-    const userState = globalSubscriptionState[userId.toString()] || globalSubscriptionState['3']; // Default to user 3 for demo
+    // Get current subscription status from database
+    const result = await pool.query(`
+      SELECT u.id, u.email, u.first_name, u.last_name,
+             s.status, s.plan_id, s.start_date, s.end_date,
+             p.name as plan_name, p.price as plan_price, p.duration
+      FROM users u
+      LEFT JOIN subscriptions s ON u.id = s.user_id
+      LEFT JOIN subscription_plans p ON s.plan_id = p.id
+      WHERE u.id = $1
+    `, [userId]);
+
+    const userRow = result.rows[0];
+    if (!userRow) {
+      throw new Error('User not found');
+    }
+
+    console.log('Database user data:', userRow);
     
     let subscriptionStatus = {
       status: 'inactive',
@@ -68,9 +70,9 @@ export const handler = async (event, context) => {
       endDate: null
     };
 
-    // Calculate status based on current user state
-    if (userState.status === 'trial') {
-      const expiryDate = new Date(userState.expiryDate || '2025-08-28T13:42:41.604Z');
+    // Calculate status based on database data
+    if (userRow.status === 'trial') {
+      const expiryDate = new Date(userRow.end_date || '2025-08-28T13:42:41.604Z');
       const now = new Date();
       const daysLeft = Math.max(0, Math.ceil((expiryDate - now) / (1000 * 60 * 60 * 24)));
 
@@ -79,11 +81,11 @@ export const handler = async (event, context) => {
         statusDisplay: 'Free Trial',
         daysLeft: daysLeft,
         color: 'bg-yellow-500 text-white',
-        plan: { name: userState.plan || 'Free Trial', price: '0.00' },
+        plan: { name: 'Free Trial', price: '0.00' },
         endDate: expiryDate.toISOString()
       };
-    } else if (userState.status === 'active') {
-      const expiryDate = new Date(userState.expiryDate || Date.now() + 14 * 24 * 60 * 60 * 1000);
+    } else if (userRow.status === 'active') {
+      const expiryDate = new Date(userRow.end_date || Date.now() + 14 * 24 * 60 * 60 * 1000);
       const now = new Date();
       const daysLeft = Math.max(0, Math.ceil((expiryDate - now) / (1000 * 60 * 60 * 24)));
 
@@ -93,27 +95,27 @@ export const handler = async (event, context) => {
         daysLeft: daysLeft,
         color: 'bg-green-500 text-white',
         plan: { 
-          name: userState.plan || 'Premium Plan', 
-          price: userState.planId === 1 ? '49.99' : userState.planId === 3 ? '179.99' : '99.99'
+          name: userRow.plan_name || 'Premium Plan', 
+          price: userRow.plan_price || '99.99'
         },
         endDate: expiryDate.toISOString()
       };
-    } else if (userState.status === 'expired') {
+    } else if (userRow.status === 'expired') {
       subscriptionStatus = {
         status: 'expired',
         statusDisplay: 'Expired',
         daysLeft: 0,
         color: 'bg-red-500 text-white',
-        plan: null,
+        plan: userRow.plan_name ? { name: userRow.plan_name, price: userRow.plan_price } : null,
         endDate: null
       };
-    } else if (userState.status === 'inactive') {
+    } else if (userRow.status === 'inactive') {
       subscriptionStatus = {
         status: 'inactive',
-        statusDisplay: 'No Subscription',
+        statusDisplay: 'Inactive',
         daysLeft: 0,
         color: 'bg-gray-500 text-white',
-        plan: null,
+        plan: userRow.plan_name ? { name: userRow.plan_name, price: userRow.plan_price } : null,
         endDate: null
       };
     }
