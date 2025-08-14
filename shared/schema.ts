@@ -96,6 +96,7 @@ export const forexSignals = pgTable("forex_signals", {
   content: text("content").notNull(),
   tradeAction: varchar("trade_action", { length: 10 }).notNull(), // Buy, Sell, Wait, Hold
   imageUrl: varchar("image_url", { length: 500 }),
+  imageUrls: text("image_urls").array(),
   createdBy: integer("created_by").references(() => users.id).notNull(),
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),

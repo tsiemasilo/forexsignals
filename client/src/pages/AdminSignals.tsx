@@ -24,7 +24,8 @@ export default function AdminSignals() {
     title: '',
     content: '',
     tradeAction: '',
-    imageUrl: ''
+    imageUrl: '',
+    imageUrls: []
   });
 
   const { data: signals = [], isLoading } = useQuery<any[]>({
@@ -121,7 +122,8 @@ export default function AdminSignals() {
       title: '',
       content: '',
       tradeAction: '',
-      imageUrl: ''
+      imageUrl: '',
+      imageUrls: []
     });
   };
 
@@ -141,8 +143,26 @@ export default function AdminSignals() {
       title: signal.title,
       content: signal.content,
       tradeAction: signal.tradeAction,
-      imageUrl: signal.imageUrl || ''
+      imageUrl: signal.imageUrl || '',
+      imageUrls: signal.imageUrls || []
     });
+  };
+
+  const addImageUrl = () => {
+    if (formData.imageUrl.trim()) {
+      setFormData(prev => ({
+        ...prev,
+        imageUrls: [...prev.imageUrls, prev.imageUrl.trim()],
+        imageUrl: ''
+      }));
+    }
+  };
+
+  const removeImageUrl = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      imageUrls: prev.imageUrls.filter((_, i) => i !== index)
+    }));
   };
 
   const handleDelete = (id: number) => {
@@ -255,13 +275,45 @@ export default function AdminSignals() {
                 </div>
                 
                 <div>
-                  <Label htmlFor="imageUrl">Chart Image URL (Optional)</Label>
-                  <Input
-                    id="imageUrl"
-                    value={formData.imageUrl}
-                    onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                    placeholder="https://example.com/chart.png"
-                  />
+                  <Label htmlFor="imageUrl">Chart Images (Optional)</Label>
+                  <div className="space-y-2">
+                    <div className="flex space-x-2">
+                      <Input
+                        id="imageUrl"
+                        value={formData.imageUrl}
+                        onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                        placeholder="https://example.com/chart.png"
+                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addImageUrl())}
+                      />
+                      <Button
+                        type="button"
+                        onClick={addImageUrl}
+                        disabled={!formData.imageUrl.trim()}
+                        className="bg-blue-600 hover:bg-blue-700"
+                      >
+                        Add
+                      </Button>
+                    </div>
+                    {formData.imageUrls.length > 0 && (
+                      <div className="space-y-2">
+                        <p className="text-sm text-gray-600">Added Images:</p>
+                        {formData.imageUrls.map((url, index) => (
+                          <div key={index} className="flex items-center space-x-2 p-2 bg-gray-50 rounded">
+                            <span className="text-sm flex-1 truncate">{url}</span>
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="outline"
+                              onClick={() => removeImageUrl(index)}
+                              className="text-red-600 hover:text-red-800"
+                            >
+                              Remove
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
                 
                 <div className="flex justify-end space-x-2">
@@ -343,12 +395,26 @@ export default function AdminSignals() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-700 mb-4">{signal.content}</p>
-                  {signal.imageUrl && (
-                    <img
-                      src={signal.imageUrl}
-                      alt="Chart analysis"
-                      className="w-full max-w-md h-48 object-cover rounded border"
-                    />
+                  {(signal.imageUrls?.length > 0 || signal.imageUrl) && (
+                    <div className="space-y-2">
+                      <p className="text-sm font-medium text-gray-600">Chart Images:</p>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {signal.imageUrls?.map((url: string, index: number) => (
+                          <img
+                            key={index}
+                            src={url}
+                            alt={`Chart analysis ${index + 1}`}
+                            className="w-full h-32 object-cover rounded border"
+                          />
+                        )) || (signal.imageUrl && (
+                          <img
+                            src={signal.imageUrl}
+                            alt="Chart analysis"
+                            className="w-full h-32 object-cover rounded border"
+                          />
+                        ))}
+                      </div>
+                    </div>
                   )}
                 </CardContent>
               </Card>
@@ -404,12 +470,45 @@ export default function AdminSignals() {
               </div>
               
               <div>
-                <Label htmlFor="edit-imageUrl">Chart Image URL (Optional)</Label>
-                <Input
-                  id="edit-imageUrl"
-                  value={formData.imageUrl}
-                  onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                />
+                <Label htmlFor="edit-imageUrl">Chart Images (Optional)</Label>
+                <div className="space-y-2">
+                  <div className="flex space-x-2">
+                    <Input
+                      id="edit-imageUrl"
+                      value={formData.imageUrl}
+                      onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                      placeholder="https://example.com/chart.png"
+                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addImageUrl())}
+                    />
+                    <Button
+                      type="button"
+                      onClick={addImageUrl}
+                      disabled={!formData.imageUrl.trim()}
+                      className="bg-blue-600 hover:bg-blue-700"
+                    >
+                      Add
+                    </Button>
+                  </div>
+                  {formData.imageUrls.length > 0 && (
+                    <div className="space-y-2">
+                      <p className="text-sm text-gray-600">Added Images:</p>
+                      {formData.imageUrls.map((url, index) => (
+                        <div key={index} className="flex items-center space-x-2 p-2 bg-gray-50 rounded">
+                          <span className="text-sm flex-1 truncate">{url}</span>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            onClick={() => removeImageUrl(index)}
+                            className="text-red-600 hover:text-red-800"
+                          >
+                            Remove
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
               
               <div className="flex justify-end space-x-2">

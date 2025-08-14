@@ -1,0 +1,230 @@
+import { useQuery } from '@tanstack/react-query';
+import { useAuth } from '@/contexts/AuthContext';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { TrendingUp, TrendingDown, Minus, Clock, ArrowLeft, Calendar, User } from 'lucide-react';
+import { Link, useParams } from 'wouter';
+
+export default function SignalDetails() {
+  const params = useParams();
+  const signalId = params.id;
+  const { sessionId } = useAuth();
+
+  const { data: signal, isLoading, error } = useQuery({
+    queryKey: ['/api/signals', signalId],
+    enabled: !!sessionId && !!signalId,
+    meta: {
+      headers: {
+        Authorization: `Bearer ${sessionId}`
+      }
+    }
+  });
+
+  const getTradeActionIcon = (action: string) => {
+    switch (action.toLowerCase()) {
+      case 'buy':
+        return <TrendingUp className="w-6 h-6 text-green-600" />;
+      case 'sell':
+        return <TrendingDown className="w-6 h-6 text-red-600" />;
+      case 'hold':
+        return <Minus className="w-6 h-6 text-yellow-600" />;
+      case 'wait':
+        return <Clock className="w-6 h-6 text-gray-600" />;
+      default:
+        return <TrendingUp className="w-6 h-6 text-blue-600" />;
+    }
+  };
+
+  const getTradeActionColor = (action: string) => {
+    switch (action.toLowerCase()) {
+      case 'buy':
+        return 'bg-green-100 text-green-800';
+      case 'sell':
+        return 'bg-red-100 text-red-800';
+      case 'hold':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'wait':
+        return 'bg-gray-100 text-gray-800';
+      default:
+        return 'bg-blue-100 text-blue-800';
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-4 border-green-600 border-t-transparent rounded-full" />
+      </div>
+    );
+  }
+
+  if (error || !signal) {
+    const errorMessage = (error as any)?.message || 'Signal not found';
+    
+    if (errorMessage.includes('subscription')) {
+      return (
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <Card className="max-w-md text-center">
+            <CardHeader>
+              <CardTitle>Subscription Required</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-600 mb-4">
+                You need an active subscription to view signal details.
+              </p>
+              <Link href="/plans">
+                <Button className="bg-green-600 hover:bg-green-700">
+                  View Plans
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        </div>
+      );
+    }
+
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Card className="max-w-md text-center">
+          <CardHeader>
+            <CardTitle>Signal Not Found</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-600 mb-4">
+              The requested signal could not be found or has been removed.
+            </p>
+            <Link href="/">
+              <Button variant="outline">
+                Back to Signals
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  const images = signal.imageUrls || (signal.imageUrl ? [signal.imageUrl] : []);
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-4xl mx-auto px-4">
+        {/* Back Button */}
+        <div className="mb-6">
+          <Link href="/">
+            <Button variant="outline" className="flex items-center space-x-2">
+              <ArrowLeft className="w-4 h-4" />
+              <span>Back to Signals</span>
+            </Button>
+          </Link>
+        </div>
+
+        {/* Signal Header */}
+        <Card className="mb-6">
+          <CardHeader>
+            <div className="flex items-start justify-between">
+              <div className="flex items-center space-x-4">
+                {getTradeActionIcon(signal.tradeAction)}
+                <div>
+                  <CardTitle className="text-2xl mb-2">{signal.title}</CardTitle>
+                  <div className="flex items-center space-x-4 text-sm text-gray-500">
+                    <div className="flex items-center space-x-1">
+                      <Calendar className="w-4 h-4" />
+                      <span>{formatDate(signal.createdAt)}</span>
+                    </div>
+                    {signal.createdBy && (
+                      <div className="flex items-center space-x-1">
+                        <User className="w-4 h-4" />
+                        <span>Expert Trader</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <Badge className={`text-sm ${getTradeActionColor(signal.tradeAction)}`}>
+                {signal.tradeAction.toUpperCase()}
+              </Badge>
+            </div>
+          </CardHeader>
+        </Card>
+
+        {/* Signal Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Main Content */}
+          <div className="lg:col-span-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>Trading Analysis</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="prose max-w-none">
+                  <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+                    {signal.content}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Risk Disclaimer */}
+            <Card className="mt-6">
+              <CardContent className="pt-6">
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                  <h4 className="font-semibold text-yellow-800 mb-2">Risk Disclaimer</h4>
+                  <p className="text-sm text-yellow-700">
+                    Trading forex involves substantial risk and may not be suitable for all investors. 
+                    Past performance is not indicative of future results. Please trade responsibly and 
+                    consider your financial situation before following any trading signals.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Images Sidebar */}
+          {images.length > 0 && (
+            <div className="lg:col-span-1">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Chart Analysis</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {images.map((imageUrl, index) => (
+                      <div key={index} className="relative">
+                        <img
+                          src={imageUrl}
+                          alt={`Chart analysis ${index + 1}`}
+                          className="w-full h-48 object-cover rounded-lg border cursor-pointer hover:opacity-90 transition-opacity"
+                          onClick={() => window.open(imageUrl, '_blank')}
+                        />
+                        <div className="absolute top-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
+                          {index + 1} of {images.length}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  {images.length > 1 && (
+                    <p className="text-xs text-gray-500 mt-2 text-center">
+                      Click images to view full size
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

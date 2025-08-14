@@ -195,10 +195,12 @@ export default function Signals() {
                             
                             {/* Quick Action Icons */}
                             <div className="flex items-center justify-between mt-3 pt-2 border-t border-slate-100">
-                              <div className="flex items-center space-x-4">
-                                {getTradeActionIcon(signal.tradeAction)}
-                                <span className="text-xs text-slate-500">Tap to view details</span>
-                              </div>
+                              <Link href={`/signal/${signal.id}`}>
+                                <div className="flex items-center space-x-4 cursor-pointer hover:text-blue-600 transition-colors">
+                                  {getTradeActionIcon(signal.tradeAction)}
+                                  <span className="text-xs text-slate-500">Tap to view details</span>
+                                </div>
+                              </Link>
                               <div className="flex space-x-2">
                                 <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center">
                                   <span className="text-xs">💰</span>

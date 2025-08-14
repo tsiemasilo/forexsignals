@@ -12,6 +12,7 @@ import Plans from "@/pages/Plans";
 import AdminDashboard from "@/pages/AdminDashboard";
 import AdminSignals from "@/pages/AdminSignals";
 import AdminUsers from "@/pages/AdminUsers";
+import SignalDetails from "@/pages/SignalDetails";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -46,6 +47,7 @@ function Router() {
           <>
             <Route path="/" component={Signals} />
             <Route path="/signals" component={Signals} />
+            <Route path="/signal/:id" component={SignalDetails} />
             <Route path="/plans" component={Plans} />
           </>
         )}
