@@ -30,11 +30,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       {/* Main Content Area */}
       <div className="ml-64">
         {/* Top Header */}
-        <header className="bg-white/95 backdrop-blur-sm border-b border-gray-200/50 px-6 py-4 sticky top-0 z-30 shadow-sm">
+        <header className="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-30">
           <div className="flex justify-between items-center">
             {/* Page Title Area - can be customized per page */}
             <div className="flex-1">
-              <h2 className="text-2xl font-semibold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              <h2 className="text-2xl font-semibold text-gray-900">
                 {user?.isAdmin ? 'Admin Dashboard' : 'Trading Dashboard'}
               </h2>
               <p className="text-sm text-gray-600 mt-1">
