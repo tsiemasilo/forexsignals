@@ -108,6 +108,8 @@ This is a full-stack e-commerce application for automotive parts built with a mo
 ## Changelog
 
 Changelog:
+- August 14, 2025. Fixed signals synchronization between Replit and Netlify platforms - both platforms now pull signals from PostgreSQL database instead of hardcoded data, ensuring identical signal display
+- August 14, 2025. Fixed subscription badge visibility and authentication issues - badges now display correctly for all users with proper debug logging and simplified query logic
 - August 14, 2025. Fixed subscription badge colors and duration calculations - all statuses (expired, inactive, trial, active) now show proper colors and accurate plan durations (Basic=5, Premium=14, VIP=30 days)
 - August 14, 2025. Fixed subscription badge synchronization - admin dropdown changes now properly refresh user subscription badges with cache invalidation and real-time status updates
 - August 14, 2025. Fixed Netlify function ES module compatibility and 502 Bad Gateway errors - converted server function to proper ES modules (.mjs) with comprehensive error handling

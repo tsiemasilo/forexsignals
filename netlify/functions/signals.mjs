@@ -46,24 +46,55 @@ export const handler = async (event, context) => {
         })
       };
     }
-    // Return trading signals from your database
-    const signals = [
-      {
-        id: 1,
-        title: "EUR/USD Buy Signal",
-        description: "Strong bullish momentum on EUR/USD with key support at 1.0850. Target 1.0920 with stop loss at 1.0830.",
-        content: "Strong bullish momentum on EUR/USD with key support at 1.0850. Target 1.0920 with stop loss at 1.0830.",
-        currencyPair: "EUR/USD",
-        signal: "BUY",
-        tradeAction: "BUY",
-        entryPrice: "1.0875",
-        stopLoss: "1.0830", 
-        takeProfit: "1.0920",
-        status: "active",
-        imageUrls: ["/api/placeholder/400/300"],
-        createdAt: "2025-08-13T13:42:41.739Z",
-        updatedAt: "2025-08-13T13:42:41.739Z"
-      },
+    // Get trading signals directly from database
+    console.log('Fetching signals from database...');
+    const signalsResult = await pool.query(`
+      SELECT id, title, description, content, currency_pair, signal_type, 
+             entry_price, stop_loss, take_profit, status, image_urls, 
+             created_at, updated_at
+      FROM signals 
+      ORDER BY created_at DESC
+    `);
+
+    const signals = signalsResult.rows.map(row => ({
+      id: row.id,
+      title: row.title,
+      description: row.description,
+      content: row.content,
+      currencyPair: row.currency_pair,
+      signal: row.signal_type,
+      tradeAction: row.signal_type,
+      entryPrice: row.entry_price,
+      stopLoss: row.stop_loss,
+      takeProfit: row.take_profit,
+      status: row.status,
+      imageUrls: row.image_urls || ["/api/placeholder/400/300"],
+      createdAt: row.created_at,
+      updatedAt: row.updated_at
+    }));
+
+    console.log(`Found ${signals.length} signals in database`);
+
+    // If no signals in database, return seed data as fallback
+    if (signals.length === 0) {
+      console.log('No signals found, using fallback data');
+      const fallbackSignals = [
+        {
+          id: 1,
+          title: "EUR/USD Buy Signal",
+          description: "Strong bullish momentum on EUR/USD with key support at 1.0850. Target 1.0920 with stop loss at 1.0830.",
+          content: "Strong bullish momentum on EUR/USD with key support at 1.0850. Target 1.0920 with stop loss at 1.0830.",
+          currencyPair: "EUR/USD",
+          signal: "BUY",
+          tradeAction: "BUY",
+          entryPrice: "1.0875",
+          stopLoss: "1.0830", 
+          takeProfit: "1.0920",
+          status: "active",
+          imageUrls: ["/api/placeholder/400/300"],
+          createdAt: "2025-08-13T13:42:41.739Z",
+          updatedAt: "2025-08-13T13:42:41.739Z"
+        },
       {
         id: 2,
         title: "GBP/JPY Sell Signal",
