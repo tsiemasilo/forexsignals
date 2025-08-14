@@ -41,22 +41,27 @@ export default function AdminSignals() {
 
   const createSignalMutation = useMutation({
     mutationFn: async (signalData: any) => {
+      console.log('Creating signal with data:', signalData);
       const response = await apiRequest('POST', '/api/signals', signalData);
-      return response.json();
+      const result = await response.json();
+      console.log('Signal creation result:', result);
+      return result;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log('Signal creation successful:', data);
       queryClient.invalidateQueries({ queryKey: ['/api/signals'] });
       toast({
         title: "Signal created",
-        description: "New trading signal has been published.",
+        description: `New trading signal "${data.title}" has been published.`,
       });
       setIsCreateDialogOpen(false);
       resetForm();
     },
-    onError: () => {
+    onError: (error) => {
+      console.error('Signal creation error:', error);
       toast({
         title: "Error",
-        description: "Failed to create signal. Please try again.",
+        description: `Failed to create signal: ${error.message}`,
         variant: "destructive",
       });
     }
