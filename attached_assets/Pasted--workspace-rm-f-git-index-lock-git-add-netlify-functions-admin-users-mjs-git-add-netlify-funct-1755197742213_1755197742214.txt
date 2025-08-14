@@ -1,0 +1,54 @@
+~/workspace$ rm -f .git/index.lock
+git add netlify/functions/admin-users.mjs
+git add netlify/functions/admin-signals.mjs  
+git add netlify/functions/admin-users-fixed.mjs
+git add netlify.toml
+git add replit.md
+git add ADMIN_FUNCTIONS_GITHUB_UPDATE.md
+git commit -m "Fix admin functions WebSocket errors - convert to HTTP connections
+
+- admin-users.mjs: Fixed WebSocket Pool to neon() HTTP connection
+- admin-signals.mjs: Connected to database instead of hardcoded data  
+- admin-users-fixed.mjs: Complete HTTP-based admin user management
+- netlify.toml: Route admin endpoints to fixed functions
+- All functions use correct database schema (trade_action, image_url)
+- Resolves all WebSocket connection failures on Netlify platform"
+git push https://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@github.com/tsiemasilo/forexsignals.git main
+On branch main
+nothing to commit, working tree clean
+Enumerating objects: 22, done.
+Counting objects: 100% (22/22), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (14/14), done.
+Writing objects: 100% (15/15), 5.19 KiB | 5.19 MiB/s, done.
+Total 15 (delta 10), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (10/10), completed with 5 local objects.
+remote: error: GH013: Repository rule violations found for refs/heads/main.
+remote: 
+remote: - GITHUB PUSH PROTECTION
+remote:   —————————————————————————————————————————
+remote:     Resolve the following violations before pushing again
+remote: 
+remote:     - Push cannot contain secrets
+remote: 
+remote:     
+remote:      (?) Learn how to resolve a blocked push
+remote:      https://docs.github.com/code-security/secret-scanning/working-with-secret-scanning-and-push-protection/working-with-push-protection-from-the-command-line#resolving-a-blocked-push
+remote:     
+remote:     
+remote:       —— GitHub Personal Access Token ——————————————————————
+remote:        locations:
+remote:          - commit: 7b865819886c62a552809cf4af587fd6987949e0
+remote:            path: ADMIN_FUNCTIONS_GITHUB_UPDATE.md:24
+remote:          - commit: bc96c8494dcccd39709dc9dd7f4e2ae72fa027b4
+remote:            path: push_admin_fixes.sh:25
+remote:     
+remote:        (?) To push, remove secret from commit(s) or follow this URL to allow the secret.
+remote:        https://github.com/tsiemasilo/forexsignals/security/secret-scanning/unblock-secret/31I3FE7rM3wgIUVx1O6cSlOEPXX
+remote:     
+remote: 
+remote: 
+To https://github.com/tsiemasilo/forexsignals.git
+ ! [remote rejected] main -> main (push declined due to repository rule violations)
+error: failed to push some refs to 'https://github.com/tsiemasilo/forexsignals.git'
+~/workspace$ 

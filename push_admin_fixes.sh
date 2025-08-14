@@ -22,7 +22,7 @@ git commit -m "Fix admin functions WebSocket errors - convert to HTTP connection
 - Resolves all WebSocket connection failures on Netlify platform"
 
 # Push to GitHub
-git push https://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@github.com/tsiemasilo/forexsignals.git main
+git push origin main
 
 echo "Admin function fixes pushed to GitHub successfully!"
 echo "Netlify will auto-deploy the updated functions."

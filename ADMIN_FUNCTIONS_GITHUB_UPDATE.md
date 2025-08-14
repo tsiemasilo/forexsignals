@@ -21,7 +21,7 @@ git add netlify/functions/admin-users-fixed.mjs
 git add netlify.toml
 git add replit.md
 git commit -m "Fix admin functions WebSocket errors - convert to HTTP connections"
-git push https://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@github.com/tsiemasilo/forexsignals.git main
+git push origin main
 ```
 
 ## Expected Result
