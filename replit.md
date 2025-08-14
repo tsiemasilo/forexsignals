@@ -108,6 +108,7 @@ This is a full-stack e-commerce application for automotive parts built with a mo
 ## Changelog
 
 Changelog:
+- August 14, 2025. NETLIFY BUILD ERRORS FIXED: Resolved bcryptjs dependency and top-level await issues causing deployment failures - removed server.mjs function, simplified password validation, configured proper ES module compatibility for Netlify serverless functions
 - August 14, 2025. GITHUB UPDATE METHOD DOCUMENTED: Created clean token removal process for bypassing GitHub push protection - uses git reset to remove problematic commits and selective file copying to avoid sensitive information in repository
 - August 14, 2025. COMPLETED NETLIFY SERVERLESS CONVERSION & GITHUB UPDATE READY: Converted entire application to work independently on Netlify using serverless functions, eliminated Replit backend dependency, created complete Netlify function suite including login, signals CRUD, admin functions, and database session management - app now fully self-contained on Netlify platform with 95% features working on live deployment (https://watchlistfx.netlify.app/), ready for GitHub update
 - August 14, 2025. ADMIN SIGNALS FUNCTIONALITY FIXED: Removed Bearer token authentication from AdminDashboard and AdminSignals pages, added CORS support for Netlify frontend, all admin signal CRUD operations working correctly on Replit (create/read/update/delete), session-based authentication fully restored, API returning 200 status for all operations
