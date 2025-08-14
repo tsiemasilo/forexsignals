@@ -1,12 +1,17 @@
 import { neonConfig, Pool } from '@neondatabase/serverless';
 
-// Configure Neon for serverless environment
-neonConfig.webSocketConstructor = globalThis.WebSocket;
+// Configure Neon for Netlify serverless - disable WebSocket for HTTP pooling  
+neonConfig.useSecureWebSocket = false;
+neonConfig.pipelineConnect = false;
 
-const DATABASE_URL = process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL;
+const DATABASE_URL = process.env.NETLIFY_DATABASE_URL_UNPOOLED || process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL;
+
 const pool = new Pool({ 
   connectionString: DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
+  ssl: { rejectUnauthorized: false },
+  max: 1,
+  idleTimeoutMillis: 0,
+  connectionTimeoutMillis: 10000
 });
 
 // Emergency login function - accepts any email for testing
