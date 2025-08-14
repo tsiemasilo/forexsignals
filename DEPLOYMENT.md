@@ -33,7 +33,7 @@ git push -u origin main
 Add these environment variables in Netlify dashboard (Site settings → Environment variables):
 
 **Required:**
-- `DATABASE_URL` - Your PostgreSQL database connection string
+- `DATABASE_URL` - `postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require`
 - `OZOW_SITE_CODE` - Your Ozow payment gateway site code
 - `OZOW_PRIVATE_KEY` - Your Ozow private key
 
