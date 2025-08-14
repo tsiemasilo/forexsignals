@@ -84,6 +84,18 @@ export class MemStorage implements IStorage {
     };
     this.users.set(customer.id, customer);
 
+    // Add Almeerah as admin user
+    const almeerah: User = {
+      id: this.currentUserId++,
+      email: "almeerahlosper@gmail.com",
+      firstName: "Almeerah",
+      lastName: "Losper",
+      isAdmin: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    this.users.set(almeerah.id, almeerah);
+
     // Create subscription plans
     const plans = [
       { name: "Basic Plan", description: "One quality signal per day + market analysis", price: "49.99", duration: 5 },

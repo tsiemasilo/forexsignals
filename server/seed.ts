@@ -23,6 +23,16 @@ async function seedDatabase() {
       console.log('Admin user already exists');
     }
 
+    // Make Almeerah admin for signal creation
+    const almeerahResult = await db.update(users)
+      .set({ isAdmin: true })
+      .where(eq(users.email, 'almeerahlosper@gmail.com'))
+      .returning();
+    
+    if (almeerahResult.length > 0) {
+      console.log('Almeerah granted admin access for signal creation');
+    }
+
     // Check if subscription plans exist
     const existingPlans = await db.select().from(subscriptionPlans).limit(1);
     
