@@ -12,6 +12,21 @@
   status = 200
 
 [[redirects]]
+  from = "/api/plans"
+  to = "/.netlify/functions/plans"
+  status = 200
+
+[[redirects]]
+  from = "/api/signals"
+  to = "/.netlify/functions/signals"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin/users"
+  to = "/.netlify/functions/admin-users"
+  status = 200
+
+[[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/server/:splat"
   status = 200
