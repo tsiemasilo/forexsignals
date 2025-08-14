@@ -108,6 +108,7 @@ This is a full-stack e-commerce application for automotive parts built with a mo
 ## Changelog
 
 Changelog:
+- August 14, 2025. Fixed session store database connection to use NETLIFY_DATABASE_URL - ensures consistent database connectivity across all platform components
 - August 14, 2025. Updated database configuration for Netlify deployment - supports both NETLIFY_DATABASE_URL and DATABASE_URL environment variables for seamless deployment across platforms
 - August 14, 2025. Migrated to new Neon PostgreSQL database with all authentic user data, signals, and subscriptions preserved
 - August 14, 2025. Fixed all Netlify deployment issues by uploading missing components (queryClient, SubscriptionStatusBadge, UI components) - deployment ready
