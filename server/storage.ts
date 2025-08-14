@@ -226,7 +226,7 @@ export class MemStorage implements IStorage {
   // Subscriptions
   async getUserSubscription(userId: number): Promise<Subscription | undefined> {
     return Array.from(this.subscriptions.values())
-      .find(sub => sub.userId === userId && (sub.status === "active" || sub.status === "trial"));
+      .find(sub => sub.userId === userId);
   }
 
   async createSubscription(insertSubscription: InsertSubscription): Promise<Subscription> {
