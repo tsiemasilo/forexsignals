@@ -1,6 +1,6 @@
 import { neon } from '@neondatabase/serverless';
 
-// Use direct HTTP connection - FIXED VERSION WITH CORRECT SCHEMA
+// Use direct HTTP connection - FIXED VERSION WITH COMPLETE CRUD SUPPORT
 const DATABASE_URL = process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
 const sql = neon(DATABASE_URL);
 
