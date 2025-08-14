@@ -37,6 +37,11 @@
   status = 200
 
 [[redirects]]
+  from = "/api/user/subscription-status"
+  to = "/.netlify/functions/user-subscription-status"
+  status = 200
+
+[[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/server/:splat"
   status = 200
