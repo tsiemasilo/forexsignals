@@ -128,9 +128,12 @@ export const handler = async (event, context) => {
         };
       }
 
+      // Handle imageUrls properly - convert to JSON string or null
+      const imageUrlsJson = imageUrls && imageUrls.length > 0 ? JSON.stringify(imageUrls) : null;
+      
       const result = await sql`
         INSERT INTO signals (title, content, trade_action, image_url, image_urls, created_by, is_active)
-        VALUES (${title}, ${content}, ${tradeAction}, ${imageUrl || null}, ${imageUrls ? JSON.stringify(imageUrls) : null}, ${user.id}, true)
+        VALUES (${title}, ${content}, ${tradeAction}, ${imageUrl || null}, ${imageUrlsJson}, ${user.id}, true)
         RETURNING id, title, content, trade_action, 
                   image_url, image_urls,
                   created_by, is_active,
@@ -181,13 +184,16 @@ export const handler = async (event, context) => {
 
       const { title, content, tradeAction, imageUrl, imageUrls } = JSON.parse(event.body);
 
+      // Handle imageUrls properly for update
+      const imageUrlsJson = imageUrls && imageUrls.length > 0 ? JSON.stringify(imageUrls) : null;
+      
       const result = await sql`
         UPDATE signals 
         SET title = ${title}, 
             content = ${content}, 
             trade_action = ${tradeAction},
             image_url = ${imageUrl || null},
-            image_urls = ${imageUrls ? JSON.stringify(imageUrls) : null},
+            image_urls = ${imageUrlsJson},
             updated_at = NOW()
         WHERE id = ${parseInt(signalId)} AND created_by = ${user.id}
         RETURNING id, title, content, trade_action, 

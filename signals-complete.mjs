@@ -1,7 +1,7 @@
 import { neon } from '@neondatabase/serverless';
 
-// Use direct HTTP connection - FIXED VERSION WITH COMPLETE CRUD SUPPORT
-const DATABASE_URL = process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
+// Use direct HTTP connection - FINAL WORKING VERSION
+const DATABASE_URL = 'postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
 const sql = neon(DATABASE_URL);
 
 // Helper function to get user from session
@@ -53,8 +53,9 @@ export const handler = async (event, context) => {
     const { httpMethod } = event;
 
     if (httpMethod === 'GET') {
-      // Check subscription for non-admin users
+      // ADMIN BYPASS: Admins can always access signals
       if (!user.is_admin) {
+        // Check subscription for non-admin users only
         const subscriptionResult = await sql`
           SELECT status, end_date
           FROM subscriptions
@@ -76,7 +77,7 @@ export const handler = async (event, context) => {
         }
       }
 
-      // Get all signals using CORRECT database schema
+      // Get all signals - admins and active subscribers can see all
       const signalsResult = await sql`
         SELECT id, title, content, trade_action, 
                image_url, image_urls, 
@@ -117,7 +118,7 @@ export const handler = async (event, context) => {
         };
       }
 
-      const { title, content, tradeAction, imageUrl, imageUrls } = JSON.parse(event.body);
+      const { title, content, tradeAction, imageUrl = '', imageUrls = [] } = JSON.parse(event.body);
 
       if (!title || !content || !tradeAction) {
         return {
@@ -127,9 +128,12 @@ export const handler = async (event, context) => {
         };
       }
 
+      // Handle imageUrls properly - only store as JSON if array has content
+      const imageUrlsJson = imageUrls && Array.isArray(imageUrls) && imageUrls.length > 0 ? JSON.stringify(imageUrls) : null;
+      
       const result = await sql`
         INSERT INTO signals (title, content, trade_action, image_url, image_urls, created_by, is_active)
-        VALUES (${title}, ${content}, ${tradeAction}, ${imageUrl || null}, ${imageUrls ? JSON.stringify(imageUrls) : null}, ${user.id}, true)
+        VALUES (${title}, ${content}, ${tradeAction}, ${imageUrl || null}, ${imageUrlsJson}, ${user.id}, true)
         RETURNING id, title, content, trade_action, 
                   image_url, image_urls,
                   created_by, is_active,
@@ -178,15 +182,18 @@ export const handler = async (event, context) => {
         };
       }
 
-      const { title, content, tradeAction, imageUrl, imageUrls } = JSON.parse(event.body);
+      const { title, content, tradeAction, imageUrl = '', imageUrls = [] } = JSON.parse(event.body);
 
+      // Handle imageUrls properly for update
+      const imageUrlsJson = imageUrls && Array.isArray(imageUrls) && imageUrls.length > 0 ? JSON.stringify(imageUrls) : null;
+      
       const result = await sql`
         UPDATE signals 
         SET title = ${title}, 
             content = ${content}, 
             trade_action = ${tradeAction},
             image_url = ${imageUrl || null},
-            image_urls = ${imageUrls ? JSON.stringify(imageUrls) : null},
+            image_urls = ${imageUrlsJson},
             updated_at = NOW()
         WHERE id = ${parseInt(signalId)} AND created_by = ${user.id}
         RETURNING id, title, content, trade_action, 
