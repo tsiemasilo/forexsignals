@@ -163,6 +163,9 @@ export class MemStorage implements IStorage {
     const user: User = { 
       ...insertUser, 
       id, 
+      firstName: insertUser.firstName || null,
+      lastName: insertUser.lastName || null,
+      isAdmin: insertUser.isAdmin || false,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -213,6 +216,7 @@ export class MemStorage implements IStorage {
     const plan: SubscriptionPlan = { 
       ...insertPlan, 
       id, 
+      description: insertPlan.description || null,
       createdAt: new Date(),
     };
     this.subscriptionPlans.set(id, plan);
@@ -230,6 +234,8 @@ export class MemStorage implements IStorage {
     const subscription: Subscription = { 
       ...insertSubscription, 
       id, 
+      status: insertSubscription.status || "trial",
+      startDate: insertSubscription.startDate || new Date(),
       createdAt: new Date(),
     };
     this.subscriptions.set(id, subscription);
@@ -273,6 +279,8 @@ export class MemStorage implements IStorage {
     const signal: ForexSignal = { 
       ...insertSignal, 
       id, 
+      imageUrl: insertSignal.imageUrl || null,
+      isActive: insertSignal.isActive || true,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
