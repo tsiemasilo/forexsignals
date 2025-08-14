@@ -13,7 +13,7 @@
 
 [[redirects]]
   from = "/api/auth"
-  to = "/.netlify/functions/login-redirect"
+  to = "/.netlify/functions/auth"
   status = 200
 
 [[redirects]]
