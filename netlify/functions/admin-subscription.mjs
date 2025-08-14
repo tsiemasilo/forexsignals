@@ -79,8 +79,8 @@ export const handler = async (event, context) => {
       }
       
       const body = JSON.parse(event.body || '{}');
-      const { status } = body;
-      console.log('Update request:', { userId, status });
+      const { status, planId } = body;
+      console.log('Update request:', { userId, status, planId });
 
       // Calculate end date based on status
       let endDate = null;
@@ -90,12 +90,40 @@ export const handler = async (event, context) => {
         endDate = now.toISOString();
       }
 
-      // Update user subscription
-      await sql`
-        UPDATE user_subscriptions 
-        SET status = ${status}, end_date = ${endDate}, updated_at = NOW()
-        WHERE user_id = ${userId}
+      // Update user subscription - check if subscription exists first
+      const existingSub = await sql`
+        SELECT id FROM subscriptions WHERE user_id = ${userId}
       `;
+
+      if (existingSub.length === 0) {
+        // Create new subscription if none exists
+        if (!planId) {
+          return {
+            statusCode: 400,
+            headers,
+            body: JSON.stringify({ error: 'planId required for new subscription' })
+          };
+        }
+        
+        await sql`
+          INSERT INTO subscriptions (user_id, plan_id, status, end_date)
+          VALUES (${userId}, ${planId}, ${status}, ${endDate})
+        `;
+      } else {
+        // Update existing subscription
+        const updateFields = { status, end_date: endDate };
+        if (planId) {
+          updateFields.plan_id = planId;
+        }
+        
+        await sql`
+          UPDATE subscriptions 
+          SET status = ${status}, 
+              end_date = ${endDate}
+              ${planId ? sql`, plan_id = ${planId}` : sql``}
+          WHERE user_id = ${userId}
+        `;
+      }
 
       return {
         statusCode: 200,
