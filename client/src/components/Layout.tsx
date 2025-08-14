@@ -1,8 +1,9 @@
 import { Link, useLocation } from 'wouter';
-import { TrendingUp, User, LogOut, Settings, Users, BarChart3 } from 'lucide-react';
+import { TrendingUp, User, LogOut, Settings, Users, BarChart3, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { SubscriptionStatusBadge } from './SubscriptionStatusBadge';
+import { useState } from 'react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,6 +19,7 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
   const [location] = useLocation();
   const { user, logout } = useAuth();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const publicNavigationItems = [
     { href: '/', label: 'Home' },
@@ -52,11 +54,14 @@ export default function Layout({ children }: LayoutProps) {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex justify-between items-center py-4">
             {/* Logo */}
-            <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
-              <TrendingUp className="text-green-400" size={32} />
-              <div>
+            <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+              <TrendingUp className="text-green-400" size={28} />
+              <div className="hidden sm:block">
                 <h1 className="text-xl font-bold">ForexSignals Pro</h1>
                 <p className="text-xs text-gray-400">Professional Trading Signals</p>
+              </div>
+              <div className="sm:hidden">
+                <h1 className="text-lg font-bold">Forex Pro</h1>
               </div>
             </Link>
 
@@ -75,8 +80,25 @@ export default function Layout({ children }: LayoutProps) {
               ))}
             </div>
 
-            {/* User Menu */}
-            <div className="flex items-center space-x-4">
+            {/* Mobile Menu Button */}
+            <div className="md:hidden flex items-center space-x-2">
+              {user && (
+                <div className="hidden xs:block">
+                  <SubscriptionStatusBadge />
+                </div>
+              )}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="text-white hover:text-green-400"
+              >
+                {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              </Button>
+            </div>
+
+            {/* Desktop User Menu */}
+            <div className="hidden md:flex items-center space-x-4">
               {user ? (
                 <>
                   {/* Subscription Status Badge */}
@@ -160,6 +182,127 @@ export default function Layout({ children }: LayoutProps) {
             </div>
           </div>
         </div>
+
+        {/* Mobile Menu */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden bg-slate-800 border-t border-slate-700">
+            <div className="px-4 py-4 space-y-4">
+              {/* Mobile Navigation Links */}
+              <div className="space-y-2">
+                {getNavigationItems().map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`block py-2 px-3 rounded-md hover:bg-slate-700 transition-colors ${
+                      location === item.href ? 'text-green-400 bg-slate-700' : 'text-white'
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+
+              {/* Mobile User Section */}
+              {user ? (
+                <div className="border-t border-slate-700 pt-4">
+                  {/* Mobile Subscription Badge */}
+                  <div className="mb-4">
+                    <SubscriptionStatusBadge />
+                  </div>
+                  
+                  {/* User Info */}
+                  <div className="flex items-center space-x-3 mb-4">
+                    <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
+                      <User size={18} className="text-white" />
+                    </div>
+                    <div>
+                      <p className="text-white font-medium text-sm">{user.firstName || user.email}</p>
+                      <p className="text-gray-400 text-xs">{user.email}</p>
+                      {user.isAdmin && (
+                        <p className="text-green-400 text-xs font-medium">Administrator</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Quick Actions */}
+                  {user.isAdmin ? (
+                    <div className="space-y-2">
+                      <Link
+                        href="/"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="flex items-center py-2 px-3 rounded-md hover:bg-slate-700 transition-colors text-white"
+                      >
+                        <BarChart3 size={16} className="mr-3" />
+                        Dashboard
+                      </Link>
+                      <Link
+                        href="/admin/signals"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="flex items-center py-2 px-3 rounded-md hover:bg-slate-700 transition-colors text-white"
+                      >
+                        <Settings size={16} className="mr-3" />
+                        Manage Signals
+                      </Link>
+                      <Link
+                        href="/admin/users"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="flex items-center py-2 px-3 rounded-md hover:bg-slate-700 transition-colors text-white"
+                      >
+                        <Users size={16} className="mr-3" />
+                        Manage Users
+                      </Link>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <Link
+                        href="/"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="flex items-center py-2 px-3 rounded-md hover:bg-slate-700 transition-colors text-white"
+                      >
+                        <TrendingUp size={16} className="mr-3" />
+                        Signals
+                      </Link>
+                      <Link
+                        href="/plans"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="flex items-center py-2 px-3 rounded-md hover:bg-slate-700 transition-colors text-white"
+                      >
+                        <BarChart3 size={16} className="mr-3" />
+                        Pricing
+                      </Link>
+                    </div>
+                  )}
+
+                  {/* Logout Button */}
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="flex items-center py-2 px-3 rounded-md hover:bg-slate-700 transition-colors text-red-400 mt-4 w-full"
+                  >
+                    <LogOut size={16} className="mr-3" />
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <div className="border-t border-slate-700 pt-4 space-y-2">
+                  <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                    <Button variant="ghost" className="w-full text-white hover:text-green-400 justify-start">
+                      Login
+                    </Button>
+                  </Link>
+                  <Link href="/register" onClick={() => setIsMobileMenuOpen(false)}>
+                    <Button className="w-full bg-green-600 hover:bg-green-700">
+                      Get Started
+                    </Button>
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* Main Content */}
