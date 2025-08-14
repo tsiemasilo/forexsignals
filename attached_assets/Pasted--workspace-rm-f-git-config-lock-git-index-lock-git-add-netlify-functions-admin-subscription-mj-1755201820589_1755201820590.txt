@@ -1,0 +1,44 @@
+~/workspace$ rm -f .git/config.lock .git/index.lock
+git add netlify/functions/admin-subscription.mjs netlify.toml replit.md SECURITY_CLEANUP_COMPLETE.md
+git commit -m "Deploy admin subscription fix with HTTP database connection"
+git push https://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@github.com/tsiemasilo/forexsignals.git main
+On branch main
+nothing to commit, working tree clean
+Enumerating objects: 29, done.
+Counting objects: 100% (29/29), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (22/22), done.
+Writing objects: 100% (23/23), 6.16 KiB | 3.08 MiB/s, done.
+Total 23 (delta 12), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (12/12), completed with 4 local objects.
+remote: error: GH013: Repository rule violations found for refs/heads/main.
+remote: 
+remote: - GITHUB PUSH PROTECTION
+remote:   —————————————————————————————————————————
+remote:     Resolve the following violations before pushing again
+remote: 
+remote:     - Push cannot contain secrets
+remote: 
+remote:     
+remote:      (?) Learn how to resolve a blocked push
+remote:      https://docs.github.com/code-security/secret-scanning/working-with-secret-scanning-and-push-protection/working-with-push-protection-from-the-command-line#resolving-a-blocked-push
+remote:     
+remote:      (?) This repository does not have Secret Scanning enabled, but is eligible. Enable Secret Scanning to view and manage detected secrets.
+remote:      Visit the repository settings page, https://github.com/tsiemasilo/forexsignals/settings/security_analysis
+remote:     
+remote:     
+remote:       —— GitHub Personal Access Token ——————————————————————
+remote:        locations:
+remote:          - commit: d58062d8010f6e1217a861f99f458588473d068f
+remote:            path: deploy_clean.sh:17
+remote:          - commit: d58062d8010f6e1217a861f99f458588473d068f
+remote:            path: replit.md:156
+remote:     
+remote:        (?) To push, remove secret from commit(s) or follow this URL to allow the secret.
+remote:        https://github.com/tsiemasilo/forexsignals/security/secret-scanning/unblock-secret/31IAUF1ZVQZ87Tix90trNNC9e6Q
+remote:     
+remote: 
+remote: 
+To https://github.com/tsiemasilo/forexsignals.git
+ ! [remote rejected] main -> main (push declined due to repository rule violations)
+error: failed to push some refs to 'https://github.com/tsiemasilo/forexsignals.git'
