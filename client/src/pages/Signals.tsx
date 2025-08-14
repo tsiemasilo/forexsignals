@@ -158,7 +158,9 @@ export default function Signals() {
                     </div>
                   ) : (
                     <div className="space-y-1">
-                      {signals.map((signal: any) => (
+                      {signals
+                        .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                        .map((signal: any) => (
                         <div key={signal.id} className="mx-4 my-2 bg-white border border-slate-200 rounded-xl shadow-sm">
                           {/* Notification Header */}
                           <div className="flex items-center px-4 py-3 border-b border-slate-100">
