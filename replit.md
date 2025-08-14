@@ -33,6 +33,7 @@ This is a full-stack e-commerce application for automotive parts built with a mo
 ## Changelog
 
 Changelog:
+- August 14, 2025. SUBSCRIPTION ACCESS CONTROL FIXED: Fixed frontend error handling to properly block expired users from viewing signals, improved subscription error detection to catch 403 responses, admin subscription function completely debugged and working
 - August 14, 2025. ADMIN PUT METHOD FIX DEPLOYED: Fixed admin-subscription.mjs to handle PUT requests, updated CORS headers, deployed with new access token - Method not allowed errors resolved
 - August 14, 2025. GITHUB DEPLOYMENT SUCCESSFUL: Successfully pushed admin subscription fix to GitHub and deployed to Netlify, all 500 errors in admin dashboard should now be resolved
 - August 14, 2025. ADMIN SUBSCRIPTION FUNCTION DEPLOYED: Created admin-subscription.mjs with HTTP database connection to resolve 500 errors when updating user subscription statuses, updated netlify.toml routing, all access token references cleaned from project files

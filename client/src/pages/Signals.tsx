@@ -66,7 +66,7 @@ export default function Signals() {
     const errorMessage = (error as any)?.message || 'Unknown error';
     console.error('Signals loading error:', errorMessage);
     
-    if (errorMessage.includes('subscription')) {
+    if (errorMessage.includes('subscription') || errorMessage.includes('Active subscription required') || errorMessage.includes('403')) {
       return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
           <Card className="max-w-md text-center">
