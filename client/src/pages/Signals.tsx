@@ -1,6 +1,6 @@
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { TrendingUp, TrendingDown, Minus, Clock } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, Clock, Bell, Smartphone } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link } from 'wouter';
@@ -112,74 +112,135 @@ export default function Signals() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Trading Signals</h1>
-          <p className="text-gray-600">
-            Professional forex signals from expert traders. Follow the analysis and manage your risk.
+    <div className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 py-8">
+      <div className="max-w-4xl mx-auto px-4">
+        <div className="mb-8 text-center">
+          <h1 className="text-3xl font-bold mb-2 text-slate-800">Live Trading Signals</h1>
+          <p className="text-slate-600">
+            Receive professional forex signals directly to your mobile notifications
           </p>
         </div>
 
-        {signals.length === 0 ? (
-          <Card className="text-center py-12">
-            <CardContent>
-              <h2 className="text-xl font-semibold mb-2">No signals available</h2>
-              <p className="text-gray-600">
-                New trading signals will appear here when our experts identify opportunities.
-              </p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="space-y-6">
-            {signals.map((signal: any) => (
-              <Card key={signal.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center space-x-3">
-                      {getTradeActionIcon(signal.tradeAction)}
-                      <div>
-                        <CardTitle className="text-xl">{signal.title}</CardTitle>
-                        <CardDescription className="text-sm text-gray-500">
-                          {formatDate(signal.createdAt)}
-                        </CardDescription>
-                      </div>
+        <div className="flex justify-center">
+          {/* Phone Mockup */}
+          <div className="relative">
+            {/* Phone Frame */}
+            <div className="w-80 h-[640px] bg-black rounded-[3rem] p-2 shadow-2xl">
+              {/* Phone Screen */}
+              <div className="w-full h-full bg-white rounded-[2.5rem] relative overflow-hidden">
+                {/* Phone Notch */}
+                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-24 h-6 bg-black rounded-b-2xl z-10"></div>
+                
+                {/* Status Bar */}
+                <div className="flex justify-between items-center px-6 pt-8 pb-2 bg-slate-50">
+                  <span className="text-sm font-medium text-slate-900">9:41</span>
+                  <div className="flex items-center space-x-1">
+                    <div className="w-4 h-2 bg-slate-900 rounded-sm"></div>
+                    <div className="w-1 h-2 bg-slate-900 rounded-sm"></div>
+                    <div className="w-6 h-3 border border-slate-900 rounded-sm">
+                      <div className="w-4 h-1.5 bg-green-500 rounded-sm m-0.5"></div>
                     </div>
-                    <Badge className={getTradeActionColor(signal.tradeAction)}>
-                      {signal.tradeAction.toUpperCase()}
-                    </Badge>
                   </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div className="lg:col-span-2">
-                      <h4 className="font-semibold mb-2">Analysis</h4>
-                      <p className="text-gray-700 leading-relaxed">{signal.content}</p>
+                </div>
+
+                {/* Notifications Header */}
+                <div className="px-6 py-4 border-b border-slate-200">
+                  <h2 className="text-lg font-semibold text-slate-900 flex items-center">
+                    <Bell className="w-5 h-5 mr-2 text-blue-600" />
+                    Forex Signals
+                  </h2>
+                </div>
+
+                {/* Signals Notifications */}
+                <div className="flex-1 overflow-y-auto max-h-[480px]">
+                  {signals.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center h-96 text-center px-6">
+                      <Bell className="w-16 h-16 text-slate-300 mb-4" />
+                      <h3 className="text-lg font-medium text-slate-600 mb-2">No New Signals</h3>
+                      <p className="text-sm text-slate-500">
+                        New trading signals will appear here
+                      </p>
                     </div>
-                    
-                    {signal.imageUrl && (
-                      <div className="lg:col-span-1">
-                        <h4 className="font-semibold mb-2">Chart Analysis</h4>
-                        <img
-                          src={signal.imageUrl}
-                          alt="Chart analysis"
-                          className="w-full h-48 object-cover rounded-lg border"
-                        />
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                    <p className="text-sm text-gray-600">
-                      <strong>Risk Disclaimer:</strong> Trading forex involves substantial risk and may not be suitable for all investors. 
-                      Past performance is not indicative of future results. Please trade responsibly.
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  ) : (
+                    <div className="space-y-1">
+                      {signals.map((signal: any) => (
+                        <div key={signal.id} className="mx-4 my-2 bg-white border border-slate-200 rounded-xl shadow-sm">
+                          {/* Notification Header */}
+                          <div className="flex items-center px-4 py-3 border-b border-slate-100">
+                            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center mr-3">
+                              <TrendingUp className="w-4 h-4 text-white" />
+                            </div>
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between">
+                                <span className="text-sm font-medium text-slate-900">Forex Pro Signals</span>
+                                <span className="text-xs text-slate-500">
+                                  {new Date(signal.createdAt).toLocaleTimeString('en-US', { 
+                                    hour: '2-digit', 
+                                    minute: '2-digit' 
+                                  })}
+                                </span>
+                              </div>
+                              <span className="text-xs text-slate-500">now</span>
+                            </div>
+                          </div>
+                          
+                          {/* Notification Content */}
+                          <div className="px-4 py-3">
+                            <div className="flex items-center justify-between mb-2">
+                              <h3 className="font-semibold text-slate-900 text-sm">{signal.title}</h3>
+                              <Badge className={`text-xs ${getTradeActionColor(signal.tradeAction)}`}>
+                                {signal.tradeAction.toUpperCase()}
+                              </Badge>
+                            </div>
+                            <p className="text-xs text-slate-600 leading-relaxed line-clamp-3">
+                              {signal.content}
+                            </p>
+                            
+                            {/* Quick Action Icons */}
+                            <div className="flex items-center justify-between mt-3 pt-2 border-t border-slate-100">
+                              <div className="flex items-center space-x-4">
+                                {getTradeActionIcon(signal.tradeAction)}
+                                <span className="text-xs text-slate-500">Tap to view details</span>
+                              </div>
+                              <div className="flex space-x-2">
+                                <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center">
+                                  <span className="text-xs">💰</span>
+                                </div>
+                                <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center">
+                                  <span className="text-xs">📊</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Home Indicator */}
+                <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-slate-900 rounded-full"></div>
+              </div>
+            </div>
+            
+            {/* Phone Side Buttons */}
+            <div className="absolute right-0 top-20 w-1 h-12 bg-slate-700 rounded-l-lg"></div>
+            <div className="absolute right-0 top-36 w-1 h-8 bg-slate-700 rounded-l-lg"></div>
+            <div className="absolute right-0 top-48 w-1 h-8 bg-slate-700 rounded-l-lg"></div>
           </div>
-        )}
+        </div>
+
+        {/* Footer Info */}
+        <div className="mt-8 text-center">
+          <p className="text-sm text-slate-600 mb-4">
+            Professional signals delivered instantly to your mobile device
+          </p>
+          <div className="flex justify-center space-x-6 text-xs text-slate-500">
+            <span>📱 Push Notifications</span>
+            <span>⚡ Real-time Updates</span>
+            <span>🔔 Sound Alerts</span>
+          </div>
+        </div>
       </div>
     </div>
   );

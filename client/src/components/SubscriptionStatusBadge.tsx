@@ -38,7 +38,7 @@ export function SubscriptionStatusBadge() {
         {getIcon()}
         {subscriptionStatus.statusDisplay}
       </Badge>
-      {subscriptionStatus.daysLeft > 0 && (
+      {subscriptionStatus.status !== 'expired' && subscriptionStatus.status !== 'inactive' && subscriptionStatus.daysLeft > 0 && (
         <span className={`text-xs font-medium text-white ${getDaysLeftColor()}`}>
           {subscriptionStatus.daysLeft} days left
         </span>
