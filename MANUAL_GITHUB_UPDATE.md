@@ -1,72 +1,52 @@
 # Manual GitHub Update Instructions
 
-## Copy and run these commands in your terminal:
+Since the git repository has lock files preventing automated updates, here are the manual steps to update your GitHub repository:
+
+## Option 1: Direct Upload via GitHub Web Interface
+
+1. **Go to your repository:** https://github.com/tsiemasilo/forexsignals
+2. **Upload these key files directly through GitHub's web interface:**
+   - `netlify/functions/emergency-login.mjs`
+   - `netlify/functions/login-redirect.mjs`
+   - `netlify/functions/signals.mjs`
+   - `netlify/functions/signals-public.mjs` 
+   - `netlify/functions/admin-users.mjs`
+   - `netlify/functions/admin-user-subscription.mjs`
+   - `netlify/functions/create-sessions-table.mjs`
+   - `netlify.toml`
+   - `replit.md`
+
+## Option 2: Terminal Commands (run from /home/runner/workspace)
 
 ```bash
-# Add all changes to git
+# Clean git locks (if any exist)
+rm -f .git/index.lock .git/config.lock 2>/dev/null
+
+# Initialize fresh git state
+git init
+git remote add origin https://github.com/tsiemasilo/forexsignals.git
+git branch -M main
+
+# Stage and commit all changes
 git add .
+git commit -m "Update Netlify functions with database fixes"
 
-# Check what will be committed
-git status
-
-# Create the commit with comprehensive message
-git commit -m "Complete Netlify serverless conversion - production ready
-
-✅ MAJOR ACHIEVEMENTS:
-- Converted entire Express backend to Netlify serverless functions
-- Created comprehensive signals CRUD system (create/read/update/delete)
-- Implemented session-based authentication with PostgreSQL storage
-- Built admin dashboard with user and subscription management
-- Fixed ES module compatibility issues in functions
-- 95% of features working on live deployment
-
-🌐 LIVE DEPLOYMENT: https://watchlistfx.netlify.app/
-- Admin login working (admin@forexsignals.com)
-- 8 trading signals displaying correctly
-- Subscription system operational
-- Customer signal viewing working
-- Admin dashboard functional
-
-🔧 TECHNICAL IMPLEMENTATION:
-- netlify/functions/ - Complete serverless function suite
-- PostgreSQL session management and database integration
-- CORS headers and proper API routing via netlify.toml
-- ES module syntax throughout all functions
-
-📋 FILES ADDED/UPDATED:
-- netlify/functions/ (8+ serverless functions)
-- netlify.toml (API routing configuration)
-- NETLIFY_DEPLOYMENT_COMPLETE.md (deployment guide)
-- FINAL_DEPLOYMENT_STATUS.md (current status)
-- replit.md (updated changelog)
-- Frontend files (updated API calls)
-
-Application is production-ready with full customer functionality."
-
-# Push to GitHub
-git push origin main
+# Push to GitHub (may require authentication)
+git push -u origin main --force
 ```
 
-## What this update includes:
+## Option 3: Create New Repository
 
-### New Netlify Functions:
-- login.mjs, signals.mjs, admin-users.mjs
-- admin-user-subscription.mjs, user-subscription-status.mjs
-- logout.mjs, plans.mjs, and other supporting functions
+If git issues persist:
+1. Create a fresh clone: `git clone https://github.com/tsiemasilo/forexsignals.git fresh-repo`
+2. Copy all current files to the fresh clone
+3. Commit and push from there
 
-### Configuration Files:
-- netlify.toml with proper API routing
-- build-netlify.js for Netlify deployment
+## Key Changes Being Updated
 
-### Documentation:
-- Complete deployment guides and status reports
-- Updated project changelog
+- **Database Connection Fixes:** All functions now use HTTP pooling instead of WebSocket
+- **Login Routing:** Added proper GET/POST method handling for /api/login
+- **Authentication:** Emergency login creates persistent database sessions
+- **Documentation:** Updated replit.md with latest deployment status
 
-### Working Features:
-- Session-based authentication with PostgreSQL
-- Trading signals display (8 signals loaded)
-- Admin dashboard with user management
-- Subscription system with status tracking
-- Customer signal viewing with subscription validation
-
-Run these commands to update GitHub with the complete Netlify serverless conversion!
+The live Netlify deployment at https://watchlistfx.netlify.app/ should already have these fixes active.
