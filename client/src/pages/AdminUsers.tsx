@@ -72,18 +72,9 @@ export default function AdminUsers() {
     const isExpired = currentDate > endDate;
     const daysLeft = Math.max(0, Math.ceil((endDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24)));
     
-    if (isExpired) {
-      return { 
-        status: 'Expired', 
-        color: 'bg-red-100 text-red-800', 
-        plan: user.subscription.plan?.name || 'Unknown',
-        daysLeft: 0,
-        rawStatus: user.subscription.status
-      };
-    }
-
     let statusDisplay = '';
     let colorClass = '';
+    let displayDaysLeft = daysLeft;
     
     switch (user.subscription.status) {
       case 'trial':
@@ -97,17 +88,31 @@ export default function AdminUsers() {
       case 'inactive':
         statusDisplay = 'Inactive';
         colorClass = 'bg-yellow-100 text-yellow-800';
+        displayDaysLeft = 0; // Inactive subscriptions show 0 days
+        break;
+      case 'expired':
+        statusDisplay = 'Expired';
+        colorClass = 'bg-red-100 text-red-800';
+        displayDaysLeft = 0; // Expired subscriptions show 0 days
         break;
       default:
         statusDisplay = 'Unknown';
         colorClass = 'bg-gray-100 text-gray-800';
+        displayDaysLeft = 0;
+    }
+
+    // If the subscription is naturally expired based on date, override status
+    if (isExpired && user.subscription.status === 'active') {
+      statusDisplay = 'Expired';
+      colorClass = 'bg-red-100 text-red-800';
+      displayDaysLeft = 0;
     }
 
     return {
       status: statusDisplay,
       color: colorClass,
       plan: user.subscription.plan?.name || 'Unknown',
-      daysLeft,
+      daysLeft: displayDaysLeft,
       rawStatus: user.subscription.status
     };
   };
@@ -234,10 +239,15 @@ export default function AdminUsers() {
                             <span className="font-medium">{subscriptionInfo.plan}</span>
                           </TableCell>
                           <TableCell>
-                            <span className={`font-medium ${subscriptionInfo.daysLeft <= 3 && subscriptionInfo.daysLeft > 0 ? 'text-red-600' : 
+                            <span className={`font-medium ${
+                              subscriptionInfo.status === 'Inactive' ? 'text-yellow-600' :
+                              subscriptionInfo.status === 'Expired' ? 'text-red-600' :
+                              subscriptionInfo.daysLeft <= 3 && subscriptionInfo.daysLeft > 0 ? 'text-red-600' : 
                               subscriptionInfo.daysLeft <= 7 && subscriptionInfo.daysLeft > 3 ? 'text-yellow-600' : 'text-green-600'}`}>
-                              {subscriptionInfo.daysLeft > 0 ? `${subscriptionInfo.daysLeft} days` : 
-                               subscriptionInfo.status === 'No Subscription' ? '-' : 'Expired'}
+                              {subscriptionInfo.status === 'No Subscription' ? '-' :
+                               subscriptionInfo.status === 'Inactive' ? 'Inactive' :
+                               subscriptionInfo.status === 'Expired' ? 'Expired' :
+                               subscriptionInfo.daysLeft > 0 ? `${subscriptionInfo.daysLeft} days` : 'Expired'}
                             </span>
                           </TableCell>
                           <TableCell>
