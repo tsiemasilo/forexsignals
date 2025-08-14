@@ -225,17 +225,7 @@ export default function Signals() {
           </div>
         </div>
 
-        {/* Footer Info */}
-        <div className="mt-8 text-center">
-          <p className="text-sm text-slate-600 mb-4">
-            Professional signals delivered instantly to your mobile device
-          </p>
-          <div className="flex justify-center space-x-6 text-xs text-slate-500">
-            <span>📱 Push Notifications</span>
-            <span>⚡ Real-time Updates</span>
-            <span>🔔 Sound Alerts</span>
-          </div>
-        </div>
+
       </div>
     </div>
   );
