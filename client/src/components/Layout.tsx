@@ -2,6 +2,7 @@ import { Link, useLocation } from 'wouter';
 import { TrendingUp, User, LogOut, Settings, Users, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
+import { SubscriptionStatusBadge } from './SubscriptionStatusBadge';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -77,13 +78,17 @@ export default function Layout({ children }: LayoutProps) {
             {/* User Menu */}
             <div className="flex items-center space-x-4">
               {user ? (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm" className="text-white hover:text-green-400">
-                      <User size={20} className="mr-2" />
-                      {user.firstName || user.email}
-                    </Button>
-                  </DropdownMenuTrigger>
+                <>
+                  {/* Subscription Status Badge */}
+                  <SubscriptionStatusBadge />
+                  
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm" className="text-white hover:text-green-400">
+                        <User size={20} className="mr-2" />
+                        {user.firstName || user.email}
+                      </Button>
+                    </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
                     <div className="px-2 py-1.5 text-sm">
                       <p className="font-medium">{user.firstName} {user.lastName}</p>
@@ -137,6 +142,7 @@ export default function Layout({ children }: LayoutProps) {
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
+                </>
               ) : (
                 <div className="flex items-center space-x-2">
                   <Link href="/login">

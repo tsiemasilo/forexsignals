@@ -185,6 +185,67 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get current user's subscription status with details
+  app.get("/api/user/subscription-status", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const userId = (req as any).userId;
+      const subscription = await storage.getUserSubscription(userId);
+      
+      if (!subscription) {
+        return res.json({ 
+          status: 'none', 
+          statusDisplay: 'No Subscription',
+          daysLeft: 0,
+          plan: null,
+          color: 'bg-gray-100 text-gray-800'
+        });
+      }
+
+      const plan = await storage.getPlan(subscription.planId);
+      const endDate = new Date(subscription.endDate);
+      const currentDate = new Date();
+      const isExpired = currentDate > endDate;
+      const daysLeft = Math.max(0, Math.ceil((endDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24)));
+      
+      let statusDisplay = '';
+      let colorClass = '';
+      
+      if (isExpired) {
+        statusDisplay = 'Expired';
+        colorClass = 'bg-red-100 text-red-800';
+      } else {
+        switch (subscription.status) {
+          case 'trial':
+            statusDisplay = 'Free Trial';
+            colorClass = 'bg-blue-100 text-blue-800';
+            break;
+          case 'active':
+            statusDisplay = 'Active';
+            colorClass = 'bg-green-100 text-green-800';
+            break;
+          case 'inactive':
+            statusDisplay = 'Inactive';
+            colorClass = 'bg-yellow-100 text-yellow-800';
+            break;
+          default:
+            statusDisplay = 'Unknown';
+            colorClass = 'bg-gray-100 text-gray-800';
+        }
+      }
+
+      res.json({
+        status: subscription.status,
+        statusDisplay,
+        daysLeft,
+        endDate: subscription.endDate,
+        plan: plan ? { name: plan.name, price: plan.price } : null,
+        color: colorClass
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch subscription status" });
+    }
+  });
+
   app.post("/api/subscribe", requireAuth, async (req: Request, res: Response) => {
     try {
       const userId = (req as any).userId;
