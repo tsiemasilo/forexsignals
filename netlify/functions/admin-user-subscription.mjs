@@ -21,23 +21,44 @@ export const handler = async (event, context) => {
     console.log('Method:', event.httpMethod);
     console.log('Body:', event.body);
 
-    if (event.httpMethod === 'PUT') {
+    if (event.httpMethod === 'PUT' || event.httpMethod === 'PATCH') {
       // Update user subscription status
       const body = JSON.parse(event.body || '{}');
-      const { status } = body;
+      const { status, planId } = body;
 
       console.log('Updating subscription status to:', status);
+      console.log('Plan ID:', planId);
 
       // In a real app, this would update the database
-      // For demo purposes, we'll return success
+      // For demo purposes, we'll return success with updated status
+      let planName = null;
+      let statusDisplay = status;
+      
+      if (status === 'trial') {
+        planName = 'Free Trial';
+        statusDisplay = 'Free Trial';
+      } else if (status === 'active' && planId) {
+        const plans = { 1: 'Basic Plan', 2: 'Premium Plan', 3: 'VIP Plan' };
+        planName = plans[planId] || 'Premium Plan';
+        statusDisplay = 'Active';
+      } else if (status === 'active') {
+        planName = 'Premium Plan';
+        statusDisplay = 'Active';
+      } else if (status === 'inactive') {
+        statusDisplay = 'Inactive';
+      } else if (status === 'expired') {
+        statusDisplay = 'Expired';
+      }
+
       const updatedUser = {
         id: parseInt(userId),
         email: userId === '3' ? 'almeerahlosper@gmail.com' : 
                userId === '2' ? 'tsiemasilo@gmail.com' : 'admin@forexsignals.com',
         subscription: {
           status: status,
-          plan: status === 'trial' ? 'Free Trial' :
-                status === 'active' ? 'Premium Plan' : null,
+          statusDisplay: statusDisplay,
+          plan: planName,
+          planId: planId || null,
           expiryDate: status === 'trial' || status === 'active' ? 
                      new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString() : 
                      null
