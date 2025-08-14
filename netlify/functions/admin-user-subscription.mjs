@@ -1,9 +1,10 @@
-// Global subscription state for demo purposes (in a real app this would be in database)
-let globalSubscriptionState = {
-  '1': { status: 'inactive', plan: null, planId: null, expiryDate: null, statusDisplay: 'No Subscription' },
-  '2': { status: 'inactive', plan: null, planId: null, expiryDate: null, statusDisplay: 'No Subscription' },
-  '3': { status: 'trial', plan: 'Free Trial', planId: null, expiryDate: '2025-08-28T13:42:41.604Z', statusDisplay: 'Free Trial' }
-};
+import { neonConfig, Pool } from '@neondatabase/serverless';
+import ws from 'ws';
+
+neonConfig.webSocketConstructor = ws;
+
+const DATABASE_URL = process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL;
+const pool = new Pool({ connectionString: DATABASE_URL });
 
 // Admin user subscription management API function
 export const handler = async (event, context) => {
@@ -36,49 +37,62 @@ export const handler = async (event, context) => {
       console.log('Updating subscription status to:', status);
       console.log('Plan ID:', planId);
 
-      // In a real app, this would update the database
-      // For demo purposes, we'll return success with updated status
-      let planName = null;
-      let statusDisplay = status;
-      
-      if (status === 'trial') {
-        planName = 'Free Trial';
-        statusDisplay = 'Free Trial';
-      } else if (status === 'active' && planId) {
-        const plans = { 1: 'Basic Plan', 2: 'Premium Plan', 3: 'VIP Plan' };
-        planName = plans[planId] || 'Premium Plan';
-        statusDisplay = 'Active';
-      } else if (status === 'active') {
-        planName = 'Premium Plan';
-        statusDisplay = 'Active';
-      } else if (status === 'inactive') {
-        statusDisplay = 'Inactive';
-      } else if (status === 'expired') {
-        statusDisplay = 'Expired';
+      // Get current planId first for non-active statuses
+      let finalPlanId = planId;
+      if (status !== 'active') {
+        const currentData = await pool.query(
+          'SELECT plan_id FROM subscriptions WHERE user_id = $1',
+          [parseInt(userId)]
+        );
+        finalPlanId = currentData.rows[0]?.plan_id || 2; // Default to Premium Plan if none exists
       }
 
-      // Update global state
-      globalSubscriptionState[userId] = {
-        status: status,
-        statusDisplay: statusDisplay,
-        plan: planName,
-        planId: planId || null,
-        expiryDate: status === 'trial' || status === 'active' ? 
-                   new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString() : 
-                   null
-      };
+      // Update the database using raw SQL for better compatibility
+      const updateResult = await pool.query(
+        `UPDATE subscriptions 
+         SET status = $1, plan_id = $2
+         WHERE user_id = $3`,
+        [status, finalPlanId, parseInt(userId)]
+      );
 
-      const updatedUser = {
-        id: parseInt(userId),
-        email: userId === '3' ? 'almeerahlosper@gmail.com' : 
-               userId === '2' ? 'tsiemasilo@gmail.com' : 'admin@forexsignals.com',
-        subscription: globalSubscriptionState[userId]
+      console.log('Database update result:', updateResult);
+
+      // Get updated user data using raw SQL
+      const userResult = await pool.query(
+        `SELECT u.id, u.email, u.first_name, u.last_name,
+                s.status, s.plan_id, s.start_date, s.end_date,
+                p.name as plan_name, p.price as plan_price
+         FROM users u
+         LEFT JOIN subscriptions s ON u.id = s.user_id
+         LEFT JOIN subscription_plans p ON s.plan_id = p.id
+         WHERE u.id = $1`,
+        [parseInt(userId)]
+      );
+
+      const user = userResult.rows[0];
+      console.log('Updated user data:', user);
+
+      const statusDisplay = status === 'trial' ? 'Free Trial' :
+                          status === 'active' ? 'Active' :
+                          status === 'inactive' ? 'Inactive' :
+                          status === 'expired' ? 'Expired' : 'Unknown';
+
+      const responseData = {
+        id: user.id,
+        email: user.email,
+        subscription: {
+          status: status,
+          statusDisplay: statusDisplay,
+          plan: user.plan_name || null,
+          planId: status === 'active' ? planId : null,
+          expiryDate: user.end_date
+        }
       };
 
       return {
         statusCode: 200,
         headers,
-        body: JSON.stringify(updatedUser)
+        body: JSON.stringify(responseData)
       };
     }
 
