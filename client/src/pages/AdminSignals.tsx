@@ -304,7 +304,9 @@ export default function AdminSignals() {
           </Card>
         ) : (
           <div className="space-y-6">
-            {signals.map((signal: any) => (
+            {signals
+              .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+              .map((signal: any) => (
               <Card key={signal.id}>
                 <CardHeader>
                   <div className="flex items-start justify-between">
