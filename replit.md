@@ -33,6 +33,7 @@ This is a full-stack e-commerce application for automotive parts built with a mo
 ## Changelog
 
 Changelog:
+- August 14, 2025. NETLIFY FRONTEND UPDATE NEEDED: Backend API correctly blocks inactive users, but frontend on Netlify has old signals page code - deployment required to show enhanced upgrade prompt instead of signals
 - August 14, 2025. SUBSCRIPTION ACCESS CONTROL ENHANCED: Improved upgrade messaging for inactive users with compelling UI, subscription blocking working perfectly as intended, enhanced signals page with premium features list and South African pricing
 - August 14, 2025. ADMIN SIGNALS 404 ISSUE DIAGNOSED: Root cause identified - non-admin users cannot access admin routes due to React router protection, created auth function and enhanced signals CRUD with PUT/DELETE methods, deployment ready
 - August 14, 2025. SUBSCRIPTION ACCESS CONTROL FIXED: Fixed frontend error handling to properly block expired users from viewing signals, improved subscription error detection to catch 403 responses, admin subscription function completely debugged and working
