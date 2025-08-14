@@ -32,14 +32,30 @@ export function SubscriptionStatusBadge() {
     return 'text-green-600';
   };
 
+  // Force explicit color classes for better CSS compilation
+  const getBadgeColorClass = () => {
+    switch (subscriptionStatus.status) {
+      case 'trial':
+        return 'bg-yellow-500 text-white';
+      case 'active':
+        return 'bg-green-500 text-white';
+      case 'expired':
+        return 'bg-red-500 text-white';
+      case 'inactive':
+        return 'bg-gray-500 text-white';
+      default:
+        return 'bg-gray-500 text-white';
+    }
+  };
+
   return (
     <div className="flex items-center gap-2">
-      <Badge className={`${subscriptionStatus.color} flex items-center text-xs`}>
+      <Badge className={`${getBadgeColorClass()} flex items-center text-xs font-medium`}>
         {getIcon()}
         {subscriptionStatus.statusDisplay}
       </Badge>
       {subscriptionStatus.status !== 'expired' && subscriptionStatus.status !== 'inactive' && subscriptionStatus.daysLeft > 0 && (
-        <span className={`text-xs font-medium text-white ${getDaysLeftColor()}`}>
+        <span className={`text-xs font-medium ${getDaysLeftColor()}`}>
           {subscriptionStatus.daysLeft} days left
         </span>
       )}
