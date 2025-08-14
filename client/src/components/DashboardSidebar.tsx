@@ -58,7 +58,7 @@ export default function DashboardSidebar() {
   const menuItems = user?.isAdmin ? adminMenuItems : customerMenuItems;
 
   return (
-    <div className="h-screen bg-gray-800 w-64 fixed left-0 top-0 z-40 flex flex-col border-r-2 border-red-500">
+    <div className="h-screen bg-gray-800 w-64 fixed left-0 top-0 z-40 flex flex-col">
       {/* Logo/Brand */}
       <div className="p-6 border-b border-gray-700">
         <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
