@@ -112,23 +112,23 @@ export default function Signals() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 py-8">
-      <div className="max-w-4xl mx-auto px-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 py-4 md:py-8" style={{ zoom: window.innerWidth >= 768 ? '75%' : '85%' }}>
+      <div className="max-w-4xl mx-auto px-2 sm:px-4">
 
 
         <div className="flex justify-center">
           {/* Phone Mockup */}
           <div className="relative">
             {/* Phone Frame */}
-            <div className="w-80 h-[640px] bg-black rounded-[3rem] p-2 shadow-2xl">
+            <div className="w-72 sm:w-80 h-[580px] sm:h-[640px] bg-black rounded-[2.5rem] sm:rounded-[3rem] p-1.5 sm:p-2 shadow-2xl">
               {/* Phone Screen */}
-              <div className="w-full h-full bg-white rounded-[2.5rem] relative overflow-hidden">
+              <div className="w-full h-full bg-white rounded-[2rem] sm:rounded-[2.5rem] relative overflow-hidden">
                 {/* Phone Notch */}
-                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-24 h-6 bg-black rounded-b-2xl z-10"></div>
+                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-20 sm:w-24 h-5 sm:h-6 bg-black rounded-b-2xl z-10"></div>
                 
                 {/* Status Bar */}
-                <div className="flex justify-between items-center px-6 pt-8 pb-2 bg-slate-50">
-                  <span className="text-sm font-medium text-slate-900">9:41</span>
+                <div className="flex justify-between items-center px-4 sm:px-6 pt-6 sm:pt-8 pb-2 bg-slate-50">
+                  <span className="text-xs sm:text-sm font-medium text-slate-900">9:41</span>
                   <div className="flex items-center space-x-1">
                     <div className="w-4 h-2 bg-slate-900 rounded-sm"></div>
                     <div className="w-1 h-2 bg-slate-900 rounded-sm"></div>
@@ -139,35 +139,35 @@ export default function Signals() {
                 </div>
 
                 {/* Notifications Header */}
-                <div className="px-6 py-4 border-b border-slate-200">
-                  <h2 className="text-lg font-semibold text-slate-900 flex items-center">
-                    <Bell className="w-5 h-5 mr-2 text-blue-600" />
+                <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-slate-200">
+                  <h2 className="text-base sm:text-lg font-semibold text-slate-900 flex items-center">
+                    <Bell className="w-4 sm:w-5 h-4 sm:h-5 mr-2 text-blue-600" />
                     Live nas100 Trading Signals
                   </h2>
                 </div>
 
                 {/* Signals Notifications */}
-                <div className="flex-1 overflow-y-auto max-h-[480px]">
+                <div className="flex-1 overflow-y-auto max-h-[420px] sm:max-h-[480px]">
                   {signals.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-96 text-center px-6">
-                      <Bell className="w-16 h-16 text-slate-300 mb-4" />
-                      <h3 className="text-lg font-medium text-slate-600 mb-2">No New Signals</h3>
-                      <p className="text-sm text-slate-500">
+                    <div className="flex flex-col items-center justify-center h-80 sm:h-96 text-center px-4 sm:px-6">
+                      <Bell className="w-12 sm:w-16 h-12 sm:h-16 text-slate-300 mb-4" />
+                      <h3 className="text-base sm:text-lg font-medium text-slate-600 mb-2">No New Signals</h3>
+                      <p className="text-xs sm:text-sm text-slate-500">
                         New trading signals will appear here
                       </p>
                     </div>
                   ) : (
                     <div className="space-y-1">
                       {signals.map((signal: any) => (
-                        <div key={signal.id} className="mx-4 my-2 bg-white border border-slate-200 rounded-xl shadow-sm">
+                        <div key={signal.id} className="mx-2 sm:mx-4 my-1 sm:my-2 bg-white border border-slate-200 rounded-xl shadow-sm">
                           {/* Notification Header */}
-                          <div className="flex items-center px-4 py-3 border-b border-slate-100">
-                            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center mr-3">
-                              <TrendingUp className="w-4 h-4 text-white" />
+                          <div className="flex items-center px-3 sm:px-4 py-2 sm:py-3 border-b border-slate-100">
+                            <div className="w-6 sm:w-8 h-6 sm:h-8 bg-blue-600 rounded-full flex items-center justify-center mr-2 sm:mr-3">
+                              <TrendingUp className="w-3 sm:w-4 h-3 sm:h-4 text-white" />
                             </div>
                             <div className="flex-1">
                               <div className="flex items-center justify-between">
-                                <span className="text-sm font-medium text-slate-900">NAS100 Pro Signals</span>
+                                <span className="text-xs sm:text-sm font-medium text-slate-900">NAS100 Pro Signals</span>
                                 <span className="text-xs text-slate-500">
                                   {new Date(signal.createdAt).toLocaleTimeString('en-US', { 
                                     hour: '2-digit', 
@@ -180,9 +180,9 @@ export default function Signals() {
                           </div>
                           
                           {/* Notification Content */}
-                          <div className="px-4 py-3">
-                            <div className="flex items-center justify-between mb-2">
-                              <h3 className="font-semibold text-slate-900 text-sm">{signal.title}</h3>
+                          <div className="px-3 sm:px-4 py-2 sm:py-3">
+                            <div className="flex items-center justify-between mb-1 sm:mb-2">
+                              <h3 className="font-semibold text-slate-900 text-xs sm:text-sm">{signal.title}</h3>
                               <Badge className={`text-xs ${getTradeActionColor(signal.tradeAction)}`}>
                                 {signal.tradeAction.toUpperCase()}
                               </Badge>
@@ -192,16 +192,16 @@ export default function Signals() {
                             </p>
                             
                             {/* Quick Action Icons */}
-                            <div className="flex items-center justify-between mt-3 pt-2 border-t border-slate-100">
-                              <div className="flex items-center space-x-4">
+                            <div className="flex items-center justify-between mt-2 sm:mt-3 pt-2 border-t border-slate-100">
+                              <div className="flex items-center space-x-2 sm:space-x-4">
                                 {getTradeActionIcon(signal.tradeAction)}
-                                <span className="text-xs text-slate-500">Tap to view details</span>
+                                <span className="text-xs text-slate-500 hidden sm:inline">Tap to view details</span>
                               </div>
-                              <div className="flex space-x-2">
-                                <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center">
+                              <div className="flex space-x-1 sm:space-x-2">
+                                <div className="w-5 sm:w-6 h-5 sm:h-6 rounded-full bg-slate-100 flex items-center justify-center">
                                   <span className="text-xs">💰</span>
                                 </div>
-                                <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center">
+                                <div className="w-5 sm:w-6 h-5 sm:h-6 rounded-full bg-slate-100 flex items-center justify-center">
                                   <span className="text-xs">📊</span>
                                 </div>
                               </div>
@@ -214,14 +214,14 @@ export default function Signals() {
                 </div>
 
                 {/* Home Indicator */}
-                <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-slate-900 rounded-full"></div>
+                <div className="absolute bottom-1.5 sm:bottom-2 left-1/2 transform -translate-x-1/2 w-24 sm:w-32 h-1 bg-slate-900 rounded-full"></div>
               </div>
             </div>
             
             {/* Phone Side Buttons */}
-            <div className="absolute right-0 top-20 w-1 h-12 bg-slate-700 rounded-l-lg"></div>
-            <div className="absolute right-0 top-36 w-1 h-8 bg-slate-700 rounded-l-lg"></div>
-            <div className="absolute right-0 top-48 w-1 h-8 bg-slate-700 rounded-l-lg"></div>
+            <div className="absolute right-0 top-16 sm:top-20 w-0.5 sm:w-1 h-10 sm:h-12 bg-slate-700 rounded-l-lg"></div>
+            <div className="absolute right-0 top-32 sm:top-36 w-0.5 sm:w-1 h-6 sm:h-8 bg-slate-700 rounded-l-lg"></div>
+            <div className="absolute right-0 top-42 sm:top-48 w-0.5 sm:w-1 h-6 sm:h-8 bg-slate-700 rounded-l-lg"></div>
           </div>
         </div>
 
