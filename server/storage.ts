@@ -259,6 +259,28 @@ export class MemStorage implements IStorage {
     return subscription;
   }
 
+  async updateUserSubscriptionWithPlan(userId: number, status: string, planId?: number): Promise<Subscription | undefined> {
+    const subscription = Array.from(this.subscriptions.values())
+      .find(sub => sub.userId === userId);
+    if (!subscription) return undefined;
+
+    subscription.status = status;
+    
+    if (planId && status === "active") {
+      const plan = await this.getPlan(planId);
+      if (plan) {
+        subscription.planId = planId;
+        // Reset the subscription duration based on the new plan
+        const newEndDate = new Date();
+        newEndDate.setDate(newEndDate.getDate() + plan.duration);
+        subscription.endDate = newEndDate;
+        subscription.startDate = new Date();
+      }
+    }
+    
+    return subscription;
+  }
+
   async getAllSubscriptions(): Promise<Subscription[]> {
     return Array.from(this.subscriptions.values());
   }

@@ -397,13 +397,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch("/api/admin/users/:userId/subscription", requireAuth, requireAdmin, async (req: Request, res: Response) => {
     try {
       const userId = parseInt(req.params.userId);
-      const { status } = req.body;
+      const { status, planId } = req.body;
 
       if (!["active", "inactive", "expired", "trial"].includes(status)) {
         return res.status(400).json({ message: "Invalid status" });
       }
 
-      const subscription = await storage.updateUserSubscriptionStatus(userId, status);
+      let subscription;
+      if (planId && status === "active") {
+        subscription = await storage.updateUserSubscriptionWithPlan(userId, status, planId);
+      } else {
+        subscription = await storage.updateUserSubscriptionStatus(userId, status);
+      }
+
       if (!subscription) {
         return res.status(404).json({ message: "User subscription not found" });
       }

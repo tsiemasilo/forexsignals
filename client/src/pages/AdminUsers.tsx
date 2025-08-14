@@ -23,9 +23,14 @@ export default function AdminUsers() {
     }
   });
 
+  const { data: plans = [] } = useQuery<any[]>({
+    queryKey: ['/api/plans'],
+    enabled: !!sessionId
+  });
+
   const updateSubscriptionMutation = useMutation({
-    mutationFn: async ({ userId, status }: { userId: number; status: string }) => {
-      return await apiRequest('PATCH', `/api/admin/users/${userId}/subscription`, { status });
+    mutationFn: async ({ userId, status, planId }: { userId: number; status: string; planId?: number }) => {
+      return await apiRequest('PATCH', `/api/admin/users/${userId}/subscription`, { status, planId });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
@@ -107,8 +112,8 @@ export default function AdminUsers() {
     };
   };
 
-  const handleStatusChange = (userId: number, newStatus: string) => {
-    updateSubscriptionMutation.mutate({ userId, status: newStatus });
+  const handleStatusChange = (userId: number, newStatus: string, planId?: number) => {
+    updateSubscriptionMutation.mutate({ userId, status: newStatus, planId });
   };
 
   if (isLoading) {
@@ -240,21 +245,45 @@ export default function AdminUsers() {
                           </TableCell>
                           <TableCell>
                             {user.subscription ? (
-                              <Select 
-                                value={subscriptionInfo.rawStatus} 
-                                onValueChange={(value) => handleStatusChange(user.id, value)}
-                                disabled={updateSubscriptionMutation.isPending}
-                              >
-                                <SelectTrigger className="w-[130px]">
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="trial">Free Trial</SelectItem>
-                                  <SelectItem value="active">Active</SelectItem>
-                                  <SelectItem value="inactive">Inactive</SelectItem>
-                                  <SelectItem value="expired">Expired</SelectItem>
-                                </SelectContent>
-                              </Select>
+                              <div className="space-y-2">
+                                <Select 
+                                  value={subscriptionInfo.rawStatus} 
+                                  onValueChange={(value) => {
+                                    if (value !== "active") {
+                                      handleStatusChange(user.id, value);
+                                    }
+                                  }}
+                                  disabled={updateSubscriptionMutation.isPending}
+                                >
+                                  <SelectTrigger className="w-[130px]">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="trial">Free Trial</SelectItem>
+                                    <SelectItem value="inactive">Inactive</SelectItem>
+                                    <SelectItem value="expired">Expired</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                
+                                {/* Active Plan Selection */}
+                                <Select 
+                                  onValueChange={(planId) => {
+                                    handleStatusChange(user.id, "active", parseInt(planId));
+                                  }}
+                                  disabled={updateSubscriptionMutation.isPending}
+                                >
+                                  <SelectTrigger className="w-[150px]">
+                                    <SelectValue placeholder="Set Active Plan" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {plans.map((plan: any) => (
+                                      <SelectItem key={plan.id} value={plan.id.toString()}>
+                                        Active - {plan.name}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
                             ) : (
                               <span className="text-gray-400 text-sm">No subscription</span>
                             )}
