@@ -1,3 +1,10 @@
+// Global subscription state for demo purposes (in a real app this would be in database)
+let globalSubscriptionState = {
+  '1': { status: 'inactive', plan: null, planId: null, expiryDate: null, statusDisplay: 'No Subscription' },
+  '2': { status: 'inactive', plan: null, planId: null, expiryDate: null, statusDisplay: 'No Subscription' },
+  '3': { status: 'trial', plan: 'Free Trial', planId: null, expiryDate: '2025-08-28T13:42:41.604Z', statusDisplay: 'Free Trial' }
+};
+
 // Admin user subscription management API function
 export const handler = async (event, context) => {
   const headers = {
@@ -50,19 +57,22 @@ export const handler = async (event, context) => {
         statusDisplay = 'Expired';
       }
 
+      // Update global state
+      globalSubscriptionState[userId] = {
+        status: status,
+        statusDisplay: statusDisplay,
+        plan: planName,
+        planId: planId || null,
+        expiryDate: status === 'trial' || status === 'active' ? 
+                   new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString() : 
+                   null
+      };
+
       const updatedUser = {
         id: parseInt(userId),
         email: userId === '3' ? 'almeerahlosper@gmail.com' : 
                userId === '2' ? 'tsiemasilo@gmail.com' : 'admin@forexsignals.com',
-        subscription: {
-          status: status,
-          statusDisplay: statusDisplay,
-          plan: planName,
-          planId: planId || null,
-          expiryDate: status === 'trial' || status === 'active' ? 
-                     new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString() : 
-                     null
-        }
+        subscription: globalSubscriptionState[userId]
       };
 
       return {

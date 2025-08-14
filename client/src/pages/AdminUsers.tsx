@@ -34,6 +34,7 @@ export default function AdminUsers() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/user/subscription-status'] });
       toast({
         title: "Success",
         description: "User subscription status updated successfully",

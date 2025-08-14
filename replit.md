@@ -108,7 +108,7 @@ This is a full-stack e-commerce application for automotive parts built with a mo
 ## Changelog
 
 Changelog:
-- August 14, 2025. Fixed admin subscription management 405 errors - added admin-user-subscription endpoint, logout function, and placeholder image API for complete functionality
+- August 14, 2025. Fixed subscription badge synchronization - admin dropdown changes now properly refresh user subscription badges with cache invalidation and real-time status updates
 - August 14, 2025. Fixed Netlify function ES module compatibility and 502 Bad Gateway errors - converted server function to proper ES modules (.mjs) with comprehensive error handling
 - August 14, 2025. Fixed session store database connection to use NETLIFY_DATABASE_URL - ensures consistent database connectivity across all platform components
 - August 14, 2025. Updated database configuration for Netlify deployment - supports both NETLIFY_DATABASE_URL and DATABASE_URL environment variables for seamless deployment across platforms
