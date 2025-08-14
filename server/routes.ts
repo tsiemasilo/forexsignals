@@ -103,6 +103,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const user = await storage.createUser(validatedData);
       console.log('User created:', user.id, user.email);
+
+      // Create 7-day free trial subscription for new user
+      try {
+        const trialEndDate = new Date();
+        trialEndDate.setDate(trialEndDate.getDate() + 7);
+        
+        await storage.createSubscription({
+          userId: user.id,
+          planId: 1, // Use Basic Plan for trial (could be a dedicated trial plan)
+          status: "trial",
+          startDate: new Date(),
+          endDate: trialEndDate
+        });
+        console.log('7-day trial subscription created for user:', user.id);
+      } catch (trialError) {
+        console.error('Failed to create trial subscription:', trialError);
+      }
       
       res.json({
         id: user.id,
@@ -294,6 +311,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Admin endpoints
   app.get("/api/admin/users", requireAuth, requireAdmin, async (req: Request, res: Response) => {
+    try {
+      const users = await storage.getAllUsersWithSubscriptions();
+      res.json(users);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch users" });
+    }
+  });
+
+  // Admin route to update user subscription status
+  app.patch("/api/admin/users/:userId/subscription", requireAuth, requireAdmin, async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const { status } = req.body;
+
+      if (!["active", "inactive", "expired", "trial"].includes(status)) {
+        return res.status(400).json({ message: "Invalid status" });
+      }
+
+      const subscription = await storage.updateUserSubscriptionStatus(userId, status);
+      if (!subscription) {
+        return res.status(404).json({ message: "User subscription not found" });
+      }
+
+      res.json({ message: "Subscription status updated successfully", subscription });
+    } catch (error) {
+      console.error('Admin subscription update error:', error);
+      res.status(500).json({ message: "Failed to update subscription status" });
+    }
+  });
+
+  // Keep the old implementation as backup
+  app.get("/api/admin/users-detailed", requireAuth, requireAdmin, async (req: Request, res: Response) => {
     try {
       const users = await storage.getAllUsers();
       const subscriptions = await storage.getAllSubscriptions();

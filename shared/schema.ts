@@ -73,7 +73,7 @@ export const subscriptions = pgTable("subscriptions", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   userId: integer("user_id").references(() => users.id).notNull(),
   planId: integer("plan_id").references(() => subscriptionPlans.id).notNull(),
-  status: varchar("status", { length: 20 }).notNull().default("active"), // active, inactive, expired
+  status: varchar("status", { length: 20 }).notNull().default("active"), // active, inactive, expired, trial
   startDate: timestamp("start_date").defaultNow(),
   endDate: timestamp("end_date").notNull(),
   createdAt: timestamp("created_at").defaultNow(),

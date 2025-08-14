@@ -1,11 +1,17 @@
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { useQuery } from '@tanstack/react-query';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
+import { apiRequest } from '@/lib/queryClient';
 
 export default function AdminUsers() {
   const { sessionId } = useAuth();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const { data: users = [], isLoading } = useQuery<any[]>({
     queryKey: ['/api/admin/users'],
@@ -15,6 +21,26 @@ export default function AdminUsers() {
         Authorization: `Bearer ${sessionId}`
       }
     }
+  });
+
+  const updateSubscriptionMutation = useMutation({
+    mutationFn: async ({ userId, status }: { userId: number; status: string }) => {
+      return await apiRequest('PATCH', `/api/admin/users/${userId}/subscription`, { status });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
+      toast({
+        title: "Success",
+        description: "User subscription status updated successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update subscription status",
+        variant: "destructive",
+      });
+    },
   });
 
   const formatDate = (dateString: string) => {
@@ -27,20 +53,62 @@ export default function AdminUsers() {
 
   const getSubscriptionStatus = (user: any) => {
     if (!user.subscription) {
-      return { status: 'None', color: 'bg-gray-100 text-gray-800', plan: 'Free' };
+      return { 
+        status: 'No Subscription', 
+        color: 'bg-gray-100 text-gray-800', 
+        plan: 'None',
+        daysLeft: 0,
+        rawStatus: 'none'
+      };
     }
 
-    const isExpired = new Date() > new Date(user.subscription.endDate);
+    const endDate = new Date(user.subscription.endDate);
+    const currentDate = new Date();
+    const isExpired = currentDate > endDate;
+    const daysLeft = Math.max(0, Math.ceil((endDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24)));
     
     if (isExpired) {
-      return { status: 'Expired', color: 'bg-red-100 text-red-800', plan: user.subscription.plan?.name || 'Unknown' };
+      return { 
+        status: 'Expired', 
+        color: 'bg-red-100 text-red-800', 
+        plan: user.subscription.plan?.name || 'Unknown',
+        daysLeft: 0,
+        rawStatus: user.subscription.status
+      };
+    }
+
+    let statusDisplay = '';
+    let colorClass = '';
+    
+    switch (user.subscription.status) {
+      case 'trial':
+        statusDisplay = 'Free Trial';
+        colorClass = 'bg-blue-100 text-blue-800';
+        break;
+      case 'active':
+        statusDisplay = 'Active';
+        colorClass = 'bg-green-100 text-green-800';
+        break;
+      case 'inactive':
+        statusDisplay = 'Inactive';
+        colorClass = 'bg-yellow-100 text-yellow-800';
+        break;
+      default:
+        statusDisplay = 'Unknown';
+        colorClass = 'bg-gray-100 text-gray-800';
     }
 
     return {
-      status: user.subscription.status === 'active' ? 'Active' : 'Inactive',
-      color: user.subscription.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800',
-      plan: user.subscription.plan?.name || 'Unknown'
+      status: statusDisplay,
+      color: colorClass,
+      plan: user.subscription.plan?.name || 'Unknown',
+      daysLeft,
+      rawStatus: user.subscription.status
     };
+  };
+
+  const handleStatusChange = (userId: number, newStatus: string) => {
+    updateSubscriptionMutation.mutate({ userId, status: newStatus });
   };
 
   if (isLoading) {
@@ -129,11 +197,12 @@ export default function AdminUsers() {
                     <TableRow>
                       <TableHead>User</TableHead>
                       <TableHead>Email</TableHead>
-                      <TableHead>Registration Date</TableHead>
-                      <TableHead>Plan</TableHead>
                       <TableHead>Status</TableHead>
+                      <TableHead>Plan</TableHead>
+                      <TableHead>Days Left</TableHead>
                       <TableHead>Expiry Date</TableHead>
-                      <TableHead>Revenue</TableHead>
+                      <TableHead>Manage Status</TableHead>
+                      <TableHead>Joined</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -151,23 +220,46 @@ export default function AdminUsers() {
                             </div>
                           </TableCell>
                           <TableCell>{user.email}</TableCell>
-                          <TableCell>{formatDate(user.createdAt)}</TableCell>
-                          <TableCell>
-                            <span className="font-medium">{subscriptionInfo.plan}</span>
-                          </TableCell>
                           <TableCell>
                             <Badge className={subscriptionInfo.color}>
                               {subscriptionInfo.status}
                             </Badge>
                           </TableCell>
                           <TableCell>
+                            <span className="font-medium">{subscriptionInfo.plan}</span>
+                          </TableCell>
+                          <TableCell>
+                            <span className={`font-medium ${subscriptionInfo.daysLeft <= 3 && subscriptionInfo.daysLeft > 0 ? 'text-red-600' : 
+                              subscriptionInfo.daysLeft <= 7 && subscriptionInfo.daysLeft > 3 ? 'text-yellow-600' : 'text-green-600'}`}>
+                              {subscriptionInfo.daysLeft > 0 ? `${subscriptionInfo.daysLeft} days` : 
+                               subscriptionInfo.status === 'No Subscription' ? '-' : 'Expired'}
+                            </span>
+                          </TableCell>
+                          <TableCell>
                             {user.subscription ? formatDate(user.subscription.endDate) : '-'}
                           </TableCell>
                           <TableCell>
-                            {user.subscription && user.subscription.plan ? 
-                              `R${user.subscription.plan.price}` : 'R0.00'
-                            }
+                            {user.subscription ? (
+                              <Select 
+                                value={subscriptionInfo.rawStatus} 
+                                onValueChange={(value) => handleStatusChange(user.id, value)}
+                                disabled={updateSubscriptionMutation.isPending}
+                              >
+                                <SelectTrigger className="w-[130px]">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="trial">Free Trial</SelectItem>
+                                  <SelectItem value="active">Active</SelectItem>
+                                  <SelectItem value="inactive">Inactive</SelectItem>
+                                  <SelectItem value="expired">Expired</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            ) : (
+                              <span className="text-gray-400 text-sm">No subscription</span>
+                            )}
                           </TableCell>
+                          <TableCell>{formatDate(user.createdAt)}</TableCell>
                         </TableRow>
                       );
                     })}

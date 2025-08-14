@@ -108,6 +108,10 @@ This is a full-stack e-commerce application for automotive parts built with a mo
 ## Changelog
 
 Changelog:
+- August 14, 2025. Enhanced admin dashboard with comprehensive user subscription management - shows current status (Trial/Active/Inactive/Expired), remaining days with color coding, and allows status changes via dropdown
+- August 14, 2025. Implemented automatic 7-day free trial for new user registrations - all new users now receive trial subscription upon signup
+- August 14, 2025. Fixed payment gateway redirect behavior - both Yoco and Ozow now open in new tabs instead of replacing current page
+- August 14, 2025. Added payment callback routes (/payment/success, /payment/cancel, /payment/error) with proper toast notifications to resolve payment page freezing issues
 - August 13, 2025. Fixed Ozow payment integration DNS issue - switched from UAT server (uat.ozow.com) to production server (pay.ozow.com) due to UAT server being inaccessible
 - August 13, 2025. Resolved Ozow HashCheck signature validation by correcting field order and concatenation logic
 - August 13, 2025. Implemented PostgreSQL database storage to replace in-memory storage, ensuring persistent user accounts and sessions

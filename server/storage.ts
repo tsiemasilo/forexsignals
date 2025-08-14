@@ -12,6 +12,7 @@ export interface IStorage {
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   getAllUsers(): Promise<User[]>;
+  getAllUsersWithSubscriptions(): Promise<any[]>;
 
   // Subscription Plans
   getAllPlans(): Promise<SubscriptionPlan[]>;
@@ -22,6 +23,7 @@ export interface IStorage {
   getUserSubscription(userId: number): Promise<Subscription | undefined>;
   createSubscription(subscription: InsertSubscription): Promise<Subscription>;
   updateSubscriptionStatus(id: number, status: string): Promise<Subscription | undefined>;
+  updateUserSubscriptionStatus(userId: number, status: string): Promise<Subscription | undefined>;
   getAllSubscriptions(): Promise<Subscription[]>;
 
   // Forex Signals
@@ -172,6 +174,31 @@ export class MemStorage implements IStorage {
     return Array.from(this.users.values()).filter(user => !user.isAdmin);
   }
 
+  async getAllUsersWithSubscriptions(): Promise<any[]> {
+    const allUsers = Array.from(this.users.values()).filter(user => !user.isAdmin);
+    return allUsers.map(user => {
+      const subscription = Array.from(this.subscriptions.values())
+        .find(sub => sub.userId === user.id);
+      
+      let subscriptionData = null;
+      if (subscription) {
+        const plan = this.subscriptionPlans.get(subscription.planId);
+        subscriptionData = {
+          id: subscription.id,
+          status: subscription.status,
+          startDate: subscription.startDate,
+          endDate: subscription.endDate,
+          plan: plan ? { id: plan.id, name: plan.name, price: plan.price } : null
+        };
+      }
+      
+      return {
+        ...user,
+        subscription: subscriptionData
+      };
+    });
+  }
+
   // Subscription Plans
   async getAllPlans(): Promise<SubscriptionPlan[]> {
     return Array.from(this.subscriptionPlans.values());
@@ -211,6 +238,15 @@ export class MemStorage implements IStorage {
 
   async updateSubscriptionStatus(id: number, status: string): Promise<Subscription | undefined> {
     const subscription = this.subscriptions.get(id);
+    if (!subscription) return undefined;
+
+    subscription.status = status;
+    return subscription;
+  }
+
+  async updateUserSubscriptionStatus(userId: number, status: string): Promise<Subscription | undefined> {
+    const subscription = Array.from(this.subscriptions.values())
+      .find(sub => sub.userId === userId);
     if (!subscription) return undefined;
 
     subscription.status = status;
@@ -284,6 +320,34 @@ export class DatabaseStorage implements IStorage {
     return allUsers;
   }
 
+  async getAllUsersWithSubscriptions(): Promise<any[]> {
+    const allUsers = await db.select({
+      id: users.id,
+      email: users.email,
+      firstName: users.firstName,
+      lastName: users.lastName,
+      isAdmin: users.isAdmin,
+      createdAt: users.createdAt,
+      subscription: {
+        id: subscriptions.id,
+        status: subscriptions.status,
+        startDate: subscriptions.startDate,
+        endDate: subscriptions.endDate,
+        plan: {
+          id: subscriptionPlans.id,
+          name: subscriptionPlans.name,
+          price: subscriptionPlans.price
+        }
+      }
+    })
+    .from(users)
+    .leftJoin(subscriptions, eq(users.id, subscriptions.userId))
+    .leftJoin(subscriptionPlans, eq(subscriptions.planId, subscriptionPlans.id))
+    .where(eq(users.isAdmin, false));
+    
+    return allUsers;
+  }
+
   // Subscription Plans
   async getAllPlans(): Promise<SubscriptionPlan[]> {
     return await db.select().from(subscriptionPlans);
@@ -315,6 +379,14 @@ export class DatabaseStorage implements IStorage {
     const [subscription] = await db.update(subscriptions)
       .set({ status })
       .where(eq(subscriptions.id, id))
+      .returning();
+    return subscription || undefined;
+  }
+
+  async updateUserSubscriptionStatus(userId: number, status: string): Promise<Subscription | undefined> {
+    const [subscription] = await db.update(subscriptions)
+      .set({ status })
+      .where(eq(subscriptions.userId, userId))
       .returning();
     return subscription || undefined;
   }
