@@ -44,4 +44,4 @@ Changelog:
 Preferred communication style: Simple, everyday language.
 Design preference: One-page poster-style layouts with bold visual impact.
 GitHub repository: https://github.com/tsiemasilo/forexsignals.git
-GitHub token: [SECURED]
+GitHub token: [SECURED - Updated August 14, 2025]
