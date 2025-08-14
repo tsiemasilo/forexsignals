@@ -1,11 +1,8 @@
-import { neonConfig, Pool } from '@neondatabase/serverless';
-import ws from 'ws';
+import { neon } from '@neondatabase/serverless';
 
-neonConfig.useSecureWebSocket = false;
-neonConfig.pipelineConnect = false;
-
+// Use direct HTTP connection instead of pooling for Netlify
 const DATABASE_URL = process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
-const pool = new Pool({ connectionString: DATABASE_URL });
+const sql = neon(DATABASE_URL);
 
 // User subscription status API function
 export const handler = async (event, context) => {
@@ -45,17 +42,17 @@ export const handler = async (event, context) => {
     }
 
     // Get current subscription status from database
-    const result = await pool.query(`
+    const result = await sql`
       SELECT u.id, u.email, u.first_name, u.last_name,
              s.status, s.plan_id, s.start_date, s.end_date,
              p.name as plan_name, p.price as plan_price, p.duration
       FROM users u
       LEFT JOIN subscriptions s ON u.id = s.user_id
       LEFT JOIN subscription_plans p ON s.plan_id = p.id
-      WHERE u.id = $1
-    `, [userId]);
+      WHERE u.id = ${userId}
+    `;
 
-    const userRow = result.rows[0];
+    const userRow = result[0];
     if (!userRow) {
       throw new Error('User not found');
     }

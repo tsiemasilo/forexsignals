@@ -120,11 +120,11 @@ export const handler = async (event, context) => {
       // Store session in database  
       const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
       await sql`
-        INSERT INTO sessions (session_id, user_id, expires_at)
-        VALUES (${sessionId}, ${userInfo.id}, ${expiresAt})
-        ON CONFLICT (session_id) DO UPDATE SET
-          user_id = ${userInfo.id},
-          expires_at = ${expiresAt}
+        INSERT INTO sessions (sid, sess, expire)
+        VALUES (${sessionId}, ${JSON.stringify({ user: userInfo })}, ${expiresAt})
+        ON CONFLICT (sid) DO UPDATE SET
+          sess = ${JSON.stringify({ user: userInfo })},
+          expire = ${expiresAt}
       `;
 
       return {

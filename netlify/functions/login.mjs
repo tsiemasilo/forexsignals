@@ -1,4 +1,4 @@
-import { neonConfig, Pool } from '@neondatabase/serverless';
+import { neon } from '@neondatabase/serverless';
 
 // Simple password validation without bcryptjs dependency
 const validatePassword = (inputPassword, storedPassword) => {
@@ -7,15 +7,9 @@ const validatePassword = (inputPassword, storedPassword) => {
   return inputPassword === storedPassword || inputPassword === 'admin123';
 };
 
-// Configure Neon for serverless environment
-neonConfig.useSecureWebSocket = false;
-neonConfig.pipelineConnect = false;
-
+// Use direct HTTP connection instead of pooling for Netlify
 const DATABASE_URL = process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
-const pool = new Pool({ 
-  connectionString: DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
-});
+const sql = neon(DATABASE_URL);
 
 export const handler = async (event, context) => {
   const headers = {
@@ -50,14 +44,13 @@ export const handler = async (event, context) => {
     }
 
     // Find user by email
-    const userQuery = `
+    const userResult = await sql`
       SELECT id, email, first_name, last_name, password_hash, is_admin
       FROM users 
-      WHERE email = $1
+      WHERE email = ${email}
     `;
-    const userResult = await pool.query(userQuery, [email]);
 
-    if (userResult.rows.length === 0) {
+    if (userResult.length === 0) {
       return {
         statusCode: 401,
         headers,
@@ -65,7 +58,7 @@ export const handler = async (event, context) => {
       };
     }
 
-    const user = userResult.rows[0];
+    const user = userResult[0];
 
     // Simple password validation for Netlify deployment
     const isValidPassword = validatePassword(password, user.password_hash);
@@ -83,15 +76,14 @@ export const handler = async (event, context) => {
                      Math.random().toString(36).substring(2, 15);
 
     // Store session in database
-    const sessionQuery = `
-      INSERT INTO sessions (session_id, user_id, expires_at)
-      VALUES ($1, $2, $3)
-      ON CONFLICT (session_id) DO UPDATE SET
-        user_id = $2,
-        expires_at = $3
-    `;
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
-    await pool.query(sessionQuery, [sessionId, user.id, expiresAt]);
+    await sql`
+      INSERT INTO sessions (sid, sess, expire)
+      VALUES (${sessionId}, ${JSON.stringify({ user: { id: user.id, email: user.email, firstName: user.first_name, lastName: user.last_name, isAdmin: user.is_admin } })}, ${expiresAt})
+      ON CONFLICT (sid) DO UPDATE SET
+        sess = ${JSON.stringify({ user: { id: user.id, email: user.email, firstName: user.first_name, lastName: user.last_name, isAdmin: user.is_admin } })},
+        expire = ${expiresAt}
+    `;
 
     return {
       statusCode: 200,
