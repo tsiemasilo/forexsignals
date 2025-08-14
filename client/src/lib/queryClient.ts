@@ -9,13 +9,7 @@ async function throwIfResNotOk(res: Response) {
 
 // API base URL configuration
 const getApiUrl = (url: string) => {
-  // If running on Netlify, use Replit API URL  
-  if (window.location.hostname === 'watchlistfx.netlify.app') {
-    // TODO: Replace with your actual Replit app URL
-    // Example: return `https://forexsignals-app.replit.app${url}`;
-    return `https://your-replit-app.replit.app${url}`;
-  }
-  // Otherwise use relative URL for development
+  // For Netlify functions, keep API routing as-is since netlify.toml handles redirects
   return url;
 };
 
