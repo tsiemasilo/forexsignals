@@ -20,7 +20,13 @@ export default function AdminSignals() {
 
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingSignal, setEditingSignal] = useState<any>(null);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    title: string;
+    content: string;
+    tradeAction: string;
+    imageUrl: string;
+    imageUrls: string[];
+  }>({
     title: '',
     content: '',
     tradeAction: '',

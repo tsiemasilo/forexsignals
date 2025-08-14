@@ -327,6 +327,7 @@ export class MemStorage implements IStorage {
       ...insertSignal, 
       id, 
       imageUrl: insertSignal.imageUrl || null,
+      imageUrls: insertSignal.imageUrls || null,
       isActive: insertSignal.isActive || true,
       createdAt: new Date(),
       updatedAt: new Date(),

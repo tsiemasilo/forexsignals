@@ -21,7 +21,9 @@ export default function SignalDetails() {
     }
   });
 
-  const getTradeActionIcon = (action: string) => {
+  const getTradeActionIcon = (action: string | undefined) => {
+    if (!action) return <TrendingUp className="w-6 h-6 text-blue-600" />;
+    
     switch (action.toLowerCase()) {
       case 'buy':
         return <TrendingUp className="w-6 h-6 text-green-600" />;
@@ -36,7 +38,9 @@ export default function SignalDetails() {
     }
   };
 
-  const getTradeActionColor = (action: string) => {
+  const getTradeActionColor = (action: string | undefined) => {
+    if (!action) return 'bg-blue-100 text-blue-800';
+    
     switch (action.toLowerCase()) {
       case 'buy':
         return 'bg-green-100 text-green-800';
@@ -115,7 +119,7 @@ export default function SignalDetails() {
     );
   }
 
-  const images = signal.imageUrls || (signal.imageUrl ? [signal.imageUrl] : []);
+  const images = signal.imageUrls?.filter(url => url && url.trim()) || (signal.imageUrl ? [signal.imageUrl] : []);
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -153,7 +157,7 @@ export default function SignalDetails() {
                 </div>
               </div>
               <Badge className={`text-sm ${getTradeActionColor(signal.tradeAction)}`}>
-                {signal.tradeAction.toUpperCase()}
+                {signal.tradeAction?.toUpperCase() || 'UNKNOWN'}
               </Badge>
             </div>
           </CardHeader>
