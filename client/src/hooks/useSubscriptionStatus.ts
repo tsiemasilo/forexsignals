@@ -17,8 +17,8 @@ export function useSubscriptionStatus() {
   const { sessionId, user } = useAuth();
 
   return useQuery<SubscriptionStatus>({
-    queryKey: ['/api/user/subscription-status', Date.now()], // Add timestamp to force fresh data
-    enabled: !!sessionId && !!user && !user.isAdmin,
+    queryKey: ['/api/user/subscription-status'],
+    enabled: true, // Always enabled - let the API handle authorization
     refetchInterval: 5000, // More frequent refetch - every 5 seconds
     staleTime: 0, // Always consider data stale to force refetch
     refetchOnMount: true,

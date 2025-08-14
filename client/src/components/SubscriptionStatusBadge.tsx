@@ -5,10 +5,23 @@ import { Clock, Crown, AlertTriangle } from 'lucide-react';
 
 export function SubscriptionStatusBadge() {
   const { user } = useAuth();
-  const { data: subscriptionStatus, isLoading } = useSubscriptionStatus();
+  const { data: subscriptionStatus, isLoading, error } = useSubscriptionStatus();
 
-  // Don't show badge for admin users
-  if (!user || user.isAdmin || isLoading || !subscriptionStatus) {
+  // Debug logging
+  console.log('Badge Debug:', { user, subscriptionStatus, isLoading, error });
+
+  // Don't show badge for admin users, but show for regular users even if user data is incomplete
+  if (isLoading) {
+    return null;
+  }
+
+  // Show badge if we have subscription data, regardless of user state
+  if (!subscriptionStatus) {
+    return null;
+  }
+
+  // Hide only for admin users
+  if (user?.isAdmin) {
     return null;
   }
 
