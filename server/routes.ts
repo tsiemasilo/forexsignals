@@ -340,7 +340,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Generate unique transaction reference
       const transactionReference = `TXN_${userId}_${planId}_${Date.now()}`;
 
-      // Generate Ozow payment form data
+      // Generate Ozow payment form data - field order matters for signature
       const paymentData = {
         SiteCode: process.env.OZOW_SITE_CODE,
         CountryCode: 'ZA',
@@ -348,14 +348,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         Amount: (parseFloat(plan.price) * 100).toString(), // Ozow expects amount in cents
         TransactionReference: transactionReference,
         BankReference: plan.name,
-        Customer: user.email,
         Optional1: userId.toString(),
         Optional2: planId.toString(),
         Optional3: plan.name,
-        NotifyUrl: `${req.protocol}://${req.get('host')}/api/ozow/notify`,
-        SuccessUrl: `${req.protocol}://${req.get('host')}/payment/success`,
-        ErrorUrl: `${req.protocol}://${req.get('host')}/payment/error`,
+        Optional4: '',
+        Optional5: '',
+        Customer: user.email,
         CancelUrl: `${req.protocol}://${req.get('host')}/payment/cancel`,
+        ErrorUrl: `${req.protocol}://${req.get('host')}/payment/error`,
+        SuccessUrl: `${req.protocol}://${req.get('host')}/payment/success`,
+        NotifyUrl: `${req.protocol}://${req.get('host')}/api/ozow/notify`,
         IsTest: 'true'
       };
 
@@ -493,9 +495,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 // Helper function to generate Ozow signature
 function generateOzowSignature(data: Record<string, any>, privateKey: string): string {
-  // Ozow signature generation - based on working PHP examples and documentation
-  // Order must match exactly: SiteCode, CountryCode, CurrencyCode, Amount, TransactionReference, 
-  // BankReference, CancelUrl, ErrorUrl, SuccessUrl, NotifyUrl, IsTest
+  // Ozow signature generation - based on working PHP and Ruby examples
+  // Order must match EXACTLY as shown in working implementations:
+  // SiteCode, CountryCode, CurrencyCode, Amount, TransactionReference, BankReference,
+  // Optional1, Optional2, Optional3, Optional4, Optional5, Customer, 
+  // CancelUrl, ErrorUrl, SuccessUrl, NotifyUrl, IsTest
   const fieldsInOrder = [
     data.SiteCode,
     data.CountryCode, 
@@ -503,6 +507,12 @@ function generateOzowSignature(data: Record<string, any>, privateKey: string): s
     data.Amount,
     data.TransactionReference,
     data.BankReference,
+    data.Optional1 || '',
+    data.Optional2 || '',
+    data.Optional3 || '',
+    data.Optional4 || '',
+    data.Optional5 || '',
+    data.Customer || '',
     data.CancelUrl,
     data.ErrorUrl,
     data.SuccessUrl,
