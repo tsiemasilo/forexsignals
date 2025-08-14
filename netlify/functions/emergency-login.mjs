@@ -1,3 +1,14 @@
+import { neonConfig, Pool } from '@neondatabase/serverless';
+
+// Configure Neon for serverless environment
+neonConfig.webSocketConstructor = globalThis.WebSocket;
+
+const DATABASE_URL = process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL;
+const pool = new Pool({ 
+  connectionString: DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
+});
+
 // Emergency login function - accepts any email for testing
 export const handler = async (event, context) => {
   try {
@@ -74,9 +85,23 @@ export const handler = async (event, context) => {
         };
       }
 
+      // Store session in database
+      const sessionQuery = `
+        INSERT INTO sessions (session_id, user_id, expires_at)
+        VALUES ($1, $2, $3)
+        ON CONFLICT (session_id) DO UPDATE SET
+          user_id = $2,
+          expires_at = $3
+      `;
+      const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+      await pool.query(sessionQuery, [sessionId, userInfo.id, expiresAt]);
+
       return {
         statusCode: 200,
-        headers,
+        headers: {
+          ...headers,
+          'Set-Cookie': `sessionId=${sessionId}; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=${7 * 24 * 60 * 60}`
+        },
         body: JSON.stringify({
           message: 'Emergency login successful',
           sessionId: sessionId,

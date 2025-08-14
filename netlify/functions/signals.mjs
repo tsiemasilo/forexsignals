@@ -1,7 +1,7 @@
 import { neonConfig, Pool } from '@neondatabase/serverless';
-import ws from 'ws';
 
-neonConfig.webSocketConstructor = ws;
+// Configure Neon for serverless environment
+neonConfig.webSocketConstructor = globalThis.WebSocket;
 
 // Use NETLIFY_DATABASE_URL_UNPOOLED for better compatibility
 const DATABASE_URL = process.env.NETLIFY_DATABASE_URL_UNPOOLED || process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL;
