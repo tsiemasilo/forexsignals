@@ -40,7 +40,14 @@ Add these environment variables in Netlify dashboard (Site settings → Environm
 **Optional (if using additional features):**
 - `GITHUB_TOKEN` - For any GitHub integrations
 
-### 4. Database Setup
+### 4. Trigger New Deployment
+
+If you had a previous failed deployment:
+1. Go to your Netlify dashboard
+2. Find your site and click "Trigger deploy" → "Deploy site"
+3. This will rebuild with all the missing files now uploaded
+
+### 5. Database Setup
 
 This project uses PostgreSQL. You can use:
 - **Neon** (recommended): https://neon.tech
