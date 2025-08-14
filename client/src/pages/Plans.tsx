@@ -37,17 +37,17 @@ export default function Plans() {
 
   const handleYocoPayment = async () => {
     try {
-      // Redirect to specific Yoco checkout URLs based on plan
+      // Open specific Yoco checkout URLs in new tab based on plan
       if (selectedPlan.name === "Basic Plan") {
-        window.location.href = "https://c.yoco.com/checkout/ch_PLmQ2BJ7wp8h3Qu4Z9F1l6Lm";
+        window.open("https://c.yoco.com/checkout/ch_PLmQ2BJ7wp8h3Qu4Z9F1l6Lm", "_blank");
         setIsPaymentDialogOpen(false);
         return;
       } else if (selectedPlan.name === "Premium Plan") {
-        window.location.href = "https://c.yoco.com/checkout/ch_QLOBkND8RDvfb3Vh207tyk0x";
+        window.open("https://c.yoco.com/checkout/ch_QLOBkND8RDvfb3Vh207tyk0x", "_blank");
         setIsPaymentDialogOpen(false);
         return;
       } else if (selectedPlan.name === "VIP Plan") {
-        window.location.href = "https://pay.yoco.com/r/mEQXAD";
+        window.open("https://pay.yoco.com/r/mEQXAD", "_blank");
         setIsPaymentDialogOpen(false);
         return;
       }
@@ -153,10 +153,11 @@ export default function Plans() {
       console.log('Ozow payment data received:', paymentData);
       console.log('Form action URL:', paymentData.action_url);
       
-      // Create and submit Ozow form
+      // Create and submit Ozow form in new tab
       const form = document.createElement('form');
       form.method = 'POST';
       form.action = paymentData.action_url;
+      form.target = '_blank'; // Open in new tab
       
       // Add all Ozow fields
       Object.entries(paymentData).forEach(([key, value]) => {
