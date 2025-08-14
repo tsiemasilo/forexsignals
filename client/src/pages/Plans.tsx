@@ -265,7 +265,7 @@ export default function Plans() {
         </div>
 
         <div className="text-center">
-          <h2 className="text-2xl font-bold mb-4">Why Choose ForexSignals Pro?</h2>
+          <h2 className="text-2xl font-bold mb-4">Why Choose Watchlist Fx?</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
             <div className="text-center">
               <div className="text-3xl font-bold text-green-600 mb-2">85%+</div>

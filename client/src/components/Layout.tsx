@@ -57,11 +57,11 @@ export default function Layout({ children }: LayoutProps) {
             <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
               <TrendingUp className="text-green-400" size={28} />
               <div className="hidden sm:block">
-                <h1 className="text-xl font-bold">ForexSignals Pro</h1>
+                <h1 className="text-xl font-bold">Watchlist Fx</h1>
                 <p className="text-xs text-gray-400">Professional Trading Signals</p>
               </div>
               <div className="sm:hidden">
-                <h1 className="text-lg font-bold">Forex Pro</h1>
+                <h1 className="text-lg font-bold">Watchlist Fx</h1>
               </div>
             </Link>
 
@@ -318,7 +318,7 @@ export default function Layout({ children }: LayoutProps) {
               <div className="flex items-center space-x-3 mb-4">
                 <TrendingUp className="text-green-400" size={28} />
                 <div>
-                  <h3 className="text-xl font-bold">ForexSignals Pro</h3>
+                  <h3 className="text-xl font-bold">Watchlist Fx</h3>
                   <p className="text-xs text-gray-400">Professional Trading Signals</p>
                 </div>
               </div>
@@ -355,7 +355,7 @@ export default function Layout({ children }: LayoutProps) {
             </div>
           </div>
           <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 ForexSignals Pro. All rights reserved. Trading involves risk.</p>
+            <p>&copy; 2024 Watchlist Fx. All rights reserved. Trading involves risk.</p>
           </div>
         </div>
       </footer>

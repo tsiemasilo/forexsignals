@@ -24,7 +24,7 @@ export function AppHeader() {
             <Link href="/">
               <div className="flex items-center space-x-2 cursor-pointer">
                 <Signal className="h-8 w-8 text-green-600" />
-                <span className="text-xl font-bold text-gray-900">ForexSignals</span>
+                <span className="text-xl font-bold text-gray-900">Watchlist Fx</span>
               </div>
             </Link>
             

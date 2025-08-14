@@ -16,7 +16,7 @@ export default function Home() {
     if (paymentStatus === 'success') {
       toast({
         title: "Payment Successful!",
-        description: "Your subscription has been activated. Welcome to ForexSignals Pro!",
+        description: "Your subscription has been activated. Welcome to Watchlist Fx!",
         variant: "default",
       });
       // Clean up URL
