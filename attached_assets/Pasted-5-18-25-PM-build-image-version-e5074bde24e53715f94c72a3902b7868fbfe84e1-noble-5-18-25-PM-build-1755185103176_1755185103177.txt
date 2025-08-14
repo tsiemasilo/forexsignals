@@ -1,0 +1,184 @@
+5:18:25 PM: build-image version: e5074bde24e53715f94c72a3902b7868fbfe84e1 (noble)
+5:18:25 PM: buildbot version: e5074bde24e53715f94c72a3902b7868fbfe84e1
+5:18:25 PM: Fetching cached dependencies
+5:18:25 PM: Starting to download cache of 431.7MB (Last modified: 2025-08-14 14:11:51 +0000 UTC)
+5:18:27 PM: Finished downloading cache in 1.397s
+5:18:27 PM: Starting to extract cache
+5:18:34 PM: Finished extracting cache in 7.681s
+5:18:34 PM: Finished fetching cache in 9.178s
+5:18:34 PM: Starting to prepare the repo for build
+5:18:34 PM: Preparing Git Reference refs/heads/main
+5:18:36 PM: Custom functions path detected. Proceeding with the specified path: 'netlify/functions'
+5:18:36 PM: Custom build command detected. Proceeding with the specified command: 'node build-netlify.js'
+5:18:36 PM: Starting to install dependencies
+5:18:36 PM: Started restoring cached python cache
+5:18:36 PM: Finished restoring cached python cache
+5:18:36 PM: Started restoring cached ruby cache
+5:18:37 PM: Finished restoring cached ruby cache
+5:18:37 PM: Started restoring cached go cache
+5:18:37 PM: Finished restoring cached go cache
+5:18:38 PM: Started restoring cached Node.js version
+5:18:38 PM: Finished restoring cached Node.js version
+5:18:38 PM: v20.19.4 is already installed.
+5:18:38 PM: Now using node v20.19.4 (npm v10.8.2)
+5:18:39 PM: Enabling Node.js Corepack
+5:18:39 PM: Started restoring cached build plugins
+5:18:39 PM: Finished restoring cached build plugins
+5:18:39 PM: Started restoring cached corepack dependencies
+5:18:39 PM: Finished restoring cached corepack dependencies
+5:18:39 PM: No npm workspaces detected
+5:18:39 PM: Started restoring cached node modules
+5:18:39 PM: Finished restoring cached node modules
+5:18:39 PM: Installing npm packages using npm version 10.8.2
+5:18:39 PM: up to date in 484ms
+5:18:39 PM: npm packages installed
+5:18:40 PM: Successfully installed dependencies
+5:18:40 PM: Starting build script
+5:18:40 PM: Detected 1 framework(s)
+5:18:40 PM: "vite" at version "5.4.19"
+5:18:40 PM: Section completed: initializing
+5:18:42 PM: ​
+5:18:42 PM: Netlify Build                                                 
+5:18:42 PM: ────────────────────────────────────────────────────────────────
+5:18:42 PM: ​
+5:18:42 PM: ❯ Version
+5:18:42 PM:   @netlify/build 35.0.7
+5:18:42 PM: ​
+5:18:42 PM: ❯ Flags
+5:18:42 PM:   accountId: 6786aa5b927658b4b62b93d6
+5:18:42 PM:   baseRelDir: true
+5:18:42 PM:   buildId: 689dfe0acc3a4e0007c9a76f
+5:18:42 PM:   deployId: 689dfe0acc3a4e0007c9a771
+5:18:42 PM: ​
+5:18:42 PM: ❯ Current directory
+5:18:42 PM:   /opt/build/repo
+5:18:42 PM: ​
+5:18:42 PM: ❯ Config file
+5:18:42 PM:   /opt/build/repo/netlify.toml
+5:18:42 PM: ​
+5:18:42 PM: ❯ Context
+5:18:42 PM:   production
+5:18:42 PM: ​
+5:18:42 PM: ❯ Installing extensions
+5:18:42 PM:    - neon
+5:18:43 PM: ​
+5:18:43 PM: ❯ Loading extensions
+5:18:43 PM:    - neon
+5:18:45 PM: ​
+5:18:45 PM: build.command from netlify.toml                               
+5:18:45 PM: ────────────────────────────────────────────────────────────────
+5:18:45 PM: ​
+5:18:45 PM: $ node build-netlify.js
+5:18:45 PM: 🚀 Starting Netlify build process...
+5:18:45 PM: 📦 Building client...
+5:18:45 PM: vite v5.4.19 building for production...
+5:18:45 PM: transforming...
+5:18:46 PM: Browserslist: browsers data (caniuse-lite) is 10 months old. Please run:
+5:18:46 PM:   npx update-browserslist-db@latest
+5:18:46 PM:   Why you should do it regularly: https://github.com/browserslist/update-db#readme
+5:18:49 PM: ✓ 1731 modules transformed.
+5:18:49 PM: rendering chunks...
+5:18:49 PM: computing gzip size...
+5:18:49 PM: ../dist/public/index.html                   0.63 kB │ gzip:   0.38 kB
+5:18:49 PM: ../dist/public/assets/index-PBLhccIn.css   86.92 kB │ gzip:  14.31 kB
+5:18:49 PM: ../dist/public/assets/index-DHehzMJA.js   421.72 kB │ gzip: 127.01 kB
+5:18:49 PM: ✓ built in 3.90s
+5:18:49 PM: ✅ Netlify build completed successfully!
+5:18:49 PM: 📁 Client built to: dist/public
+5:18:49 PM: 🔧 Functions available in: netlify/functions
+5:18:49 PM: ​
+5:18:49 PM: (build.command completed in 4.3s)
+5:18:49 PM: ​
+5:18:49 PM: Functions bundling                                            
+5:18:49 PM: ────────────────────────────────────────────────────────────────
+5:18:49 PM: ​
+5:18:49 PM: Packaging Functions from netlify/functions directory:
+5:18:49 PM:  - admin-signals.mjs
+5:18:49 PM:  - admin-user-subscription.mjs
+5:18:49 PM:  - admin-users.mjs
+5:18:49 PM:  - create-sessions-table.mjs
+5:18:49 PM:  - create-signals-table.mjs
+5:18:49 PM:  - debug.mjs
+5:18:49 PM:  - emergency-login.mjs
+5:18:49 PM:  - login.mjs
+5:18:49 PM:  - logout.mjs
+5:18:49 PM:  - placeholder.mjs
+5:18:49 PM:  - plans.mjs
+5:18:49 PM:  - server.mjs
+5:18:49 PM:  - setup-database.mjs
+5:18:49 PM:  - signals.mjs
+5:18:49 PM:  - simple-login.mjs
+5:18:49 PM:  - test.mjs
+5:18:49 PM:  - user-subscription-status.mjs
+5:18:49 PM:  - user-subscription.mjs
+5:18:49 PM: ​
+5:18:49 PM: ✘ [ERROR] Top-level await is currently not supported with the "cjs" output format
+5:18:49 PM:     netlify/functions/server.mjs:7:23:
+5:18:49 PM:       7 │   const routesModule = await import('../../dist/server/routes.js');
+5:18:49 PM:         ╵                        ~~~~~
+5:18:50 PM: ​
+5:18:50 PM: Bundling of function "server" failed                          
+5:18:50 PM: ────────────────────────────────────────────────────────────────
+5:18:50 PM: ​
+5:18:50 PM:   Error message
+5:18:50 PM:   Build failed with 1 error:
+5:18:50 PM:   netlify/functions/server.mjs:7:23: ERROR: Top-level await is currently not supported with the "cjs" output format
+5:18:50 PM: ​
+5:18:50 PM:   Error location
+5:18:50 PM:   While bundling function "server"
+5:18:50 PM: ​
+5:18:50 PM:   Resolved config
+5:18:50 PM:   build:
+5:18:50 PM:     command: node build-netlify.js
+5:18:50 PM:     commandOrigin: config
+5:18:50 PM:     environment:
+5:18:50 PM:       - NETLIFY_DATABASE_URL
+5:18:50 PM:       - NETLIFY_DATABASE_URL_UNPOOLED
+5:18:50 PM:       - OZOW_PRIVATE_KEY
+5:18:50 PM:       - OZOW_SITE_CODE
+5:18:50 PM:       - NODE_VERSION
+5:18:50 PM:     publish: /opt/build/repo/dist/public
+5:18:50 PM:     publishOrigin: config
+5:18:50 PM:   functions:
+5:18:50 PM:     "*":
+5:18:50 PM:       node_bundler: esbuild
+5:18:50 PM:   functionsDirectory: /opt/build/repo/netlify/functions
+5:18:50 PM:   redirects:
+5:18:50 PM:     - from: /api/login
+5:18:50 PM:       status: 200
+5:18:50 PM:       to: /.netlify/functions/emergency-login
+5:18:50 PM:     - from: /api/plans
+5:18:50 PM:       status: 200
+5:18:50 PM:       to: /.netlify/functions/plans
+5:18:50 PM:     - from: /api/signals
+5:18:50 PM:       status: 200
+5:18:50 PM:       to: /.netlify/functions/signals
+5:18:50 PM:     - from: /api/signals/*
+      status: 200
+      to: /.netlify/functions/signals
+    - from: /api/admin/users
+      status: 200
+      to: /.netlify/functions/admin-users
+    - from: /api/admin/users/*/subscription
+5:18:50 PM:       status: 200
+5:18:50 PM:       to: /.netlify/functions/admin-user-subscription
+5:18:50 PM:     - from: /api/admin/signals
+5:18:50 PM:       status: 200
+5:18:50 PM:       to: /.netlify/functions/admin-signals
+5:18:50 PM:     - from: /api/user/subscription-status
+5:18:50 PM:       status: 200
+5:18:50 PM:       to: /.netlify/functions/user-subscription-status
+5:18:50 PM:     - from: /api/logout
+5:18:50 PM:       status: 200
+5:18:50 PM:       to: /.netlify/functions/logout
+5:18:51 PM: Failed during stage 'building site': Build script returned non-zero exit code: 2 (https://ntl.fyi/exit-code-2)
+5:18:51 PM:     - from: /api/placeholder/*/*
+      status: 200
+      to: /.netlify/functions/placeholder
+    - from: /*
+      status: 200
+      to: /index.html
+  redirectsOrigin: config
+5:18:51 PM: Build failed due to a user error: Build script returned non-zero exit code: 2
+5:18:51 PM: Failing build: Failed to build site
+5:18:53 PM: Finished processing build request in 25.76s
