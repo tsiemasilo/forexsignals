@@ -204,33 +204,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const plan = await storage.getPlan(subscription.planId);
       const endDate = new Date(subscription.endDate);
       const currentDate = new Date();
-      const isExpired = currentDate > endDate;
-      const daysLeft = Math.max(0, Math.ceil((endDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24)));
+      const isNaturallyExpired = currentDate > endDate;
+      let daysLeft = Math.max(0, Math.ceil((endDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24)));
       
       let statusDisplay = '';
       let colorClass = '';
       
-      if (isExpired) {
-        statusDisplay = 'Expired';
-        colorClass = 'bg-red-100 text-red-800';
-      } else {
-        switch (subscription.status) {
-          case 'trial':
+      // Handle manually set statuses first
+      switch (subscription.status) {
+        case 'expired':
+          statusDisplay = 'Expired';
+          colorClass = 'bg-red-100 text-red-800';
+          daysLeft = 0; // Force 0 days for manually expired subscriptions
+          break;
+        case 'inactive':
+          statusDisplay = 'Inactive';
+          colorClass = 'bg-yellow-100 text-yellow-800';
+          daysLeft = 0; // Force 0 days for inactive subscriptions
+          break;
+        case 'trial':
+          if (isNaturallyExpired) {
+            statusDisplay = 'Expired';
+            colorClass = 'bg-red-100 text-red-800';
+            daysLeft = 0;
+          } else {
             statusDisplay = 'Free Trial';
             colorClass = 'bg-blue-100 text-blue-800';
-            break;
-          case 'active':
+          }
+          break;
+        case 'active':
+          if (isNaturallyExpired) {
+            statusDisplay = 'Expired';
+            colorClass = 'bg-red-100 text-red-800';
+            daysLeft = 0;
+          } else {
             statusDisplay = 'Active';
             colorClass = 'bg-green-100 text-green-800';
-            break;
-          case 'inactive':
-            statusDisplay = 'Inactive';
-            colorClass = 'bg-yellow-100 text-yellow-800';
-            break;
-          default:
-            statusDisplay = 'Unknown';
-            colorClass = 'bg-gray-100 text-gray-800';
-        }
+          }
+          break;
+        default:
+          statusDisplay = 'Unknown';
+          colorClass = 'bg-gray-100 text-gray-800';
+          daysLeft = 0;
       }
 
       res.json({
