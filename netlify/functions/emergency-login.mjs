@@ -1,18 +1,9 @@
-import { neonConfig, Pool } from '@neondatabase/serverless';
+import { neon } from '@neondatabase/serverless';
 
-// Configure Neon for Netlify serverless - disable WebSocket for HTTP pooling  
-neonConfig.useSecureWebSocket = false;
-neonConfig.pipelineConnect = false;
+// Use direct HTTP connection instead of pooling for Netlify
+const DATABASE_URL = process.env.NETLIFY_DATABASE_URL_UNPOOLED || process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
 
-const DATABASE_URL = process.env.NETLIFY_DATABASE_URL_UNPOOLED || process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL;
-
-const pool = new Pool({ 
-  connectionString: DATABASE_URL,
-  ssl: { rejectUnauthorized: false },
-  max: 1,
-  idleTimeoutMillis: 0,
-  connectionTimeoutMillis: 10000
-});
+const sql = neon(DATABASE_URL);
 
 // Emergency login function - accepts any email for testing
 export const handler = async (event, context) => {
@@ -112,16 +103,29 @@ export const handler = async (event, context) => {
         };
       }
 
-      // Store session in database
-      const sessionQuery = `
-        INSERT INTO sessions (session_id, user_id, expires_at)
-        VALUES ($1, $2, $3)
-        ON CONFLICT (session_id) DO UPDATE SET
-          user_id = $2,
-          expires_at = $3
-      `;
+      // Get user from database first
+      const users = await sql`SELECT id, email, first_name, last_name, is_admin FROM users WHERE email = ${email}`;
+      
+      if (users.length > 0) {
+        const dbUser = users[0];
+        userInfo = {
+          id: dbUser.id,
+          email: dbUser.email,
+          firstName: dbUser.first_name,
+          lastName: dbUser.last_name,
+          isAdmin: dbUser.is_admin || dbUser.email === 'admin@forexsignals.com'
+        };
+      }
+
+      // Store session in database  
       const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
-      await pool.query(sessionQuery, [sessionId, userInfo.id, expiresAt]);
+      await sql`
+        INSERT INTO sessions (session_id, user_id, expires_at)
+        VALUES (${sessionId}, ${userInfo.id}, ${expiresAt})
+        ON CONFLICT (session_id) DO UPDATE SET
+          user_id = ${userInfo.id},
+          expires_at = ${expiresAt}
+      `;
 
       return {
         statusCode: 200,
