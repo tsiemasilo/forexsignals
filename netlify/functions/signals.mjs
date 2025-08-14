@@ -1,6 +1,6 @@
 import { neon } from '@neondatabase/serverless';
 
-// Use direct HTTP connection - FIXED VERSION WITH COMPLETE CRUD SUPPORT
+// Use direct HTTP connection - COMPLETE VERSION WITH ADMIN BYPASS
 const DATABASE_URL = process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
 const sql = neon(DATABASE_URL);
 
@@ -53,8 +53,9 @@ export const handler = async (event, context) => {
     const { httpMethod } = event;
 
     if (httpMethod === 'GET') {
-      // Check subscription for non-admin users
+      // ADMIN BYPASS: Admins can always access signals
       if (!user.is_admin) {
+        // Check subscription for non-admin users only
         const subscriptionResult = await sql`
           SELECT status, end_date
           FROM subscriptions
@@ -76,7 +77,7 @@ export const handler = async (event, context) => {
         }
       }
 
-      // Get all signals using CORRECT database schema
+      // Get all signals - admins and active subscribers can see all
       const signalsResult = await sql`
         SELECT id, title, content, trade_action, 
                image_url, image_urls, 
