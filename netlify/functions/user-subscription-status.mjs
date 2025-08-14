@@ -72,7 +72,9 @@ export const handler = async (event, context) => {
 
     // Calculate status based on database data
     if (userRow.status === 'trial') {
-      const expiryDate = new Date(userRow.end_date || '2025-08-28T13:42:41.604Z');
+      // Trial always gets 7 days from start_date, regardless of plan
+      const startDate = new Date(userRow.start_date);
+      const expiryDate = new Date(startDate.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 days for trial
       const now = new Date();
       const daysLeft = Math.max(0, Math.ceil((expiryDate - now) / (1000 * 60 * 60 * 24)));
 
@@ -85,7 +87,10 @@ export const handler = async (event, context) => {
         endDate: expiryDate.toISOString()
       };
     } else if (userRow.status === 'active') {
-      const expiryDate = new Date(userRow.end_date || Date.now() + 14 * 24 * 60 * 60 * 1000);
+      // Active subscription uses the actual plan duration
+      const startDate = new Date(userRow.start_date);
+      const planDuration = userRow.duration || 14; // Get duration from database
+      const expiryDate = new Date(startDate.getTime() + planDuration * 24 * 60 * 60 * 1000);
       const now = new Date();
       const daysLeft = Math.max(0, Math.ceil((expiryDate - now) / (1000 * 60 * 60 * 24)));
 
@@ -101,13 +106,15 @@ export const handler = async (event, context) => {
         endDate: expiryDate.toISOString()
       };
     } else if (userRow.status === 'expired') {
+      const expiryDate = userRow.end_date ? new Date(userRow.end_date) : null;
+      
       subscriptionStatus = {
         status: 'expired',
         statusDisplay: 'Expired',
         daysLeft: 0,
         color: 'bg-red-500 text-white',
         plan: userRow.plan_name ? { name: userRow.plan_name, price: userRow.plan_price } : null,
-        endDate: null
+        endDate: expiryDate ? expiryDate.toISOString() : null
       };
     } else if (userRow.status === 'inactive') {
       subscriptionStatus = {
