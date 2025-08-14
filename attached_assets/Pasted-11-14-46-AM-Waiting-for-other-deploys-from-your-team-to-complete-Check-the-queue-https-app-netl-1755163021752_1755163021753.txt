@@ -1,0 +1,117 @@
+11:14:46 AM: Waiting for other deploys from your team to complete. Check the queue: https://app.netlify.com/teams/tsiemasilo/builds
+11:15:06 AM: build-image version: 71a98eb82b055b934e7d58946f59957e90f5a76f (noble)
+11:15:06 AM: buildbot version: 72ba091da8478e084b7407a21cd8435e7ecab808
+11:15:06 AM: Fetching cached dependencies
+11:15:06 AM: Failed to fetch cache, continuing with build
+11:15:06 AM: Starting to prepare the repo for build
+11:15:07 AM: No cached dependencies found. Cloning fresh repo
+11:15:07 AM: git clone --filter=blob:none https://github.com/tsiemasilo/forexsignals
+11:15:08 AM: Preparing Git Reference refs/heads/main
+11:15:09 AM: Custom functions path detected. Proceeding with the specified path: 'netlify/functions'
+11:15:10 AM: Starting to install dependencies
+11:15:11 AM: Downloading and installing node v20.19.4...
+11:15:11 AM: Downloading https://nodejs.org/dist/v20.19.4/node-v20.19.4-linux-x64.tar.xz...
+11:15:11 AM: Computing checksum with sha256sum
+11:15:11 AM: Checksums matched!
+11:15:14 AM: Now using node v20.19.4 (npm v10.8.2)
+11:15:14 AM: Enabling Node.js Corepack
+11:15:15 AM: Started restoring cached build plugins
+11:15:15 AM: Finished restoring cached build plugins
+11:15:15 AM: Started restoring cached corepack dependencies
+11:15:15 AM: Finished restoring cached corepack dependencies
+11:15:15 AM: No npm workspaces detected
+11:15:15 AM: Started restoring cached node modules
+11:15:15 AM: Finished restoring cached node modules
+11:15:15 AM: Installing npm packages using npm version 10.8.2
+11:15:37 AM: npm warn deprecated @esbuild-kit/core-utils@3.3.2: Merged into tsx: https://tsx.is
+11:15:37 AM: npm warn deprecated @esbuild-kit/esm-loader@2.6.5: Merged into tsx: https://tsx.is
+11:15:42 AM: added 517 packages in 28s
+11:15:42 AM: npm packages installed
+11:15:43 AM: Successfully installed dependencies
+11:15:43 AM: Starting build script
+11:15:43 AM: Detected 1 framework(s)
+11:15:43 AM: "vite" at version "5.4.19"
+11:15:43 AM: Section completed: initializing
+11:15:44 AM: ​
+11:15:44 AM: Netlify Build                                                 
+11:15:44 AM: ────────────────────────────────────────────────────────────────
+11:15:44 AM: ​
+11:15:44 AM: ❯ Version
+11:15:44 AM:   @netlify/build 35.0.5
+11:15:44 AM: ​
+11:15:44 AM: ❯ Flags
+11:15:44 AM:   accountId: 6786aa5b927658b4b62b93d6
+11:15:44 AM:   baseRelDir: true
+11:15:44 AM:   buildId: 689da906cf567c000834a0fe
+11:15:44 AM:   deployId: 689da906cf567c000834a100
+11:15:45 AM: ​
+11:15:45 AM: ❯ Current directory
+11:15:45 AM:   /opt/build/repo
+11:15:45 AM: ​
+11:15:45 AM: ❯ Config file
+11:15:45 AM:   /opt/build/repo/netlify.toml
+11:15:45 AM: ​
+11:15:45 AM: ❯ Context
+11:15:45 AM:   production
+11:15:45 AM: ​
+11:15:45 AM: ❯ Installing extensions
+11:15:45 AM:    - neon
+11:16:06 AM: ​
+11:16:06 AM: ❯ Loading extensions
+11:16:06 AM:    - neon
+11:16:07 AM: ​
+11:16:07 AM: build.command from netlify.toml                               
+11:16:07 AM: ────────────────────────────────────────────────────────────────
+11:16:07 AM: ​
+11:16:07 AM: $ npm run build
+11:16:07 AM: > rest-express@1.0.0 build
+11:16:07 AM: > vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+11:16:07 AM: vite v5.4.19 building for production...
+11:16:08 AM: transforming...
+11:16:09 AM: ✓ 76 modules transformed.
+11:16:09 AM: x Build failed in 1.07s
+11:16:09 AM: error during build:
+11:16:09 AM: Could not resolve "./SubscriptionStatusBadge" from "client/src/components/Layout.tsx"
+11:16:09 AM: file: /opt/build/repo/client/src/components/Layout.tsx
+11:16:09 AM:     at getRollupError (file:///opt/build/repo/node_modules/rollup/dist/es/shared/parseAst.js:401:41)
+11:16:09 AM:     at error (file:///opt/build/repo/node_modules/rollup/dist/es/shared/parseAst.js:397:42)
+11:16:09 AM:     at ModuleLoader.handleInvalidResolvedId (file:///opt/build/repo/node_modules/rollup/dist/es/shared/node-entry.js:21490:24)
+11:16:09 AM:     at file:///opt/build/repo/node_modules/rollup/dist/es/shared/node-entry.js:21450:26
+11:16:09 AM: ​
+11:16:09 AM: "build.command" failed                                        
+11:16:09 AM: ────────────────────────────────────────────────────────────────
+11:16:09 AM: ​
+11:16:09 AM:   Error message
+11:16:09 AM:   Command failed with exit code 1: npm run build (https://ntl.fyi/exit-code-1)
+11:16:09 AM: ​
+11:16:09 AM:   Error location
+11:16:09 AM:   In build.command from netlify.toml:
+11:16:09 AM:   npm run build
+11:16:09 AM: ​
+11:16:09 AM:   Resolved config
+11:16:09 AM:   build:
+11:16:09 AM:     command: npm run build
+11:16:09 AM:     commandOrigin: config
+11:16:09 AM:     environment:
+11:16:09 AM:       - DATABASE_URL
+11:16:09 AM:       - OZOW_PRIVATE_KEY
+11:16:09 AM:       - OZOW_SITE_CODE
+11:16:09 AM:       - NODE_VERSION
+11:16:09 AM:     publish: /opt/build/repo/dist/public
+11:16:09 AM:     publishOrigin: config
+11:16:09 AM:   functions:
+11:16:09 AM:     "*":
+11:16:09 AM:       node_bundler: esbuild
+11:16:09 AM:   functionsDirectory: /opt/build/repo/netlify/functions
+11:16:09 AM:   redirects:
+11:16:09 AM:     - from: /api/*
+      status: 200
+      to: /.netlify/functions/server/:splat
+    - from: /*
+      status: 200
+      to: /index.html
+  redirectsOrigin: config
+11:16:09 AM: Build failed due to a user error: Build script returned non-zero exit code: 2
+11:16:10 AM: Failing build: Failed to build site
+11:16:10 AM: Finished processing build request in 1m3.46s
+11:16:10 AM: Failed during stage 'building site': Build script returned non-zero exit code: 2 (https://ntl.fyi/exit-code-2)
