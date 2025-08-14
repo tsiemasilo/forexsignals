@@ -108,7 +108,7 @@ This is a full-stack e-commerce application for automotive parts built with a mo
 ## Changelog
 
 Changelog:
-- August 14, 2025. DATABASE AND AUTHENTICATION FIXES COMPLETE: Fixed missing forex_signals table causing 500 errors, created signals view for compatibility, corrected user roles (Almeerah=customer, admin@forexsignals.com=admin), resolved frontend Bearer token authentication issue, all signals API working correctly with session-based authentication
+- August 14, 2025. DATABASE AND AUTHENTICATION FIXES COMPLETE: Fixed missing forex_signals table causing 500 errors, created signals view for compatibility, corrected user roles (Almeerah=customer, admin@forexsignals.com=admin), resolved frontend Bearer token authentication issue, all signals API working correctly with session-based authentication on user's specified database (postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb)
 - August 14, 2025. Fixed Netlify function ES module compatibility and 502 Bad Gateway errors - converted server function to proper ES modules (.mjs) with comprehensive error handling
 - August 14, 2025. RESOLVED: Fixed signals table creation and admin access - signals API now working on Replit with all 4 signals including nas100, proper admin/customer role separation established (admin@forexsignals.com = admin, almeerahlosper@gmail.com = customer)
 - August 14, 2025. RESOLUTION IN PROGRESS: Created database synchronization scripts and table creation functions to resolve NAS100 signal sync - implementing signals table creation on Netlify database
