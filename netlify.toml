@@ -56,11 +56,7 @@
   to = "/.netlify/functions/placeholder"
   status = 200
 
-# Commented out server catch-all to use specific function routing
-# [[redirects]]
-#   from = "/api/*"
-#   to = "/.netlify/functions/server/:splat"
-#   status = 200
+# Server catch-all removed - using specific function routing only
 
 [[redirects]]
   from = "/*"

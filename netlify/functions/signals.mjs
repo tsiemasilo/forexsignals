@@ -159,7 +159,23 @@ export const handler = async (event, context) => {
         };
       }
 
-      const signalId = event.path.split('/').pop();
+      // Extract signal ID from path or query parameters
+      const pathParts = event.path?.split('/') || [];
+      let signalId = pathParts[pathParts.length - 1];
+      
+      // If the last part isn't a number, check query params
+      if (isNaN(signalId) || signalId === 'signals') {
+        signalId = event.queryStringParameters?.id;
+      }
+      
+      if (!signalId) {
+        return {
+          statusCode: 400,
+          headers,
+          body: JSON.stringify({ message: 'Signal ID is required for update' })
+        };
+      }
+      
       const updates = JSON.parse(event.body);
 
       const updateQuery = `
@@ -207,7 +223,22 @@ export const handler = async (event, context) => {
         };
       }
 
-      const signalId = event.path.split('/').pop();
+      // Extract signal ID from path or query parameters
+      const pathParts = event.path?.split('/') || [];
+      let signalId = pathParts[pathParts.length - 1];
+      
+      // If the last part isn't a number, check query params
+      if (isNaN(signalId) || signalId === 'signals') {
+        signalId = event.queryStringParameters?.id;
+      }
+      
+      if (!signalId) {
+        return {
+          statusCode: 400,
+          headers,
+          body: JSON.stringify({ message: 'Signal ID is required for deletion' })
+        };
+      }
 
       const deleteQuery = `
         DELETE FROM signals WHERE id = $1
