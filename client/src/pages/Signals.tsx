@@ -114,12 +114,7 @@ export default function Signals() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 py-8">
       <div className="max-w-4xl mx-auto px-4">
-        <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold mb-2 text-slate-800">Live Trading Signals</h1>
-          <p className="text-slate-600">
-            Receive professional forex signals directly to your mobile notifications
-          </p>
-        </div>
+
 
         <div className="flex justify-center">
           {/* Phone Mockup */}
@@ -147,7 +142,7 @@ export default function Signals() {
                 <div className="px-6 py-4 border-b border-slate-200">
                   <h2 className="text-lg font-semibold text-slate-900 flex items-center">
                     <Bell className="w-5 h-5 mr-2 text-blue-600" />
-                    Forex Signals
+                    Live nas100 Trading Signals
                   </h2>
                 </div>
 
@@ -172,7 +167,7 @@ export default function Signals() {
                             </div>
                             <div className="flex-1">
                               <div className="flex items-center justify-between">
-                                <span className="text-sm font-medium text-slate-900">Forex Pro Signals</span>
+                                <span className="text-sm font-medium text-slate-900">NAS100 Pro Signals</span>
                                 <span className="text-xs text-slate-500">
                                   {new Date(signal.createdAt).toLocaleTimeString('en-US', { 
                                     hour: '2-digit', 
