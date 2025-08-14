@@ -1,0 +1,8 @@
+Since you've allowed the secret access keys on GitHub, run these commands to complete the push:
+
+git push origin main
+
+If it still asks for authentication, run:
+git push origin main --force
+
+Your changes are ready and committed. The push should work now that you've allowed the secrets on GitHub.
