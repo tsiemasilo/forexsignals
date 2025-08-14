@@ -68,20 +68,35 @@ export default function Signals() {
     
     if (errorMessage.includes('subscription') || errorMessage.includes('Active subscription required') || errorMessage.includes('403')) {
       return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-          <Card className="max-w-md text-center">
-            <CardHeader>
-              <CardTitle>Subscription Required</CardTitle>
-              <CardDescription>
-                You need an active subscription to view trading signals.
+        <div className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center p-4">
+          <Card className="max-w-lg text-center shadow-lg">
+            <CardHeader className="pb-4">
+              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-orange-400 to-red-500 rounded-full flex items-center justify-center">
+                <Bell className="w-8 h-8 text-white" />
+              </div>
+              <CardTitle className="text-2xl font-bold text-gray-800">Upgrade Your Plan</CardTitle>
+              <CardDescription className="text-lg text-gray-600 mt-2">
+                Your subscription has expired. Upgrade now to continue receiving premium NAS100 trading signals.
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
+              <div className="bg-gray-50 rounded-lg p-4 text-left">
+                <h3 className="font-semibold text-gray-800 mb-2">What you're missing:</h3>
+                <ul className="text-sm text-gray-600 space-y-1">
+                  <li>• Real-time NAS100 trading signals</li>
+                  <li>• Entry, stop loss, and take profit levels</li>
+                  <li>• Mobile push notifications</li>
+                  <li>• Professional market analysis</li>
+                </ul>
+              </div>
               <Link href="/plans">
-                <Button className="bg-green-600 hover:bg-green-700">
-                  View Plans
+                <Button className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-200">
+                  Choose Your Plan
                 </Button>
               </Link>
+              <p className="text-xs text-gray-500 mt-2">
+                Plans start from R49.99/month
+              </p>
             </CardContent>
           </Card>
         </div>
