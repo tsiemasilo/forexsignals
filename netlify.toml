@@ -8,8 +8,15 @@
 
 [[redirects]]
   from = "/api/login"
+  to = "/.netlify/functions/login-redirect"
+  status = 200
+  conditions = {Method = ["GET"]}
+
+[[redirects]]
+  from = "/api/login"
   to = "/.netlify/functions/emergency-login"
   status = 200
+  conditions = {Method = ["POST"]}
 
 [[redirects]]
   from = "/api/plans"

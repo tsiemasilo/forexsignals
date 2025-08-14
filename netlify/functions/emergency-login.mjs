@@ -28,6 +28,28 @@ export const handler = async (event, context) => {
       return { statusCode: 200, headers, body: '' };
     }
 
+    if (event.httpMethod === 'GET') {
+      // Handle GET requests - show simple login form or redirect
+      return {
+        statusCode: 200,
+        headers: {
+          'Content-Type': 'text/html',
+          'Access-Control-Allow-Origin': '*'
+        },
+        body: `
+          <!DOCTYPE html>
+          <html>
+            <head><title>Login</title></head>
+            <body>
+              <h2>Emergency Login</h2>
+              <p>Use POST request to /api/login with email in body</p>
+              <p>Valid emails: admin@forexsignals.com, almeerahlosper@gmail.com</p>
+            </body>
+          </html>
+        `
+      };
+    }
+
     if (event.httpMethod !== 'POST') {
       return {
         statusCode: 405,
