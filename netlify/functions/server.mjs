@@ -1,6 +1,20 @@
 import serverless from 'serverless-http';
 import express from 'express';
-import { registerRoutes } from '../../dist/server/routes.js';
+
+// Try to import registerRoutes with fallback
+let registerRoutes;
+try {
+  const routesModule = await import('../../dist/server/routes.js');
+  registerRoutes = routesModule.registerRoutes;
+} catch (error) {
+  console.error('Failed to import routes:', error);
+  // Create a minimal fallback
+  registerRoutes = async (app) => {
+    app.get('/api/test', (req, res) => {
+      res.json({ message: 'Fallback route working', error: 'Main routes failed to load' });
+    });
+  };
+}
 
 async function createApp() {
   try {
