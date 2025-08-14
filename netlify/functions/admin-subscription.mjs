@@ -12,7 +12,7 @@ export default async (req, context) => {
       status: 200,
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE, OPTIONS',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type, Authorization',
       },
     });
@@ -20,7 +20,7 @@ export default async (req, context) => {
 
   const headers = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE, OPTIONS',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     'Content-Type': 'application/json',
   };
@@ -30,7 +30,7 @@ export default async (req, context) => {
     const pathParts = url.pathname.split('/');
     const userId = pathParts[pathParts.length - 2]; // Get user ID from path
     
-    if (req.method === 'PATCH') {
+    if (req.method === 'PATCH' || req.method === 'PUT') {
       const body = await req.json();
       const { status } = body;
 
