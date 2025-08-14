@@ -48,9 +48,9 @@ export default function Layout({ children }: LayoutProps) {
 
   return (
     <div className="min-h-screen bg-background flex">
-      {/* Sidebar - only show for authenticated users */}
-      {user && (
-        <div className="w-64 bg-gray-800 text-white fixed left-0 top-0 h-screen z-40 flex flex-col">
+      {/* Debug: Force show sidebar for testing */}
+      {(user || true) && (
+        <div className="w-64 bg-gray-800 text-white fixed left-0 top-0 h-screen z-40 flex flex-col border-r-4 border-red-500">
           {/* Logo */}
           <div className="p-6 border-b border-gray-700">
             <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
