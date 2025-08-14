@@ -58,11 +58,11 @@ export default function DashboardSidebar() {
   const menuItems = user?.isAdmin ? adminMenuItems : customerMenuItems;
 
   return (
-    <div className="h-full bg-slate-900 w-64 fixed left-0 top-0 z-40 flex flex-col">
+    <div className="h-full bg-gray-800 w-64 fixed left-0 top-0 z-40 flex flex-col">
       {/* Logo/Brand */}
-      <div className="p-6 border-b border-slate-700">
+      <div className="p-6 border-b border-gray-700">
         <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
-          <TrendingUp className="text-green-400" size={28} />
+          <TrendingUp className="text-[#00FF9C]" size={28} />
           <div>
             <h1 className="text-lg font-bold text-white">ForexSignals Pro</h1>
             <p className="text-xs text-gray-400">Professional Trading</p>
@@ -84,18 +84,18 @@ export default function DashboardSidebar() {
               className={cn(
                 'flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 group',
                 isActive
-                  ? 'bg-green-500/10 text-green-400 border border-green-500/20'
-                  : 'text-gray-300 hover:bg-slate-800 hover:text-white'
+                  ? 'bg-[#00FF9C]/10 text-[#00FF9C] border border-[#00FF9C]/20'
+                  : 'text-gray-300 hover:bg-gray-700 hover:text-white'
               )}
             >
               <Icon size={20} className={cn(
                 'transition-colors',
-                isActive ? 'text-green-400' : 'text-gray-400 group-hover:text-white'
+                isActive ? 'text-[#00FF9C]' : 'text-gray-400 group-hover:text-white'
               )} />
               <div className="flex-1">
                 <div className={cn(
                   'font-medium text-sm',
-                  isActive ? 'text-green-400' : 'text-gray-300 group-hover:text-white'
+                  isActive ? 'text-[#00FF9C]' : 'text-gray-300 group-hover:text-white'
                 )}>
                   {item.label}
                 </div>
@@ -109,7 +109,7 @@ export default function DashboardSidebar() {
       </nav>
 
       {/* Bottom section */}
-      <div className="p-4 border-t border-slate-700">
+      <div className="p-4 border-t border-gray-700">
         <div className="text-xs text-gray-500 text-center">
           © 2025 ForexSignals Pro
         </div>

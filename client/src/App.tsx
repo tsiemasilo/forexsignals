@@ -28,37 +28,41 @@ function Router() {
   }
 
   return (
-    <Switch>
+    <>
       {!user ? (
         <Layout>
-          <Route path="/" component={Home} />
-          <Route path="/login" component={Auth} />
-          <Route path="/register" component={Auth} />
-          <Route path="/auth" component={Auth} />
-          <Route path="/plans" component={Plans} />
-          <Route component={NotFound} />
+          <Switch>
+            <Route path="/" component={Home} />
+            <Route path="/login" component={Auth} />
+            <Route path="/register" component={Auth} />
+            <Route path="/auth" component={Auth} />
+            <Route path="/plans" component={Plans} />
+            <Route component={NotFound} />
+          </Switch>
         </Layout>
       ) : (
         <DashboardLayout>
-          {user.isAdmin ? (
-            <>
-              <Route path="/" component={AdminDashboard} />
-              <Route path="/admin/signals" component={AdminSignals} />
-              <Route path="/admin/users" component={AdminUsers} />
-              <Route path="/plans" component={Plans} />
-            </>
-          ) : (
-            <>
-              <Route path="/" component={Signals} />
-              <Route path="/signals" component={Signals} />
-              <Route path="/plans" component={Plans} />
-              <Route path="/calendar" component={Calendar} />
-            </>
-          )}
-          <Route component={NotFound} />
+          <Switch>
+            {user.isAdmin ? (
+              <>
+                <Route path="/" component={AdminDashboard} />
+                <Route path="/admin/signals" component={AdminSignals} />
+                <Route path="/admin/users" component={AdminUsers} />
+                <Route path="/plans" component={Plans} />
+              </>
+            ) : (
+              <>
+                <Route path="/" component={Signals} />
+                <Route path="/signals" component={Signals} />
+                <Route path="/plans" component={Plans} />
+                <Route path="/calendar" component={Calendar} />
+              </>
+            )}
+            <Route component={NotFound} />
+          </Switch>
         </DashboardLayout>
       )}
-    </Switch>
+    </>
   );
 }
 
