@@ -1,36 +1,24 @@
 #!/bin/bash
 
-# Admin Signals 404 Fix Deployment Script
-echo "🚀 Deploying Admin Signals 404 Fix..."
+# Deploy Admin Signals Fix
+echo "🚀 Deploying admin signals fix to resolve 403 errors..."
 
-# Remove git lock if it exists
+# Remove any git locks
 rm -f .git/index.lock
 
-# Add all the fixed files
+# Add files for deployment
+git add netlify/functions/signals.mjs
+git add netlify.toml  
+git add client/src/pages/Signals.tsx
 git add netlify/functions/auth.mjs
-git add netlify/functions/signals-fixed.mjs 
-git add netlify.toml
-git add signals-complete.mjs
-git add admin-signals-fix.md
-git add replit.md
 git add DEPLOY_ADMIN_SIGNALS_FIX.md
-git add deploy-admin-signals-fix.sh
+git add replit.md
 
-# Commit the changes
-git commit -m "ADMIN SIGNALS 404 FIXED: Added auth function, enhanced signals CRUD with PUT/DELETE methods, fixed routing for admin access"
+# Commit with clear message
+git commit -m "ADMIN SIGNALS FIX: Deploy admin bypass logic to resolve 403 errors in admin console"
 
-# Push to GitHub using the correct format
+# Push to GitHub (will trigger Netlify deployment)
 git push https://tsiemasilo:$PERSONAL_ACCESS_TOKEN_FOREX@github.com/tsiemasilo/forexsignals.git main
 
-echo "✅ Deployment complete!"
-echo ""
-echo "📋 Testing Instructions:"
-echo "1. Login as admin: admin@forexsignals.com"
-echo "2. Navigate to: https://watchlistfx.netlify.app/admin/signals"
-echo "3. Verify: No more 404 errors, admin interface loads properly"
-echo ""
-echo "🔧 What was fixed:"
-echo "- Added /api/auth function for proper user authentication"
-echo "- Enhanced signals function with PUT/DELETE methods"
-echo "- Fixed route protection - only admins can access admin routes"
-echo "- Current user (Almeerah) is not admin, so 404 was expected behavior"
+echo "✅ Deployment pushed to GitHub - Netlify will rebuild automatically"
+echo "📝 This will fix the admin console 403 errors and enable proper admin access"
