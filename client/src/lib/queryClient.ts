@@ -7,6 +7,18 @@ async function throwIfResNotOk(res: Response) {
   }
 }
 
+// API base URL configuration
+const getApiUrl = (url: string) => {
+  // If running on Netlify, use Replit API URL  
+  if (window.location.hostname === 'watchlistfx.netlify.app') {
+    // TODO: Replace with your actual Replit app URL
+    // Example: return `https://forexsignals-app.replit.app${url}`;
+    return `https://your-replit-app.replit.app${url}`;
+  }
+  // Otherwise use relative URL for development
+  return url;
+};
+
 export async function apiRequest(
   method: string,
   url: string,
@@ -18,7 +30,8 @@ export async function apiRequest(
     ...(options?.headers || {})
   };
 
-  const res = await fetch(url, {
+  const fullUrl = getApiUrl(url);
+  const res = await fetch(fullUrl, {
     method,
     headers,
     body: data ? JSON.stringify(data) : undefined,
@@ -42,7 +55,8 @@ export const getQueryFn: <T>(options: {
       Object.assign(headers, meta.headers);
     }
 
-    const res = await fetch(queryKey[0] as string, {
+    const fullUrl = getApiUrl(queryKey[0] as string);
+    const res = await fetch(fullUrl, {
       credentials: "include",
       headers,
     });
