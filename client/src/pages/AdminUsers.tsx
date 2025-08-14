@@ -113,10 +113,23 @@ export default function AdminUsers() {
       };
     }
 
-    const endDate = new Date(user.subscription.endDate);
+    // Calculate days based on plan duration, not end date
+    const startDate = new Date(user.subscription.startDate);
     const currentDate = new Date();
-    const isExpired = currentDate > endDate;
-    const daysLeft = Math.max(0, Math.ceil((endDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24)));
+    
+    let planDuration = 14; // Default to 14 days
+    if (user.subscription.plan) {
+      planDuration = user.subscription.plan.duration;
+    }
+    
+    // For trial, always use 7 days
+    if (user.subscription.status === 'trial') {
+      planDuration = 7;
+    }
+    
+    const calculatedEndDate = new Date(startDate.getTime() + planDuration * 24 * 60 * 60 * 1000);
+    const isExpired = currentDate > calculatedEndDate;
+    const daysLeft = Math.max(0, Math.ceil((calculatedEndDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24)));
     
     let statusDisplay = '';
     let colorClass = '';

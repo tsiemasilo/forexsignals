@@ -1,9 +1,17 @@
+import { neonConfig, Pool } from '@neondatabase/serverless';
+import ws from 'ws';
+
+neonConfig.webSocketConstructor = ws;
+
+const DATABASE_URL = process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL;
+const pool = new Pool({ connectionString: DATABASE_URL });
+
 // Signals API function
 export const handler = async (event, context) => {
   const headers = {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS'
   };
 
@@ -12,6 +20,32 @@ export const handler = async (event, context) => {
   }
 
   try {
+    // Check subscription status first
+    const userId = 3; // Default to Almeerah for demo
+    
+    const result = await pool.query(`
+      SELECT s.status, s.end_date
+      FROM users u
+      LEFT JOIN subscriptions s ON u.id = s.user_id
+      WHERE u.id = $1
+    `, [userId]);
+
+    const userRow = result.rows[0];
+    
+    // Check if user has valid subscription
+    const hasValidSubscription = userRow && 
+      (userRow.status === 'active' || userRow.status === 'trial');
+
+    if (!hasValidSubscription) {
+      return {
+        statusCode: 403,
+        headers,
+        body: JSON.stringify({ 
+          message: 'Active subscription required',
+          status: userRow?.status || 'none'
+        })
+      };
+    }
     // Return trading signals from your database
     const signals = [
       {
