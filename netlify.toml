@@ -4,6 +4,7 @@
 
 [build.environment]
   NODE_VERSION = "20"
+  # Netlify automatically provides NETLIFY_DATABASE_URL for Neon database connections
 
 [[redirects]]
   from = "/api/*"

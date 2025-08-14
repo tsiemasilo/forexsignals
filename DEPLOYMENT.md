@@ -33,9 +33,11 @@ git push -u origin main
 Add these environment variables in Netlify dashboard (Site settings → Environment variables):
 
 **Required:**
-- `DATABASE_URL` - `postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require`
+- `NETLIFY_DATABASE_URL` - `postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require`
 - `OZOW_SITE_CODE` - Your Ozow payment gateway site code
 - `OZOW_PRIVATE_KEY` - Your Ozow private key
+
+**Note:** Netlify provides the database URL as `NETLIFY_DATABASE_URL` and `NETLIFY_DATABASE_URL_UNPOOLED`. Use the standard `NETLIFY_DATABASE_URL` for your connection.
 
 **Optional (if using additional features):**
 - `GITHUB_TOKEN` - For any GitHub integrations
@@ -61,7 +63,12 @@ This project uses PostgreSQL. You can use:
 - **Supabase**: https://supabase.com
 - **Railway**: https://railway.app
 
-Get your connection string and add it as `DATABASE_URL` in Netlify.
+Get your connection string and add it as `NETLIFY_DATABASE_URL` in Netlify.
+
+**For Netlify Deployment:** Set the new Neon database URL:
+```
+NETLIFY_DATABASE_URL=postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+```
 
 ### 5. Post-Deployment
 
