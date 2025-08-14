@@ -1,3 +1,9 @@
+import { neon } from '@neondatabase/serverless';
+
+// Use direct HTTP connection for Netlify compatibility
+const DATABASE_URL = process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
+const sql = neon(DATABASE_URL);
+
 // Admin Signals API function
 export const handler = async (event, context) => {
   const headers = {
@@ -12,79 +18,35 @@ export const handler = async (event, context) => {
   }
 
   try {
-    // Same signals data as main signals endpoint
-    const signals = [
-      {
-        id: 1,
-        title: "EUR/USD Buy Signal",
-        description: "Strong bullish momentum on EUR/USD with key support at 1.0850. Target 1.0920 with stop loss at 1.0830.",
-        content: "Strong bullish momentum on EUR/USD with key support at 1.0850. Target 1.0920 with stop loss at 1.0830.",
-        currencyPair: "EUR/USD",
-        signal: "BUY",
-        tradeAction: "BUY",
-        entryPrice: "1.0875",
-        stopLoss: "1.0830", 
-        takeProfit: "1.0920",
-        status: "active",
-        imageUrls: ["/api/placeholder/400/300"],
-        createdAt: "2025-08-13T13:42:41.739Z",
-        updatedAt: "2025-08-13T13:42:41.739Z"
-      },
-      {
-        id: 2,
-        title: "GBP/JPY Sell Signal",
-        description: "Bearish reversal pattern on GBP/JPY. Strong resistance at 190.50. Target 188.80 with stop loss at 191.20.",
-        content: "Bearish reversal pattern on GBP/JPY. Strong resistance at 190.50. Target 188.80 with stop loss at 191.20.",
-        currencyPair: "GBP/JPY",
-        signal: "SELL",
-        tradeAction: "SELL",
-        entryPrice: "190.25",
-        stopLoss: "191.20",
-        takeProfit: "188.80", 
-        status: "active",
-        imageUrls: ["/api/placeholder/400/300"],
-        createdAt: "2025-08-13T13:42:41.875Z",
-        updatedAt: "2025-08-13T13:42:41.875Z"
-      },
-      {
-        id: 3,
-        title: "USD/CAD Buy Signal",
-        description: "Bullish breakout on USD/CAD above key resistance. Target 1.3650 with stop loss at 1.3520.",
-        content: "Bullish breakout on USD/CAD above key resistance. Target 1.3650 with stop loss at 1.3520.",
-        currencyPair: "USD/CAD", 
-        signal: "BUY",
-        tradeAction: "BUY",
-        entryPrice: "1.3580",
-        stopLoss: "1.3520",
-        takeProfit: "1.3650",
-        status: "closed",
-        imageUrls: ["/api/placeholder/400/300"],
-        createdAt: "2025-08-13T13:42:42.011Z",
-        updatedAt: "2025-08-13T13:42:42.011Z"
-      },
-      {
-        id: 4,
-        title: "AUD/USD Sell Signal", 
-        description: "Bearish trend continuation on AUD/USD. Key resistance at 0.6750. Target 0.6680 with stop loss at 0.6780.",
-        content: "Bearish trend continuation on AUD/USD. Key resistance at 0.6750. Target 0.6680 with stop loss at 0.6780.",
-        currencyPair: "AUD/USD",
-        signal: "SELL",
-        tradeAction: "SELL", 
-        entryPrice: "0.6720",
-        stopLoss: "0.6780",
-        takeProfit: "0.6680",
-        status: "active",
-        imageUrls: ["/api/placeholder/400/300"],
-        createdAt: "2025-08-13T13:42:42.147Z",
-        updatedAt: "2025-08-13T13:42:42.147Z"
-      }
-    ];
-
     if (event.httpMethod === 'GET') {
+      // Get signals from database using correct schema
+      const result = await sql`
+        SELECT id, title, content, trade_action, 
+               image_url, image_urls, 
+               created_by, is_active, 
+               created_at, updated_at
+        FROM signals 
+        ORDER BY created_at DESC
+      `;
+      
+      // Format the response to match frontend expectations
+      const formattedSignals = result.map(signal => ({
+        id: signal.id,
+        title: signal.title,
+        content: signal.content,
+        tradeAction: signal.trade_action,
+        imageUrl: signal.image_url,
+        imageUrls: signal.image_urls ? JSON.parse(signal.image_urls) : [],
+        createdBy: signal.created_by,
+        isActive: signal.is_active,
+        createdAt: signal.created_at,
+        updatedAt: signal.updated_at
+      }));
+      
       return {
         statusCode: 200,
         headers,
-        body: JSON.stringify(signals)
+        body: JSON.stringify(formattedSignals)
       };
     }
 
@@ -101,28 +63,43 @@ export const handler = async (event, context) => {
         };
       }
 
-      const newSignal = {
-        id: signals.length + 1,
-        title: body.title || "New Signal",
-        description: body.description || "",
-        currencyPair: body.currencyPair || "",
-        signal: body.signal || "BUY",
-        entryPrice: body.entryPrice || "0.0000",
-        stopLoss: body.stopLoss || "0.0000",
-        takeProfit: body.takeProfit || "0.0000",
-        status: "active",
-        imageUrls: body.imageUrls || [],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+      const { title, content, tradeAction, imageUrl, imageUrls } = body;
+
+      if (!title || !content || !tradeAction) {
+        return {
+          statusCode: 400,
+          headers,
+          body: JSON.stringify({ message: 'Title, content, and tradeAction are required' })
+        };
+      }
+
+      const result = await sql`
+        INSERT INTO signals (title, content, trade_action, image_url, image_urls, created_by, is_active)
+        VALUES (${title}, ${content}, ${tradeAction}, ${imageUrl || null}, ${imageUrls ? JSON.stringify(imageUrls) : null}, 1, true)
+        RETURNING id, title, content, trade_action, 
+                  image_url, image_urls,
+                  created_by, is_active,
+                  created_at, updated_at
+      `;
+
+      // Format response
+      const formattedSignal = {
+        id: result[0].id,
+        title: result[0].title,
+        content: result[0].content,
+        tradeAction: result[0].trade_action,
+        imageUrl: result[0].image_url,
+        imageUrls: result[0].image_urls ? JSON.parse(result[0].image_urls) : [],
+        createdBy: result[0].created_by,
+        isActive: result[0].is_active,
+        createdAt: result[0].created_at,
+        updatedAt: result[0].updated_at
       };
 
       return {
         statusCode: 201,
         headers,
-        body: JSON.stringify({
-          message: 'Signal created successfully',
-          signal: newSignal
-        })
+        body: JSON.stringify(formattedSignal)
       };
     }
 

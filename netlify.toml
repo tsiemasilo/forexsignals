@@ -33,7 +33,7 @@
 
 [[redirects]]
   from = "/api/admin/users"
-  to = "/.netlify/functions/admin-users"
+  to = "/.netlify/functions/admin-users-fixed"
   status = 200
 
 [[redirects]]
@@ -43,7 +43,7 @@
 
 [[redirects]]
   from = "/api/admin/signals"
-  to = "/.netlify/functions/admin-signals"
+  to = "/.netlify/functions/signals-fixed"
   status = 200
 
 [[redirects]]
