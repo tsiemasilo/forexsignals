@@ -24,7 +24,9 @@ export interface IStorage {
   createSubscription(subscription: InsertSubscription): Promise<Subscription>;
   updateSubscriptionStatus(id: number, status: string): Promise<Subscription | undefined>;
   updateUserSubscriptionStatus(userId: number, status: string): Promise<Subscription | undefined>;
+  updateUserSubscriptionWithPlan(userId: number, status: string, planId?: number): Promise<Subscription | undefined>;
   getAllSubscriptions(): Promise<Subscription[]>;
+  extendUserSubscription(userId: number, planId: number, additionalDays: number): Promise<Subscription | undefined>;
 
   // Forex Signals
   getAllSignals(): Promise<ForexSignal[]>;
@@ -389,7 +391,8 @@ export class DatabaseStorage implements IStorage {
         plan: {
           id: subscriptionPlans.id,
           name: subscriptionPlans.name,
-          price: subscriptionPlans.price
+          price: subscriptionPlans.price,
+          duration: subscriptionPlans.duration
         }
       }
     })
@@ -442,6 +445,56 @@ export class DatabaseStorage implements IStorage {
       .where(eq(subscriptions.userId, userId))
       .returning();
     return subscription || undefined;
+  }
+
+  async updateUserSubscriptionWithPlan(userId: number, status: string, planId?: number): Promise<Subscription | undefined> {
+    if (planId && status === "active") {
+      const plan = await this.getPlan(planId);
+      if (plan) {
+        const newEndDate = new Date();
+        newEndDate.setDate(newEndDate.getDate() + plan.duration);
+        
+        const [subscription] = await db.update(subscriptions)
+          .set({ 
+            status, 
+            planId,
+            startDate: new Date(),
+            endDate: newEndDate
+          })
+          .where(eq(subscriptions.userId, userId))
+          .returning();
+        return subscription || undefined;
+      }
+    }
+    
+    const [subscription] = await db.update(subscriptions)
+      .set({ status })
+      .where(eq(subscriptions.userId, userId))
+      .returning();
+    return subscription || undefined;
+  }
+
+  async extendUserSubscription(userId: number, planId: number, additionalDays: number): Promise<Subscription | undefined> {
+    const existingSubscription = await this.getUserSubscription(userId);
+    if (existingSubscription) {
+      const currentEndDate = existingSubscription.endDate > new Date() 
+        ? existingSubscription.endDate 
+        : new Date();
+      
+      const newEndDate = new Date(currentEndDate);
+      newEndDate.setDate(newEndDate.getDate() + additionalDays);
+      
+      const [subscription] = await db.update(subscriptions)
+        .set({ 
+          endDate: newEndDate,
+          planId: planId,
+          status: "active"
+        })
+        .where(eq(subscriptions.userId, userId))
+        .returning();
+      return subscription || undefined;
+    }
+    return undefined;
   }
 
   async getAllSubscriptions(): Promise<Subscription[]> {
