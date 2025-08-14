@@ -32,6 +32,47 @@ export default function AdminUsers() {
     mutationFn: async ({ userId, status, planId }: { userId: number; status: string; planId?: number }) => {
       return await apiRequest('PATCH', `/api/admin/users/${userId}/subscription`, { status, planId });
     },
+    onMutate: async ({ userId, status, planId }) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['/api/admin/users'] });
+      
+      // Snapshot the previous value
+      const previousUsers = queryClient.getQueryData(['/api/admin/users']);
+      
+      // Optimistically update the cache
+      queryClient.setQueryData(['/api/admin/users'], (old: any[]) => {
+        if (!old) return old;
+        
+        return old.map(user => {
+          if (user.id === userId) {
+            const updatedUser = { ...user };
+            if (updatedUser.subscription) {
+              updatedUser.subscription = {
+                ...updatedUser.subscription,
+                status: status,
+                planId: planId || updatedUser.subscription.planId
+              };
+              
+              // Update plan info for active status
+              if (status === 'active' && planId) {
+                const plan = plans.find(p => p.id === planId);
+                if (plan) {
+                  updatedUser.subscription.plan = plan;
+                }
+              } else if (status !== 'active') {
+                // Clear plan for non-active statuses
+                updatedUser.subscription.plan = null;
+                updatedUser.subscription.planId = null;
+              }
+            }
+            return updatedUser;
+          }
+          return user;
+        });
+      });
+      
+      return { previousUsers };
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
       queryClient.invalidateQueries({ queryKey: ['/api/user/subscription-status'] });
@@ -40,7 +81,11 @@ export default function AdminUsers() {
         description: "User subscription status updated successfully",
       });
     },
-    onError: (error: any) => {
+    onError: (error: any, variables, context) => {
+      // Revert optimistic update on error
+      if (context?.previousUsers) {
+        queryClient.setQueryData(['/api/admin/users'], context.previousUsers);
+      }
       toast({
         title: "Error",
         description: error.message || "Failed to update subscription status",
