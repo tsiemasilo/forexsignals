@@ -284,7 +284,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check if user has active subscription (unless admin)
       if (!isAdmin) {
         const subscription = await storage.getUserSubscription(userId);
-        if (!subscription || subscription.status !== "active" || new Date() > subscription.endDate) {
+        if (!subscription || (subscription.status !== "active" && subscription.status !== "trial") || new Date() > subscription.endDate) {
           return res.status(403).json({ message: "Active subscription required" });
         }
       }
@@ -305,7 +305,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check if user has active subscription (unless admin)
       if (!isAdmin) {
         const subscription = await storage.getUserSubscription(userId);
-        if (!subscription || subscription.status !== "active" || new Date() > subscription.endDate) {
+        if (!subscription || (subscription.status !== "active" && subscription.status !== "trial") || new Date() > subscription.endDate) {
           return res.status(403).json({ message: "Active subscription required" });
         }
       }
