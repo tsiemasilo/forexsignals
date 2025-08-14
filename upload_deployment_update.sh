@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TOKEN="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"
+TOKEN="YOUR_GITHUB_TOKEN_HERE"
 REPO="tsiemasilo/forexsignals"
 
 # Get current SHA for updating existing file

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # GitHub upload script for Watchlist Fx
-TOKEN="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"
+TOKEN="YOUR_GITHUB_TOKEN_HERE"
 REPO="tsiemasilo/forexsignals"
 BASE_URL="https://api.github.com/repos/$REPO/contents"
 
