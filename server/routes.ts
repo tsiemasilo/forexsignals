@@ -345,7 +345,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         SiteCode: process.env.OZOW_SITE_CODE,
         CountryCode: 'ZA',
         CurrencyCode: 'ZAR',
-        Amount: (parseFloat(plan.price) * 100).toString(), // Ozow expects amount in cents
+        Amount: parseFloat(plan.price).toFixed(2), // Ozow expects amount in Rands as decimal
         TransactionReference: transactionReference,
         BankReference: plan.name,
         Optional1: userId.toString(),
