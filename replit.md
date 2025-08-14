@@ -108,6 +108,9 @@ This is a full-stack e-commerce application for automotive parts built with a mo
 ## Changelog
 
 Changelog:
+- August 14, 2025. Implemented subscription extension functionality - purchasing new plans now extends existing subscriptions instead of replacing them, with proper trial-to-active upgrades
+- August 14, 2025. Fixed trial user access to signals - users with free trial subscriptions can now properly view trading signals
+- August 14, 2025. Added subscription status badge for logged-in users showing status (Free Trial/Active/Inactive/Expired) with remaining days and color coding
 - August 14, 2025. Enhanced admin dashboard with comprehensive user subscription management - shows current status (Trial/Active/Inactive/Expired), remaining days with color coding, and allows status changes via dropdown
 - August 14, 2025. Implemented automatic 7-day free trial for new user registrations - all new users now receive trial subscription upon signup
 - August 14, 2025. Fixed payment gateway redirect behavior - both Yoco and Ozow now open in new tabs instead of replacing current page

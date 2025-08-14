@@ -263,6 +263,29 @@ export class MemStorage implements IStorage {
     return Array.from(this.subscriptions.values());
   }
 
+  async extendUserSubscription(userId: number, planId: number, additionalDays: number): Promise<Subscription | undefined> {
+    const existingSubscription = Array.from(this.subscriptions.values())
+      .find(sub => sub.userId === userId && (sub.status === "active" || sub.status === "trial"));
+    
+    if (existingSubscription) {
+      // Extend the existing subscription
+      const currentEndDate = existingSubscription.endDate > new Date() 
+        ? existingSubscription.endDate 
+        : new Date(); // If expired, start from now
+      
+      const newEndDate = new Date(currentEndDate);
+      newEndDate.setDate(newEndDate.getDate() + additionalDays);
+      
+      existingSubscription.endDate = newEndDate;
+      existingSubscription.planId = planId;
+      existingSubscription.status = "active"; // Upgrade trial to active
+      
+      return existingSubscription;
+    }
+    
+    return undefined;
+  }
+
   // Forex Signals
   async getAllSignals(): Promise<ForexSignal[]> {
     return Array.from(this.forexSignals.values())

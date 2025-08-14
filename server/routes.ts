@@ -256,22 +256,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Plan not found" });
       }
 
-      // Create subscription
-      const endDate = new Date();
-      endDate.setDate(endDate.getDate() + plan.duration);
+      // Check if user has existing subscription
+      const existingSubscription = await storage.getUserSubscription(userId);
+      
+      let subscription;
+      if (existingSubscription) {
+        // Extend existing subscription
+        subscription = await storage.extendUserSubscription(userId, planId, plan.duration);
+        if (!subscription) {
+          return res.status(500).json({ message: "Failed to extend subscription" });
+        }
+      } else {
+        // Create new subscription
+        const endDate = new Date();
+        endDate.setDate(endDate.getDate() + plan.duration);
 
-      const subscriptionData = {
-        userId,
-        planId,
-        status: "active" as const,
-        startDate: new Date(),
-        endDate
-      };
+        const subscriptionData = {
+          userId,
+          planId,
+          status: "active" as const,
+          startDate: new Date(),
+          endDate
+        };
 
-      const subscription = await storage.createSubscription(subscriptionData);
+        subscription = await storage.createSubscription(subscriptionData);
+      }
+
       res.json(subscription);
     } catch (error) {
-      res.status(500).json({ message: "Failed to create subscription" });
+      res.status(500).json({ message: "Failed to create or extend subscription" });
     }
   });
 
