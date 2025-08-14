@@ -1,75 +1,59 @@
 import { neon } from '@neondatabase/serverless';
 
-// Use direct HTTP connection for Netlify compatibility
-const DATABASE_URL = process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
-const sql = neon(DATABASE_URL);
-
-// Helper function to get user from session
-const getUserFromSession = async (event) => {
-  const cookies = event.headers.cookie || '';
-  const sessionMatch = cookies.match(/sessionId=([^;]+)/);
-  
-  if (!sessionMatch) {
-    return null;
-  }
-
-  const sessionId = sessionMatch[1];
-  
-  const result = await sql`
-    SELECT u.id, u.email, u.first_name, u.last_name, u.is_admin, s.expire
-    FROM sessions s
-    JOIN users u ON (s.sess->>'user')::jsonb->>'id' = u.id::text
-    WHERE s.sid = ${sessionId} AND s.expire > NOW()
-  `;
-  
-  return result[0] || null;
-};
+const sql = neon('postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb');
 
 export const handler = async (event, context) => {
+  console.log('Admin subscription function called:', event.httpMethod, event.path);
+  
   const headers = {
-    'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization, Cookie',
-    'Access-Control-Allow-Methods': 'GET,POST,PUT,PATCH,DELETE,OPTIONS',
-    'Access-Control-Allow-Credentials': 'true'
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
+    'Content-Type': 'application/json'
   };
 
   if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 200, headers, body: '' };
+    return {
+      statusCode: 200,
+      headers,
+      body: ''
+    };
   }
 
   try {
-    console.log('Request method:', event.httpMethod);
-    console.log('Request path:', event.path);
-    
-    // Get user from session and verify admin access
-    const user = await getUserFromSession(event);
-    
-    if (!user) {
+    if (event.httpMethod === 'GET') {
+      // Get all users with their subscription status
+      const users = await sql`
+        SELECT 
+          u.id,
+          u.email,
+          u.first_name as "firstName",
+          u.last_name as "lastName",
+          u.is_admin as "isAdmin",
+          s.status as subscription_status,
+          s.plan_id,
+          s.end_date,
+          p.name as plan_name,
+          p.price as plan_price
+        FROM users u
+        LEFT JOIN subscriptions s ON u.id = s.user_id
+        LEFT JOIN subscription_plans p ON s.plan_id = p.id
+        ORDER BY u.id
+      `;
+
       return {
-        statusCode: 401,
+        statusCode: 200,
         headers,
-        body: JSON.stringify({ message: 'Session expired. Please sign in again.' })
+        body: JSON.stringify(users)
       };
     }
 
-    if (!user.is_admin) {
-      return {
-        statusCode: 403,
-        headers,
-        body: JSON.stringify({ message: 'Admin access required' })
-      };
-    }
-    
-    // Extract user ID from path: /api/admin/users/3/subscription
-    const pathParts = event.path.split('/').filter(part => part.length > 0);
-    console.log('Path parts:', pathParts);
-    
-    const userIndex = pathParts.indexOf('users');
-    const userId = userIndex >= 0 && userIndex + 1 < pathParts.length ? pathParts[userIndex + 1] : null;
-    console.log('Extracted user ID:', userId);
-    
-    if (event.httpMethod === 'PATCH' || event.httpMethod === 'PUT') {
+    if (event.httpMethod === 'PATCH') {
+      // Extract user ID from path
+      const pathParts = event.path.split('/');
+      const userIdIndex = pathParts.findIndex(part => part === 'users') + 1;
+      const userId = pathParts[userIdIndex];
+      
       if (!userId) {
         return {
           statusCode: 400,
