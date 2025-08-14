@@ -20,7 +20,7 @@ Since git operations are restricted in this environment, here are alternative wa
 ```bash
 # Install GitHub CLI if needed
 # Then authenticate with your token
-gh auth login --with-token < echo "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"
+gh auth login --with-token < echo "YOUR_GITHUB_TOKEN_HERE"
 
 # Clone your repo
 gh repo clone Almeerah/watchlist-fx

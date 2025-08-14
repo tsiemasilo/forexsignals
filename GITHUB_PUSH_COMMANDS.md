@@ -7,7 +7,7 @@ Run these commands in the shell to push your Netlify updates to GitHub:
 rm -rf /tmp/forexsignals
 
 # Clone your repository
-git clone https://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@github.com/tsiemasilo/forexsignals.git /tmp/forexsignals
+git clone https://YOUR_GITHUB_TOKEN_HERE@github.com/tsiemasilo/forexsignals.git /tmp/forexsignals
 
 # Navigate to repository
 cd /tmp/forexsignals

@@ -2,7 +2,7 @@
 
 ## Repository Information
 - **Repository**: https://github.com/tsiemasilo/forexsignals.git
-- **Token**: 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
+- **Token**: YOUR_GITHUB_TOKEN_HERE
 
 ## Quick Update Commands
 
@@ -10,7 +10,7 @@ Since git operations are restricted in Replit, use these commands locally:
 
 ```bash
 # Clone or update your repository
-git clone https://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@github.com/tsiemasilo/forexsignals.git
+git clone https://YOUR_GITHUB_TOKEN_HERE@github.com/tsiemasilo/forexsignals.git
 cd forexsignals
 
 # Add all files

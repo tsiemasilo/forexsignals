@@ -9,7 +9,7 @@ git config --global user.name "Almeerah"
 
 # Set the correct remote
 git remote remove origin 2>/dev/null || true
-git remote add origin https://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@github.com/tsiemasilo/forexsignals.git
+git remote add origin https://YOUR_GITHUB_TOKEN_HERE@github.com/tsiemasilo/forexsignals.git
 
 # Add all files
 git add .

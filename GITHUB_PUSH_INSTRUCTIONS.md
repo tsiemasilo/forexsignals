@@ -2,7 +2,7 @@
 
 ## Using Your Personal Access Token
 
-Your token: `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`
+Your token: `YOUR_GITHUB_TOKEN_HERE`
 
 ## Method 1: Update via GitHub Web Interface
 
@@ -21,10 +21,10 @@ If you have git access locally, run:
 
 ```bash
 # Clone or navigate to your repo
-git clone https://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@github.com/your-username/watchlist-fx.git
+git clone https://YOUR_GITHUB_TOKEN_HERE@github.com/your-username/watchlist-fx.git
 
 # Or set remote with token
-git remote set-url origin https://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@github.com/your-username/watchlist-fx.git
+git remote set-url origin https://YOUR_GITHUB_TOKEN_HERE@github.com/your-username/watchlist-fx.git
 
 # Add all changes
 git add .

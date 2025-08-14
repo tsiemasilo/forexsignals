@@ -4,7 +4,7 @@
 cd /tmp/watchlist-fx-final
 
 # Set remote URL with access token
-git remote set-url origin https://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@github.com/almeeraleem/watchlist-fx.git
+git remote set-url origin https://YOUR_GITHUB_TOKEN_HERE@github.com/almeeraleem/watchlist-fx.git
 
 # Add all files and commit
 git add .

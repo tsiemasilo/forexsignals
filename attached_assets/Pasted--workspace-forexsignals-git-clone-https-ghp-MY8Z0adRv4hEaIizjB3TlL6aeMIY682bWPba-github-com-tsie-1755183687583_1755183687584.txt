@@ -1,4 +1,4 @@
-~/workspace/forexsignals$ git clone https://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@github.com/tsiemasilo/forexsignals.git /tmp/forexsignals
+~/workspace/forexsignals$ git clone https://YOUR_GITHUB_TOKEN_HERE@github.com/tsiemasilo/forexsignals.git /tmp/forexsignals
 cd /tmp/forexsignals
 git config user.email "almeerahlosper@gmail.com"
 git config user.name "Almeerah"
