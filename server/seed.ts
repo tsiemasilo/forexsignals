@@ -1,11 +1,33 @@
 import { db } from "./db";
 import { users, subscriptionPlans, forexSignals } from "@shared/schema";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 async function seedDatabase() {
   console.log('Seeding database...');
 
   try {
+    // Create forex_signals table if it doesn't exist
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS forex_signals (
+        id SERIAL PRIMARY KEY,
+        title VARCHAR(200) NOT NULL,
+        content TEXT NOT NULL,
+        trade_action VARCHAR(10) NOT NULL,
+        image_url VARCHAR(500),
+        image_urls TEXT[],
+        created_by INTEGER NOT NULL,
+        is_active BOOLEAN DEFAULT true,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+    console.log('Forex signals table created/verified');
+
+    // Also create signals view for backward compatibility
+    await db.execute(sql`
+      CREATE OR REPLACE VIEW signals AS SELECT * FROM forex_signals;
+    `);
+    console.log('Signals view created for compatibility');
     // Check if admin user already exists
     const existingAdmin = await db.select().from(users).where(eq(users.email, "admin@forexsignals.com")).limit(1);
     
