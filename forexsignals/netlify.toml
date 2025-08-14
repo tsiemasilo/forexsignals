@@ -1,0 +1,69 @@
+[build]
+  publish = "dist/public"
+  command = "node build-netlify.js"
+
+[build.environment]
+  NODE_VERSION = "20"
+  # Netlify automatically provides NETLIFY_DATABASE_URL for Neon database connections
+
+[[redirects]]
+  from = "/api/login"
+  to = "/.netlify/functions/emergency-login"
+  status = 200
+
+[[redirects]]
+  from = "/api/plans"
+  to = "/.netlify/functions/plans"
+  status = 200
+
+[[redirects]]
+  from = "/api/signals"
+  to = "/.netlify/functions/signals"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin/users"
+  to = "/.netlify/functions/admin-users"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin/users/*/subscription"
+  to = "/.netlify/functions/admin-user-subscription"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin/signals"
+  to = "/.netlify/functions/admin-signals"
+  status = 200
+
+[[redirects]]
+  from = "/api/user/subscription-status"
+  to = "/.netlify/functions/user-subscription-status"
+  status = 200
+
+[[redirects]]
+  from = "/api/logout"
+  to = "/.netlify/functions/logout"
+  status = 200
+
+[[redirects]]
+  from = "/api/placeholder/*/*"
+  to = "/.netlify/functions/placeholder"
+  status = 200
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/server/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[functions]
+  node_bundler = "esbuild"
+
+[dev]
+  command = "npm run dev"
+  port = 5000
