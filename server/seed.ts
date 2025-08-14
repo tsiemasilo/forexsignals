@@ -23,14 +23,14 @@ async function seedDatabase() {
       console.log('Admin user already exists');
     }
 
-    // Make Almeerah admin for signal creation
+    // Ensure Almeerah is a regular customer (not admin)
     const almeerahResult = await db.update(users)
-      .set({ isAdmin: true })
+      .set({ isAdmin: false })
       .where(eq(users.email, 'almeerahlosper@gmail.com'))
       .returning();
     
     if (almeerahResult.length > 0) {
-      console.log('Almeerah granted admin access for signal creation');
+      console.log('Almeerah set as regular customer user');
     }
 
     // Check if subscription plans exist

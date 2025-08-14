@@ -109,7 +109,7 @@ This is a full-stack e-commerce application for automotive parts built with a mo
 
 Changelog:
 - August 14, 2025. Fixed Netlify function ES module compatibility and 502 Bad Gateway errors - converted server function to proper ES modules (.mjs) with comprehensive error handling
-- August 14, 2025. RESOLVED: Fixed signals table creation and admin access - signals API now working on Replit with all 4 signals including nas100, user granted admin permissions for signal creation
+- August 14, 2025. RESOLVED: Fixed signals table creation and admin access - signals API now working on Replit with all 4 signals including nas100, proper admin/customer role separation established (admin@forexsignals.com = admin, almeerahlosper@gmail.com = customer)
 - August 14, 2025. RESOLUTION IN PROGRESS: Created database synchronization scripts and table creation functions to resolve NAS100 signal sync - implementing signals table creation on Netlify database
 - August 14, 2025. CRITICAL ISSUE IDENTIFIED: NAS100 signal synchronization blocked by missing signals table on Netlify database - Replit has 4 signals including nas100, Netlify database shows 'relation signals does not exist'
 - August 14, 2025. Fixed signals synchronization between Replit and Netlify platforms - both platforms now pull signals from PostgreSQL database instead of hardcoded data, ensuring identical signal display
