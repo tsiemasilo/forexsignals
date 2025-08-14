@@ -164,69 +164,60 @@ export default function SignalDetails() {
         </Card>
 
         {/* Signal Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="max-w-4xl mx-auto">
           {/* Main Content */}
-          <div className="lg:col-span-2">
+          <div>
             <Card>
               <CardHeader>
                 <CardTitle>Trading Analysis</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-6">
+                {/* Signal Summary */}
+                <div className="bg-blue-50 p-4 rounded-lg">
+                  <p className="text-sm text-gray-600 mb-2">Signal Posted</p>
+                  <p className="text-lg font-semibold">
+                    {signal.createdAt ? new Date(signal.createdAt).toLocaleDateString() : 'Date not available'}
+                  </p>
+                </div>
+
+                {/* Signal Description */}
                 <div className="prose max-w-none">
                   <p className="text-gray-700 leading-relaxed whitespace-pre-line">
                     {signal.content}
                   </p>
                 </div>
-              </CardContent>
-            </Card>
 
-            {/* Risk Disclaimer */}
-            <Card className="mt-6">
-              <CardContent className="pt-6">
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                  <h4 className="font-semibold text-yellow-800 mb-2">Risk Disclaimer</h4>
-                  <p className="text-sm text-yellow-700">
-                    Trading forex involves substantial risk and may not be suitable for all investors. 
-                    Past performance is not indicative of future results. Please trade responsibly and 
-                    consider your financial situation before following any trading signals.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Images Sidebar */}
-          {images.length > 0 && (
-            <div className="lg:col-span-1">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Chart Analysis</CardTitle>
-                </CardHeader>
-                <CardContent>
+                {/* Chart Images */}
+                {images.length > 0 && (
                   <div className="space-y-4">
-                    {images.map((imageUrl, index) => (
-                      <div key={index} className="relative">
-                        <img
-                          src={imageUrl}
-                          alt={`Chart analysis ${index + 1}`}
-                          className="w-full h-48 object-cover rounded-lg border cursor-pointer hover:opacity-90 transition-opacity"
-                          onClick={() => window.open(imageUrl, '_blank')}
-                        />
-                        <div className="absolute top-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
-                          {index + 1} of {images.length}
+                    <h4 className="font-semibold text-gray-800">Chart Analysis</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {images.map((imageUrl, index) => (
+                        <div key={index} className="relative">
+                          <img
+                            src={imageUrl}
+                            alt={`Chart analysis ${index + 1}`}
+                            className="w-full h-48 object-cover rounded-lg border cursor-pointer hover:opacity-90 transition-opacity"
+                            onClick={() => window.open(imageUrl, '_blank')}
+                          />
+                          <div className="absolute top-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
+                            {index + 1} of {images.length}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
+                    {images.length > 1 && (
+                      <p className="text-xs text-gray-500 text-center">
+                        Click images to view full size
+                      </p>
+                    )}
                   </div>
-                  {images.length > 1 && (
-                    <p className="text-xs text-gray-500 mt-2 text-center">
-                      Click images to view full size
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-          )}
+                )}
+              </CardContent>
+            </Card>
+
+
+          </div>
         </div>
       </div>
     </div>
