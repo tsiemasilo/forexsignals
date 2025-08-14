@@ -118,7 +118,7 @@ export default function Signals() {
 
         <div className="flex justify-center">
           {/* Phone Mockup */}
-          <div className="relative">
+          <div className="relative scale-85 md:scale-100">
             {/* Phone Frame */}
             <div className="w-80 h-[640px] bg-black rounded-[3rem] p-2 shadow-2xl">
               {/* Phone Screen */}
