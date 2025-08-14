@@ -9,7 +9,6 @@ import Home from "@/pages/Home";
 import Auth from "@/pages/Auth";
 import Signals from "@/pages/Signals";
 import Plans from "@/pages/Plans";
-import Calendar from "@/pages/Calendar";
 import AdminDashboard from "@/pages/AdminDashboard";
 import AdminSignals from "@/pages/AdminSignals";
 import AdminUsers from "@/pages/AdminUsers";
@@ -42,14 +41,12 @@ function Router() {
             <Route path="/" component={AdminDashboard} />
             <Route path="/admin/signals" component={AdminSignals} />
             <Route path="/admin/users" component={AdminUsers} />
-            <Route path="/plans" component={Plans} />
           </>
         ) : (
           <>
             <Route path="/" component={Signals} />
             <Route path="/signals" component={Signals} />
             <Route path="/plans" component={Plans} />
-            <Route path="/calendar" component={Calendar} />
           </>
         )}
         <Route component={NotFound} />
