@@ -18,12 +18,12 @@
 
 [[redirects]]
   from = "/api/signals"
-  to = "/.netlify/functions/signals"
+  to = "/.netlify/functions/signals-public"
   status = 200
 
 [[redirects]]
   from = "/api/signals/*"
-  to = "/.netlify/functions/signals"
+  to = "/.netlify/functions/signals-public"
   status = 200
 
 [[redirects]]
