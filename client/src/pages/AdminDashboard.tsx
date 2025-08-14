@@ -8,22 +8,12 @@ export default function AdminDashboard() {
 
   const { data: users = [] } = useQuery<any[]>({
     queryKey: ['/api/admin/users'],
-    enabled: !!sessionId,
-    meta: {
-      headers: {
-        Authorization: `Bearer ${sessionId}`
-      }
-    }
+    enabled: !!sessionId
   });
 
   const { data: signals = [] } = useQuery<any[]>({
     queryKey: ['/api/signals'],
-    enabled: !!sessionId,
-    meta: {
-      headers: {
-        Authorization: `Bearer ${sessionId}`
-      }
-    }
+    enabled: !!sessionId
   });
 
   const totalUsers = users.length;

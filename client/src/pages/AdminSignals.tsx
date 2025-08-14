@@ -36,21 +36,12 @@ export default function AdminSignals() {
 
   const { data: signals = [], isLoading } = useQuery<any[]>({
     queryKey: ['/api/signals'],
-    enabled: !!sessionId,
-    meta: {
-      headers: {
-        Authorization: `Bearer ${sessionId}`
-      }
-    }
+    enabled: !!sessionId
   });
 
   const createSignalMutation = useMutation({
     mutationFn: async (signalData: any) => {
-      const response = await apiRequest('POST', '/api/signals', signalData, {
-        headers: {
-          Authorization: `Bearer ${sessionId}`
-        }
-      });
+      const response = await apiRequest('POST', '/api/signals', signalData);
       return response.json();
     },
     onSuccess: () => {
@@ -73,11 +64,7 @@ export default function AdminSignals() {
 
   const updateSignalMutation = useMutation({
     mutationFn: async ({ id, ...signalData }: any) => {
-      const response = await apiRequest('PUT', `/api/signals/${id}`, signalData, {
-        headers: {
-          Authorization: `Bearer ${sessionId}`
-        }
-      });
+      const response = await apiRequest('PUT', `/api/signals/${id}`, signalData);
       return response.json();
     },
     onSuccess: () => {
@@ -100,11 +87,7 @@ export default function AdminSignals() {
 
   const deleteSignalMutation = useMutation({
     mutationFn: async (id: number) => {
-      const response = await apiRequest('DELETE', `/api/signals/${id}`, {}, {
-        headers: {
-          Authorization: `Bearer ${sessionId}`
-        }
-      });
+      const response = await apiRequest('DELETE', `/api/signals/${id}`);
       return response.json();
     },
     onSuccess: () => {
