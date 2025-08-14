@@ -358,7 +358,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ErrorUrl: `${req.protocol}://${req.get('host')}/payment/error`,
         SuccessUrl: `${req.protocol}://${req.get('host')}/payment/success`,
         NotifyUrl: `${req.protocol}://${req.get('host')}/api/ozow/notify`,
-        IsTest: 'true'
+        IsTest: 'false'
       };
 
       // Generate signature for Ozow
