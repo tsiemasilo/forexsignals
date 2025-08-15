@@ -641,6 +641,41 @@ export class DatabaseStorage implements IStorage {
       .returning();
     return !!signal;
   }
+
+  async createFreshTrial(userId: number): Promise<Subscription | undefined> {
+    console.log('🎯 DATABASE STORAGE: Creating fresh 7-day trial for user:', userId);
+    
+    // Create start and end dates for the trial
+    const now = new Date();
+    const endDate = new Date();
+    endDate.setDate(now.getDate() + 7); // Exactly 7 days from now
+    
+    try {
+      // Remove any existing subscription for this user first
+      await db.delete(subscriptions).where(eq(subscriptions.userId, userId));
+      console.log('🗑️ DATABASE STORAGE: Removed existing subscription for user:', userId);
+      
+      // Create fresh trial subscription
+      const [newSubscription] = await db.insert(subscriptions).values({
+        userId: userId,
+        planId: 1, // Basic plan for trials
+        status: 'trial',
+        startDate: now,
+        endDate: endDate,
+        createdAt: now
+      }).returning();
+      
+      console.log('✅ DATABASE STORAGE: Fresh trial created:', {
+        ...newSubscription,
+        durationDays: Math.round((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+      });
+      
+      return newSubscription;
+    } catch (error) {
+      console.error('❌ DATABASE STORAGE: Error creating fresh trial:', error);
+      return undefined;
+    }
+  }
 }
 
 export const storage = new DatabaseStorage();
