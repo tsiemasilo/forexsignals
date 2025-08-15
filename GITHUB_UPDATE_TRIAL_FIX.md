@@ -1,10 +1,18 @@
-# GitHub Update Instructions - Trial Logic Fix
+# GitHub Update Instructions - Session Isolation & Trial Logic Complete Fix
 
 ## Summary of Changes Made
 
-The trial access system has been completely overhauled and fixed:
+Both session isolation and trial access systems have been completely overhauled and fixed:
 
-### Key Fixes Implemented
+### Session Isolation Enhancements
+1. **Session Regeneration**: Added session regeneration on login to prevent session fixation attacks
+2. **Custom Session Config**: Enhanced session configuration with custom name "forexSignalsSession" and security settings
+3. **Enhanced Logout**: Improved logout functionality with proper session destruction and logging
+4. **Rolling Sessions**: Added rolling sessions that refresh on user activity
+5. **Security Features**: Added SameSite cookie protection and httpOnly flags
+6. **Admin Tools**: Created admin session cleanup endpoint for debugging session issues
+
+### Trial Access Logic Fixes
 1. **Admin Trial Creation**: Fixed dropdown trial creation to automatically set proper 7-day future end dates
 2. **Backend Validation**: Enhanced `updateUserSubscriptionStatus` method to handle trial creation with correct dates
 3. **Subscription Logic**: Improved backend subscription validation to properly distinguish between active trials and expired subscriptions
