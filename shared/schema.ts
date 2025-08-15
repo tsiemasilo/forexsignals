@@ -40,10 +40,6 @@ export type InsertUser = typeof users.$inferInsert;
 
 export const insertUserSchema = createInsertSchema(users, {
   email: z.string().email(),
-}).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
 });
 
 export type InsertUserType = z.infer<typeof insertUserSchema>;
@@ -61,10 +57,7 @@ export const subscriptionPlans = pgTable("subscription_plans", {
 export type SubscriptionPlan = typeof subscriptionPlans.$inferSelect;
 export type InsertSubscriptionPlan = typeof subscriptionPlans.$inferInsert;
 
-export const insertSubscriptionPlanSchema = createInsertSchema(subscriptionPlans).omit({
-  id: true,
-  createdAt: true,
-});
+export const insertSubscriptionPlanSchema = createInsertSchema(subscriptionPlans);
 
 export type InsertSubscriptionPlanType = z.infer<typeof insertSubscriptionPlanSchema>;
 
@@ -82,10 +75,7 @@ export const subscriptions = pgTable("subscriptions", {
 export type Subscription = typeof subscriptions.$inferSelect;
 export type InsertSubscription = typeof subscriptions.$inferInsert;
 
-export const insertSubscriptionSchema = createInsertSchema(subscriptions).omit({
-  id: true,
-  createdAt: true,
-});
+export const insertSubscriptionSchema = createInsertSchema(subscriptions);
 
 export type InsertSubscriptionType = z.infer<typeof insertSubscriptionSchema>;
 
@@ -106,11 +96,7 @@ export const forexSignals = pgTable("forex_signals", {
 export type ForexSignal = typeof forexSignals.$inferSelect;
 export type InsertForexSignal = typeof forexSignals.$inferInsert;
 
-export const insertForexSignalSchema = createInsertSchema(forexSignals).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
+export const insertForexSignalSchema = createInsertSchema(forexSignals);
 
 export type InsertForexSignalType = z.infer<typeof insertForexSignalSchema>;
 

@@ -282,7 +282,8 @@ export class MemStorage implements IStorage {
         planId: 1, // Default to Basic Plan
         status: "trial",
         startDate: new Date(),
-        endDate: trialEndDate
+        endDate: trialEndDate,
+        createdAt: new Date()
       };
       
       this.subscriptions.set(trialId, subscription);
@@ -417,12 +418,17 @@ export class MemStorage implements IStorage {
     endDate.setDate(now.getDate() + 7); // Exactly 7 days from now
     
     // Remove any existing subscription for this user
-    for (const [id, subscription] of this.subscriptions.entries()) {
+    const subscriptionsToRemove: number[] = [];
+    this.subscriptions.forEach((subscription, id) => {
       if (subscription.userId === userId) {
-        this.subscriptions.delete(id);
-        console.log('🗑️ STORAGE: Removed existing subscription:', id);
+        subscriptionsToRemove.push(id);
       }
-    }
+    });
+    
+    subscriptionsToRemove.forEach(id => {
+      this.subscriptions.delete(id);
+      console.log('🗑️ STORAGE: Removed existing subscription:', id);
+    });
     
     // Create fresh trial subscription
     const newSubscription: Subscription = {
@@ -468,32 +474,34 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getAllUsersWithSubscriptions(): Promise<any[]> {
-    const allUsers = await db.select({
-      id: users.id,
-      email: users.email,
-      firstName: users.firstName,
-      lastName: users.lastName,
-      isAdmin: users.isAdmin,
-      createdAt: users.createdAt,
-      subscription: {
-        id: subscriptions.id,
-        status: subscriptions.status,
-        startDate: subscriptions.startDate,
-        endDate: subscriptions.endDate,
-        plan: {
-          id: subscriptionPlans.id,
-          name: subscriptionPlans.name,
-          price: subscriptionPlans.price,
-          duration: subscriptionPlans.duration
-        }
-      }
-    })
-    .from(users)
-    .leftJoin(subscriptions, eq(users.id, subscriptions.userId))
-    .leftJoin(subscriptionPlans, eq(subscriptions.planId, subscriptionPlans.id))
-    .where(eq(users.isAdmin, false));
+    const allUsers = await db
+      .select()
+      .from(users)
+      .leftJoin(subscriptions, eq(users.id, subscriptions.userId))
+      .leftJoin(subscriptionPlans, eq(subscriptions.planId, subscriptionPlans.id))
+      .where(eq(users.isAdmin, false));
     
-    return allUsers;
+    // Transform the result to the expected structure
+    return allUsers.map(row => ({
+      id: row.users.id,
+      email: row.users.email,
+      firstName: row.users.firstName,
+      lastName: row.users.lastName,
+      isAdmin: row.users.isAdmin,
+      createdAt: row.users.createdAt,
+      subscription: row.subscriptions ? {
+        id: row.subscriptions.id,
+        status: row.subscriptions.status,
+        startDate: row.subscriptions.startDate,
+        endDate: row.subscriptions.endDate,
+        plan: row.subscription_plans ? {
+          id: row.subscription_plans.id,
+          name: row.subscription_plans.name,
+          price: row.subscription_plans.price,
+          duration: row.subscription_plans.duration
+        } : null
+      } : null
+    }));
   }
 
   // Subscription Plans
@@ -678,4 +686,5 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-export const storage = new DatabaseStorage();
+// Use MemStorage for now - can be switched to DatabaseStorage when database credentials are available
+export const storage = new MemStorage();

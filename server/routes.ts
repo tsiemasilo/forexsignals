@@ -58,8 +58,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   }));
 
-  // Seed database on startup
-  await seedDatabase();
+  // Skip database seeding when using memory storage
+  // await seedDatabase();
   // Auth endpoints
   app.post("/api/login", async (req: Request, res: Response) => {
     try {

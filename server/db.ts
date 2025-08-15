@@ -5,12 +5,12 @@ import * as schema from "@shared/schema";
 
 neonConfig.webSocketConstructor = ws;
 
-// Use the specified database connection string
-const databaseUrl = "postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require";
+// Use environment variable for database connection
+const databaseUrl = process.env.DATABASE_URL;
 
 if (!databaseUrl) {
   throw new Error(
-    "Database connection string must be set.",
+    "DATABASE_URL environment variable must be set. Did you forget to provision a database?",
   );
 }
 
