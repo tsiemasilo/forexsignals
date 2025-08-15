@@ -1,0 +1,84 @@
+/api/signals:1  Failed to load resource: the server responded with a status of 500 ()
+/api/signals:1  Failed to load resource: the server responded with a status of 500 ()
+/api/signals:1  Failed to load resource: the server responded with a status of 500 ()
+/api/signals:1  Failed to load resource: the server responded with a status of 500 ()
+/api/signals:1  Failed to load resource: the server responded with a status of 500 ()
+/api/signals:1  Failed to load resource: the server responded with a status of 500 ()
+/api/signals:1  Failed to load resource: the server responded with a status of 500 ()
+/api/signals:1  Failed to load resource: the server responded with a status of 500 ()
+/api/signals:1  Failed to load resource: the server responded with a status of 500 ()
+index-yOGo1Ga6.js:48  GET https://watchlistfx.netlify.app/api/signals 500 (Internal Server Error)
+(anonymous) @ index-yOGo1Ga6.js:48
+o @ index-yOGo1Ga6.js:48
+S @ index-yOGo1Ga6.js:48
+start @ index-yOGo1Ga6.js:48
+fetch @ index-yOGo1Ga6.js:48
+wo @ index-yOGo1Ga6.js:48
+(anonymous) @ index-yOGo1Ga6.js:48
+index-yOGo1Ga6.js:48  GET https://watchlistfx.netlify.app/api/signals 500 (Internal Server Error)
+(anonymous) @ index-yOGo1Ga6.js:48
+o @ index-yOGo1Ga6.js:48
+S @ index-yOGo1Ga6.js:48
+start @ index-yOGo1Ga6.js:48
+fetch @ index-yOGo1Ga6.js:48
+wo @ index-yOGo1Ga6.js:48
+(anonymous) @ index-yOGo1Ga6.js:48
+setInterval
+ju @ index-yOGo1Ga6.js:48
+Eu @ index-yOGo1Ga6.js:48
+onQueryUpdate @ index-yOGo1Ga6.js:48
+(anonymous) @ index-yOGo1Ga6.js:48
+(anonymous) @ index-yOGo1Ga6.js:48
+batch @ index-yOGo1Ga6.js:48
+un @ index-yOGo1Ga6.js:48
+l @ index-yOGo1Ga6.js:48
+h @ index-yOGo1Ga6.js:48
+(anonymous) @ index-yOGo1Ga6.js:48
+Promise.catch
+S @ index-yOGo1Ga6.js:48
+start @ index-yOGo1Ga6.js:48
+fetch @ index-yOGo1Ga6.js:48
+wo @ index-yOGo1Ga6.js:48
+(anonymous) @ index-yOGo1Ga6.js:48
+index-yOGo1Ga6.js:48  GET https://watchlistfx.netlify.app/api/signals 500 (Internal Server Error)
+(anonymous) @ index-yOGo1Ga6.js:48
+o @ index-yOGo1Ga6.js:48
+S @ index-yOGo1Ga6.js:48
+start @ index-yOGo1Ga6.js:48
+fetch @ index-yOGo1Ga6.js:48
+wo @ index-yOGo1Ga6.js:48
+(anonymous) @ index-yOGo1Ga6.js:48
+setInterval
+ju @ index-yOGo1Ga6.js:48
+Eu @ index-yOGo1Ga6.js:48
+onQueryUpdate @ index-yOGo1Ga6.js:48
+(anonymous) @ index-yOGo1Ga6.js:48
+(anonymous) @ index-yOGo1Ga6.js:48
+batch @ index-yOGo1Ga6.js:48
+un @ index-yOGo1Ga6.js:48
+l @ index-yOGo1Ga6.js:48
+h @ index-yOGo1Ga6.js:48
+(anonymous) @ index-yOGo1Ga6.js:48
+Promise.catch
+S @ index-yOGo1Ga6.js:48
+start @ index-yOGo1Ga6.js:48
+fetch @ index-yOGo1Ga6.js:48
+wo @ index-yOGo1Ga6.js:48
+(anonymous) @ index-yOGo1Ga6.js:48
+setInterval
+ju @ index-yOGo1Ga6.js:48
+Eu @ index-yOGo1Ga6.js:48
+onQueryUpdate @ index-yOGo1Ga6.js:48
+(anonymous) @ index-yOGo1Ga6.js:48
+(anonymous) @ index-yOGo1Ga6.js:48
+batch @ index-yOGo1Ga6.js:48
+un @ index-yOGo1Ga6.js:48
+l @ index-yOGo1Ga6.js:48
+h @ index-yOGo1Ga6.js:48
+(anonymous) @ index-yOGo1Ga6.js:48
+Promise.catch
+S @ index-yOGo1Ga6.js:48
+start @ index-yOGo1Ga6.js:48
+fetch @ index-yOGo1Ga6.js:48
+wo @ index-yOGo1Ga6.js:48
+(anonymous) @ index-yOGo1Ga6.js:48
