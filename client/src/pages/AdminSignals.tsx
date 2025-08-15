@@ -248,6 +248,43 @@ export default function AdminSignals() {
     }));
   };
 
+  // Compress image to reduce payload size
+  const compressImage = (file: File): Promise<string> => {
+    return new Promise((resolve) => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d')!;
+      const img = new Image();
+      
+      img.onload = () => {
+        // Calculate new dimensions (max 800px width/height)
+        const maxSize = 800;
+        let { width, height } = img;
+        
+        if (width > height) {
+          if (width > maxSize) {
+            height = (height * maxSize) / width;
+            width = maxSize;
+          }
+        } else {
+          if (height > maxSize) {
+            width = (width * maxSize) / height;
+            height = maxSize;
+          }
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        
+        // Draw and compress
+        ctx.drawImage(img, 0, 0, width, height);
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7); // 70% quality
+        resolve(compressedDataUrl);
+      };
+      
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
   // File upload handlers
   const handleFileUpload = (files: FileList | null) => {
     if (!files) return;
@@ -284,22 +321,13 @@ export default function AdminSignals() {
       setUploadedImages(prev => [...prev, ...validFiles]);
       setImagePreviews(prev => [...prev, ...newPreviews]);
       
-      // Convert files to base64 data URLs and add to imageUrls for API compatibility
-      const filePromises = validFiles.map(file => {
-        return new Promise<string>((resolve) => {
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            const dataUrl = e.target?.result as string;
-            resolve(dataUrl);
-          };
-          reader.readAsDataURL(file);
-        });
-      });
+      // Compress and convert files to base64 data URLs
+      const filePromises = validFiles.map(file => compressImage(file));
 
-      Promise.all(filePromises).then(dataUrls => {
+      Promise.all(filePromises).then(compressedDataUrls => {
         setFormData(prev => ({
           ...prev,
-          imageUrls: [...prev.imageUrls, ...dataUrls]
+          imageUrls: [...prev.imageUrls, ...compressedDataUrls]
         }));
       });
     }
