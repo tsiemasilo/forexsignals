@@ -27,6 +27,7 @@ export interface IStorage {
   updateUserSubscriptionWithPlan(userId: number, status: string, planId?: number): Promise<Subscription | undefined>;
   getAllSubscriptions(): Promise<Subscription[]>;
   extendUserSubscription(userId: number, planId: number, additionalDays: number): Promise<Subscription | undefined>;
+  createFreshTrial(userId: number): Promise<Subscription | undefined>;
 
   // Forex Signals
   getAllSignals(): Promise<ForexSignal[]>;
@@ -405,6 +406,42 @@ export class MemStorage implements IStorage {
     signal.isActive = false;
     signal.updatedAt = new Date();
     return true;
+  }
+
+  async createFreshTrial(userId: number): Promise<Subscription | undefined> {
+    console.log('🎯 STORAGE: Creating fresh 7-day trial for user:', userId);
+    
+    // Create start and end dates for the trial
+    const now = new Date();
+    const endDate = new Date();
+    endDate.setDate(now.getDate() + 7); // Exactly 7 days from now
+    
+    // Remove any existing subscription for this user
+    for (const [id, subscription] of this.subscriptions.entries()) {
+      if (subscription.userId === userId) {
+        this.subscriptions.delete(id);
+        console.log('🗑️ STORAGE: Removed existing subscription:', id);
+      }
+    }
+    
+    // Create fresh trial subscription
+    const newSubscription: Subscription = {
+      id: this.currentSubscriptionId++,
+      userId: userId,
+      planId: 1, // Basic plan for trials
+      status: 'trial',
+      startDate: now,
+      endDate: endDate,
+      createdAt: now
+    };
+    
+    this.subscriptions.set(newSubscription.id, newSubscription);
+    console.log('✅ STORAGE: Fresh trial created:', {
+      ...newSubscription,
+      durationDays: Math.round((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+    });
+    
+    return newSubscription;
   }
 }
 

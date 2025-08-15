@@ -94,6 +94,28 @@ export default function AdminUsers() {
     },
   });
 
+  // Dedicated mutation for creating fresh trials
+  const updateTrialMutation = useMutation({
+    mutationFn: async ({ userId }: { userId: number }) => {
+      return await apiRequest('POST', `/api/admin/users/${userId}/create-trial`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/user/subscription-status'] });
+      toast({
+        title: "Success",
+        description: "7-day trial created successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to create trial",
+        variant: "destructive",
+      });
+    },
+  });
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -179,6 +201,12 @@ export default function AdminUsers() {
   const handleStatusChange = (userId: number, newStatus: string, planId?: number) => {
     console.log('🔧 ADMIN FRONTEND: About to change subscription:', { userId, newStatus, planId });
     updateSubscriptionMutation.mutate({ userId, status: newStatus, planId });
+  };
+
+  // New dedicated trial creation function
+  const handleCreateTrial = (userId: number) => {
+    console.log('🎯 ADMIN: Creating fresh 7-day trial for user:', userId);
+    updateTrialMutation.mutate({ userId });
   };
 
   if (isLoading) {
@@ -316,24 +344,38 @@ export default function AdminUsers() {
                           <TableCell>
                             {user.subscription ? (
                               <div className="space-y-2">
-                                <Select 
-                                  value={subscriptionInfo.rawStatus} 
-                                  onValueChange={(value) => {
-                                    if (value !== "active") {
-                                      handleStatusChange(user.id, value);
-                                    }
-                                  }}
-                                  disabled={updateSubscriptionMutation.isPending}
-                                >
-                                  <SelectTrigger className="w-[130px]">
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="trial">Free Trial</SelectItem>
-                                    <SelectItem value="inactive">Inactive</SelectItem>
-                                    <SelectItem value="expired">Expired</SelectItem>
-                                  </SelectContent>
-                                </Select>
+                                {/* Simple buttons instead of dropdown */}
+                                <div className="flex flex-col gap-1">
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => handleCreateTrial(user.id)}
+                                    disabled={updateSubscriptionMutation.isPending}
+                                    className="w-[130px] text-xs"
+                                  >
+                                    Create 7-Day Trial
+                                  </Button>
+                                  
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => handleStatusChange(user.id, "inactive")}
+                                    disabled={updateSubscriptionMutation.isPending}
+                                    className="w-[130px] text-xs"
+                                  >
+                                    Set Inactive
+                                  </Button>
+                                  
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => handleStatusChange(user.id, "expired")}
+                                    disabled={updateSubscriptionMutation.isPending}
+                                    className="w-[130px] text-xs"
+                                  >
+                                    Set Expired
+                                  </Button>
+                                </div>
                                 
                                 {/* Active Plan Selection */}
                                 <Select 

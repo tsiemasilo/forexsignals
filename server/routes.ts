@@ -578,6 +578,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // NEW: Dedicated admin endpoint for creating fresh trials (bypasses dropdown issues)
+  app.post("/api/admin/users/:userId/create-trial", requireAuth, requireAdmin, async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      console.log('🎯 DEDICATED TRIAL CREATION: Starting fresh trial for user:', userId);
+      
+      // Create a completely fresh 7-day trial using direct storage method
+      const freshTrial = await storage.createFreshTrial(userId);
+      
+      if (!freshTrial) {
+        return res.status(500).json({ message: "Failed to create fresh trial" });
+      }
+      
+      console.log('✅ DEDICATED TRIAL CREATION: Fresh 7-day trial created successfully:', freshTrial);
+      res.json({ message: "Fresh 7-day trial created successfully", subscription: freshTrial });
+      
+    } catch (error) {
+      console.error('Dedicated trial creation error:', error);
+      res.status(500).json({ message: "Failed to create fresh trial" });
+    }
+  });
+
   // Keep the old implementation as backup
   app.get("/api/admin/users-detailed", requireAuth, requireAdmin, async (req: Request, res: Response) => {
     try {
