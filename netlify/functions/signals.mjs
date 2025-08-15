@@ -53,11 +53,19 @@ export const handler = async (event, context) => {
     const { httpMethod } = event;
 
     if (httpMethod === 'GET') {
+      // SUBSCRIPTION DEBUG LOGGING
+      console.log('🔍 SUBSCRIPTION CHECK DEBUG:', {
+        userId: user.id,
+        userEmail: user.email,
+        isAdmin: user.is_admin,
+        timestamp: new Date().toISOString()
+      });
+      
       // ADMIN BYPASS: Admins can always access signals
       if (!user.is_admin) {
         // Check subscription for non-admin users only
         const subscriptionResult = await sql`
-          SELECT status, end_date
+          SELECT status, end_date, start_date, created_at
           FROM subscriptions
           WHERE user_id = ${user.id}
           ORDER BY created_at DESC
@@ -66,15 +74,44 @@ export const handler = async (event, context) => {
         
         const subscription = subscriptionResult[0];
         
+        // Enhanced subscription debug logging
+        console.log('🔍 SUBSCRIPTION VALIDATION DETAILS:', {
+          userId: user.id,
+          subscriptionFound: !!subscription,
+          subscription: subscription,
+          currentTime: new Date().toISOString(),
+          endDatePassed: subscription ? new Date() > subscription.end_date : null,
+          isActiveOrTrial: subscription ? (subscription.status === 'active' || subscription.status === 'trial') : false
+        });
+        
         if (!subscription || 
             (subscription.status !== 'active' && subscription.status !== 'trial') || 
             new Date() > subscription.end_date) {
+          
+          console.log('❌ SUBSCRIPTION ACCESS DENIED:', {
+            userId: user.id,
+            reason: !subscription ? 'No subscription found' : 
+                   (subscription.status !== 'active' && subscription.status !== 'trial') ? `Invalid status: ${subscription.status}` :
+                   'Subscription expired',
+            subscription: subscription
+          });
+          
           return {
             statusCode: 403,
             headers,
             body: JSON.stringify({ message: 'Active subscription required' })
           };
         }
+        
+        console.log('✅ SUBSCRIPTION ACCESS GRANTED:', {
+          userId: user.id,
+          subscription: subscription
+        });
+      } else {
+        console.log('✅ ADMIN ACCESS GRANTED:', {
+          userId: user.id,
+          userEmail: user.email
+        });
       }
 
       // Get all signals - admins and active subscribers can see all

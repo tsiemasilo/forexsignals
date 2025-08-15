@@ -28,10 +28,23 @@ export default function Signals() {
     signals: signals,
     isLoading,
     error: error?.message,
+    errorType: error?.constructor?.name,
+    errorStatus: (error as any)?.status,
     sessionId,
     user,
     timestamp: new Date().toISOString()
   });
+  
+  // Additional subscription access debug
+  if (error) {
+    console.log('🚨 SUBSCRIPTION ACCESS DEBUG:', {
+      errorMessage: error.message,
+      errorContainsSubscription: error.message.includes('subscription'),
+      errorContains403: error.message.includes('403'),
+      errorContainsActive: error.message.includes('Active subscription required'),
+      shouldShowUpgrade: error.message.includes('subscription') || error.message.includes('Active subscription required') || error.message.includes('403')
+    });
+  }
 
   const getTradeActionIcon = (action: string) => {
     switch (action.toLowerCase()) {
