@@ -484,6 +484,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin sync endpoint to force memory storage sync with database
+  app.post("/api/admin/sync-trial", async (req: Request, res: Response) => {
+    try {
+      const { userId, trialEndDate, planId } = req.body;
+      console.log('🔄 SYNCING MEMORY STORAGE WITH DATABASE TRIAL:', { userId, trialEndDate, planId });
+      
+      // Force update memory storage subscription
+      const subscription = await storage.updateUserSubscriptionStatus(userId, "trial");
+      if (subscription) {
+        // Update with correct database dates
+        subscription.endDate = new Date(trialEndDate);
+        subscription.planId = planId;
+        subscription.startDate = new Date();
+        
+        console.log('✅ Memory storage synced:', subscription);
+        return res.json({ message: "Memory storage synced successfully", subscription });
+      }
+      
+      res.status(404).json({ message: "Failed to sync subscription" });
+    } catch (error) {
+      console.error('❌ Sync error:', error);
+      res.status(500).json({ message: "Failed to sync memory storage" });
+    }
+  });
+
   // Admin endpoints
   app.get("/api/admin/users", requireAuth, requireAdmin, async (req: Request, res: Response) => {
     try {
