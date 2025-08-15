@@ -86,6 +86,12 @@ export default function Signals() {
     });
   };
 
+  // Check subscription status to determine if user should see upgrade prompt (must be at top level)
+  const { data: subscriptionStatus } = useQuery({
+    queryKey: ['/api/user/subscription-status'],
+    retry: false,
+  });
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -93,12 +99,6 @@ export default function Signals() {
       </div>
     );
   }
-
-  // Check subscription status to determine if user should see upgrade prompt
-  const { data: subscriptionStatus } = useQuery({
-    queryKey: ['/api/user/subscription-status'],
-    retry: false,
-  });
 
   if (error) {
     const errorMessage = (error as any)?.message || 'Unknown error';
