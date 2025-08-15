@@ -4,83 +4,54 @@ import { apiRequest } from "@/lib/queryClient";
 interface User {
   id: number;
   email: string;
-  firstName: string | null;
-  lastName: string | null;
+  firstName: string;
+  lastName: string;
   isAdmin: boolean;
 }
 
 interface AuthContextType {
   user: User | null;
-  sessionId: string | null;
-  isLoading: boolean;
   login: (email: string) => Promise<void>;
-  register: (userData: { email: string; firstName?: string; lastName?: string }) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
+  loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [sessionId, setSessionId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check for existing session on app load
-    const storedSessionId = localStorage.getItem("sessionId");
-    const storedUser = localStorage.getItem("user");
-    
-    if (storedSessionId && storedUser) {
-      try {
-        setSessionId(storedSessionId);
-        setUser(JSON.parse(storedUser));
-      } catch (error) {
-        // Invalid stored data, clear it
-        localStorage.removeItem("sessionId");
-        localStorage.removeItem("user");
-      }
-    }
-    setIsLoading(false);
+    checkAuth();
   }, []);
 
+  const checkAuth = async () => {
+    try {
+      const response = await apiRequest("/api/me");
+      setUser(response.user);
+    } catch (error) {
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const login = async (email: string) => {
-    try {
-      const response = await apiRequest("POST", "/api/login", { email });
-      const data = await response.json();
-      
-      setUser(data.user);
-      setSessionId(data.sessionId);
-      
-      // Store in localStorage for persistence
-      localStorage.setItem("sessionId", data.sessionId);
-      localStorage.setItem("user", JSON.stringify(data.user));
-    } catch (error) {
-      throw new Error("Login failed");
-    }
-  };
-
-  const register = async (userData: { email: string; firstName?: string; lastName?: string }) => {
-    try {
-      await apiRequest("POST", "/api/register", userData);
-    } catch (error) {
-      throw new Error("Registration failed");
-    }
-  };
-
-  const logout = () => {
-    // Call logout endpoint (no authorization header needed with session cookies)
-    apiRequest("POST", "/api/logout", {}).catch(() => {
-      // Ignore errors for logout
+    const response = await apiRequest("/api/login", {
+      method: "POST",
+      body: JSON.stringify({ email }),
     });
-    
+    setUser(response.user);
+  };
+
+  const logout = async () => {
+    await apiRequest("/api/logout", { method: "POST" });
     setUser(null);
-    setSessionId(null);
-    localStorage.removeItem("sessionId");
-    localStorage.removeItem("user");
   };
 
   return (
-    <AuthContext.Provider value={{ user, sessionId, isLoading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

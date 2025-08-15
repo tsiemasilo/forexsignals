@@ -1,160 +1,372 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { TrendingUp, Users, DollarSign, Activity } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
-import { useAuth } from '@/contexts/AuthContext';
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/contexts/AuthContext";
+import { apiRequest } from "@/lib/queryClient";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
+import { Users, Plus, TrendingUp, Settings, User, Calendar } from "lucide-react";
 
-export default function AdminDashboard() {
-  const { sessionId } = useAuth();
+interface AdminUser {
+  id: number;
+  email: string;
+  firstName: string;
+  lastName: string;
+  subscription?: {
+    id: number;
+    status: string;
+    startDate: string;
+    endDate: string;
+    plan: {
+      name: string;
+      price: string;
+    };
+  };
+}
 
-  const { data: users = [] } = useQuery<any[]>({
-    queryKey: ['/api/admin/users'],
-    enabled: !!sessionId
+interface ForexSignal {
+  id: number;
+  title: string;
+  content: string;
+  tradeAction: "Buy" | "Sell" | "Hold";
+  imageUrl?: string;
+  createdAt: string;
+}
+
+export function AdminDashboard() {
+  const { user, logout } = useAuth();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [newSignal, setNewSignal] = useState({
+    title: "",
+    content: "",
+    tradeAction: "Buy" as "Buy" | "Sell" | "Hold",
+    imageUrl: "",
   });
 
-  const { data: signals = [] } = useQuery<any[]>({
-    queryKey: ['/api/signals'],
-    enabled: !!sessionId
+  const { data: users } = useQuery({
+    queryKey: ["/api/admin/users"],
+    queryFn: () => apiRequest("/api/admin/users"),
   });
 
-  const totalUsers = users.length;
-  const activeSubscriptions = users.filter((user: any) => 
-    user.subscription && user.subscription.status === 'active'
-  ).length;
-  const totalSignals = signals.length;
-  const recentSignals = signals.slice(0, 3);
+  const { data: signals } = useQuery({
+    queryKey: ["/api/admin/signals"],
+    queryFn: () => apiRequest("/api/admin/signals"),
+  });
 
-  const stats = [
-    {
-      title: "Total Users",
-      value: totalUsers,
-      description: "Registered customers",
-      icon: Users,
-      color: "text-blue-600"
+  const createTrialMutation = useMutation({
+    mutationFn: (userId: number) => 
+      apiRequest(`/api/admin/users/${userId}/create-trial`, { method: "POST" }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      toast({
+        title: "Success",
+        description: "Trial created successfully!",
+      });
     },
-    {
-      title: "Active Subscriptions",
-      value: activeSubscriptions,
-      description: "Current subscribers",
-      icon: DollarSign,
-      color: "text-green-600"
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to create trial",
+        variant: "destructive",
+      });
     },
-    {
-      title: "Total Signals",
-      value: totalSignals,
-      description: "Published signals",
-      icon: TrendingUp,
-      color: "text-purple-600"
+  });
+
+  const createSignalMutation = useMutation({
+    mutationFn: (signalData: typeof newSignal) => 
+      apiRequest("/api/admin/signals", {
+        method: "POST",
+        body: JSON.stringify(signalData),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/signals"] });
+      setNewSignal({
+        title: "",
+        content: "",
+        tradeAction: "Buy",
+        imageUrl: "",
+      });
+      toast({
+        title: "Success",
+        description: "Signal created successfully!",
+      });
     },
-    {
-      title: "Conversion Rate",
-      value: totalUsers > 0 ? `${Math.round((activeSubscriptions / totalUsers) * 100)}%` : "0%",
-      description: "Users to subscribers",
-      icon: Activity,
-      color: "text-orange-600"
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to create signal",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleCreateTrial = (userId: number) => {
+    createTrialMutation.mutate(userId);
+  };
+
+  const handleCreateSignal = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newSignal.title || !newSignal.content) return;
+    createSignalMutation.mutate(newSignal);
+  };
+
+  const getStatusColor = (subscription?: AdminUser['subscription']) => {
+    if (!subscription) return "bg-gray-100 text-gray-800";
+    
+    const now = new Date();
+    const endDate = new Date(subscription.endDate);
+    const isActive = endDate > now;
+    
+    if (subscription.status === 'trial' && isActive) {
+      return "bg-blue-100 text-blue-800";
+    } else if (subscription.status === 'active' && isActive) {
+      return "bg-green-100 text-green-800";
+    } else {
+      return "bg-red-100 text-red-800";
     }
-  ];
+  };
+
+  const getStatusDisplay = (subscription?: AdminUser['subscription']) => {
+    if (!subscription) return "No Subscription";
+    
+    const now = new Date();
+    const endDate = new Date(subscription.endDate);
+    const daysLeft = Math.max(0, Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+    
+    if (subscription.status === 'trial') {
+      return daysLeft > 0 ? `Trial (${daysLeft} days left)` : "Trial Expired";
+    } else if (subscription.status === 'active') {
+      return daysLeft > 0 ? `Active (${daysLeft} days left)` : "Expired";
+    } else {
+      return subscription.status.charAt(0).toUpperCase() + subscription.status.slice(1);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Admin Dashboard</h1>
-          <p className="text-gray-600">
-            Monitor your forex signals platform performance and manage users.
-          </p>
+    <div className="min-h-screen bg-gray-50">
+      <header className="bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center">
+              <h1 className="text-xl font-semibold text-gray-900">Admin Dashboard</h1>
+            </div>
+            <div className="flex items-center space-x-4">
+              <Badge className="bg-purple-100 text-purple-800">
+                <Settings className="h-3 w-3 mr-1" />
+                Admin
+              </Badge>
+              <div className="flex items-center space-x-2">
+                <User className="h-4 w-4 text-gray-500" />
+                <span className="text-sm text-gray-700">{user?.firstName} {user?.lastName}</span>
+              </div>
+              <Button variant="outline" onClick={logout}>
+                Sign Out
+              </Button>
+            </div>
+          </div>
         </div>
+      </header>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {stats.map((stat, index) => (
-            <Card key={index}>
+      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div className="px-4 py-6 sm:px-0 space-y-8">
+          {/* Stats Overview */}
+          <div className="grid gap-6 md:grid-cols-3">
+            <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  {stat.title}
-                </CardTitle>
-                <stat.icon className={`h-4 w-4 ${stat.color}`} />
+                <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+                <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stat.value}</div>
+                <div className="text-2xl font-bold">{users?.length || 0}</div>
                 <p className="text-xs text-muted-foreground">
-                  {stat.description}
+                  Registered customers
                 </p>
               </CardContent>
             </Card>
-          ))}
-        </div>
+            
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Active Signals</CardTitle>
+                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{signals?.length || 0}</div>
+                <p className="text-xs text-muted-foreground">
+                  Published signals
+                </p>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Active Subscriptions</CardTitle>
+                <Calendar className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {users?.filter((u: AdminUser) => {
+                    if (!u.subscription) return false;
+                    const now = new Date();
+                    const endDate = new Date(u.subscription.endDate);
+                    return endDate > now;
+                  }).length || 0}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Active customers
+                </p>
+              </CardContent>
+            </Card>
+          </div>
 
-        {/* Recent Activity */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Create New Signal */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Plus className="h-5 w-5" />
+                <span>Create New Signal</span>
+              </CardTitle>
+              <CardDescription>
+                Add a new forex trading signal for subscribers
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleCreateSignal} className="space-y-4">
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Signal Title</label>
+                    <Input
+                      placeholder="EUR/USD Buy Signal"
+                      value={newSignal.title}
+                      onChange={(e) => setNewSignal({ ...newSignal, title: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Trade Action</label>
+                    <select
+                      className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm"
+                      value={newSignal.tradeAction}
+                      onChange={(e) => setNewSignal({ ...newSignal, tradeAction: e.target.value as "Buy" | "Sell" | "Hold" })}
+                    >
+                      <option value="Buy">Buy</option>
+                      <option value="Sell">Sell</option>
+                      <option value="Hold">Hold</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Signal Content</label>
+                  <textarea
+                    className="flex min-h-[80px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
+                    placeholder="Strong bullish momentum on EUR/USD. Entry at 1.0850, Stop Loss at 1.0820, Take Profit at 1.0920..."
+                    value={newSignal.content}
+                    onChange={(e) => setNewSignal({ ...newSignal, content: e.target.value })}
+                    required
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Image URL (Optional)</label>
+                  <Input
+                    placeholder="https://example.com/chart-image.png"
+                    value={newSignal.imageUrl}
+                    onChange={(e) => setNewSignal({ ...newSignal, imageUrl: e.target.value })}
+                  />
+                </div>
+                
+                <Button 
+                  type="submit" 
+                  className="w-full md:w-auto" 
+                  disabled={createSignalMutation.isPending}
+                >
+                  {createSignalMutation.isPending ? "Creating..." : "Create Signal"}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+
+          {/* User Management */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Users className="h-5 w-5" />
+                <span>User Management</span>
+              </CardTitle>
+              <CardDescription>
+                Manage user subscriptions and trials
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {users?.map((user: AdminUser) => (
+                  <div key={user.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-3">
+                        <div>
+                          <h3 className="font-medium">{user.firstName} {user.lastName}</h3>
+                          <p className="text-sm text-gray-600">{user.email}</p>
+                        </div>
+                        <Badge className={getStatusColor(user.subscription)}>
+                          {getStatusDisplay(user.subscription)}
+                        </Badge>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleCreateTrial(user.id)}
+                        disabled={createTrialMutation.isPending}
+                      >
+                        Create 7-Day Trial
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Recent Signals */}
           <Card>
             <CardHeader>
-              <CardTitle>Recent Signals</CardTitle>
+              <CardTitle className="flex items-center space-x-2">
+                <TrendingUp className="h-5 w-5" />
+                <span>Recent Signals</span>
+              </CardTitle>
               <CardDescription>
                 Latest trading signals published
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {recentSignals.length === 0 ? (
-                <p className="text-gray-500 text-center py-4">No signals published yet</p>
-              ) : (
-                <div className="space-y-4">
-                  {recentSignals.map((signal: any) => (
-                    <div key={signal.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="font-medium">{signal.title}</p>
-                        <p className="text-sm text-gray-500">
-                          {new Date(signal.createdAt).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        signal.tradeAction === 'Buy' ? 'bg-green-100 text-green-800' :
-                        signal.tradeAction === 'Sell' ? 'bg-red-100 text-red-800' :
-                        'bg-gray-100 text-gray-800'
-                      }`}>
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {signals?.slice(0, 6).map((signal: ForexSignal) => (
+                  <div key={signal.id} className="border rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-medium truncate">{signal.title}</h3>
+                      <Badge className={
+                        signal.tradeAction === "Buy" ? "bg-green-100 text-green-800" :
+                        signal.tradeAction === "Sell" ? "bg-red-100 text-red-800" :
+                        "bg-yellow-100 text-yellow-800"
+                      }>
                         {signal.tradeAction}
-                      </span>
+                      </Badge>
                     </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Recent Users */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Recent Users</CardTitle>
-              <CardDescription>
-                Newly registered customers
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {users.length === 0 ? (
-                <p className="text-gray-500 text-center py-4">No users registered yet</p>
-              ) : (
-                <div className="space-y-4">
-                  {users.slice(0, 5).map((user: any) => (
-                    <div key={user.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="font-medium">{user.firstName} {user.lastName}</p>
-                        <p className="text-sm text-gray-500">{user.email}</p>
-                      </div>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        user.subscription && user.subscription.status === 'active'
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-gray-100 text-gray-800'
-                      }`}>
-                        {user.subscription && user.subscription.status === 'active' ? 'Active' : 'Free'}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
+                    <p className="text-sm text-gray-600 line-clamp-2">{signal.content}</p>
+                    <p className="text-xs text-gray-500 mt-2">
+                      {new Date(signal.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </CardContent>
           </Card>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
