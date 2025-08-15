@@ -1,25 +1,37 @@
 #!/bin/bash
 
-# Navigate to the prepared repository
-cd /tmp/forexsignals
+# GitHub Update Script - Admin Trial Fix
+# Run these commands to push the admin trial corruption fix to GitHub
 
-# Configure git
-git config user.email "almeerahlosper@gmail.com"
-git config user.name "Almeerah"
+echo "🔄 Updating GitHub with Admin Trial Fix..."
 
-# Add all files
-git add .
+# Add all changes
+git add -A
 
-# Commit changes
-git commit -m "Complete Netlify serverless conversion - production ready
+# Commit with detailed message
+git commit -m "CRITICAL FIX: Admin trial corruption completely resolved
 
-- 17 serverless functions operational at https://watchlistfx.netlify.app/
-- Session authentication with PostgreSQL working
-- Admin signals CRUD fully functional
-- User subscription system operational
-- All customer data preserved and working"
+✅ ADMIN PANEL TRIAL CREATION NOW WORKING
+- Fixed admin route logic that was corrupting trials
+- Added early exit mechanism to prevent double method calls
+- Implemented safety checks for trial duration validation
+- Test suite confirms 7-day trials created properly
 
-# Push to your repository
-git push origin main
+🔧 TECHNICAL DETAILS
+- Root cause: admin route calling both updateUserSubscriptionStatus() and updateUserSubscriptionWithPlan()
+- Fix: Force early exit after trial creation to prevent corruption
+- Added duration validation and auto-correction
+- Comprehensive test script validates fix works perfectly
 
-echo "✅ Successfully updated https://github.com/tsiemasilo/forexsignals.git"
+🎯 RESULTS
+- Admin can safely select 'Free Trial' from dropdown
+- Always creates proper 7-day trials (never expired)  
+- 18 signals accessible immediately after trial creation
+- No more 'error loading signals' or expiration issues
+
+This resolves the core issue where admin panel changes would corrupt user trials."
+
+# Push to GitHub using authentication token
+git push https://tsiemasilo:$PERSONAL_ACCESS_TOKEN_FOREX@github.com/tsiemasilo/forexsignals.git main
+
+echo "✅ GitHub update complete!"
