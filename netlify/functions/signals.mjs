@@ -71,47 +71,45 @@ export async function handler(event, context) {
   const sql = neon(databaseUrl);
 
   try {
-    // Extract session ID from cookies
-    const cookies = event.headers.cookie || '';
-    const sessionMatch = cookies.match(/connect\.sid=([^;]+)/);
-    const sessionId = sessionMatch ? decodeURIComponent(sessionMatch[1]).replace(/^s:/, '').split('.')[0] : null;
-
-    console.log('Session ID extracted:', sessionId ? 'Present' : 'Missing');
-
-    if (!sessionId) {
+    // Extract JWT token from Authorization header
+    const authHeader = event.headers.authorization;
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return {
         statusCode: 401,
         headers,
-        body: JSON.stringify({ message: 'Session expired. Please sign in again.' })
+        body: JSON.stringify({ message: 'Authentication required' })
       };
     }
 
-    // Get session data
-    const sessionResult = await sql`
-      SELECT sess FROM sessions 
-      WHERE sid = ${sessionId} AND expire > NOW()
-    `;
+    const token = authHeader.substring(7);
+    console.log('Token extracted:', token.substring(0, 20) + '...');
 
-    if (sessionResult.length === 0) {
-      console.log('No valid session found');
+    // Verify JWT token
+    let decoded;
+    try {
+      const jwt = await import('jsonwebtoken');
+      const JWT_SECRET = process.env.JWT_SECRET || 'watchlistfx-default-secret-2025';
+      decoded = jwt.default.verify(token, JWT_SECRET);
+    } catch (jwtError) {
+      console.error('JWT verification failed:', jwtError.message);
       return {
         statusCode: 401,
         headers,
-        body: JSON.stringify({ message: 'Session expired. Please sign in again.' })
+        body: JSON.stringify({ message: 'Invalid token' })
       };
     }
 
-    const sessionData = sessionResult[0].sess;
-    const userId = sessionData.userId;
-    const isAdmin = sessionData.isAdmin || false;
+    const userId = decoded.userId;
+    const isAdmin = decoded.isAdmin || false;
 
-    console.log('Session validated for user:', userId, 'Admin:', isAdmin);
+    console.log('Token validated for user:', userId, 'Admin:', isAdmin);
 
     if (!userId) {
       return {
         statusCode: 401,
         headers,
-        body: JSON.stringify({ message: 'Session expired. Please sign in again.' })
+        body: JSON.stringify({ message: 'Invalid token payload' })
       };
     }
 

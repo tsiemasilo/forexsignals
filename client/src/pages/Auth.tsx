@@ -14,7 +14,8 @@ export default function Auth() {
   const { toast } = useToast();
   
   const [loginData, setLoginData] = useState({
-    email: ''
+    email: '',
+    password: ''
   });
   
   const [registerData, setRegisterData] = useState({
@@ -33,7 +34,7 @@ export default function Auth() {
     e.preventDefault();
     
     try {
-      await login(loginData.email);
+      await login(loginData.email, loginData.password);
       toast({
         title: "Login successful",
         description: "Welcome back!"
@@ -42,7 +43,7 @@ export default function Auth() {
     } catch (error) {
       toast({
         title: "Login failed",
-        description: "Please check your email address.",
+        description: "Please check your email and password.",
         variant: "destructive"
       });
     }
@@ -67,7 +68,7 @@ export default function Auth() {
         });
         // Switch to login tab after successful registration
         setActiveTab('login');
-        setLoginData({ email: registerData.email });
+        setLoginData({ email: registerData.email, password: '' });
         // Clear register form
         setRegisterData({ email: '', firstName: '', lastName: '' });
       } else {
@@ -118,6 +119,18 @@ export default function Auth() {
                   />
                 </div>
                 
+                <div className="space-y-2">
+                  <Label htmlFor="login-password">Password</Label>
+                  <Input
+                    id="login-password"
+                    type="password"
+                    value={loginData.password}
+                    onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
+                    placeholder="Enter your password"
+                    required
+                  />
+                </div>
+                
                 <Button type="submit" className="w-full bg-green-600 hover:bg-green-700">
                   Sign In
                 </Button>
@@ -126,8 +139,8 @@ export default function Auth() {
               <div className="text-center text-sm text-gray-600 mt-4">
                 <p>Demo accounts:</p>
                 <p className="text-xs">
-                  Admin: admin@forexsignals.com<br/>
-                  Customer: customer@example.com
+                  Admin: admin@forexsignals.com / admin123<br/>
+                  Customer: almeerahlosper@gmail.com / password123
                 </p>
               </div>
             </TabsContent>
