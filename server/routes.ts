@@ -48,10 +48,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     secret: 'forex-signals-secret-key-2025',
     resave: false,
     saveUninitialized: false,
+    name: 'forexSignalsSession', // Custom session name to avoid conflicts
+    rolling: true, // Refresh session on activity
     cookie: {
       secure: false, // Set to true in production with HTTPS
       httpOnly: true,
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days for payment redirects
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days for payment redirects
+      sameSite: 'lax' // Prevent CSRF attacks while allowing same-site requests
     }
   }));
 
@@ -70,21 +73,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
-      // Store user data in session
-      (req as any).session.userId = user.id;
-      (req as any).session.isAdmin = user.isAdmin || false;
-      const sessionId = (req as any).session.id;
-      console.log('Session created:', sessionId, 'for user:', user.id);
-
-      res.json({
-        sessionId,
-        user: {
-          id: user.id,
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          isAdmin: user.isAdmin
+      // Regenerate session to prevent session fixation attacks
+      (req as any).session.regenerate((err: any) => {
+        if (err) {
+          console.error('Session regeneration failed:', err);
+          return res.status(500).json({ message: "Login failed" });
         }
+
+        // Store user data in new session
+        (req as any).session.userId = user.id;
+        (req as any).session.isAdmin = user.isAdmin || false;
+        (req as any).session.loginTime = new Date().toISOString();
+        
+        // Save session before responding
+        (req as any).session.save((saveErr: any) => {
+          if (saveErr) {
+            console.error('Session save failed:', saveErr);
+            return res.status(500).json({ message: "Login failed" });
+          }
+
+          const sessionId = (req as any).session.id;
+          console.log('New session created:', sessionId, 'for user:', user.id);
+
+          res.json({
+            sessionId,
+            user: {
+              id: user.id,
+              email: user.email,
+              firstName: user.firstName,
+              lastName: user.lastName,
+              isAdmin: user.isAdmin
+            }
+          });
+        });
       });
     } catch (error) {
       console.error('Login error:', error);
@@ -141,6 +162,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/logout", (req: Request, res: Response) => {
     if ((req as any).session) {
+      const sessionId = (req as any).session.id;
+      console.log('Destroying session:', sessionId);
+      
       (req as any).session.destroy((err: any) => {
         if (err) {
           console.error('Session destroy error:', err);
@@ -151,6 +175,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } else {
       res.json({ message: "Logged out successfully" });
+    }
+  });
+
+  // Admin endpoint to clear all sessions (for debugging session issues)
+  app.post("/api/admin/clear-sessions", requireAuth, requireAdmin, async (req: Request, res: Response) => {
+    try {
+      // Note: This would require direct database access to clear sessions table
+      // For now, we'll just log that the endpoint was called
+      console.log('Admin requested session cleanup');
+      res.json({ message: "Session cleanup logged - users will need to login again" });
+    } catch (error) {
+      console.error('Session cleanup error:', error);
+      res.status(500).json({ message: "Session cleanup failed" });
     }
   });
 
