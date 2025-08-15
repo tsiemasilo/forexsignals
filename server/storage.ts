@@ -271,6 +271,15 @@ export class MemStorage implements IStorage {
     if (!subscription) return undefined;
 
     subscription.status = status;
+    
+    // If setting to trial, create a proper 7-day trial with future end date
+    if (status === "trial") {
+      const trialEndDate = new Date();
+      trialEndDate.setDate(trialEndDate.getDate() + 7); // 7-day trial
+      subscription.startDate = new Date();
+      subscription.endDate = trialEndDate;
+    }
+    
     return subscription;
   }
 
@@ -454,6 +463,23 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateUserSubscriptionStatus(userId: number, status: string): Promise<Subscription | undefined> {
+    // If setting to trial, create a proper 7-day trial with future end date
+    if (status === "trial") {
+      const trialEndDate = new Date();
+      trialEndDate.setDate(trialEndDate.getDate() + 7); // 7-day trial
+      
+      const [subscription] = await db.update(subscriptions)
+        .set({ 
+          status, 
+          startDate: new Date(),
+          endDate: trialEndDate
+        })
+        .where(eq(subscriptions.userId, userId))
+        .returning();
+      return subscription || undefined;
+    }
+    
+    // For other statuses, just update the status
     const [subscription] = await db.update(subscriptions)
       .set({ status })
       .where(eq(subscriptions.userId, userId))
