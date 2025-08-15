@@ -126,18 +126,7 @@ export default function SignalDetails() {
     );
   }
 
-  // Debug logging for signal data
-  console.log('📋 SIGNAL DETAILS DEBUG:', {
-    signalId,
-    signal,
-    title: signal?.title,
-    content: signal?.content,
-    tradeAction: signal?.tradeAction,
-    createdAt: signal?.createdAt,
-    updatedAt: signal?.updatedAt,
-    imageUrls: signal?.imageUrls,
-    imageUrl: signal?.imageUrl
-  });
+
 
   const images = signal.imageUrls?.filter(url => url && url.trim()) || (signal.imageUrl ? [signal.imageUrl] : []);
 
