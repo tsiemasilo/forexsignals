@@ -285,16 +285,22 @@ export default function AdminSignals() {
       setImagePreviews(prev => [...prev, ...newPreviews]);
       
       // Convert files to base64 data URLs and add to imageUrls for API compatibility
-      validFiles.forEach(file => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const dataUrl = e.target?.result as string;
-          setFormData(prev => ({
-            ...prev,
-            imageUrls: [...prev.imageUrls, dataUrl]
-          }));
-        };
-        reader.readAsDataURL(file);
+      const filePromises = validFiles.map(file => {
+        return new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const dataUrl = e.target?.result as string;
+            resolve(dataUrl);
+          };
+          reader.readAsDataURL(file);
+        });
+      });
+
+      Promise.all(filePromises).then(dataUrls => {
+        setFormData(prev => ({
+          ...prev,
+          imageUrls: [...prev.imageUrls, ...dataUrls]
+        }));
       });
     }
   };
@@ -487,15 +493,16 @@ export default function AdminSignals() {
                 Create Signal
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl">
-              <DialogHeader>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+              <DialogHeader className="flex-shrink-0">
                 <DialogTitle>Create New Signal</DialogTitle>
                 <DialogDescription>
                   Publish a new trading signal for your subscribers.
                 </DialogDescription>
               </DialogHeader>
               
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="flex-1 overflow-y-auto px-1">
+                <form onSubmit={handleSubmit} className="space-y-4 pb-4">
                 <div>
                   <Label htmlFor="title">Signal Title</Label>
                   <Input
@@ -647,26 +654,27 @@ export default function AdminSignals() {
                   </div>
                 </div>
                 
-                <div className="flex justify-end space-x-2">
-                  <Button 
-                    type="button" 
-                    variant="outline"
-                    onClick={() => {
-                      setIsCreateDialogOpen(false);
-                      resetForm();
-                    }}
-                  >
-                    Cancel
-                  </Button>
-                  <Button 
-                    type="submit" 
-                    className="bg-green-600 hover:bg-green-700"
-                    disabled={createSignalMutation.isPending}
-                  >
-                    {createSignalMutation.isPending ? 'Publishing...' : 'Publish Signal'}
-                  </Button>
-                </div>
-              </form>
+                  <div className="flex justify-end space-x-2 pt-4 border-t">
+                    <Button 
+                      type="button" 
+                      variant="outline"
+                      onClick={() => {
+                        setIsCreateDialogOpen(false);
+                        resetForm();
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      type="submit" 
+                      className="bg-green-600 hover:bg-green-700"
+                      disabled={createSignalMutation.isPending}
+                    >
+                      {createSignalMutation.isPending ? 'Publishing...' : 'Publish Signal'}
+                    </Button>
+                  </div>
+                </form>
+              </div>
             </DialogContent>
           </Dialog>
         </div>
