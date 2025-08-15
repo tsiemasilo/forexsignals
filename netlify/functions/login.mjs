@@ -72,7 +72,8 @@ export const handler = async (event, context) => {
     }
 
     // Create session token (simplified for demo)
-    const sessionId = `netlify_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+    const sessionId = Math.random().toString(36).substring(2, 15) + 
+                     Math.random().toString(36).substring(2, 15);
 
     // Store session in database
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
