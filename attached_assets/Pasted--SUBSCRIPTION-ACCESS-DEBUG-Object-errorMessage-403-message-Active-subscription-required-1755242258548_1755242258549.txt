@@ -1,0 +1,29 @@
+🚨 SUBSCRIPTION ACCESS DEBUG: 
+Object {errorMessage: "403: {"message":"Active subscription required"}", errorContainsSubscription: true, errorContains403: true, errorContainsActive: true, shouldShowUpgrade: true}
+❌ USER DASHBOARD SIGNALS LOADING ERROR: 
+Object {errorMessage: "403: {"message":"Active subscription required"}", error: Error, sessionId: "daosY1wRZF_LKxuyOXkxaeg_SDDU_efv", user: {…}, timestamp: "2025-08-15T07:17:25.871Z"}
+error: Error
+errorMessage: "403: {"message":"Active subscription required"}"
+sessionId: "daosY1wRZF_LKxuyOXkxaeg_SDDU_efv"
+timestamp: "2025-08-15T07:17:25.871Z"
+user: Object
+[[Prototype]]: Object
+
+🏠 USER DASHBOARD DEBUG: 
+Object {sessionId: "daosY1wRZF_LKxuyOXkxaeg_SDDU_efv", user: {…}, isAdmin: false, timestamp: "2025-08-15T07:17:29.417Z"}
+🎯 USER DASHBOARD QUERY RESULT (REAL-TIME): 
+Object {signalsCount: 15, signals: Array(15), isLoading: false, error: "403: {"message":"Active subscription required"}", errorType: "Error", …}
+🚨 SUBSCRIPTION ACCESS DEBUG: 
+Object {errorMessage: "403: {"message":"Active subscription required"}", errorContainsSubscription: true, errorContains403: true, errorContainsActive: true, shouldShowUpgrade: true}
+❌ USER DASHBOARD SIGNALS LOADING ERROR: 
+Object {errorMessage: "403: {"message":"Active subscription required"}", error: Error, sessionId: "daosY1wRZF_LKxuyOXkxaeg_SDDU_efv", user: {…}, timestamp: "2025-08-15T07:17:29.418Z"}
+
+🏠 USER DASHBOARD DEBUG: 
+Object {sessionId: "daosY1wRZF_LKxuyOXkxaeg_SDDU_efv", user: {…}, isAdmin: false, timestamp: "2025-08-15T07:17:32.981Z"}
+🎯 USER DASHBOARD QUERY RESULT (REAL-TIME): 
+Object {signalsCount: 15, signals: Array(15), isLoading: false, error: "403: {"message":"Active subscription required"}", errorType: "Error", …}
+🚨 SUBSCRIPTION ACCESS DEBUG: 
+Object {errorMessage: "403: {"message":"Active subscription required"}", errorContainsSubscription: true, errorContains403: true, errorContainsActive: true, shouldShowUpgrade: true}
+❌ USER DASHBOARD SIGNALS LOADING ERROR: 
+Object {errorMessage: "403: {"message":"Active subscription required"}", error: Error, sessionId: "daosY1wRZF_LKxuyOXkxaeg_SDDU_efv", user: {…}, timestamp: "2025-08-15T07:17:32.982Z"}
+
