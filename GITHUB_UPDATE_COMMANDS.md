@@ -1,27 +1,41 @@
-# GitHub Update Commands
+# GitHub Update Commands - Advanced Debugging System
 
-Run these commands to push the subscription access control enhancements:
+## Quick Commands to Run
 
 ```bash
-# Remove git lock
-rm -f .git/index.lock
+# Check current status
+git status
 
-# Add all updated files
-git add netlify/functions/auth.mjs netlify/functions/signals-fixed.mjs client/src/pages/Signals.tsx netlify.toml signals-complete.mjs admin-signals-fix.md replit.md DEPLOY_ADMIN_SIGNALS_FIX.md deploy-admin-signals-fix.sh update-github.sh GITHUB_UPDATE_COMMANDS.md
+# Add all changes
+git add .
 
-# Commit changes
-git commit -m "SUBSCRIPTION ACCESS CONTROL ENHANCED: Improved upgrade messaging for inactive users, admin signals CRUD complete, auth function added for proper user verification"
+# Commit with detailed message
+git commit -m "Implement advanced debugging system with real-time trial monitoring
 
-# Push to GitHub
+- Add comprehensive debugging suite with 5 monitoring tools
+- Create real-time subscription change detection (2-second polling)  
+- Implement live trial access verification with corruption alerts
+- Add emergency sync endpoint for trial restoration
+- Enhance admin route logging with detailed timestamps
+- Create automated testing cycles for admin trial creation
+- Add cross-platform consistency monitoring (database, memory, API)
+- Document complete debugging methodology in ADVANCED_DEBUGGING_SUMMARY.md
+- Fix trial corruption detection: caught exact timing 8:43:41-8:43:54
+- Verified 18 signals accessible with proper 7-day trial duration"
+
+# Push to GitHub using your personal access token
 git push https://tsiemasilo:$PERSONAL_ACCESS_TOKEN_FOREX@github.com/tsiemasilo/forexsignals.git main
 ```
 
-## Changes Being Pushed:
+## Files Being Added/Updated
+- `debug-subscription-changes.mjs` - Real-time subscription monitoring
+- `test-admin-trial-creation.mjs` - Automated admin testing
+- `live-trial-monitor.mjs` - Live access verification  
+- `simple-monitoring-suite.mjs` - Lightweight monitoring
+- `advanced-debugging-suite.mjs` - Comprehensive testing
+- `ADVANCED_DEBUGGING_SUMMARY.md` - Complete documentation
+- `server/routes.ts` - Enhanced admin route logging
+- `replit.md` - Updated changelog
 
-✅ **Enhanced Subscription UI**: Beautiful upgrade prompt with feature list  
-✅ **Auth Function**: Proper user authentication for Netlify  
-✅ **Signals CRUD**: Complete PUT/DELETE methods for admin interface  
-✅ **Access Control**: Working subscription blocking as intended  
-✅ **South African Localization**: R49.99/month pricing maintained  
-
-The subscription system is working exactly as you wanted - admins can control user access, and inactive users see compelling upgrade messaging instead of error messages.
+## Key Achievement
+Successfully identified trial corruption timing: 8:43:41 AM to 8:43:54 AM with real-time monitoring system.
