@@ -6,20 +6,19 @@ export function useRealtimeSignals() {
   const queryClient = useQueryClient();
   const [lastUpdateTime, setLastUpdateTime] = useState<Date>(new Date());
 
-  // Fetch signals with auto-refresh
+  // Fetch signals with optimized refresh strategy
   const { data: signals, isLoading, error } = useQuery({
     queryKey: ['/api/signals'],
-    refetchInterval: 3000, // React Query auto-refresh every 3 seconds
-    refetchIntervalInBackground: true, // Continue refreshing when tab is not active
-    staleTime: 0, // Always consider data stale to force refresh
+    refetchInterval: 5000, // Reduced to 5 seconds to prevent too frequent updates
+    refetchIntervalInBackground: false, // Disable background refresh to reduce conflicts
+    staleTime: 2000, // Allow data to be fresh for 2 seconds before forcing refresh
+    retry: false, // Don't retry failed requests automatically
   });
 
-  // Additional custom auto-refresh hook for manual control
-  const { refresh } = useAutoRefresh({
-    queryKey: ['/api/signals'],
-    interval: 5000, // Manual refresh every 5 seconds as backup
-    enabled: true
-  });
+  // Simplified manual refresh without conflicting intervals
+  const refresh = () => {
+    queryClient.invalidateQueries({ queryKey: ['/api/signals'] });
+  };
 
   // Update timestamp when signals change
   useEffect(() => {

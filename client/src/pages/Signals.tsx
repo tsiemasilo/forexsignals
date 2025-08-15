@@ -90,6 +90,8 @@ export default function Signals() {
   const { data: subscriptionStatus } = useQuery({
     queryKey: ['/api/user/subscription-status'],
     retry: false,
+    staleTime: 10000, // Cache subscription status for 10 seconds to reduce requests
+    refetchInterval: 15000, // Check subscription status every 15 seconds instead of constantly
   });
 
   if (isLoading) {
