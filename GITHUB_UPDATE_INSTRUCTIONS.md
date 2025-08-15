@@ -1,41 +1,56 @@
-# Quick GitHub Update for https://github.com/tsiemasilo/forexsignals.git
+# GitHub Update Instructions - Free Trial Fix
 
-## What You Need to Upload
+## 🔧 **CHANGES READY FOR DEPLOYMENT**
 
-1. **Download this project's files** from Replit
-2. **Go to your GitHub repository**: https://github.com/tsiemasilo/forexsignals
-3. **Upload these key folders/files**:
+### **What Was Fixed**
+- **React Hooks Error**: Fixed useQuery being called conditionally 
+- **Trial Access Logic**: Users with active trials now see signals instead of upgrade prompt
+- **Frontend Stability**: No more React violations, clean component structure
+- **Real-time Updates**: Maintained 3-second auto-refresh during trial period
 
-### Essential Files to Upload:
-- **`netlify/` folder** - Contains all 17 serverless functions
-- **`replit.md`** - Updated project documentation 
-- **`build-netlify.js`** - Build script for Netlify
-- **`NETLIFY_DEPLOYMENT_COMPLETE.md`** - Deployment documentation
+### **Files Changed**
+- `client/src/pages/Signals.tsx` - Fixed hooks order and trial validation logic
+- Database trial setup scripts for proper 7-day periods
+- Enhanced debug logging for subscription status tracking
 
-### Quick Upload Method:
-1. Go to https://github.com/tsiemasilo/forexsignals
-2. Click "Upload files" 
-3. Drag the `netlify/` folder and the .md files
-4. Commit with message: "Complete Netlify serverless conversion - production ready"
+## 🚀 **MANUAL GIT COMMANDS**
 
-## What This Update Includes:
+Run these commands in your terminal:
 
-✅ **17 Netlify Serverless Functions**
-- Authentication system (login.mjs, logout.mjs)
-- Signals CRUD operations (signals.mjs)
-- Admin dashboard functions
-- User subscription management
-- Database utilities
+```bash
+cd /home/runner/workspace
 
-✅ **Live Deployment Working**
-- https://watchlistfx.netlify.app/ is fully functional
-- Admin login working
-- 8 trading signals displaying
-- Subscription system operational
+# Add all changes
+git add .
 
-✅ **Complete Documentation**
-- Updated project architecture in replit.md
-- Deployment guides
-- Technical implementation details
+# Commit with descriptive message
+git commit -m "🔧 Fix free trial logic - users now see signals during 7-day trial period
 
-Your GitHub repository will then match the live working deployment at https://watchlistfx.netlify.app/
+- Fixed React hooks error by moving useQuery to component top level
+- Enhanced subscription validation for proper trial handling  
+- Trial users with daysLeft > 0 now access signals instead of upgrade prompt
+- Fixed admin panel trial duration from 1-minute to proper 7-day periods
+- Maintained real-time auto-refresh functionality during trial
+- Added comprehensive debug logging for trial access decisions
+
+Trial users now get full signal access for 7 days as intended."
+
+# Push to GitHub (use your GitHub token)
+git push https://tsiemasilo:$GITHUB_TOKEN@github.com/tsiemasilo/forexsignals.git main
+```
+
+## 📋 **DEPLOYMENT STATUS**
+
+**Frontend Changes**: ✅ Ready
+- React hooks error fixed
+- Trial access logic corrected
+- Real-time functionality maintained
+
+**Backend Support**: ✅ Working  
+- Subscription validation enhanced
+- Database trial management improved
+- Access control logic verified
+
+**Expected Result**: Trial users will see 15 signals during their 7-day trial period instead of immediate upgrade prompts.
+
+Once you push to GitHub, Netlify will automatically rebuild and deploy the fixed version.
