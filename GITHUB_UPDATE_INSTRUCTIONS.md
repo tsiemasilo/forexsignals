@@ -35,8 +35,8 @@ git commit -m "🔧 Fix free trial logic - users now see signals during 7-day tr
 
 Trial users now get full signal access for 7 days as intended."
 
-# Push to GitHub (use your GitHub token)
-git push https://tsiemasilo:$GITHUB_TOKEN@github.com/tsiemasilo/forexsignals.git main
+# Push to GitHub (use your personal access token)
+git push https://tsiemasilo:$PERSONAL_ACCESS_TOKEN_FOREX@github.com/tsiemasilo/forexsignals.git main
 ```
 
 ## 📋 **DEPLOYMENT STATUS**
