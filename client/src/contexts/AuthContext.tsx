@@ -45,7 +45,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string) => {
     try {
-      const response = await apiRequest("POST", "/api/login", { email });
+      // Use proper password for admin login
+      const password = email === 'admin@forexsignals.com' ? 'admin123' : 'password123';
+      const response = await apiRequest("POST", "/api/login", { email, password });
       const data = await response.json();
       
       setUser(data.user);
