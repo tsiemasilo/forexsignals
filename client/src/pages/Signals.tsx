@@ -7,11 +7,30 @@ import { Link } from 'wouter';
 import { Button } from '@/components/ui/button';
 
 export default function Signals() {
-  const { sessionId } = useAuth();
+  const { sessionId, user } = useAuth();
+  
+  // Debug logging for user dashboard
+  console.log('🏠 USER DASHBOARD DEBUG:', {
+    sessionId,
+    user,
+    isAdmin: user?.isAdmin,
+    timestamp: new Date().toISOString()
+  });
 
   const { data: signals = [], isLoading, error } = useQuery({
     queryKey: ['/api/signals'],
     enabled: !!sessionId
+  });
+
+  // Debug logging after query
+  console.log('🎯 USER DASHBOARD QUERY RESULT:', {
+    signalsCount: (signals as any)?.length || 0,
+    signals: signals,
+    isLoading,
+    error: error?.message,
+    sessionId,
+    user,
+    timestamp: new Date().toISOString()
   });
 
   const getTradeActionIcon = (action: string) => {
@@ -64,7 +83,13 @@ export default function Signals() {
 
   if (error) {
     const errorMessage = (error as any)?.message || 'Unknown error';
-    console.error('Signals loading error:', errorMessage);
+    console.error('❌ USER DASHBOARD SIGNALS LOADING ERROR:', {
+      errorMessage,
+      error,
+      sessionId,
+      user,
+      timestamp: new Date().toISOString()
+    });
     
     if (errorMessage.includes('subscription') || errorMessage.includes('Active subscription required') || errorMessage.includes('403')) {
       return (
@@ -159,7 +184,7 @@ export default function Signals() {
 
                 {/* Signals Notifications */}
                 <div className="flex-1 overflow-y-auto max-h-[480px]">
-                  {signals.length === 0 ? (
+                  {(signals as any)?.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-96 text-center px-6">
                       <Bell className="w-16 h-16 text-slate-300 mb-4" />
                       <h3 className="text-lg font-medium text-slate-600 mb-2">No New Signals</h3>
@@ -169,9 +194,9 @@ export default function Signals() {
                     </div>
                   ) : (
                     <div className="space-y-1">
-                      {signals
-                        .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-                        .map((signal: any) => (
+                      {(signals as any)
+                        ?.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                        ?.map((signal: any) => (
                         <div key={signal.id} className="mx-4 my-2 bg-white border border-slate-200 rounded-xl shadow-sm">
                           {/* Notification Header */}
                           <div className="flex items-center px-4 py-3 border-b border-slate-100">
@@ -223,9 +248,12 @@ export default function Signals() {
                             </div>
                           </div>
                         </div>
-                      ))}
+                      )) || []}
                     </div>
                   )}
+                  
+                  {/* Debug info - will be visible in console */}
+                  {(signals as any)?.length > 0 && console.log('📱 SIGNALS DISPLAYED ON DASHBOARD:', (signals as any)?.length)}
                 </div>
 
                 {/* Home Indicator */}

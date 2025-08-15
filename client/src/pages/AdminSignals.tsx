@@ -168,13 +168,19 @@ export default function AdminSignals() {
       timestamp: new Date().toISOString()
     });
     
-    // Validate required fields
+    // Enhanced validation debugging
+    const validationResults = {
+      title: !!formData.title,
+      content: !!formData.content,
+      tradeAction: !!formData.tradeAction,
+      imageUrlsArray: Array.isArray(formData.imageUrls),
+      formDataComplete: formData
+    };
+    
+    console.log('🔍 FORM VALIDATION CHECK:', validationResults);
+    
     if (!formData.title || !formData.content || !formData.tradeAction) {
-      console.error('Form validation failed:', { 
-        title: !!formData.title, 
-        content: !!formData.content, 
-        tradeAction: !!formData.tradeAction 
-      });
+      console.error('❌ Form validation failed:', validationResults);
       toast({
         title: "Validation Error",
         description: "Please fill in all required fields (title, content, and trade action).",
@@ -182,6 +188,8 @@ export default function AdminSignals() {
       });
       return;
     }
+    
+    console.log('✅ FORM VALIDATION PASSED - Proceeding with submission');
     
     if (editingSignal) {
       console.log('Updating existing signal:', editingSignal.id);
