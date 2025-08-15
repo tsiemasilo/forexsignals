@@ -39,7 +39,7 @@ git add replit.md
 git commit -m "ADMIN SIGNALS COMPLETE: Fixed imageUrls handling, enhanced debugging, API working perfectly - signals 12,13,14 created successfully"
 
 # Push to GitHub (triggers Netlify deployment)
-git push origin main
+git push https://tsiemasilo:$PERSONAL_ACCESS_TOKEN_FOREX@github.com/tsiemasilo/forexsignals.git main
 ```
 
 ## Expected Results After Push
