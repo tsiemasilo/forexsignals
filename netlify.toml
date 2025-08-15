@@ -42,6 +42,11 @@
   status = 200
 
 [[redirects]]
+  from = "/api/admin/users/*/create-trial"
+  to = "/.netlify/functions/admin-create-trial"
+  status = 200
+
+[[redirects]]
   from = "/api/admin/signals"
   to = "/.netlify/functions/signals"
   status = 200
