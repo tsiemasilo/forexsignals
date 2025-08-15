@@ -6,6 +6,7 @@ import { Link } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { useRealtimeSignals } from '@/hooks/useRealtimeSignals';
 import { useQuery } from '@tanstack/react-query';
+import { SubscriptionStatusBadge } from '@/components/SubscriptionStatusBadge';
 
 export default function Signals() {
   const { sessionId, user } = useAuth();
@@ -235,10 +236,13 @@ export default function Signals() {
 
                 {/* Notifications Header */}
                 <div className="px-6 py-4 border-b border-slate-200">
-                  <h2 className="text-lg font-semibold text-slate-900 flex items-center">
-                    <Bell className="w-5 h-5 mr-2 text-blue-600" />
-                    Live nas100 Trading Signals
-                  </h2>
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-lg font-semibold text-slate-900 flex items-center">
+                      <Bell className="w-5 h-5 mr-2 text-blue-600" />
+                      Trading Signals
+                    </h2>
+                    <SubscriptionStatusBadge />
+                  </div>
                 </div>
 
                 {/* Signals Notifications */}
