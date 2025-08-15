@@ -131,12 +131,13 @@ export const handler = async (event, context) => {
         statusCode: 200,
         headers: {
           ...headers,
-          'Set-Cookie': `sessionId=${sessionId}; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=${7 * 24 * 60 * 60}`
+          'Set-Cookie': `sessionId=${sessionId}; Path=/; SameSite=Lax; Max-Age=${7 * 24 * 60 * 60}`
         },
         body: JSON.stringify({
           message: 'Emergency login successful',
           sessionId: sessionId,
-          user: userInfo
+          user: userInfo,
+          redirectUrl: userInfo.isAdmin ? '/admin' : '/dashboard'
         })
       };
     }

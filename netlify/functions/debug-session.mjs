@@ -28,13 +28,20 @@ export async function handler(event, context) {
 
     const sql = neon(databaseUrl);
 
-    // Extract session details from cookies
+    // Extract session details from cookies - check both formats
     const cookies = event.headers.cookie || '';
     console.log('🔍 DEBUG - Full cookies:', cookies);
     
-    const sessionMatch = cookies.match(/connect\.sid=([^;]+)/);
-    const rawSessionId = sessionMatch ? sessionMatch[1] : null;
-    const sessionId = rawSessionId ? decodeURIComponent(rawSessionId).replace(/^s:/, '').split('.')[0] : null;
+    // Try both sessionId and connect.sid formats
+    let sessionMatch = cookies.match(/sessionId=([^;]+)/);
+    let rawSessionId = sessionMatch ? sessionMatch[1] : null;
+    let sessionId = rawSessionId;
+    
+    if (!sessionId) {
+      sessionMatch = cookies.match(/connect\.sid=([^;]+)/);
+      rawSessionId = sessionMatch ? sessionMatch[1] : null;
+      sessionId = rawSessionId ? decodeURIComponent(rawSessionId).replace(/^s:/, '').split('.')[0] : null;
+    }
 
     const debugInfo = {
       timestamp: new Date().toISOString(),

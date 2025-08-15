@@ -67,6 +67,11 @@
   status = 200
 
 [[redirects]]
+  from = "/api/test-login"
+  to = "/.netlify/functions/test-login"
+  status = 200
+
+[[redirects]]
   from = "/api/placeholder/*/*"
   to = "/.netlify/functions/placeholder"
   status = 200
