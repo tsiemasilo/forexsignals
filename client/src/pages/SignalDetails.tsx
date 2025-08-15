@@ -6,12 +6,25 @@ import { Button } from '@/components/ui/button';
 import { TrendingUp, TrendingDown, Minus, Clock, ArrowLeft, Calendar, User } from 'lucide-react';
 import { Link, useParams } from 'wouter';
 
+interface Signal {
+  id: number;
+  title: string;
+  content: string;
+  tradeAction: string;
+  imageUrl?: string;
+  imageUrls?: string[];
+  createdBy: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export default function SignalDetails() {
   const params = useParams();
   const signalId = params.id;
   const { sessionId } = useAuth();
 
-  const { data: signal, isLoading, error } = useQuery({
+  const { data: signal, isLoading, error } = useQuery<Signal>({
     queryKey: [`/api/signals/${signalId}`],
     enabled: !!sessionId && !!signalId,
   });
@@ -128,7 +141,7 @@ export default function SignalDetails() {
 
 
 
-  const images = signal.imageUrls?.filter(url => url && url.trim()) || (signal.imageUrl ? [signal.imageUrl] : []);
+  const images = signal?.imageUrls?.filter((url: string) => url && url.trim()) || (signal?.imageUrl ? [signal.imageUrl] : []);
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -148,13 +161,13 @@ export default function SignalDetails() {
           <CardHeader>
             <div className="flex items-start justify-between">
               <div className="flex items-center space-x-4">
-                {getTradeActionIcon(signal.tradeAction)}
+                {getTradeActionIcon(signal?.tradeAction)}
                 <div>
-                  <CardTitle className="text-2xl mb-2">{signal.title || 'Signal Title Not Available'}</CardTitle>
+                  <CardTitle className="text-2xl mb-2">{signal?.title || 'Signal Title Not Available'}</CardTitle>
                   <div className="flex items-center space-x-4 text-sm text-gray-500">
                     <div className="flex items-center space-x-1">
                       <Calendar className="w-4 h-4" />
-                      <span>{formatDate(signal.createdAt || signal.updatedAt)}</span>
+                      <span>{formatDate(signal?.createdAt || signal?.updatedAt)}</span>
                     </div>
                     <div className="flex items-center space-x-1">
                       <User className="w-4 h-4" />
@@ -163,8 +176,8 @@ export default function SignalDetails() {
                   </div>
                 </div>
               </div>
-              <Badge className={`text-sm ${getTradeActionColor(signal.tradeAction)}`}>
-                {(signal.tradeAction?.toUpperCase()) || 'PENDING'}
+              <Badge className={`text-sm ${getTradeActionColor(signal?.tradeAction)}`}>
+                {(signal?.tradeAction?.toUpperCase()) || 'PENDING'}
               </Badge>
             </div>
           </CardHeader>
@@ -183,8 +196,8 @@ export default function SignalDetails() {
                 <div className="bg-blue-50 p-4 rounded-lg">
                   <p className="text-sm text-gray-600 mb-2">Signal Posted</p>
                   <p className="text-lg font-semibold">
-                    {formatDate(signal.createdAt || signal.updatedAt) !== 'Date not available' 
-                      ? formatDate(signal.createdAt || signal.updatedAt) 
+                    {formatDate(signal?.createdAt || signal?.updatedAt) !== 'Date not available' 
+                      ? formatDate(signal?.createdAt || signal?.updatedAt) 
                       : new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
                     }
                   </p>
@@ -193,7 +206,7 @@ export default function SignalDetails() {
                 {/* Signal Description */}
                 <div className="prose max-w-none">
                   <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-                    {signal.content}
+                    {signal?.content || 'No signal analysis content available'}
                   </p>
                 </div>
 
@@ -202,7 +215,7 @@ export default function SignalDetails() {
                   <div className="space-y-4">
                     <h4 className="font-semibold text-gray-800">Chart Analysis</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {images.map((imageUrl, index) => (
+                      {images.map((imageUrl: string, index: number) => (
                         <div key={index} className="relative">
                           <img
                             src={imageUrl}
