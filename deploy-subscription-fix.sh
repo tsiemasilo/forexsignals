@@ -20,7 +20,7 @@ Critical Fix:
 - Ensures proper upgrade prompt display"
 
 # Push to trigger Netlify deployment
-git push origin main
+git push https://tsiemasilo:$PERSONAL_ACCESS_TOKEN_FOREX@github.com/tsiemasilo/forexsignals.git main
 
 echo "✅ Subscription fix deployed - inactive users will now be blocked"
 echo "🔄 Netlify rebuilding automatically"

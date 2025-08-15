@@ -25,7 +25,7 @@ Deploy updated netlify/functions/signals.mjs with strict subscription validation
 ```bash
 git add netlify/functions/signals.mjs
 git commit -m "SUBSCRIPTION ACCESS FIX: Block inactive users"
-git push origin main
+git push https://tsiemasilo:$PERSONAL_ACCESS_TOKEN_FOREX@github.com/tsiemasilo/forexsignals.git main
 ```
 
 ## 📋 **Expected After Fix**
