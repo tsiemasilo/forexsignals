@@ -4,28 +4,6 @@ import { neon } from '@neondatabase/serverless';
 const DATABASE_URL = process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL;
 const sql = neon(DATABASE_URL);
 
-// Helper function to safely parse image URLs
-const safeParseImageUrls = (imageUrls, signalId = null) => {
-  if (!imageUrls) return [];
-  
-  try {
-    if (typeof imageUrls === 'string') {
-      // Handle data URLs stored as strings
-      if (imageUrls.startsWith('data:image')) {
-        return [imageUrls];
-      }
-      // Handle JSON strings
-      return JSON.parse(imageUrls);
-    } else if (Array.isArray(imageUrls)) {
-      return imageUrls;
-    }
-  } catch (e) {
-    console.warn(`Failed to parse image_urls for signal ${signalId}:`, e.message);
-  }
-  
-  return [];
-};
-
 // Helper function to get user from session
 const getUserFromSession = async (event) => {
   const cookies = event.headers.cookie || '';
@@ -147,19 +125,38 @@ export const handler = async (event, context) => {
         ORDER BY created_at DESC
       `;
       
-      // Format the response to match frontend expectations with safe JSON parsing
-      const formattedSignals = signalsResult.map(signal => ({
-        id: signal.id,
-        title: signal.title,
-        content: signal.content,
-        tradeAction: signal.trade_action,
-        imageUrl: signal.image_url,
-        imageUrls: safeParseImageUrls(signal.image_urls, signal.id),
-        createdBy: signal.created_by,
-        isActive: signal.is_active,
-        createdAt: signal.created_at,
-        updatedAt: signal.updated_at
-      }));
+      // Format the response to match frontend expectations
+      const formattedSignals = signalsResult.map(signal => {
+        let imageUrls = [];
+        try {
+          if (signal.image_urls && typeof signal.image_urls === 'string') {
+            // Handle both JSON string and data URL cases
+            if (signal.image_urls.startsWith('data:image')) {
+              imageUrls = [signal.image_urls];
+            } else {
+              imageUrls = JSON.parse(signal.image_urls);
+            }
+          } else if (Array.isArray(signal.image_urls)) {
+            imageUrls = signal.image_urls;
+          }
+        } catch (e) {
+          console.warn('Failed to parse image_urls for signal', signal.id, ':', e.message);
+          imageUrls = [];
+        }
+
+        return {
+          id: signal.id,
+          title: signal.title,
+          content: signal.content,
+          tradeAction: signal.trade_action,
+          imageUrl: signal.image_url,
+          imageUrls: imageUrls,
+          createdBy: signal.created_by,
+          isActive: signal.is_active,
+          createdAt: signal.created_at,
+          updatedAt: signal.updated_at
+        };
+      });
       
       return {
         statusCode: 200,
@@ -199,14 +196,14 @@ export const handler = async (event, context) => {
                   created_at, updated_at
       `;
 
-      // Format response with safe JSON parsing
+      // Format response
       const formattedSignal = {
         id: result[0].id,
         title: result[0].title,
         content: result[0].content,
         tradeAction: result[0].trade_action,
         imageUrl: result[0].image_url,
-        imageUrls: safeParseImageUrls(result[0].image_urls, result[0].id),
+        imageUrls: result[0].image_urls ? JSON.parse(result[0].image_urls) : [],
         createdBy: result[0].created_by,
         isActive: result[0].is_active,
         createdAt: result[0].created_at,
@@ -269,14 +266,14 @@ export const handler = async (event, context) => {
         };
       }
 
-      // Format response with safe JSON parsing
+      // Format response
       const formattedSignal = {
         id: result[0].id,
         title: result[0].title,
         content: result[0].content,
         tradeAction: result[0].trade_action,
         imageUrl: result[0].image_url,
-        imageUrls: safeParseImageUrls(result[0].image_urls, result[0].id),
+        imageUrls: result[0].image_urls ? JSON.parse(result[0].image_urls) : [],
         createdBy: result[0].created_by,
         isActive: result[0].is_active,
         createdAt: result[0].created_at,
