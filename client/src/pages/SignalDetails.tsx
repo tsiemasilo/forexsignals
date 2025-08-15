@@ -12,13 +12,8 @@ export default function SignalDetails() {
   const { sessionId } = useAuth();
 
   const { data: signal, isLoading, error } = useQuery({
-    queryKey: ['/api/signals', signalId],
+    queryKey: [`/api/signals/${signalId}`],
     enabled: !!sessionId && !!signalId,
-    meta: {
-      headers: {
-        Authorization: `Bearer ${sessionId}`
-      }
-    }
   });
 
   const getTradeActionIcon = (action: string | undefined) => {
@@ -55,14 +50,26 @@ export default function SignalDetails() {
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+  const formatDate = (dateString: string | undefined | null) => {
+    if (!dateString) return 'Date not available';
+    
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return 'Date not available';
+      }
+      
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch (error) {
+      console.error('Date formatting error:', error);
+      return 'Date not available';
+    }
   };
 
   if (isLoading) {
@@ -119,6 +126,19 @@ export default function SignalDetails() {
     );
   }
 
+  // Debug logging for signal data
+  console.log('📋 SIGNAL DETAILS DEBUG:', {
+    signalId,
+    signal,
+    title: signal?.title,
+    content: signal?.content,
+    tradeAction: signal?.tradeAction,
+    createdAt: signal?.createdAt,
+    updatedAt: signal?.updatedAt,
+    imageUrls: signal?.imageUrls,
+    imageUrl: signal?.imageUrl
+  });
+
   const images = signal.imageUrls?.filter(url => url && url.trim()) || (signal.imageUrl ? [signal.imageUrl] : []);
 
   return (
@@ -141,23 +161,21 @@ export default function SignalDetails() {
               <div className="flex items-center space-x-4">
                 {getTradeActionIcon(signal.tradeAction)}
                 <div>
-                  <CardTitle className="text-2xl mb-2">{signal.title}</CardTitle>
+                  <CardTitle className="text-2xl mb-2">{signal.title || 'Signal Title Not Available'}</CardTitle>
                   <div className="flex items-center space-x-4 text-sm text-gray-500">
                     <div className="flex items-center space-x-1">
                       <Calendar className="w-4 h-4" />
-                      <span>{formatDate(signal.createdAt)}</span>
+                      <span>{formatDate(signal.createdAt || signal.updatedAt)}</span>
                     </div>
-                    {signal.createdBy && (
-                      <div className="flex items-center space-x-1">
-                        <User className="w-4 h-4" />
-                        <span>Expert Trader</span>
-                      </div>
-                    )}
+                    <div className="flex items-center space-x-1">
+                      <User className="w-4 h-4" />
+                      <span>Expert Trader</span>
+                    </div>
                   </div>
                 </div>
               </div>
               <Badge className={`text-sm ${getTradeActionColor(signal.tradeAction)}`}>
-                {signal.tradeAction?.toUpperCase() || 'UNKNOWN'}
+                {(signal.tradeAction?.toUpperCase()) || 'PENDING'}
               </Badge>
             </div>
           </CardHeader>
@@ -176,7 +194,10 @@ export default function SignalDetails() {
                 <div className="bg-blue-50 p-4 rounded-lg">
                   <p className="text-sm text-gray-600 mb-2">Signal Posted</p>
                   <p className="text-lg font-semibold">
-                    {signal.createdAt ? new Date(signal.createdAt).toLocaleDateString() : 'Date not available'}
+                    {formatDate(signal.createdAt || signal.updatedAt) !== 'Date not available' 
+                      ? formatDate(signal.createdAt || signal.updatedAt) 
+                      : new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+                    }
                   </p>
                 </div>
 

@@ -429,6 +429,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Signal not found" });
       }
 
+      console.log('🔍 SINGLE SIGNAL RETRIEVAL DEBUG:', {
+        signalId,
+        signal: {
+          id: signal.id,
+          title: signal.title,
+          content: signal.content,
+          tradeAction: signal.tradeAction,
+          createdAt: signal.createdAt,
+          updatedAt: signal.updatedAt,
+          hasCreatedAt: !!signal.createdAt,
+          hasUpdatedAt: !!signal.updatedAt,
+          createdAtType: typeof signal.createdAt,
+          imageUrls: signal.imageUrls?.length || 0
+        }
+      });
+
       res.json(signal);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch signal" });
