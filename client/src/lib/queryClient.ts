@@ -24,17 +24,12 @@ export async function apiRequest(
     ...(options?.headers || {})
   };
 
-  // Add authorization header if token exists
-  const token = localStorage.getItem('authToken');
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-
   const fullUrl = getApiUrl(url);
   const res = await fetch(fullUrl, {
     method,
     headers,
     body: data ? JSON.stringify(data) : undefined,
+    credentials: "include",
   });
 
   await throwIfResNotOk(res);
@@ -49,19 +44,14 @@ export const getQueryFn: <T>(options: {
   async ({ queryKey, meta }) => {
     const headers: Record<string, string> = {};
     
-    // Add authorization header if token exists
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-    
-    // Add additional headers if provided in meta
+    // Add authorization header if provided in meta
     if (meta?.headers) {
       Object.assign(headers, meta.headers);
     }
 
     const fullUrl = getApiUrl(queryKey[0] as string);
     const res = await fetch(fullUrl, {
+      credentials: "include",
       headers,
     });
 

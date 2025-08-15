@@ -63,19 +63,11 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <AuthProvider>
-          <AppContent />
+          <Toaster />
+          <Router />
         </AuthProvider>
       </TooltipProvider>
     </QueryClientProvider>
-  );
-}
-
-function AppContent() {
-  return (
-    <>
-      <Toaster />
-      <Router />
-    </>
   );
 }
 

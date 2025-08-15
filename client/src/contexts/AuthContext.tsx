@@ -11,9 +11,9 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
-  token: string | null;
+  sessionId: string | null;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string) => Promise<void>;
   register: (userData: { email: string; firstName?: string; lastName?: string }) => Promise<void>;
   logout: () => void;
 }
@@ -22,37 +22,37 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check for existing token on app load
-    const storedToken = localStorage.getItem("authToken");
+    // Check for existing session on app load
+    const storedSessionId = localStorage.getItem("sessionId");
     const storedUser = localStorage.getItem("user");
     
-    if (storedToken && storedUser) {
+    if (storedSessionId && storedUser) {
       try {
-        setToken(storedToken);
+        setSessionId(storedSessionId);
         setUser(JSON.parse(storedUser));
       } catch (error) {
         // Invalid stored data, clear it
-        localStorage.removeItem("authToken");
+        localStorage.removeItem("sessionId");
         localStorage.removeItem("user");
       }
     }
     setIsLoading(false);
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string) => {
     try {
-      const response = await apiRequest("POST", "/api/auth", { email, password });
+      const response = await apiRequest("POST", "/api/login", { email });
       const data = await response.json();
       
       setUser(data.user);
-      setToken(data.token);
+      setSessionId(data.sessionId);
       
       // Store in localStorage for persistence
-      localStorage.setItem("authToken", data.token);
+      localStorage.setItem("sessionId", data.sessionId);
       localStorage.setItem("user", JSON.stringify(data.user));
     } catch (error) {
       throw new Error("Login failed");
@@ -68,15 +68,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = () => {
-    // Clear local state and storage
+    // Call logout endpoint (no authorization header needed with session cookies)
+    apiRequest("POST", "/api/logout", {}).catch(() => {
+      // Ignore errors for logout
+    });
+    
     setUser(null);
-    setToken(null);
-    localStorage.removeItem("authToken");
+    setSessionId(null);
+    localStorage.removeItem("sessionId");
     localStorage.removeItem("user");
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, isLoading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, sessionId, isLoading, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );
