@@ -14,9 +14,18 @@ import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 
 export default function AdminSignals() {
-  const { sessionId } = useAuth();
+  const { user, sessionId, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Advanced debugging
+  console.log('AdminSignals Debug:', { 
+    user, 
+    sessionId, 
+    authLoading,
+    isAdmin: user?.isAdmin,
+    userEmail: user?.email 
+  });
 
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingSignal, setEditingSignal] = useState<any>(null);
@@ -194,6 +203,53 @@ export default function AdminSignals() {
         return 'bg-blue-100 text-blue-800';
     }
   };
+
+  // Show admin access check first
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-4 border-green-600 border-t-transparent rounded-full" />
+      </div>
+    );
+  }
+
+  // Admin access validation with detailed debugging
+  if (!user?.isAdmin) {
+    console.error('ADMIN ACCESS DENIED:', { 
+      user, 
+      isAdmin: user?.isAdmin, 
+      email: user?.email,
+      message: 'Current user does not have admin privileges' 
+    });
+    
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="bg-white p-8 rounded-lg shadow-lg max-w-md text-center">
+          <AlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Admin Access Required</h2>
+          <p className="text-gray-600 mb-6">
+            You are logged in as: <strong>{user?.email}</strong><br/>
+            Admin status: <strong>{user?.isAdmin ? 'Yes' : 'No'}</strong><br/>
+            This page requires admin privileges to publish signals.
+          </p>
+          <div className="space-y-4">
+            <Button 
+              onClick={() => window.location.href = '/api/logout'} 
+              variant="outline"
+              className="w-full"
+            >
+              Logout and Login as Admin
+            </Button>
+            <Link href="/admin">
+              <Button variant="outline" className="w-full">
+                Back to Admin Dashboard
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
