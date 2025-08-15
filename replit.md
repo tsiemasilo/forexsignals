@@ -33,6 +33,7 @@ This is a full-stack e-commerce application for automotive parts built with a mo
 ## Changelog
 
 Changelog:
+- August 15, 2025. FREE TRIAL LOGIC FIXED: Enhanced frontend logic to properly handle trial users - users with active trial days see signals instead of upgrade prompt, only show upgrade when trial actually expires (0 days left), added subscription status validation to prevent immediate upgrade prompts for fresh trial users
 - August 15, 2025. REALTIME AUTO-REFRESH IMPLEMENTED: Complete real-time functionality with auto-refresh every 3s for users and 4s for admin, visual status indicators, background refresh, window focus triggers, manual refresh controls, and network detection - changes from admin appear on user dashboard automatically without manual refresh
 - August 15, 2025. AUTHENTICATION FIXED: Resolved login 500 errors by removing non-existent password_hash column reference, subscription access control now working perfectly with expired users properly blocked and shown upgrade prompt
 - August 14, 2025. SUBSCRIPTION ACCESS CONTROL ENHANCED: Improved upgrade messaging for inactive users with compelling UI, subscription blocking working perfectly as intended, enhanced signals page with premium features list and South African pricing

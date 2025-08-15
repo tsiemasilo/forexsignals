@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Link } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { useRealtimeSignals } from '@/hooks/useRealtimeSignals';
+import { useQuery } from '@tanstack/react-query';
 
 export default function Signals() {
   const { sessionId, user } = useAuth();
@@ -93,6 +94,12 @@ export default function Signals() {
     );
   }
 
+  // Check subscription status to determine if user should see upgrade prompt
+  const { data: subscriptionStatus } = useQuery({
+    queryKey: ['/api/user/subscription-status'],
+    retry: false,
+  });
+
   if (error) {
     const errorMessage = (error as any)?.message || 'Unknown error';
     console.error('❌ USER DASHBOARD SIGNALS LOADING ERROR:', {
@@ -103,7 +110,20 @@ export default function Signals() {
       timestamp: new Date().toISOString()
     });
     
-    if (errorMessage.includes('subscription') || errorMessage.includes('Active subscription required') || errorMessage.includes('403')) {
+    // Only show upgrade prompt if subscription access is blocked AND user has no days left
+    // If user is on trial with days remaining, they should see signals, not upgrade prompt
+    const shouldShowUpgrade = (errorMessage.includes('subscription') || errorMessage.includes('Active subscription required') || errorMessage.includes('403')) && 
+                             (!subscriptionStatus || subscriptionStatus.daysLeft === 0 || subscriptionStatus.status === 'inactive' || subscriptionStatus.status === 'expired');
+    
+    console.log('🔍 TRIAL ACCESS DEBUG:', {
+      errorMessage,
+      subscriptionStatus,
+      shouldShowUpgrade,
+      daysLeft: subscriptionStatus?.daysLeft,
+      status: subscriptionStatus?.status
+    });
+    
+    if (shouldShowUpgrade) {
       return (
         <div className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center p-4">
           <Card className="max-w-lg text-center shadow-lg">
