@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus, Edit, Trash2, TrendingUp, TrendingDown, Minus, Clock, AlertTriangle, RefreshCw } from 'lucide-react';
+import { Plus, Edit, Trash2, TrendingUp, TrendingDown, Minus, Clock, AlertTriangle, RefreshCw, Upload, Image, X } from 'lucide-react';
 import { Link } from 'wouter';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
@@ -46,6 +46,9 @@ export default function AdminSignals() {
     imageUrl: '',
     imageUrls: []
   });
+
+  const [uploadedImages, setUploadedImages] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
 
   // Real-time updates for admin dashboard
   const { isOnline, lastUpdateTime, refreshAll } = useRealtimeUpdates({
@@ -165,6 +168,12 @@ export default function AdminSignals() {
       imageUrl: '',
       imageUrls: []
     });
+    setEditingSignal(null);
+    
+    // Clear uploaded images and their previews
+    imagePreviews.forEach(preview => URL.revokeObjectURL(preview));
+    setUploadedImages([]);
+    setImagePreviews([]);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -237,6 +246,81 @@ export default function AdminSignals() {
       ...prev,
       imageUrls: prev.imageUrls.filter((_, i) => i !== index)
     }));
+  };
+
+  // File upload handlers
+  const handleFileUpload = (files: FileList | null) => {
+    if (!files) return;
+    
+    const validFiles = Array.from(files).filter(file => {
+      const isValidType = file.type.startsWith('image/');
+      const isValidSize = file.size <= 5 * 1024 * 1024; // 5MB limit
+      
+      if (!isValidType) {
+        toast({
+          title: "Invalid file type",
+          description: "Please upload only image files (PNG, JPG, GIF, etc.)",
+          variant: "destructive",
+        });
+        return false;
+      }
+      
+      if (!isValidSize) {
+        toast({
+          title: "File too large",
+          description: "Please upload images smaller than 5MB",
+          variant: "destructive",
+        });
+        return false;
+      }
+      
+      return true;
+    });
+
+    if (validFiles.length > 0) {
+      // Create preview URLs for the uploaded files
+      const newPreviews = validFiles.map(file => URL.createObjectURL(file));
+      
+      setUploadedImages(prev => [...prev, ...validFiles]);
+      setImagePreviews(prev => [...prev, ...newPreviews]);
+      
+      // Convert files to base64 data URLs and add to imageUrls for API compatibility
+      validFiles.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const dataUrl = e.target?.result as string;
+          setFormData(prev => ({
+            ...prev,
+            imageUrls: [...prev.imageUrls, dataUrl]
+          }));
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  };
+
+  const removeUploadedImage = (index: number) => {
+    // Revoke object URL to prevent memory leaks
+    URL.revokeObjectURL(imagePreviews[index]);
+    
+    setUploadedImages(prev => prev.filter((_, i) => i !== index));
+    setImagePreviews(prev => prev.filter((_, i) => i !== index));
+    setFormData(prev => ({
+      ...prev,
+      imageUrls: prev.imageUrls.filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const files = e.dataTransfer.files;
+    handleFileUpload(files);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
   };
 
   const handleDelete = (id: number) => {
@@ -451,42 +535,113 @@ export default function AdminSignals() {
                 </div>
                 
                 <div>
-                  <Label htmlFor="imageUrl">Chart Images (Optional)</Label>
-                  <div className="space-y-2">
-                    <div className="flex space-x-2">
-                      <Input
-                        id="imageUrl"
-                        value={formData.imageUrl}
-                        onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                        placeholder="https://example.com/chart.png"
-                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addImageUrl())}
+                  <Label htmlFor="images">Chart Images (Optional)</Label>
+                  <div className="space-y-4">
+                    {/* Drag & Drop Upload Area */}
+                    <div
+                      onDrop={handleDrop}
+                      onDragOver={handleDragOver}
+                      className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors cursor-pointer"
+                    >
+                      <input
+                        type="file"
+                        multiple
+                        accept="image/*"
+                        onChange={(e) => handleFileUpload(e.target.files)}
+                        className="hidden"
+                        id="imageUpload"
                       />
-                      <Button
-                        type="button"
-                        onClick={addImageUrl}
-                        disabled={!formData.imageUrl.trim()}
-                        className="bg-blue-600 hover:bg-blue-700"
-                      >
-                        Add
-                      </Button>
-                    </div>
-                    {formData.imageUrls.length > 0 && (
-                      <div className="space-y-2">
-                        <p className="text-sm text-gray-600">Added Images:</p>
-                        {formData.imageUrls.map((url, index) => (
-                          <div key={index} className="flex items-center space-x-2 p-2 bg-gray-50 rounded">
-                            <span className="text-sm flex-1 truncate">{url}</span>
-                            <Button
-                              type="button"
-                              size="sm"
-                              variant="outline"
-                              onClick={() => removeImageUrl(index)}
-                              className="text-red-600 hover:text-red-800"
-                            >
-                              Remove
-                            </Button>
+                      <label htmlFor="imageUpload" className="cursor-pointer">
+                        <div className="flex flex-col items-center space-y-2">
+                          <Upload className="w-12 h-12 text-gray-400" />
+                          <div>
+                            <p className="text-sm font-medium text-gray-700">
+                              Drop your chart images here, or <span className="text-blue-600">browse</span>
+                            </p>
+                            <p className="text-xs text-gray-500 mt-1">
+                              Supports PNG, JPG, GIF up to 5MB each
+                            </p>
                           </div>
-                        ))}
+                        </div>
+                      </label>
+                    </div>
+
+                    {/* URL Input as Alternative */}
+                    <div className="border-t pt-4">
+                      <p className="text-sm text-gray-600 mb-2">Or add image URL:</p>
+                      <div className="flex space-x-2">
+                        <Input
+                          id="imageUrl"
+                          value={formData.imageUrl}
+                          onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                          placeholder="https://example.com/chart.png"
+                          onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addImageUrl())}
+                        />
+                        <Button
+                          type="button"
+                          onClick={addImageUrl}
+                          disabled={!formData.imageUrl.trim()}
+                          className="bg-blue-600 hover:bg-blue-700"
+                        >
+                          Add
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Image Previews */}
+                    {(imagePreviews.length > 0 || formData.imageUrls.length > 0) && (
+                      <div className="space-y-2">
+                        <p className="text-sm text-gray-600">Uploaded Images:</p>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                          {/* Show uploaded file previews */}
+                          {imagePreviews.map((preview, index) => (
+                            <div key={`preview-${index}`} className="relative group">
+                              <img
+                                src={preview}
+                                alt={`Upload ${index + 1}`}
+                                className="w-full h-24 object-cover rounded border"
+                              />
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => removeUploadedImage(index)}
+                                className="absolute -top-2 -right-2 w-6 h-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                <X className="w-3 h-3" />
+                              </Button>
+                              <div className="absolute bottom-1 left-1 bg-black/50 text-white text-xs px-1 rounded">
+                                {uploadedImages[index]?.name.split('.').pop()?.toUpperCase()}
+                              </div>
+                            </div>
+                          ))}
+                          
+                          {/* Show URL-based images that aren't from uploads */}
+                          {formData.imageUrls.filter((_, i) => i >= imagePreviews.length).map((url, index) => (
+                            <div key={`url-${index}`} className="relative group">
+                              <img
+                                src={url}
+                                alt={`URL ${index + 1}`}
+                                className="w-full h-24 object-cover rounded border"
+                                onError={(e) => {
+                                  (e.target as HTMLImageElement).src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJMMTMuMDkgOC4yNkwyMCA5TDEzLjA5IDE1Ljc0TDEyIDIyTDEwLjkxIDE1Ljc0TDQgOUwxMC45MSA4LjI2TDEyIDJaIiBzdHJva2U9IiM5Q0E0QUYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo=';
+                                }}
+                              />
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => removeImageUrl(imagePreviews.length + index)}
+                                className="absolute -top-2 -right-2 w-6 h-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                <X className="w-3 h-3" />
+                              </Button>
+                              <div className="absolute bottom-1 left-1 bg-black/50 text-white text-xs px-1 rounded">
+                                URL
+                              </div>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     )}
                   </div>
