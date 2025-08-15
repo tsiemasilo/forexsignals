@@ -19,13 +19,15 @@ export default function AdminSignals() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Advanced debugging
-  console.log('AdminSignals Debug:', { 
+  // Advanced debugging for live site
+  console.log('AdminSignals Debug (Live Site):', { 
     user, 
     sessionId, 
     authLoading,
     isAdmin: user?.isAdmin,
-    userEmail: user?.email 
+    userEmail: user?.email,
+    timestamp: new Date().toISOString(),
+    location: window.location.href
   });
 
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -51,10 +53,25 @@ export default function AdminSignals() {
 
   const createSignalMutation = useMutation({
     mutationFn: async (signalData: any) => {
-      console.log('Creating signal with data:', signalData);
+      console.log('🚀 CREATING SIGNAL - REQUEST DATA:', {
+        signalData,
+        url: '/api/signals',
+        method: 'POST',
+        timestamp: new Date().toISOString(),
+        sessionId,
+        user: { id: user?.id, email: user?.email, isAdmin: user?.isAdmin }
+      });
+      
       const response = await apiRequest('POST', '/api/signals', signalData);
       const result = await response.json();
-      console.log('Signal creation result:', result);
+      
+      console.log('✅ SIGNAL CREATION - RESPONSE:', {
+        status: response.status,
+        statusText: response.statusText,
+        result,
+        timestamp: new Date().toISOString()
+      });
+      
       return result;
     },
     onSuccess: (data) => {
@@ -68,10 +85,18 @@ export default function AdminSignals() {
       resetForm();
     },
     onError: (error) => {
-      console.error('Signal creation error:', error);
+      console.error('❌ SIGNAL CREATION FAILED:', {
+        error: error.message,
+        fullError: error,
+        timestamp: new Date().toISOString(),
+        sessionId,
+        user: { id: user?.id, email: user?.email, isAdmin: user?.isAdmin },
+        formData
+      });
+      
       toast({
-        title: "Error",
-        description: `Failed to create signal: ${error.message}`,
+        title: "Signal Creation Failed",
+        description: `Error: ${error.message}`,
         variant: "destructive",
       });
     }
