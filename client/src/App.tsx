@@ -46,6 +46,7 @@ function Router() {
         ) : (
           <>
             <Route path="/" component={Signals} />
+            <Route path="/dashboard" component={Signals} />
             <Route path="/signals" component={Signals} />
             <Route path="/signal/:id" component={SignalDetails} />
             <Route path="/plans" component={Plans} />
