@@ -266,8 +266,29 @@ export class MemStorage implements IStorage {
   }
 
   async updateUserSubscriptionStatus(userId: number, status: string): Promise<Subscription | undefined> {
-    const subscription = Array.from(this.subscriptions.values())
+    let subscription = Array.from(this.subscriptions.values())
       .find(sub => sub.userId === userId);
+    
+    // If no subscription exists, create one (for trial creation)
+    if (!subscription && status === "trial") {
+      const trialId = this.currentSubscriptionId++;
+      const trialEndDate = new Date();
+      trialEndDate.setDate(trialEndDate.getDate() + 7); // 7-day trial
+      
+      subscription = {
+        id: trialId,
+        userId,
+        planId: 1, // Default to Basic Plan
+        status: "trial",
+        startDate: new Date(),
+        endDate: trialEndDate
+      };
+      
+      this.subscriptions.set(trialId, subscription);
+      console.log('✅ Created new trial subscription in memory storage:', subscription);
+      return subscription;
+    }
+    
     if (!subscription) return undefined;
 
     subscription.status = status;
@@ -278,6 +299,7 @@ export class MemStorage implements IStorage {
       trialEndDate.setDate(trialEndDate.getDate() + 7); // 7-day trial
       subscription.startDate = new Date();
       subscription.endDate = trialEndDate;
+      console.log('✅ Updated trial subscription in memory storage:', subscription);
     }
     
     return subscription;

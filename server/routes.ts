@@ -352,9 +352,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check if user has active subscription (unless admin)
       if (!isAdmin) {
         const subscription = await storage.getUserSubscription(userId);
-        if (!subscription || (subscription.status !== "active" && subscription.status !== "trial") || new Date() > subscription.endDate) {
+        console.log('🔍 SIGNALS ACCESS DEBUG - User:', userId, 'Subscription:', subscription);
+        
+        if (!subscription) {
+          console.log('❌ No subscription found for user:', userId);
           return res.status(403).json({ message: "Active subscription required" });
         }
+        
+        const now = new Date();
+        const isActiveSubscription = subscription.status === "active" && subscription.endDate > now;
+        const isActiveTrial = subscription.status === "trial" && subscription.endDate > now;
+        
+        console.log('🕐 Access Check:', {
+          status: subscription.status,
+          endDate: subscription.endDate,
+          now: now,
+          isActiveSubscription,
+          isActiveTrial,
+          shouldHaveAccess: isActiveSubscription || isActiveTrial
+        });
+        
+        if (!isActiveSubscription && !isActiveTrial) {
+          console.log('❌ Access denied - subscription expired or inactive');
+          return res.status(403).json({ message: "Active subscription required" });
+        }
+        
+        console.log('✅ Access granted for user:', userId);
       }
 
       const signals = await storage.getAllSignals();
@@ -373,9 +396,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check if user has active subscription (unless admin)
       if (!isAdmin) {
         const subscription = await storage.getUserSubscription(userId);
-        if (!subscription || (subscription.status !== "active" && subscription.status !== "trial") || new Date() > subscription.endDate) {
+        console.log('🔍 SINGLE SIGNAL ACCESS DEBUG - User:', userId, 'Subscription:', subscription);
+        
+        if (!subscription) {
+          console.log('❌ No subscription found for user:', userId);
           return res.status(403).json({ message: "Active subscription required" });
         }
+        
+        const now = new Date();
+        const isActiveSubscription = subscription.status === "active" && subscription.endDate > now;
+        const isActiveTrial = subscription.status === "trial" && subscription.endDate > now;
+        
+        console.log('🕐 Single Signal Access Check:', {
+          status: subscription.status,
+          endDate: subscription.endDate,
+          now: now,
+          isActiveSubscription,
+          isActiveTrial,
+          shouldHaveAccess: isActiveSubscription || isActiveTrial
+        });
+        
+        if (!isActiveSubscription && !isActiveTrial) {
+          console.log('❌ Single signal access denied - subscription expired or inactive');
+          return res.status(403).json({ message: "Active subscription required" });
+        }
+        
+        console.log('✅ Single signal access granted for user:', userId);
       }
 
       const signal = await storage.getSignal(signalId);

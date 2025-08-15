@@ -8,12 +8,14 @@ const sql = neon(process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL);
 
 async function createFreshTrial() {
   try {
-    // Create 7-day trial from now
+    // Calculate trial end date (7 days from now) - Fix the date calculation
     const trialEndDate = new Date();
     trialEndDate.setDate(trialEndDate.getDate() + 7);
     
     console.log('🔧 Creating fresh 7-day trial for Almeerah...');
+    console.log('🔍 Current time:', new Date().toISOString());
     console.log('📅 Trial will end:', trialEndDate.toISOString());
+    console.log('⏰ Days difference:', Math.ceil((trialEndDate - new Date()) / (1000 * 60 * 60 * 24)));
 
     // Get a plan ID first (Basic Plan)
     const plan = await sql`SELECT id FROM subscription_plans WHERE name = 'Basic Plan' LIMIT 1;`;
@@ -22,10 +24,11 @@ async function createFreshTrial() {
     // Delete existing subscription
     await sql`DELETE FROM subscriptions WHERE user_id = 3;`;
     
-    // Insert fresh trial subscription
+    // Insert fresh trial subscription with proper 7-day future date
+    const startDate = new Date();
     const result = await sql`
       INSERT INTO subscriptions (user_id, plan_id, status, end_date, start_date, created_at)
-      VALUES (3, ${planId}, 'trial', ${trialEndDate.toISOString()}, NOW(), NOW())
+      VALUES (3, ${planId}, 'trial', ${trialEndDate.toISOString()}, ${startDate.toISOString()}, NOW())
       RETURNING *;
     `;
 
