@@ -9,7 +9,7 @@ export GIT_COMMITTER_EMAIL="deploy@watchlistfx.com"
 
 # Step 2: Configure remote with your personal access token
 git remote remove origin
-git remote add origin https://tsiemasilo:$GITHUB_TOKEN@github.com/tsiemasilo/forexsignals.git
+git remote add origin https://tsiemasilo:$PERSONAL_ACCESS_TOKEN_FOREX@github.com/tsiemasilo/forexsignals.git
 
 # Step 3: Stage all authentication fix files
 git add client/src/App.tsx
