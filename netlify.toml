@@ -62,6 +62,11 @@
   status = 200
 
 [[redirects]]
+  from = "/api/debug-session"
+  to = "/.netlify/functions/debug-session"
+  status = 200
+
+[[redirects]]
   from = "/api/placeholder/*/*"
   to = "/.netlify/functions/placeholder"
   status = 200

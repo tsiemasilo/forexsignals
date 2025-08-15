@@ -1,0 +1,15 @@
+#!/bin/bash
+# CRITICAL PRODUCTION FIX - Session Authentication for Signals Endpoint
+
+git add .
+git commit -m "CRITICAL PRODUCTION FIX: Session authentication for signals endpoint
+
+❌ ISSUE: Production signals endpoint returning 401 Unauthorized
+✅ FIX: Updated Netlify signals.mjs with proper session handling  
+✅ Enhanced individual signal support with complete CRUD operations
+✅ Improved error handling and database environment variable usage
+
+🚨 URGENT: Users cannot access signals on live site
+🎯 This commit restores full signals functionality"
+
+git push https://tsiemasilo:$PERSONAL_ACCESS_TOKEN_FOREX@github.com/tsiemasilo/forexsignals.git main
