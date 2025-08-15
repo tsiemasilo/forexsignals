@@ -7,12 +7,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus, Edit, Trash2, TrendingUp, TrendingDown, Minus, Clock, AlertTriangle } from 'lucide-react';
+import { Plus, Edit, Trash2, TrendingUp, TrendingDown, Minus, Clock, AlertTriangle, RefreshCw } from 'lucide-react';
 import { Link } from 'wouter';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
+import { useRealtimeUpdates } from '@/hooks/useRealtimeUpdates';
 
 export default function AdminSignals() {
   const { user, sessionId, isLoading: authLoading } = useAuth();
@@ -46,9 +47,19 @@ export default function AdminSignals() {
     imageUrls: []
   });
 
+  // Real-time updates for admin dashboard
+  const { isOnline, lastUpdateTime, refreshAll } = useRealtimeUpdates({
+    queryKeys: [['/api/signals']],
+    interval: 4000, // 4 second refresh for admin
+    backgroundRefresh: true
+  });
+
   const { data: signals = [], isLoading } = useQuery<any[]>({
     queryKey: ['/api/signals'],
-    enabled: !!sessionId
+    enabled: !!sessionId,
+    refetchInterval: 4000, // Auto-refresh every 4 seconds
+    refetchIntervalInBackground: true, // Continue refreshing in background
+    staleTime: 0, // Always consider data stale
   });
 
   const createSignalMutation = useMutation({
@@ -347,9 +358,39 @@ export default function AdminSignals() {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4">
+        {/* Admin Dashboard Header with Real-time Status */}
+        <div className="mb-8 bg-white rounded-lg p-6 shadow-sm border">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Admin Signal Dashboard</h1>
+              <p className="text-gray-600 mt-2">Create and manage live trading signals</p>
+            </div>
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2 text-sm text-blue-600 bg-blue-50 px-3 py-2 rounded-full">
+                <div className={`w-2 h-2 rounded-full ${isOnline ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></div>
+                <span className="font-medium">
+                  {isOnline ? 'Live Updates: 4s' : 'Offline Mode'}
+                </span>
+              </div>
+              <div className="text-xs text-gray-500">
+                Last sync: {lastUpdateTime.toLocaleTimeString()}
+              </div>
+              <Button 
+                onClick={refreshAll} 
+                variant="outline" 
+                size="sm"
+                className="flex items-center space-x-2 hover:bg-blue-50"
+              >
+                <RefreshCw className="w-4 h-4" />
+                <span>Refresh All</span>
+              </Button>
+            </div>
+          </div>
+        </div>
+        
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold mb-2">Manage Signals</h1>
+            <h2 className="text-xl font-semibold mb-2">Signal Management</h2>
             <p className="text-gray-600">
               Create, edit, and manage trading signals for your subscribers.
             </p>

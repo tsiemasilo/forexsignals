@@ -1,10 +1,10 @@
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { TrendingUp, TrendingDown, Minus, Clock, Bell, Smartphone } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
+import { TrendingUp, TrendingDown, Minus, Clock, Bell, Smartphone, RefreshCw } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link } from 'wouter';
 import { Button } from '@/components/ui/button';
+import { useRealtimeSignals } from '@/hooks/useRealtimeSignals';
 
 export default function Signals() {
   const { sessionId, user } = useAuth();
@@ -17,19 +17,18 @@ export default function Signals() {
     timestamp: new Date().toISOString()
   });
 
-  const { data: signals = [], isLoading, error } = useQuery({
-    queryKey: ['/api/signals'],
-    enabled: !!sessionId
-  });
+  // Use real-time signals hook for auto-refresh
+  const { signals = [], isLoading, error, lastUpdateTime, refresh } = useRealtimeSignals();
 
-  // Debug logging after query
-  console.log('🎯 USER DASHBOARD QUERY RESULT:', {
+  // Debug logging after query with real-time info
+  console.log('🎯 USER DASHBOARD QUERY RESULT (REAL-TIME):', {
     signalsCount: (signals as any)?.length || 0,
     signals: signals,
     isLoading,
     error: error?.message,
     errorType: error?.constructor?.name,
     errorStatus: (error as any)?.status,
+    lastUpdateTime: lastUpdateTime.toISOString(),
     sessionId,
     user,
     timestamp: new Date().toISOString()
@@ -163,6 +162,31 @@ export default function Signals() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 py-8">
       <div className="max-w-4xl mx-auto px-4">
+        {/* Auto-refresh indicator */}
+        <div className="mb-6 flex items-center justify-between bg-white rounded-lg p-4 shadow-sm">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Live Trading Signals</h1>
+            <p className="text-gray-600">Real-time NAS100 professional insights</p>
+          </div>
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 text-sm text-green-600 bg-green-50 px-3 py-2 rounded-full">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="font-medium">Auto-updating every 3s</span>
+            </div>
+            <div className="text-xs text-gray-500">
+              Last update: {lastUpdateTime.toLocaleTimeString()}
+            </div>
+            <Button 
+              onClick={refresh} 
+              variant="outline" 
+              size="sm"
+              className="flex items-center space-x-2 hover:bg-blue-50"
+            >
+              <RefreshCw className="w-4 h-4" />
+              <span>Refresh Now</span>
+            </Button>
+          </div>
+        </div>
 
 
         <div className="flex justify-center">
