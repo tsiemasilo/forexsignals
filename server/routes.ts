@@ -530,7 +530,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       let subscription;
-      if (planId && status === "active") {
+      if (status === "trial") {
+        // For trials, always create proper 7-day trial regardless of planId
+        subscription = await storage.updateUserSubscriptionStatus(userId, status);
+        console.log('✅ Created 7-day trial for user:', userId, subscription);
+      } else if (planId && status === "active") {
         subscription = await storage.updateUserSubscriptionWithPlan(userId, status, planId);
       } else {
         subscription = await storage.updateUserSubscriptionStatus(userId, status);

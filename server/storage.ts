@@ -273,7 +273,7 @@ export class MemStorage implements IStorage {
     if (!subscription && status === "trial") {
       const trialId = this.currentSubscriptionId++;
       const trialEndDate = new Date();
-      trialEndDate.setDate(trialEndDate.getDate() + 7); // 7-day trial
+      trialEndDate.setDate(trialEndDate.getDate() + 7); // Always 7-day trial
       
       subscription = {
         id: trialId,
@@ -285,7 +285,7 @@ export class MemStorage implements IStorage {
       };
       
       this.subscriptions.set(trialId, subscription);
-      console.log('✅ Created new trial subscription in memory storage:', subscription);
+      console.log('✅ Created new 7-day trial subscription in memory storage:', subscription);
       return subscription;
     }
     
@@ -293,13 +293,14 @@ export class MemStorage implements IStorage {
 
     subscription.status = status;
     
-    // If setting to trial, create a proper 7-day trial with future end date
+    // ALWAYS create proper 7-day trial when status is set to "trial"
     if (status === "trial") {
       const trialEndDate = new Date();
-      trialEndDate.setDate(trialEndDate.getDate() + 7); // 7-day trial
+      trialEndDate.setDate(trialEndDate.getDate() + 7); // Always 7-day trial
       subscription.startDate = new Date();
       subscription.endDate = trialEndDate;
-      console.log('✅ Updated trial subscription in memory storage:', subscription);
+      subscription.planId = 1; // Reset to Basic Plan for trials
+      console.log('✅ Updated to 7-day trial subscription in memory storage:', subscription);
     }
     
     return subscription;
