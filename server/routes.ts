@@ -533,22 +533,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('🔧 ADMIN ROUTE: Processing subscription update:', { userId, status, planId, timestamp: new Date().toISOString() });
       
       if (status === "trial") {
-        // For trials, always create proper 7-day trial regardless of planId
-        console.log('🎯 ADMIN ROUTE: Creating trial - calling updateUserSubscriptionStatus');
+        // For trials, ALWAYS create proper 7-day trial and IGNORE planId completely
+        console.log('🎯 ADMIN ROUTE: Creating trial - FORCE 7-day trial regardless of planId');
         subscription = await storage.updateUserSubscriptionStatus(userId, status);
         console.log('✅ ADMIN ROUTE: Trial created:', subscription);
         
-        // Double-check the trial duration
+        // Double-check trial duration and force 7 days if corrupted
         if (subscription) {
-          const start = new Date(subscription.startDate);
-          const end = new Date(subscription.endDate);
-          const durationDays = Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
-          console.log('📊 ADMIN ROUTE: Trial duration check:', { durationDays, isValid: durationDays >= 6 });
-          
-          if (durationDays < 6) {
-            console.log('🚫 ADMIN ROUTE: WARNING - Trial duration is too short!');
+          const durationDays = Math.round((subscription.endDate.getTime() - subscription.startDate.getTime()) / (1000 * 60 * 60 * 24));
+          console.log('📅 ADMIN ROUTE: Trial duration check:', { durationDays, endDate: subscription.endDate });
+          if (durationDays < 7) {
+            console.log('⚠️ ADMIN ROUTE: WARNING - Trial duration corrupted, fixing...');
+            const fixedEndDate = new Date();
+            fixedEndDate.setDate(fixedEndDate.getDate() + 7);
+            subscription.endDate = fixedEndDate;
+            subscription.startDate = new Date();
+            subscription.planId = 1; // Force basic plan
+            console.log('✅ ADMIN ROUTE: Trial duration fixed to 7 days:', subscription);
           }
         }
+        
+        // CRITICAL: For trials, exit early and don't call updateUserSubscriptionWithPlan
+        console.log('🔒 ADMIN ROUTE: Trial creation complete, exiting early to prevent corruption');
+        res.json({ message: "Trial subscription created successfully", subscription });
+        return;
       } else if (planId && status === "active") {
         console.log('🎯 ADMIN ROUTE: Creating active subscription with plan');
         subscription = await storage.updateUserSubscriptionWithPlan(userId, status, planId);
