@@ -313,7 +313,15 @@ export class MemStorage implements IStorage {
 
     subscription.status = status;
     
-    if (planId && status === "active") {
+    // PREVENT ADMIN FROM CREATING EXPIRED TRIALS - Always create proper 7-day trials
+    if (status === "trial") {
+      const trialEndDate = new Date();
+      trialEndDate.setDate(trialEndDate.getDate() + 7); // FORCE 7-day trial
+      subscription.startDate = new Date();
+      subscription.endDate = trialEndDate;
+      subscription.planId = 1; // Reset to Basic Plan for trials
+      console.log('✅ ADMIN WITH PLAN: Created proper 7-day trial:', subscription);
+    } else if (planId && status === "active") {
       const plan = await this.getPlan(planId);
       if (plan) {
         subscription.planId = planId;
@@ -322,6 +330,7 @@ export class MemStorage implements IStorage {
         newEndDate.setDate(newEndDate.getDate() + plan.duration);
         subscription.endDate = newEndDate;
         subscription.startDate = new Date();
+        console.log('✅ ADMIN WITH PLAN: Created active subscription:', subscription);
       }
     }
     

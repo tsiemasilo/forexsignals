@@ -177,6 +177,7 @@ export default function AdminUsers() {
   };
 
   const handleStatusChange = (userId: number, newStatus: string, planId?: number) => {
+    console.log('🔧 ADMIN FRONTEND: About to change subscription:', { userId, newStatus, planId });
     updateSubscriptionMutation.mutate({ userId, status: newStatus, planId });
   };
 
