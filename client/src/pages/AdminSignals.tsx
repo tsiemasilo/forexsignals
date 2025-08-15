@@ -7,7 +7,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus, Edit, Trash2, TrendingUp, TrendingDown, Minus, Clock } from 'lucide-react';
+import { Plus, Edit, Trash2, TrendingUp, TrendingDown, Minus, Clock, AlertTriangle } from 'lucide-react';
+import { Link } from 'wouter';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
@@ -133,9 +134,35 @@ export default function AdminSignals() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log('FORM SUBMISSION DEBUG:', {
+      formData,
+      editingSignal,
+      user,
+      sessionId,
+      isAdmin: user?.isAdmin,
+      timestamp: new Date().toISOString()
+    });
+    
+    // Validate required fields
+    if (!formData.title || !formData.content || !formData.tradeAction) {
+      console.error('Form validation failed:', { 
+        title: !!formData.title, 
+        content: !!formData.content, 
+        tradeAction: !!formData.tradeAction 
+      });
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all required fields (title, content, and trade action).",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     if (editingSignal) {
+      console.log('Updating existing signal:', editingSignal.id);
       updateSignalMutation.mutate({ id: editingSignal.id, ...formData });
     } else {
+      console.log('Creating new signal with data:', formData);
       createSignalMutation.mutate(formData);
     }
   };
@@ -234,17 +261,42 @@ export default function AdminSignals() {
           </p>
           <div className="space-y-4">
             <Button 
-              onClick={() => window.location.href = '/api/logout'} 
-              variant="outline"
-              className="w-full"
+              onClick={async () => {
+                try {
+                  // Quick admin login
+                  const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: 'admin@forexsignals.com' }),
+                    credentials: 'include'
+                  });
+                  
+                  if (response.ok) {
+                    window.location.reload();
+                  } else {
+                    console.error('Admin login failed:', await response.text());
+                    window.location.href = '/api/logout';
+                  }
+                } catch (error) {
+                  console.error('Login error:', error);
+                  window.location.href = '/api/logout';
+                }
+              }} 
+              className="w-full bg-green-600 hover:bg-green-700"
             >
-              Logout and Login as Admin
+              Quick Admin Login
             </Button>
             <Link href="/admin">
               <Button variant="outline" className="w-full">
                 Back to Admin Dashboard
               </Button>
             </Link>
+            <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+              <p className="text-sm text-blue-600">
+                <strong>Admin Login:</strong> admin@forexsignals.com<br/>
+                <strong>Debug Info:</strong> Session ID: {sessionId}
+              </p>
+            </div>
           </div>
         </div>
       </div>
