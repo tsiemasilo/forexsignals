@@ -530,14 +530,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       let subscription;
+      console.log('🔧 ADMIN ROUTE: Processing subscription update:', { userId, status, planId, timestamp: new Date().toISOString() });
+      
       if (status === "trial") {
         // For trials, always create proper 7-day trial regardless of planId
+        console.log('🎯 ADMIN ROUTE: Creating trial - calling updateUserSubscriptionStatus');
         subscription = await storage.updateUserSubscriptionStatus(userId, status);
-        console.log('✅ Created 7-day trial for user:', userId, subscription);
+        console.log('✅ ADMIN ROUTE: Trial created:', subscription);
+        
+        // Double-check the trial duration
+        if (subscription) {
+          const start = new Date(subscription.startDate);
+          const end = new Date(subscription.endDate);
+          const durationDays = Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+          console.log('📊 ADMIN ROUTE: Trial duration check:', { durationDays, isValid: durationDays >= 6 });
+          
+          if (durationDays < 6) {
+            console.log('🚫 ADMIN ROUTE: WARNING - Trial duration is too short!');
+          }
+        }
       } else if (planId && status === "active") {
+        console.log('🎯 ADMIN ROUTE: Creating active subscription with plan');
         subscription = await storage.updateUserSubscriptionWithPlan(userId, status, planId);
+        console.log('✅ ADMIN ROUTE: Active subscription created:', subscription);
       } else {
+        console.log('🎯 ADMIN ROUTE: Creating subscription without plan');
         subscription = await storage.updateUserSubscriptionStatus(userId, status);
+        console.log('✅ ADMIN ROUTE: Subscription created:', subscription);
       }
 
       if (!subscription) {
