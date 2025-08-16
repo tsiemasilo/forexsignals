@@ -83,207 +83,199 @@ export function PhoneSignalsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
-      {/* Phone Frame */}
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center p-4">
+      {/* iPhone Frame */}
       <div className="relative w-full max-w-sm mx-auto">
-        {/* Phone Outline */}
-        <div className="relative w-[210px] h-[400px] bg-black rounded-[35px] border-2 border-gray-600 p-[7px] shadow-[2px_5px_15px_rgba(0,0,0,0.486)] mx-auto">
+        {/* iPhone Outline with more realistic styling */}
+        <div className="relative bg-gradient-to-b from-gray-800 to-black rounded-[3rem] p-1 shadow-2xl border border-gray-700">
+          {/* Camera Notch */}
+          <div className="absolute top-2 left-1/2 transform -translate-x-1/2 w-32 h-6 bg-black rounded-full z-20"></div>
           
-          {/* Side Buttons */}
-          <div className="absolute w-[2px] h-[45px] top-[30%] right-[-4px] bg-gradient-to-r from-gray-800 via-gray-600 to-gray-500"></div>
-          <div className="absolute w-[2px] h-[30px] top-[26%] left-[-4px] bg-gradient-to-r from-gray-800 via-gray-600 to-gray-500"></div>
-          <div className="absolute w-[2px] h-[30px] top-[36%] left-[-4px] bg-gradient-to-r from-gray-800 via-gray-600 to-gray-500"></div>
-          
-          {/* Top Notch */}
-          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-[35%] h-[18px] bg-black rounded-b-[10px]">
-            <div className="absolute top-[2px] left-1/2 transform -translate-x-1/2 w-[40%] h-[2px] rounded-[2px] bg-gray-800"></div>
-            <div className="absolute top-[6px] left-[16%] w-[6px] h-[6px] rounded-full bg-white/10">
-              <div className="absolute w-[3px] h-[3px] rounded-full top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-blue-400/20"></div>
-            </div>
-          </div>
-          
-          {/* Screen with gradient */}
-          <div 
-            className="h-full rounded-[25px] overflow-hidden relative"
-            style={{
-              background: 'linear-gradient(to right bottom, #ff0000, #ff0045, #ff0078, #ea00aa, #b81cd7, #8a3ad6, #5746cf, #004ac2, #003d94, #002e66, #001d3a, #020812)',
-              backgroundSize: '200% 200%',
-              backgroundPosition: '0% 0%',
-              transition: 'all 0.6s ease-out'
-            }}
-          >
-            {/* Status Bar */}
-            <div className="text-white px-4 pt-6 pb-2 flex justify-between items-center text-xs font-medium relative z-10">
+          {/* Screen */}
+          <div className="bg-black rounded-[2.8rem] overflow-hidden min-h-[640px] max-h-[750px] flex flex-col relative">
+            {/* iOS Style Status Bar */}
+            <div className="bg-black text-white px-8 pt-12 pb-2 flex justify-between items-center text-sm font-medium">
               <span>9:41</span>
               <div className="flex items-center space-x-1">
                 <div className="flex space-x-1">
-                  <div className="w-1 h-2 bg-white rounded-full"></div>
-                  <div className="w-1 h-2 bg-white rounded-full"></div>
-                  <div className="w-1 h-2 bg-white/60 rounded-full"></div>
-                  <div className="w-1 h-2 bg-white/30 rounded-full"></div>
+                  <div className="w-1 h-3 bg-white rounded-full"></div>
+                  <div className="w-1 h-3 bg-white rounded-full"></div>
+                  <div className="w-1 h-3 bg-white/60 rounded-full"></div>
+                  <div className="w-1 h-3 bg-white/30 rounded-full"></div>
                 </div>
-                <div className="w-5 h-2 bg-white rounded-sm relative">
+                <div className="w-6 h-3 bg-white rounded-sm relative">
                   <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-black rounded-full"></div>
                 </div>
               </div>
             </div>
 
-            {/* Header */}
-            <div className="text-white px-4 py-3 relative z-10">
+            {/* iOS Style Header */}
+            <div className="bg-gradient-to-b from-gray-50 to-white px-6 py-4 border-b border-gray-200">
               <div className="flex justify-between items-center">
-                <div className="flex items-center space-x-2">
-                  <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
-                    <Signal className="h-3 w-3 text-white" />
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                    <Signal className="h-4 w-4 text-white" />
                   </div>
                   <div>
-                    <h1 className="text-sm font-bold">Forex Signals</h1>
-                    <p className="text-xs opacity-80">Live Updates</p>
+                    <h1 className="text-lg font-semibold text-gray-900">Signals</h1>
+                    <p className="text-xs text-gray-500">Live Trading Updates</p>
                   </div>
                 </div>
-                <div className="flex items-center space-x-1">
+                <div className="flex items-center space-x-2">
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    className="w-6 h-6 p-0 rounded-full hover:bg-white/10 text-white"
+                    className="w-8 h-8 p-0 rounded-full hover:bg-gray-100"
                   >
-                    <Bell className="h-3 w-3" />
+                    <Bell className="h-4 w-4 text-gray-600" />
                   </Button>
                   <Button 
                     variant="ghost" 
                     size="sm" 
                     onClick={logout}
-                    className="w-6 h-6 p-0 rounded-full hover:bg-white/10 text-white"
+                    className="w-8 h-8 p-0 rounded-full hover:bg-gray-100"
                   >
-                    <LogOut className="h-3 w-3" />
+                    <LogOut className="h-4 w-4 text-gray-600" />
                   </Button>
                 </div>
               </div>
               
               {subscription && (
-                <div className="mt-2 bg-white/10 backdrop-blur-sm rounded-lg px-3 py-2">
+                <div className="mt-3 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl px-4 py-3">
                   <div className="flex justify-between items-center">
                     <div>
-                      <span className="text-xs font-medium">{subscription.plan?.name}</span>
-                      <p className="text-xs opacity-70">Hello, {user?.firstName}</p>
+                      <span className="text-sm font-medium text-gray-900">{subscription.plan?.name}</span>
+                      <p className="text-xs text-gray-600 mt-1">Hello, {user?.firstName}</p>
                     </div>
                     <div className="text-right">
-                      <div className="text-sm font-bold">{getDaysRemaining(subscription)}</div>
-                      <div className="text-xs opacity-70">days left</div>
+                      <div className="text-lg font-bold text-blue-600">{getDaysRemaining(subscription)}</div>
+                      <div className="text-xs text-gray-500">days left</div>
                     </div>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Signals List */}
-            <div className="flex-1 overflow-y-auto px-3 py-2 relative z-10">
+            {/* iOS Style Signals List */}
+            <div className="flex-1 overflow-y-auto bg-gray-50">
               {signalsLoading ? (
-                <div className="space-y-2">
+                <div className="p-4 space-y-4">
                   {[1, 2, 3].map((i) => (
-                    <div key={i} className="bg-white/10 backdrop-blur-sm rounded-lg p-3">
+                    <div key={i} className="bg-white rounded-2xl p-4 shadow-sm">
                       <div className="animate-pulse">
-                        <div className="h-3 bg-white/20 rounded w-3/4 mb-2"></div>
-                        <div className="h-2 bg-white/20 rounded w-1/2 mb-2"></div>
-                        <div className="h-16 bg-white/20 rounded mb-2"></div>
-                        <div className="h-2 bg-white/20 rounded w-full"></div>
+                        <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                        <div className="h-3 bg-gray-200 rounded w-1/2 mb-3"></div>
+                        <div className="h-20 bg-gray-200 rounded-xl mb-3"></div>
+                        <div className="h-3 bg-gray-200 rounded w-full"></div>
                       </div>
                     </div>
                   ))}
                 </div>
               ) : signals?.length ? (
-                <div className="space-y-2">
-                  {signals.map((signal: ForexSignal) => (
-                    <div key={signal.id} className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20">
-                      <div className="flex justify-between items-start mb-2">
-                        <div className="flex-1">
-                          <h3 className="font-bold text-white text-xs leading-tight mb-1">
-                            {signal.title}
-                          </h3>
-                          <div className="flex items-center space-x-1 mb-2">
-                            <div className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium ${getTradeColor(signal.tradeAction)}`}>
-                              {getTradeIcon(signal.tradeAction)}
-                              <span>{signal.tradeAction}</span>
-                            </div>
-                            <div className="flex items-center space-x-1 text-xs text-white/70 bg-white/10 px-2 py-1 rounded-full">
-                              <Clock className="h-2 w-2" />
-                              <span>{formatDate(signal.createdAt)}</span>
+                <div className="p-4 space-y-4">
+                  {signals.map((signal: ForexSignal, index: number) => (
+                    <div key={signal.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                      {/* Signal Header */}
+                      <div className="p-4 pb-3">
+                        <div className="flex justify-between items-start mb-3">
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-gray-900 text-base leading-tight">
+                              {signal.title}
+                            </h3>
+                            <div className="flex items-center space-x-2 mt-2">
+                              <div className={`flex items-center space-x-1 px-3 py-1.5 rounded-full text-sm font-medium ${getTradeColor(signal.tradeAction)}`}>
+                                {getTradeIcon(signal.tradeAction)}
+                                <span>{signal.tradeAction.toUpperCase()}</span>
+                              </div>
+                              <div className="flex items-center space-x-1 text-xs text-gray-500 bg-gray-100 px-3 py-1.5 rounded-full">
+                                <Clock className="h-3 w-3" />
+                                <span>{formatDate(signal.createdAt)}</span>
+                              </div>
                             </div>
                           </div>
                         </div>
+                        
+                        {signal.imageUrl && (
+                          <div className="mb-4">
+                            <img
+                              src={signal.imageUrl}
+                              alt={signal.title}
+                              className="w-full h-40 object-cover rounded-xl border border-gray-200"
+                            />
+                          </div>
+                        )}
+                        
+                        <div className="bg-gray-50 rounded-xl p-4">
+                          <p className="text-sm text-gray-700 leading-relaxed">
+                            {signal.content}
+                          </p>
+                        </div>
                       </div>
                       
-                      {signal.imageUrl && (
-                        <div className="mb-2">
-                          <img
-                            src={signal.imageUrl}
-                            alt={signal.title}
-                            className="w-full h-20 object-cover rounded border border-white/20"
-                          />
+                      {/* Action Bar */}
+                      <div className="bg-gray-50 px-4 py-3 border-t border-gray-100">
+                        <div className="flex justify-between items-center">
+                          <div className="flex space-x-4">
+                            <button className="flex items-center space-x-1 text-gray-600 hover:text-blue-600 transition-colors">
+                              <BarChart3 className="h-4 w-4" />
+                              <span className="text-sm">Analyze</span>
+                            </button>
+                            <button className="flex items-center space-x-1 text-gray-600 hover:text-green-600 transition-colors">
+                              <Signal className="h-4 w-4" />
+                              <span className="text-sm">Follow</span>
+                            </button>
+                          </div>
+                          <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                         </div>
-                      )}
-                      
-                      <div className="bg-white/5 rounded p-2">
-                        <p className="text-xs text-white/90 leading-relaxed">
-                          {signal.content}
-                        </p>
-                      </div>
-                      
-                      <div className="flex justify-between items-center mt-2 pt-2 border-t border-white/10">
-                        <div className="flex space-x-3">
-                          <button className="flex items-center space-x-1 text-white/70 hover:text-white transition-colors">
-                            <BarChart3 className="h-2 w-2" />
-                            <span className="text-xs">Chart</span>
-                          </button>
-                          <button className="flex items-center space-x-1 text-white/70 hover:text-white transition-colors">
-                            <Signal className="h-2 w-2" />
-                            <span className="text-xs">Follow</span>
-                          </button>
-                        </div>
-                        <div className="w-1 h-1 bg-white/50 rounded-full"></div>
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="flex-1 flex items-center justify-center text-center">
-                  <div>
-                    <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <Signal className="h-6 w-6 text-white/50" />
+                <div className="flex-1 flex items-center justify-center p-8">
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Signal className="h-8 w-8 text-gray-400" />
                     </div>
-                    <h3 className="text-sm font-medium text-white mb-1">No signals yet</h3>
-                    <p className="text-white/70 text-xs">New signals will appear here</p>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No signals yet</h3>
+                    <p className="text-gray-500 text-sm">New trading signals will appear here</p>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Bottom Navigation */}
-            <div className="bg-white/10 backdrop-blur-sm border-t border-white/20 relative z-10">
+            {/* iOS Style Tab Bar */}
+            <div className="bg-white/95 backdrop-blur-lg border-t border-gray-200">
               <div className="flex justify-around py-2">
-                <button className="flex flex-col items-center py-1">
-                  <div className="w-5 h-5 bg-white/20 rounded flex items-center justify-center mb-1">
-                    <Signal className="h-3 w-3 text-white" />
+                <button className="flex flex-col items-center py-2 px-4">
+                  <div className="w-6 h-6 bg-blue-600 rounded-lg flex items-center justify-center mb-1">
+                    <Signal className="h-4 w-4 text-white" />
                   </div>
-                  <span className="text-xs font-medium text-white">Signals</span>
+                  <span className="text-xs font-medium text-blue-600">Signals</span>
                 </button>
-                <button className="flex flex-col items-center py-1">
-                  <div className="w-5 h-5 bg-white/10 rounded flex items-center justify-center mb-1">
-                    <BarChart3 className="h-3 w-3 text-white/60" />
+                <button className="flex flex-col items-center py-2 px-4">
+                  <div className="w-6 h-6 bg-gray-200 rounded-lg flex items-center justify-center mb-1">
+                    <BarChart3 className="h-4 w-4 text-gray-600" />
                   </div>
-                  <span className="text-xs text-white/60">Charts</span>
+                  <span className="text-xs text-gray-500">Charts</span>
                 </button>
-                <button className="flex flex-col items-center py-1">
-                  <div className="w-5 h-5 bg-white/10 rounded flex items-center justify-center mb-1">
-                    <Calendar className="h-3 w-3 text-white/60" />
+                <button className="flex flex-col items-center py-2 px-4">
+                  <div className="w-6 h-6 bg-gray-200 rounded-lg flex items-center justify-center mb-1">
+                    <Calendar className="h-4 w-4 text-gray-600" />
                   </div>
-                  <span className="text-xs text-white/60">History</span>
+                  <span className="text-xs text-gray-500">History</span>
                 </button>
-                <button className="flex flex-col items-center py-1">
-                  <div className="w-5 h-5 bg-white/10 rounded flex items-center justify-center mb-1">
-                    <Settings className="h-3 w-3 text-white/60" />
+                <button className="flex flex-col items-center py-2 px-4">
+                  <div className="w-6 h-6 bg-gray-200 rounded-lg flex items-center justify-center mb-1">
+                    <Settings className="h-4 w-4 text-gray-600" />
                   </div>
-                  <span className="text-xs text-white/60">Settings</span>
+                  <span className="text-xs text-gray-500">Settings</span>
                 </button>
+              </div>
+              
+              {/* iOS Home Indicator */}
+              <div className="flex justify-center py-2">
+                <div className="w-32 h-1 bg-gray-900 rounded-full"></div>
               </div>
             </div>
           </div>
