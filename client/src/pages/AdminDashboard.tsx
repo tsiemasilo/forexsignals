@@ -185,6 +185,12 @@ export function AdminDashboard() {
       imageUrls: uploadedImages.length > 0 ? uploadedImages : undefined
     };
     
+    console.log('🚀 Creating signal with data:', { 
+      title: signalData.title, 
+      hasImages: !!signalData.imageUrls,
+      imageCount: signalData.imageUrls?.length || 0 
+    });
+    
     createSignalMutation.mutate(signalData);
   };
 

@@ -350,26 +350,28 @@ export async function registerRoutes(app: express.Application) {
   app.post("/api/admin/signals", requireAdmin, async (req: Request, res: Response) => {
     try {
       const userId = req.session.userId!;
-      console.log('📥 Raw request body:', req.body);
+      console.log('📥 Raw request body:', { title: req.body.title, hasImages: !!req.body.imageUrls });
       
-      // For now, skip imageUrls entirely to avoid database errors
-      // Store only basic signal data until database schema is properly updated
+      // Handle image upload - store first image as imageUrl for now
+      let imageUrl = req.body.imageUrl || null;
+      if (req.body.imageUrls && Array.isArray(req.body.imageUrls) && req.body.imageUrls.length > 0) {
+        // Use the first uploaded image as the main image
+        imageUrl = req.body.imageUrls[0];
+        console.log('📸 Using first uploaded image as main image');
+      }
+      
       let processedBody = {
         title: req.body.title,
         content: req.body.content,
         tradeAction: req.body.tradeAction,
-        imageUrl: req.body.imageUrl || null
+        imageUrl: imageUrl
       };
-      
-      // Log what we're sending to validation
-      console.log('📤 Processed body for validation:', processedBody);
       
       const validatedData = insertForexSignalSchema.parse({
         ...processedBody,
         createdBy: userId
       });
       
-      console.log('✅ Validated data:', validatedData);
       const signal = await storage.createSignal(validatedData);
       console.log('✅ Signal created successfully:', signal.id);
       res.json(signal);
