@@ -130,6 +130,18 @@ export async function registerRoutes(app: express.Application) {
       const userId = req.session.userId!;
       console.log(`🔍 SUBSCRIPTION STATUS DEBUG - User: ${userId}`);
       
+      // Check if user is admin - admins get admin status
+      const user = await storage.getUser(userId);
+      if (user?.isAdmin) {
+        return res.json({
+          status: "admin",
+          statusDisplay: "Admin Account",
+          daysLeft: 999,
+          plan: { name: "Admin", price: "0.00" },
+          color: "bg-purple-100 text-purple-800"
+        });
+      }
+      
       const subscription = await storage.getUserSubscription(userId);
       console.log(`📋 Subscription found:`, subscription);
       
@@ -186,7 +198,15 @@ export async function registerRoutes(app: express.Application) {
       const userId = req.session.userId!;
       console.log(`🔍 SIGNALS ACCESS DEBUG - User: ${userId}`);
       
-      // Check subscription status
+      // Check if user is admin - admins bypass subscription checks
+      const user = await storage.getUser(userId);
+      if (user?.isAdmin) {
+        console.log(`✅ Admin access granted for user: ${userId}`);
+        const signals = await storage.getAllSignals();
+        return res.json(signals);
+      }
+      
+      // Check subscription status for regular users
       const subscription = await storage.getUserSubscription(userId);
       console.log(`📋 Subscription:`, subscription);
       

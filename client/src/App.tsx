@@ -23,9 +23,9 @@ function AppRoutes() {
 
   return (
     <Switch>
-      <Route path="/" component={DashboardPage} />
+      <Route path="/" component={user.isAdmin ? AdminDashboard : DashboardPage} />
       <Route path="/dashboard" component={DashboardPage} />
-      {user.isAdmin && <Route path="/admin" component={AdminDashboard} />}
+      <Route path="/admin" component={AdminDashboard} />
       <Route>
         <Redirect to="/" />
       </Route>
