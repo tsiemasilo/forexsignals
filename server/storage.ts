@@ -254,10 +254,10 @@ export class DatabaseStorage implements IStorage {
     // Always avoid imageUrls field due to array parsing issues
     let processedSignal = { ...insertSignal };
     
-    // Truncate large images to fit in varchar(500) field for now
-    if (processedSignal.imageUrl && processedSignal.imageUrl.length > 500) {
-      console.log('⚠️ Image too large, truncating to 500 chars to avoid array parsing error');
-      processedSignal.imageUrl = processedSignal.imageUrl.substring(0, 500);
+    // Truncate large images to fit in varchar(500) field
+    if (processedSignal.imageUrl && processedSignal.imageUrl.length > 450) {
+      console.log('⚠️ Image too large, truncating to 450 chars. Original length:', processedSignal.imageUrl.length);
+      processedSignal.imageUrl = processedSignal.imageUrl.substring(0, 450);
     }
     
     // Never set imageUrls to avoid array parsing issues

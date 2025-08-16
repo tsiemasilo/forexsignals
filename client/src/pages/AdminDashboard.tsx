@@ -139,8 +139,8 @@ export function AdminDashboard() {
     updateSubscriptionMutation.mutate({ userId, status, planName });
   };
 
-  // Ultra-aggressive compression to fit database limits
-  const compressImage = (file: File, maxWidth = 100, maxHeight = 100, quality = 0.1): Promise<string> => {
+  // Extreme compression to fit database varchar(500) limit
+  const compressImage = (file: File, maxWidth = 50, maxHeight = 50, quality = 0.05): Promise<string> => {
     return new Promise((resolve, reject) => {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
@@ -176,12 +176,24 @@ export function AdminDashboard() {
             console.log('Original size:', file.size, 'bytes');
             console.log('First compression:', compressedData.length, 'characters');
             
-            // Compress to fit within 500 character database limit
+            // Compress to fit within 400 character database limit (safe margin)
             let currentQuality = quality;
-            while (compressedData.length > 450 && currentQuality > 0.05) {
-              currentQuality -= 0.1;
+            while (compressedData.length > 400 && currentQuality > 0.01) {
+              currentQuality -= 0.01; // Smaller steps for fine control
               compressedData = canvas.toDataURL('image/jpeg', currentQuality);
               console.log('Re-compressing at', Math.round(currentQuality * 100) + '%:', compressedData.length, 'characters');
+            }
+            
+            // If still too large, reduce dimensions further
+            if (compressedData.length > 400) {
+              console.log('Still too large, reducing to 30x30');
+              canvas.width = 30;
+              canvas.height = 30;
+              ctx.fillStyle = 'white';
+              ctx.fillRect(0, 0, 30, 30);
+              ctx.drawImage(img, 0, 0, 30, 30);
+              compressedData = canvas.toDataURL('image/jpeg', 0.01);
+              console.log('Ultra-small compression:', compressedData.length, 'characters');
             }
             
             console.log('Final compressed size:', compressedData.length, 'characters');
@@ -217,8 +229,8 @@ export function AdminDashboard() {
         
         try {
           const compressedImage = await compressImage(file);
-          if (compressedImage.length > 450) {
-            alert('Image still too large after compression. Please try a much smaller or simpler image.');
+          if (compressedImage.length > 400) {
+            alert(`Image still too large (${compressedImage.length} chars). Database limit is 400. Please use a tiny simple image.`);
             continue;
           }
           setUploadedImages(prev => [...prev, compressedImage]);
@@ -254,16 +266,24 @@ export function AdminDashboard() {
 
   const handleCreateSignal = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newSignal.title || !newSignal.content) return;
+    
+    if (!newSignal.title || !newSignal.content || !newSignal.tradeAction) {
+      alert('Please fill in all required fields (title, content, trade action)');
+      return;
+    }
     
     const signalData = {
-      ...newSignal,
-      imageUrls: uploadedImages.length > 0 ? uploadedImages : undefined
+      title: newSignal.title,
+      content: newSignal.content,
+      tradeAction: newSignal.tradeAction,
+      imageUrls: uploadedImages.length > 0 ? uploadedImages : []
     };
     
     console.log('🚀 Creating signal with data:', { 
       title: signalData.title, 
-      hasImages: !!signalData.imageUrls,
+      content: signalData.content,
+      tradeAction: signalData.tradeAction,
+      hasImages: !!signalData.imageUrls?.length,
       imageCount: signalData.imageUrls?.length || 0 
     });
     
