@@ -139,32 +139,76 @@ export function AdminDashboard() {
     updateSubscriptionMutation.mutate({ userId, status, planName });
   };
 
-  // Simplified image upload handlers
-  const handleImageUpload = (files: FileList) => {
-    console.log('Processing', files.length, 'files');
-    Array.from(files).forEach(file => {
-      if (file.type.startsWith('image/')) {
-        console.log('Processing image:', file.name, file.size, 'bytes');
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const result = e.target?.result as string;
-          if (result) {
-            console.log('Image loaded, data length:', result.length);
-            // For now, use original image but limit to smaller files
-            if (file.size < 100000) { // 100KB limit
-              setUploadedImages(prev => [...prev, result]);
-              console.log('Image added to preview');
-            } else {
-              alert('Please use smaller images (under 100KB) for now');
+  // Advanced image compression that works with large files
+  const compressImage = (file: File, maxWidth = 800, maxHeight = 600, quality = 0.8): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      
+      img.onload = () => {
+        try {
+          let { width, height } = img;
+          
+          // Calculate new dimensions maintaining aspect ratio
+          if (width > height) {
+            if (width > maxWidth) {
+              height = (height * maxWidth) / width;
+              width = maxWidth;
+            }
+          } else {
+            if (height > maxHeight) {
+              width = (width * maxHeight) / height;
+              height = maxHeight;
             }
           }
-        };
-        reader.onerror = (error) => {
-          console.error('FileReader error:', error);
-        };
-        reader.readAsDataURL(file);
-      }
+          
+          canvas.width = width;
+          canvas.height = height;
+          
+          if (ctx) {
+            // Use white background for better compression
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, width, height);
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            const compressedData = canvas.toDataURL('image/jpeg', quality);
+            console.log('Original size:', file.size, 'bytes');
+            console.log('Compressed size:', compressedData.length, 'characters');
+            resolve(compressedData);
+          } else {
+            reject(new Error('Canvas context not available'));
+          }
+        } catch (error) {
+          reject(error);
+        }
+      };
+      
+      img.onerror = () => reject(new Error('Failed to load image'));
+      
+      // Create object URL to load the image
+      const objectUrl = URL.createObjectURL(file);
+      img.src = objectUrl;
     });
+  };
+
+  const handleImageUpload = async (files: FileList) => {
+    console.log('Processing', files.length, 'files');
+    
+    for (const file of Array.from(files)) {
+      if (file.type.startsWith('image/')) {
+        console.log('Processing image:', file.name, 'Original size:', file.size, 'bytes');
+        
+        try {
+          const compressedImage = await compressImage(file);
+          setUploadedImages(prev => [...prev, compressedImage]);
+          console.log('Image compressed and added to preview');
+        } catch (error) {
+          console.error('Image compression failed:', error);
+          alert('Failed to process image. Please try a different image.');
+        }
+      }
+    }
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -418,7 +462,7 @@ export function AdminDashboard() {
                             browse files
                           </label>
                         </p>
-                        <p className="text-xs text-gray-500">Support JPG, PNG, GIF under 100KB</p>
+                        <p className="text-xs text-gray-500">Support JPG, PNG, GIF - any size (auto-compressed)</p>
                         <input
                           id="image-upload"
                           type="file"
