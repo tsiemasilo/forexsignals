@@ -110,10 +110,15 @@ export function DashboardPage() {
                   </CardHeader>
                   <CardContent>
                     {subscriptionStatus && (
-                      <div className="mb-4">
+                      <div className="mb-4 flex items-center justify-center space-x-2">
                         <Badge className={subscriptionStatus.color}>
                           {subscriptionStatus.statusDisplay}
                         </Badge>
+                        {subscriptionStatus.daysLeft > 0 && (
+                          <span className="text-sm text-gray-600">
+                            {subscriptionStatus.daysLeft} days left
+                          </span>
+                        )}
                       </div>
                     )}
                     <p className="text-sm text-gray-600 mb-4">
@@ -153,9 +158,16 @@ export function DashboardPage() {
             </div>
             <div className="flex items-center space-x-4">
               {subscriptionStatus && (
-                <Badge className={subscriptionStatus.color}>
-                  {subscriptionStatus.statusDisplay}
-                </Badge>
+                <div className="flex items-center space-x-2">
+                  <Badge className={subscriptionStatus.color}>
+                    {subscriptionStatus.statusDisplay}
+                  </Badge>
+                  {subscriptionStatus.daysLeft > 0 && (
+                    <span className="text-sm text-gray-600">
+                      {subscriptionStatus.daysLeft} days left
+                    </span>
+                  )}
+                </div>
               )}
               <div className="flex items-center space-x-2">
                 <User className="h-4 w-4 text-gray-500" />
