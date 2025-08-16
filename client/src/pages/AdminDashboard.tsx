@@ -53,8 +53,6 @@ export function AdminDashboard() {
     queryFn: () => apiRequest("/api/admin/users"),
   });
 
-  console.log('Admin Dashboard - Users Data:', users);
-
   const { data: signals } = useQuery({
     queryKey: ["/api/admin/signals"],
     queryFn: () => apiRequest("/api/admin/signals"),
@@ -414,15 +412,9 @@ export function AdminDashboard() {
                                 ) : 'No Subscription'}
                               </Badge>
                               {user.subscription && (
-                                <Badge variant="outline" className="text-xs bg-gray-50">
+                                <Badge variant="outline" className="text-xs">
                                   {getDaysRemaining(user.subscription)} days left
                                 </Badge>
-                              )}
-                              {/* Debug info */}
-                              {user.subscription && (
-                                <span className="text-xs text-gray-500">
-                                  (Debug: {user.subscription.endDate})
-                                </span>
                               )}
                             </div>
                           </div>
