@@ -219,12 +219,10 @@ export function DashboardPage() {
                         </div>
                       </Badge>
                     </div>
-                    <CardDescription>
-                      <div className="flex items-center space-x-1 text-xs">
-                        <Clock className="h-3 w-3" />
-                        <span>{formatDate(signal.createdAt)}</span>
-                      </div>
-                    </CardDescription>
+                    <div className="flex items-center space-x-1 text-xs text-muted-foreground">
+                      <Clock className="h-3 w-3" />
+                      <span>{formatDate(signal.createdAt)}</span>
+                    </div>
                   </CardHeader>
                   <CardContent>
                     {signal.imageUrl && (
