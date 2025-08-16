@@ -350,30 +350,31 @@ export async function registerRoutes(app: express.Application) {
   app.post("/api/admin/signals", requireAdmin, async (req: Request, res: Response) => {
     try {
       const userId = req.session.userId!;
-      console.log('📥 Raw request body:', { title: req.body.title, hasImages: !!req.body.imageUrls });
+      console.log('📥 Raw request body keys:', Object.keys(req.body));
+      console.log('📥 ImageUrls data:', { 
+        hasImageUrls: !!req.body.imageUrls, 
+        isArray: Array.isArray(req.body.imageUrls),
+        length: req.body.imageUrls?.length || 0 
+      });
       
-      // Handle image upload - store first image as imageUrl for now
-      let imageUrl = req.body.imageUrl || null;
-      if (req.body.imageUrls && Array.isArray(req.body.imageUrls) && req.body.imageUrls.length > 0) {
-        // Use the first uploaded image as the main image
-        const firstImage = req.body.imageUrls[0];
-        
-        // Use the first uploaded image (should be compressed on frontend)
-        imageUrl = firstImage;
-        console.log('📸 Using first uploaded image as main image. Size:', firstImage.length);
-      }
-      
+      // Use imageUrls field (text type - unlimited size) instead of imageUrl (varchar limited)
       let processedBody = {
         title: req.body.title,
         content: req.body.content,
         tradeAction: req.body.tradeAction,
-        imageUrl: imageUrl,
-        imageUrls: null // Explicitly set to null to avoid array parsing issues
+        imageUrl: null, // Don't use limited varchar field
+        imageUrls: req.body.imageUrls // Store unlimited images in text field
       };
       
       const validatedData = insertForexSignalSchema.parse({
         ...processedBody,
         createdBy: userId
+      });
+      
+      console.log('🚀 Creating signal with unlimited storage:', {
+        title: validatedData.title,
+        hasImageUrls: !!validatedData.imageUrls,
+        imageCount: Array.isArray(validatedData.imageUrls) ? validatedData.imageUrls.length : 0
       });
       
       const signal = await storage.createSignal(validatedData);

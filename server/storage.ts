@@ -254,14 +254,20 @@ export class DatabaseStorage implements IStorage {
       content: insertSignal.content,  
       tradeAction: insertSignal.tradeAction,
       hasImageUrls: !!(insertSignal as any).imageUrls,
-      imageUrlsLength: (insertSignal as any).imageUrls?.length || 0
+      imageUrlsType: typeof (insertSignal as any).imageUrls,
+      imageUrlsLength: Array.isArray((insertSignal as any).imageUrls) ? (insertSignal as any).imageUrls.length : 0
     });
     
-    // Handle unlimited image storage by converting array to JSON string
+    // Handle unlimited image storage
     let processedSignal = { ...insertSignal };
-    if ((insertSignal as any).imageUrls && Array.isArray((insertSignal as any).imageUrls)) {
-      console.log('🖼️ Processing', (insertSignal as any).imageUrls.length, 'images for unlimited storage');
-      processedSignal.imageUrls = JSON.stringify((insertSignal as any).imageUrls);
+    if ((insertSignal as any).imageUrls) {
+      if (Array.isArray((insertSignal as any).imageUrls)) {
+        console.log('🖼️ Processing', (insertSignal as any).imageUrls.length, 'images - converting array to JSON string');
+        processedSignal.imageUrls = JSON.stringify((insertSignal as any).imageUrls);
+      } else if (typeof (insertSignal as any).imageUrls === 'string') {
+        console.log('🖼️ ImageUrls already a string, using as-is');
+        processedSignal.imageUrls = (insertSignal as any).imageUrls;
+      }
     }
     
     const [signal] = await db.insert(forexSignals).values(processedSignal).returning();
