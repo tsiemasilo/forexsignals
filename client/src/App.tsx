@@ -4,6 +4,7 @@ import { queryClient } from "@/lib/queryClient";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { LoginPage } from "@/pages/LoginPage";
 import { DashboardPage } from "@/pages/DashboardPage";
+import { PhoneSignalsPage } from "@/pages/PhoneSignalsPage";
 import { AdminDashboard } from "@/pages/AdminDashboard";
 
 function AppRoutes() {
@@ -23,8 +24,9 @@ function AppRoutes() {
 
   return (
     <Switch>
-      <Route path="/" component={user.isAdmin ? AdminDashboard : DashboardPage} />
+      <Route path="/" component={user.isAdmin ? AdminDashboard : PhoneSignalsPage} />
       <Route path="/dashboard" component={DashboardPage} />
+      <Route path="/phone-signals" component={PhoneSignalsPage} />
       <Route path="/admin" component={AdminDashboard} />
       <Route>
         <Redirect to="/" />

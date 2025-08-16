@@ -4,6 +4,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Link } from "wouter";
 import { TrendingUp, TrendingDown, Minus, Clock, User } from "lucide-react";
 
 interface ForexSignal {
@@ -173,6 +174,11 @@ export function DashboardPage() {
                 <User className="h-4 w-4 text-gray-500" />
                 <span className="text-sm text-gray-700">{user?.firstName} {user?.lastName}</span>
               </div>
+              <Link href="/phone-signals">
+                <Button variant="outline" size="sm">
+                  📱 Phone View
+                </Button>
+              </Link>
               <Button variant="outline" onClick={logout}>
                 Sign Out
               </Button>
