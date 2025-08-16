@@ -181,7 +181,9 @@ export function AdminDashboard() {
     
     const now = new Date();
     const endDate = new Date(subscription.endDate);
-    return Math.max(0, Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+    const daysLeft = Math.max(0, Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+
+    return daysLeft;
   };
 
   return (
@@ -409,7 +411,7 @@ export function AdminDashboard() {
                                     'Expired'
                                 ) : 'No Subscription'}
                               </Badge>
-                              {user.subscription && getDaysRemaining(user.subscription) > 0 && (
+                              {user.subscription && (
                                 <Badge variant="outline" className="text-xs">
                                   {getDaysRemaining(user.subscription)} days left
                                 </Badge>

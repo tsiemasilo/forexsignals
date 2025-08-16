@@ -62,6 +62,8 @@ export class DatabaseStorage implements IStorage {
       .leftJoin(subscriptionPlans, eq(subscriptions.planId, subscriptionPlans.id))
       .where(eq(users.isAdmin, false));
     
+
+    
     // Transform the result to the expected structure
     return allUsers.map(row => ({
       id: row.users.id,
