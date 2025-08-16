@@ -367,7 +367,8 @@ export async function registerRoutes(app: express.Application) {
         title: req.body.title,
         content: req.body.content,
         tradeAction: req.body.tradeAction,
-        imageUrl: imageUrl
+        imageUrl: imageUrl,
+        imageUrls: null // Explicitly set to null to avoid array parsing issues
       };
       
       const validatedData = insertForexSignalSchema.parse({
