@@ -472,7 +472,7 @@ export function AdminDashboard() {
                         </div>
                         
                         {/* Display images if available */}
-                        {(signal.imageUrl || (signal.imageUrls && signal.imageUrls.length > 0)) && (
+                        {(signal.imageUrl || signal.imageUrls) && (
                           <div className="mb-2">
                             {signal.imageUrl && (
                               <img
@@ -481,23 +481,34 @@ export function AdminDashboard() {
                                 className="w-full h-20 object-cover rounded-md"
                               />
                             )}
-                            {signal.imageUrls && signal.imageUrls.length > 0 && (
-                              <div className={signal.imageUrls.length === 1 ? "" : "grid grid-cols-2 gap-1"}>
-                                {signal.imageUrls.slice(0, 4).map((imageUrl, index) => (
-                                  <img
-                                    key={index}
-                                    src={imageUrl}
-                                    alt={`${signal.title} ${index + 1}`}
-                                    className="w-full h-16 object-cover rounded-md"
-                                  />
-                                ))}
-                              </div>
-                            )}
-                            {signal.imageUrls && signal.imageUrls.length > 4 && (
-                              <p className="text-xs text-gray-500 mt-1">
-                                +{signal.imageUrls.length - 4} more images
-                              </p>
-                            )}
+                            {signal.imageUrls && (() => {
+                              try {
+                                const imageArray = typeof signal.imageUrls === 'string' 
+                                  ? JSON.parse(signal.imageUrls) 
+                                  : signal.imageUrls;
+                                return Array.isArray(imageArray) && imageArray.length > 0 ? (
+                                  <>
+                                    <div className={imageArray.length === 1 ? "" : "grid grid-cols-2 gap-1"}>
+                                      {imageArray.slice(0, 4).map((imageUrl, index) => (
+                                        <img
+                                          key={index}
+                                          src={imageUrl}
+                                          alt={`${signal.title} ${index + 1}`}
+                                          className="w-full h-16 object-cover rounded-md"
+                                        />
+                                      ))}
+                                    </div>
+                                    {imageArray.length > 4 && (
+                                      <p className="text-xs text-gray-500 mt-1">
+                                        +{imageArray.length - 4} more images
+                                      </p>
+                                    )}
+                                  </>
+                                ) : null;
+                              } catch (e) {
+                                return null;
+                              }
+                            })()}
                           </div>
                         )}
                         

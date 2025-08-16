@@ -354,8 +354,8 @@ export async function registerRoutes(app: express.Application) {
       // Handle imageUrls array if present
       let processedBody = { ...req.body };
       if (req.body.imageUrls && Array.isArray(req.body.imageUrls)) {
-        // Store imageUrls as JSON string for now
-        processedBody.imageUrls = req.body.imageUrls;
+        // Convert array to JSON string for database storage
+        processedBody.imageUrls = JSON.stringify(req.body.imageUrls);
       }
       
       const validatedData = insertForexSignalSchema.parse({

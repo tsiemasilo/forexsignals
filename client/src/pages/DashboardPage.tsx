@@ -236,32 +236,41 @@ export function DashboardPage() {
                     )}
                     
                     {/* Display multiple uploaded images */}
-                    {signal.imageUrls && signal.imageUrls.length > 0 && (
-                      <div className="mb-4">
-                        {signal.imageUrls.length === 1 ? (
-                          <img
-                            src={signal.imageUrls[0]}
-                            alt={signal.title}
-                            className="w-full h-40 object-cover rounded-md"
-                          />
-                        ) : (
-                          <div className="grid grid-cols-2 gap-2">
-                            {signal.imageUrls.map((imageUrl, index) => (
+                    {signal.imageUrls && (() => {
+                      try {
+                        const imageArray = typeof signal.imageUrls === 'string' 
+                          ? JSON.parse(signal.imageUrls) 
+                          : signal.imageUrls;
+                        return Array.isArray(imageArray) && imageArray.length > 0 ? (
+                          <div className="mb-4">
+                            {imageArray.length === 1 ? (
                               <img
-                                key={index}
-                                src={imageUrl}
-                                alt={`${signal.title} ${index + 1}`}
-                                className="w-full h-24 object-cover rounded-md cursor-pointer hover:opacity-75 transition-opacity"
-                                onClick={() => {
-                                  // Open image in new tab for full view
-                                  window.open(imageUrl, '_blank');
-                                }}
+                                src={imageArray[0]}
+                                alt={signal.title}
+                                className="w-full h-40 object-cover rounded-md"
                               />
-                            ))}
+                            ) : (
+                              <div className="grid grid-cols-2 gap-2">
+                                {imageArray.map((imageUrl, index) => (
+                                  <img
+                                    key={index}
+                                    src={imageUrl}
+                                    alt={`${signal.title} ${index + 1}`}
+                                    className="w-full h-24 object-cover rounded-md cursor-pointer hover:opacity-75 transition-opacity"
+                                    onClick={() => {
+                                      // Open image in new tab for full view
+                                      window.open(imageUrl, '_blank');
+                                    }}
+                                  />
+                                ))}
+                              </div>
+                            )}
                           </div>
-                        )}
-                      </div>
-                    )}
+                        ) : null;
+                      } catch (e) {
+                        return null;
+                      }
+                    })()}
                     
                     <p className="text-sm text-gray-700 leading-relaxed">
                       {signal.content}
