@@ -176,9 +176,9 @@ export function AdminDashboard() {
             console.log('Original size:', file.size, 'bytes');
             console.log('First compression:', compressedData.length, 'characters');
             
-            // If still too large, compress further
+            // If still too large, compress further (allow up to 50KB characters for database)
             let currentQuality = quality;
-            while (compressedData.length > 400 && currentQuality > 0.1) {
+            while (compressedData.length > 50000 && currentQuality > 0.05) {
               currentQuality -= 0.1;
               compressedData = canvas.toDataURL('image/jpeg', currentQuality);
               console.log('Re-compressing at', Math.round(currentQuality * 100) + '%:', compressedData.length, 'characters');
@@ -217,8 +217,8 @@ export function AdminDashboard() {
         
         try {
           const compressedImage = await compressImage(file);
-          if (compressedImage.length > 400) {
-            alert('Image still too large after compression. Please try a smaller image.');
+          if (compressedImage.length > 50000) {
+            alert('Image still too large after compression. Please try a smaller or simpler image.');
             continue;
           }
           setUploadedImages(prev => [...prev, compressedImage]);
