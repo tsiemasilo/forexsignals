@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Users, Plus, TrendingUp, Settings, User, Calendar, Signal } from "lucide-react";
+import { Users, Plus, TrendingUp, Settings, User, Calendar, Signal, Upload, X, Image } from "lucide-react";
 
 interface AdminUser {
   id: number;
@@ -33,6 +33,7 @@ interface ForexSignal {
   content: string;
   tradeAction: "Buy" | "Sell" | "Hold";
   imageUrl?: string;
+  imageUrls?: string[];
   createdAt: string;
 }
 
@@ -47,6 +48,8 @@ export function AdminDashboard() {
     tradeAction: "Buy" as "Buy" | "Sell" | "Hold",
     imageUrl: "",
   });
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+  const [isDragOver, setIsDragOver] = useState(false);
 
   const { data: users } = useQuery({
     queryKey: ["/api/admin/users"],
@@ -100,7 +103,7 @@ export function AdminDashboard() {
   });
 
   const createSignalMutation = useMutation({
-    mutationFn: (signalData: typeof newSignal) => 
+    mutationFn: (signalData: typeof newSignal & { imageUrls?: string[] }) => 
       apiRequest("/api/admin/signals", {
         method: "POST",
         body: JSON.stringify(signalData),
@@ -113,6 +116,7 @@ export function AdminDashboard() {
         tradeAction: "Buy",
         imageUrl: "",
       });
+      setUploadedImages([]);
       toast({
         title: "Success",
         description: "Signal created successfully!",
@@ -135,10 +139,53 @@ export function AdminDashboard() {
     updateSubscriptionMutation.mutate({ userId, status, planName });
   };
 
+  // Image upload handlers
+  const handleImageUpload = (files: FileList) => {
+    Array.from(files).forEach(file => {
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const result = e.target?.result as string;
+          if (result) {
+            setUploadedImages(prev => [...prev, result]);
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    const files = e.dataTransfer.files;
+    handleImageUpload(files);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+  };
+
+  const removeImage = (index: number) => {
+    setUploadedImages(prev => prev.filter((_, i) => i !== index));
+  };
+
   const handleCreateSignal = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newSignal.title || !newSignal.content) return;
-    createSignalMutation.mutate(newSignal);
+    
+    const signalData = {
+      ...newSignal,
+      imageUrls: uploadedImages.length > 0 ? uploadedImages : undefined
+    };
+    
+    createSignalMutation.mutate(signalData);
   };
 
   const getStatusColor = (subscription?: AdminUser['subscription']) => {
@@ -332,6 +379,60 @@ export function AdminDashboard() {
                         onChange={(e) => setNewSignal({ ...newSignal, imageUrl: e.target.value })}
                       />
                     </div>
+
+                    {/* Image Upload Section */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Upload Images (Optional)</label>
+                      <div
+                        onDrop={handleDrop}
+                        onDragOver={handleDragOver}
+                        onDragLeave={handleDragLeave}
+                        className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+                          isDragOver 
+                            ? 'border-blue-400 bg-blue-50 dark:bg-blue-900/20' 
+                            : 'border-gray-300 hover:border-gray-400'
+                        }`}
+                      >
+                        <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                        <p className="text-sm text-gray-600 mb-2">
+                          Drag and drop images here, or{' '}
+                          <label htmlFor="image-upload" className="text-blue-600 hover:text-blue-700 cursor-pointer">
+                            browse files
+                          </label>
+                        </p>
+                        <p className="text-xs text-gray-500">Support JPG, PNG, GIF up to 10MB</p>
+                        <input
+                          id="image-upload"
+                          type="file"
+                          multiple
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => e.target.files && handleImageUpload(e.target.files)}
+                        />
+                      </div>
+
+                      {/* Image Preview */}
+                      {uploadedImages.length > 0 && (
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+                          {uploadedImages.map((image, index) => (
+                            <div key={index} className="relative group">
+                              <img
+                                src={image}
+                                alt={`Upload ${index + 1}`}
+                                className="w-full h-24 object-cover rounded-lg border"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => removeImage(index)}
+                                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                <X className="h-3 w-3" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                     
                     <Button 
                       type="submit" 
@@ -369,6 +470,37 @@ export function AdminDashboard() {
                             {signal.tradeAction}
                           </Badge>
                         </div>
+                        
+                        {/* Display images if available */}
+                        {(signal.imageUrl || (signal.imageUrls && signal.imageUrls.length > 0)) && (
+                          <div className="mb-2">
+                            {signal.imageUrl && (
+                              <img
+                                src={signal.imageUrl}
+                                alt={signal.title}
+                                className="w-full h-20 object-cover rounded-md"
+                              />
+                            )}
+                            {signal.imageUrls && signal.imageUrls.length > 0 && (
+                              <div className={signal.imageUrls.length === 1 ? "" : "grid grid-cols-2 gap-1"}>
+                                {signal.imageUrls.slice(0, 4).map((imageUrl, index) => (
+                                  <img
+                                    key={index}
+                                    src={imageUrl}
+                                    alt={`${signal.title} ${index + 1}`}
+                                    className="w-full h-16 object-cover rounded-md"
+                                  />
+                                ))}
+                              </div>
+                            )}
+                            {signal.imageUrls && signal.imageUrls.length > 4 && (
+                              <p className="text-xs text-gray-500 mt-1">
+                                +{signal.imageUrls.length - 4} more images
+                              </p>
+                            )}
+                          </div>
+                        )}
+                        
                         <p className="text-sm text-gray-600 line-clamp-2">{signal.content}</p>
                         <p className="text-xs text-gray-500 mt-2">
                           {new Date(signal.createdAt).toLocaleDateString()}

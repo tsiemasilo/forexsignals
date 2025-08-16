@@ -12,6 +12,7 @@ interface ForexSignal {
   content: string;
   tradeAction: "Buy" | "Sell" | "Hold";
   imageUrl?: string;
+  imageUrls?: string[];
   createdAt: string;
   updatedAt: string;
 }
@@ -225,6 +226,7 @@ export function DashboardPage() {
                     </div>
                   </CardHeader>
                   <CardContent>
+                    {/* Display single image URL */}
                     {signal.imageUrl && (
                       <img
                         src={signal.imageUrl}
@@ -232,6 +234,35 @@ export function DashboardPage() {
                         className="w-full h-40 object-cover rounded-md mb-4"
                       />
                     )}
+                    
+                    {/* Display multiple uploaded images */}
+                    {signal.imageUrls && signal.imageUrls.length > 0 && (
+                      <div className="mb-4">
+                        {signal.imageUrls.length === 1 ? (
+                          <img
+                            src={signal.imageUrls[0]}
+                            alt={signal.title}
+                            className="w-full h-40 object-cover rounded-md"
+                          />
+                        ) : (
+                          <div className="grid grid-cols-2 gap-2">
+                            {signal.imageUrls.map((imageUrl, index) => (
+                              <img
+                                key={index}
+                                src={imageUrl}
+                                alt={`${signal.title} ${index + 1}`}
+                                className="w-full h-24 object-cover rounded-md cursor-pointer hover:opacity-75 transition-opacity"
+                                onClick={() => {
+                                  // Open image in new tab for full view
+                                  window.open(imageUrl, '_blank');
+                                }}
+                              />
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    
                     <p className="text-sm text-gray-700 leading-relaxed">
                       {signal.content}
                     </p>
