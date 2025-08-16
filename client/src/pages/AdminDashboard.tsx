@@ -139,8 +139,8 @@ export function AdminDashboard() {
     updateSubscriptionMutation.mutate({ userId, status, planName });
   };
 
-  // Advanced image compression that works with large files
-  const compressImage = (file: File, maxWidth = 800, maxHeight = 600, quality = 0.8): Promise<string> => {
+  // Advanced image compression that works with large files up to 50MB
+  const compressImage = (file: File, maxWidth = 400, maxHeight = 400, quality = 0.6): Promise<string> => {
     return new Promise((resolve, reject) => {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
@@ -172,9 +172,19 @@ export function AdminDashboard() {
             ctx.fillRect(0, 0, width, height);
             ctx.drawImage(img, 0, 0, width, height);
             
-            const compressedData = canvas.toDataURL('image/jpeg', quality);
+            let compressedData = canvas.toDataURL('image/jpeg', quality);
             console.log('Original size:', file.size, 'bytes');
-            console.log('Compressed size:', compressedData.length, 'characters');
+            console.log('First compression:', compressedData.length, 'characters');
+            
+            // If still too large, compress further
+            let currentQuality = quality;
+            while (compressedData.length > 400 && currentQuality > 0.1) {
+              currentQuality -= 0.1;
+              compressedData = canvas.toDataURL('image/jpeg', currentQuality);
+              console.log('Re-compressing at', Math.round(currentQuality * 100) + '%:', compressedData.length, 'characters');
+            }
+            
+            console.log('Final compressed size:', compressedData.length, 'characters');
             resolve(compressedData);
           } else {
             reject(new Error('Canvas context not available'));
@@ -197,10 +207,20 @@ export function AdminDashboard() {
     
     for (const file of Array.from(files)) {
       if (file.type.startsWith('image/')) {
+        // Check file size limit (50MB = 52,428,800 bytes)
+        if (file.size > 52428800) {
+          alert('Image too large! Please use images under 50MB.');
+          continue;
+        }
+        
         console.log('Processing image:', file.name, 'Original size:', file.size, 'bytes');
         
         try {
           const compressedImage = await compressImage(file);
+          if (compressedImage.length > 400) {
+            alert('Image still too large after compression. Please try a smaller image.');
+            continue;
+          }
           setUploadedImages(prev => [...prev, compressedImage]);
           console.log('Image compressed and added to preview');
         } catch (error) {
@@ -462,7 +482,7 @@ export function AdminDashboard() {
                             browse files
                           </label>
                         </p>
-                        <p className="text-xs text-gray-500">Support JPG, PNG, GIF - any size (auto-compressed)</p>
+                        <p className="text-xs text-gray-500">Support JPG, PNG, GIF up to 50MB (auto-compressed to database size)</p>
                         <input
                           id="image-upload"
                           type="file"
