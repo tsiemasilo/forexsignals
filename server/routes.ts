@@ -5,26 +5,23 @@ import { seedDatabase } from "./seed";
 import { insertUserSchema, insertForexSignalSchema, insertSubscriptionSchema } from "@shared/schema";
 import { z } from "zod";
 
-const app = express();
-
-// Middleware
-app.use(express.json({ limit: "50mb" }));
-app.use(express.urlencoded({ extended: true, limit: "50mb" }));
-
-// Session configuration
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'your-secret-key-here',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: false, // Set to true in production with HTTPS
-    httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    sameSite: 'lax'
-  }
-}));
-
 export async function registerRoutes(app: express.Application) {
+  // Middleware
+  app.use(express.json({ limit: "50mb" }));
+  app.use(express.urlencoded({ extended: true, limit: "50mb" }));
+
+  // Session configuration
+  app.use(session({
+    secret: process.env.SESSION_SECRET || 'your-secret-key-here',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: false, // Set to true in production with HTTPS
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      sameSite: 'lax'
+    }
+  }));
   // Seed database on startup
   await seedDatabase();
 
@@ -52,7 +49,8 @@ export async function registerRoutes(app: express.Application) {
   // Auth endpoints
   app.post("/api/login", async (req: Request, res: Response) => {
     try {
-      const { email } = req.body;
+      console.log('Login request body:', req.body);
+      const { email } = req.body || {};
       
       if (!email) {
         return res.status(400).json({ message: "Email is required" });
