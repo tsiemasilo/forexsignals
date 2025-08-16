@@ -311,6 +311,32 @@ export async function registerRoutes(app: express.Application) {
     }
   });
 
+  app.put("/api/admin/users/:userId/subscription", requireAdmin, async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const { status, planName } = req.body;
+      
+      console.log(`🔄 Updating subscription for user: ${userId}, status: ${status}, plan: ${planName}`);
+      
+      if (status === "expired") {
+        // Set subscription to expired
+        await storage.expireUserSubscription(userId);
+        console.log(`❌ Set user ${userId} subscription to expired`);
+        res.json({ message: "Subscription set to expired" });
+      } else if (status === "active" && planName) {
+        // Create active subscription with specified plan
+        await storage.createActiveSubscription(userId, planName);
+        console.log(`✅ Created active ${planName} subscription for user ${userId}`);
+        res.json({ message: `Active ${planName} subscription created` });
+      } else {
+        res.status(400).json({ message: "Invalid subscription parameters" });
+      }
+    } catch (error) {
+      console.error('Update subscription error:', error);
+      res.status(500).json({ message: "Failed to update subscription" });
+    }
+  });
+
   app.get("/api/admin/signals", requireAdmin, async (req: Request, res: Response) => {
     try {
       const signals = await storage.getAllSignals();

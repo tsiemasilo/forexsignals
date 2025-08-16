@@ -21,6 +21,8 @@ export interface IStorage {
   createSubscription(insertSubscription: InsertSubscription): Promise<Subscription>;
   updateUserSubscriptionStatus(userId: number, planId: number, status: string, endDate: Date): Promise<Subscription | undefined>;
   createFreshTrial(userId: number): Promise<Subscription | undefined>;
+  expireUserSubscription(userId: number): Promise<void>;
+  createActiveSubscription(userId: number, planName: string): Promise<Subscription | undefined>;
 
   // Forex Signals
   getAllSignals(): Promise<ForexSignal[]>;
@@ -167,6 +169,68 @@ export class DatabaseStorage implements IStorage {
       return newSubscription;
     } catch (error) {
       console.error('❌ DATABASE STORAGE: Error creating fresh trial:', error);
+      return undefined;
+    }
+  }
+
+  async expireUserSubscription(userId: number): Promise<void> {
+    try {
+      // Set current subscription to expired (past date)
+      const pastDate = new Date();
+      pastDate.setDate(pastDate.getDate() - 1); // Yesterday
+      
+      await db.delete(subscriptions).where(eq(subscriptions.userId, userId));
+      
+      // Create expired subscription
+      await db.insert(subscriptions).values({
+        userId: userId,
+        planId: 1, // Basic plan
+        status: 'expired',
+        startDate: pastDate,
+        endDate: pastDate,
+      });
+      
+      console.log('❌ DATABASE STORAGE: Set subscription to expired for user:', userId);
+    } catch (error) {
+      console.error('❌ DATABASE STORAGE: Error expiring subscription:', error);
+    }
+  }
+
+  async createActiveSubscription(userId: number, planName: string): Promise<Subscription | undefined> {
+    try {
+      // Find the plan by name
+      const [plan] = await db.select().from(subscriptionPlans).where(eq(subscriptionPlans.name, planName));
+      
+      if (!plan) {
+        console.error('❌ Plan not found:', planName);
+        return undefined;
+      }
+      
+      // Remove any existing subscription
+      await db.delete(subscriptions).where(eq(subscriptions.userId, userId));
+      
+      // Create active subscription
+      const now = new Date();
+      const endDate = new Date();
+      endDate.setDate(now.getDate() + plan.duration); // Use plan duration
+      
+      const [newSubscription] = await db.insert(subscriptions).values({
+        userId: userId,
+        planId: plan.id,
+        status: 'active',
+        startDate: now,
+        endDate: endDate,
+      }).returning();
+      
+      console.log('✅ DATABASE STORAGE: Created active subscription:', {
+        ...newSubscription,
+        planName,
+        durationDays: plan.duration
+      });
+      
+      return newSubscription;
+    } catch (error) {
+      console.error('❌ DATABASE STORAGE: Error creating active subscription:', error);
       return undefined;
     }
   }

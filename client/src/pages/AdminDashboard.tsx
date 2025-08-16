@@ -77,6 +77,28 @@ export function AdminDashboard() {
     },
   });
 
+  const updateSubscriptionMutation = useMutation({
+    mutationFn: ({ userId, status, planName }: { userId: number; status: string; planName?: string }) => 
+      apiRequest(`/api/admin/users/${userId}/subscription`, { 
+        method: "PUT",
+        body: JSON.stringify({ status, planName })
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      toast({
+        title: "Success",
+        description: "Subscription updated successfully!",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to update subscription",
+        variant: "destructive",
+      });
+    },
+  });
+
   const createSignalMutation = useMutation({
     mutationFn: (signalData: typeof newSignal) => 
       apiRequest("/api/admin/signals", {
@@ -107,6 +129,10 @@ export function AdminDashboard() {
 
   const handleCreateTrial = (userId: number) => {
     createTrialMutation.mutate(userId);
+  };
+
+  const handleUpdateSubscription = (userId: number, status: string, planName?: string) => {
+    updateSubscriptionMutation.mutate({ userId, status, planName });
   };
 
   const handleCreateSignal = (e: React.FormEvent) => {
@@ -368,14 +394,50 @@ export function AdminDashboard() {
                             </Badge>
                           </div>
                         </div>
-                        <div className="flex items-center space-x-2">
+                        <div className="flex items-center space-x-2 flex-wrap gap-2">
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() => handleCreateTrial(user.id)}
-                            disabled={createTrialMutation.isPending}
+                            disabled={createTrialMutation.isPending || updateSubscriptionMutation.isPending}
                           >
-                            Create 7-Day Trial
+                            7-Day Trial
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleUpdateSubscription(user.id, "active", "Basic Plan")}
+                            disabled={createTrialMutation.isPending || updateSubscriptionMutation.isPending}
+                            className="bg-green-50 hover:bg-green-100"
+                          >
+                            Basic Plan
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleUpdateSubscription(user.id, "active", "Pro Plan")}
+                            disabled={createTrialMutation.isPending || updateSubscriptionMutation.isPending}
+                            className="bg-blue-50 hover:bg-blue-100"
+                          >
+                            Premium Plan
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleUpdateSubscription(user.id, "active", "VIP Plan")}
+                            disabled={createTrialMutation.isPending || updateSubscriptionMutation.isPending}
+                            className="bg-purple-50 hover:bg-purple-100"
+                          >
+                            VIP Plan
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleUpdateSubscription(user.id, "expired")}
+                            disabled={createTrialMutation.isPending || updateSubscriptionMutation.isPending}
+                            className="bg-red-50 hover:bg-red-100"
+                          >
+                            Set Expired
                           </Button>
                         </div>
                       </div>
