@@ -104,8 +104,6 @@ export const insertForexSignalSchema = createInsertSchema(forexSignals, {
   content: z.string().min(1),
   tradeAction: z.enum(["Buy", "Sell", "Hold"]),
   createdBy: z.number().min(1),
-}).extend({
-  imageUrls: z.string().optional(), // JSON string
 });
 
 export type InsertUserType = z.infer<typeof insertUserSchema>;

@@ -350,28 +350,35 @@ export async function registerRoutes(app: express.Application) {
   app.post("/api/admin/signals", requireAdmin, async (req: Request, res: Response) => {
     try {
       const userId = req.session.userId!;
+      console.log('📥 Raw request body:', req.body);
       
-      // Handle imageUrls array if present
-      let processedBody = { ...req.body };
-      if (req.body.imageUrls && Array.isArray(req.body.imageUrls)) {
-        // Convert array to JSON string for database storage
-        processedBody.imageUrls = JSON.stringify(req.body.imageUrls);
-      }
+      // For now, skip imageUrls entirely to avoid database errors
+      // Store only basic signal data until database schema is properly updated
+      let processedBody = {
+        title: req.body.title,
+        content: req.body.content,
+        tradeAction: req.body.tradeAction,
+        imageUrl: req.body.imageUrl || null
+      };
+      
+      // Log what we're sending to validation
+      console.log('📤 Processed body for validation:', processedBody);
       
       const validatedData = insertForexSignalSchema.parse({
         ...processedBody,
         createdBy: userId
       });
       
-      console.log('Creating signal with data:', validatedData);
+      console.log('✅ Validated data:', validatedData);
       const signal = await storage.createSignal(validatedData);
+      console.log('✅ Signal created successfully:', signal.id);
       res.json(signal);
     } catch (error) {
       if (error instanceof z.ZodError) {
-        console.error('Validation error:', error.errors);
+        console.error('❌ Validation error:', error.errors);
         return res.status(400).json({ message: "Invalid signal data", errors: error.errors });
       }
-      console.error('Admin signal creation error:', error);
+      console.error('❌ Admin signal creation error:', error);
       res.status(500).json({ message: "Failed to create signal" });
     }
   });
