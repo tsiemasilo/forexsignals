@@ -86,13 +86,25 @@ export function PhoneSignalsPage() {
     <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center p-4">
       {/* iPhone Frame */}
       <div className="relative w-full max-w-sm mx-auto">
-        {/* iPhone Outline with more realistic styling */}
-        <div className="relative bg-gradient-to-b from-gray-800 to-black rounded-[3rem] p-1 shadow-2xl border border-gray-700">
-          {/* Camera Notch */}
-          <div className="absolute top-2 left-1/2 transform -translate-x-1/2 w-32 h-6 bg-black rounded-full z-20"></div>
+        {/* iPhone Frame with styled-components inspired design */}
+        <div className="relative bg-black rounded-[35px] border-2 border-gray-600 p-[7px] shadow-2xl">
+          {/* Side Buttons */}
+          <div className="absolute w-0.5 h-11 top-[30%] -right-1 bg-gradient-to-r from-gray-800 to-gray-600 rounded"></div>
+          <div className="absolute w-0.5 h-8 top-[26%] -left-1 bg-gradient-to-r from-gray-800 to-gray-600 rounded"></div>
+          <div className="absolute w-0.5 h-8 top-[36%] -left-1 bg-gradient-to-r from-gray-800 to-gray-600 rounded"></div>
+          
+          {/* Top Notch */}
+          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-[35%] h-[18px] bg-black rounded-b-[10px] z-20">
+            {/* Speaker */}
+            <div className="absolute top-0.5 left-1/2 transform -translate-x-1/2 w-[40%] h-0.5 bg-gray-800 rounded"></div>
+            {/* Camera */}
+            <div className="absolute top-1.5 left-[16%] w-1.5 h-1.5 bg-gray-700 bg-opacity-20 rounded-full">
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-0.5 h-0.5 bg-blue-900 bg-opacity-20 rounded-full"></div>
+            </div>
+          </div>
           
           {/* Screen */}
-          <div className="bg-black rounded-[2.8rem] overflow-hidden min-h-[640px] max-h-[750px] flex flex-col relative">
+          <div className="bg-black rounded-[25px] overflow-hidden min-h-[640px] max-h-[750px] flex flex-col relative">
             {/* iOS Style Status Bar */}
             <div className="bg-black text-white px-8 pt-12 pb-2 flex justify-between items-center text-sm font-medium">
               <span>9:41</span>
