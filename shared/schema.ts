@@ -42,7 +42,7 @@ export const forexSignals = pgTable("forex_signals", {
   content: text("content").notNull(),
   tradeAction: varchar("trade_action", { length: 10 }).notNull(), // Buy, Sell, Hold
   imageUrl: varchar("image_url", { length: 500 }),
-  imageUrls: json("image_urls"), // Array of image URLs
+  imageUrls: json("image_urls"), // Array of image URLs as JSON
   createdBy: integer("created_by").notNull().references(() => users.id),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -104,6 +104,8 @@ export const insertForexSignalSchema = createInsertSchema(forexSignals, {
   content: z.string().min(1),
   tradeAction: z.enum(["Buy", "Sell", "Hold"]),
   createdBy: z.number().min(1),
+}).extend({
+  imageUrls: z.array(z.string()).optional(),
 });
 
 export type InsertUserType = z.infer<typeof insertUserSchema>;
