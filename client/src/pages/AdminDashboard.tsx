@@ -139,20 +139,59 @@ export function AdminDashboard() {
     updateSubscriptionMutation.mutate({ userId, status, planName });
   };
 
-  // Image upload handlers
-  const handleImageUpload = (files: FileList) => {
-    Array.from(files).forEach(file => {
-      if (file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const result = e.target?.result as string;
-          if (result) {
-            setUploadedImages(prev => [...prev, result]);
+  // Image upload handlers with compression
+  const compressImage = (file: File): Promise<string> => {
+    return new Promise((resolve) => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      
+      img.onload = () => {
+        // Compress to max 400x400 to keep data size manageable
+        const maxWidth = 400;
+        const maxHeight = 400;
+        let { width, height } = img;
+        
+        if (width > height) {
+          if (width > maxWidth) {
+            height = (height * maxWidth) / width;
+            width = maxWidth;
           }
-        };
-        reader.readAsDataURL(file);
-      }
+        } else {
+          if (height > maxHeight) {
+            width = (width * maxHeight) / height;
+            height = maxHeight;
+          }
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        
+        ctx?.drawImage(img, 0, 0, width, height);
+        const compressedData = canvas.toDataURL('image/jpeg', 0.7);
+        resolve(compressedData);
+      };
+      
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        img.src = e.target?.result as string;
+      };
+      reader.readAsDataURL(file);
     });
+  };
+
+  const handleImageUpload = async (files: FileList) => {
+    const fileArray = Array.from(files);
+    for (const file of fileArray) {
+      if (file.type.startsWith('image/')) {
+        try {
+          const compressedImage = await compressImage(file);
+          setUploadedImages(prev => [...prev, compressedImage]);
+        } catch (error) {
+          console.error('Image compression failed:', error);
+        }
+      }
+    }
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -406,7 +445,7 @@ export function AdminDashboard() {
                             browse files
                           </label>
                         </p>
-                        <p className="text-xs text-gray-500">Support JPG, PNG, GIF up to 10MB</p>
+                        <p className="text-xs text-gray-500">Support JPG, PNG, GIF - smaller images work best</p>
                         <input
                           id="image-upload"
                           type="file"

@@ -356,8 +356,16 @@ export async function registerRoutes(app: express.Application) {
       let imageUrl = req.body.imageUrl || null;
       if (req.body.imageUrls && Array.isArray(req.body.imageUrls) && req.body.imageUrls.length > 0) {
         // Use the first uploaded image as the main image
-        imageUrl = req.body.imageUrls[0];
-        console.log('📸 Using first uploaded image as main image');
+        const firstImage = req.body.imageUrls[0];
+        
+        // Check if image is too large for database (temporary fix until schema is updated)
+        if (firstImage && firstImage.length > 500) {
+          console.log('🚫 Image too large, skipping for now. Size:', firstImage.length);
+          imageUrl = null; // Skip large images for now
+        } else {
+          imageUrl = firstImage;
+          console.log('📸 Using first uploaded image as main image');
+        }
       }
       
       let processedBody = {
