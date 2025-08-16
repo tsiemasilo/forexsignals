@@ -4,7 +4,7 @@ import { queryClient } from "@/lib/queryClient";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { LoginPage } from "@/pages/LoginPage";
 import { DashboardPage } from "@/pages/DashboardPage";
-import { AdminDashboard } from "@/pages/AdminDashboard";
+import { AdminDashboard } from "@/pages/AdminDashboardNew";
 
 function AppRoutes() {
   const { user, loading } = useAuth();

@@ -251,41 +251,18 @@ export class DatabaseStorage implements IStorage {
   async createSignal(insertSignal: InsertForexSignal): Promise<ForexSignal> {
     console.log('📝 Creating signal with data:', {
       title: insertSignal.title,
-      imageUrl: insertSignal.imageUrl?.substring(0, 50) + '...' || 'no imageUrl',
-      imageUrls: insertSignal.imageUrls ? 'has imageUrls array' : 'no imageUrls',
-      imageUrlsLength: insertSignal.imageUrls?.length || 0
+      content: insertSignal.content,  
+      tradeAction: insertSignal.tradeAction,
+      hasImageUrls: !!(insertSignal as any).imageUrls,
+      imageUrlsLength: (insertSignal as any).imageUrls?.length || 0
     });
     
-    // Handle imageUrls array - use first image as imageUrl for database compatibility
+    // Handle unlimited image storage by converting array to JSON string
     let processedSignal = { ...insertSignal };
-    
-    if (processedSignal.imageUrls && processedSignal.imageUrls.length > 0) {
-      console.log('📸 Processing imageUrls array with', processedSignal.imageUrls.length, 'images');
-      const firstImage = processedSignal.imageUrls[0];
-      if (firstImage && firstImage.length <= 500) {
-        processedSignal.imageUrl = firstImage;
-        console.log('✅ Using first image from array as imageUrl:', firstImage.length, 'chars');
-      } else if (firstImage) {
-        console.log('⚠️ First image too large, truncating to 450 chars. Original:', firstImage.length);
-        processedSignal.imageUrl = firstImage.substring(0, 450);
-      }
+    if ((insertSignal as any).imageUrls && Array.isArray((insertSignal as any).imageUrls)) {
+      console.log('🖼️ Processing', (insertSignal as any).imageUrls.length, 'images for unlimited storage');
+      processedSignal.imageUrls = JSON.stringify((insertSignal as any).imageUrls);
     }
-    
-    // Truncate imageUrl if needed
-    if (processedSignal.imageUrl && processedSignal.imageUrl.length > 450) {
-      console.log('⚠️ ImageUrl too large, truncating to 450 chars. Original:', processedSignal.imageUrl.length);
-      processedSignal.imageUrl = processedSignal.imageUrl.substring(0, 450);
-    }
-    
-    // Always set imageUrls to null to avoid array parsing issues
-    processedSignal.imageUrls = null;
-    
-    console.log('💾 Final processed signal data:', {
-      title: processedSignal.title,
-      hasImageUrl: !!processedSignal.imageUrl,
-      imageUrlLength: processedSignal.imageUrl?.length || 0,
-      imageUrls: processedSignal.imageUrls
-    });
     
     const [signal] = await db.insert(forexSignals).values(processedSignal).returning();
     console.log('✅ Signal created successfully with ID:', signal.id);

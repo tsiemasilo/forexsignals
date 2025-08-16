@@ -35,14 +35,14 @@ export const subscriptions = pgTable("subscriptions", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-// Forex signals table
+// Forex signals table  
 export const forexSignals = pgTable("forex_signals", {
   id: serial("id").primaryKey(),
   title: varchar("title", { length: 200 }).notNull(),
   content: text("content").notNull(),
   tradeAction: varchar("trade_action", { length: 10 }).notNull(), // Buy, Sell, Hold
-  imageUrl: text("image_url"),
-  imageUrls: text("image_urls"), // JSON string of image URLs
+  imageUrl: text("image_url"), // Keep existing field for compatibility
+  imageUrls: text("image_urls"), // JSON string of base64 images - unlimited size
   createdBy: integer("created_by").notNull().references(() => users.id),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
