@@ -139,8 +139,8 @@ export function AdminDashboard() {
     updateSubscriptionMutation.mutate({ userId, status, planName });
   };
 
-  // Extreme compression to fit database varchar(500) limit
-  const compressImage = (file: File, maxWidth = 50, maxHeight = 50, quality = 0.05): Promise<string> => {
+  // Ultra-extreme compression to fit database varchar(500) limit
+  const compressImage = (file: File, maxWidth = 20, maxHeight = 20, quality = 0.01): Promise<string> => {
     return new Promise((resolve, reject) => {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
@@ -186,14 +186,26 @@ export function AdminDashboard() {
             
             // If still too large, reduce dimensions further
             if (compressedData.length > 400) {
-              console.log('Still too large, reducing to 30x30');
-              canvas.width = 30;
-              canvas.height = 30;
+              console.log('Still too large, reducing to 16x16');
+              canvas.width = 16;
+              canvas.height = 16;
               ctx.fillStyle = 'white';
-              ctx.fillRect(0, 0, 30, 30);
-              ctx.drawImage(img, 0, 0, 30, 30);
-              compressedData = canvas.toDataURL('image/jpeg', 0.01);
-              console.log('Ultra-small compression:', compressedData.length, 'characters');
+              ctx.fillRect(0, 0, 16, 16);
+              ctx.drawImage(img, 0, 0, 16, 16);
+              compressedData = canvas.toDataURL('image/jpeg', 0.001);
+              console.log('Ultra-small compression (16x16):', compressedData.length, 'characters');
+            }
+            
+            // If STILL too large, make it even smaller
+            if (compressedData.length > 400) {
+              console.log('Still too large, reducing to 8x8');
+              canvas.width = 8;
+              canvas.height = 8;
+              ctx.fillStyle = 'white';
+              ctx.fillRect(0, 0, 8, 8);
+              ctx.drawImage(img, 0, 0, 8, 8);
+              compressedData = canvas.toDataURL('image/jpeg', 0.001);
+              console.log('Micro compression (8x8):', compressedData.length, 'characters');
             }
             
             console.log('Final compressed size:', compressedData.length, 'characters');
