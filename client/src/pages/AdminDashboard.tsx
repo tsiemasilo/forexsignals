@@ -167,10 +167,21 @@ export function AdminDashboard() {
     if (subscription.status === 'trial') {
       return daysLeft > 0 ? `Trial (${daysLeft} days left)` : "Trial Expired";
     } else if (subscription.status === 'active') {
-      return daysLeft > 0 ? `Active (${daysLeft} days left)` : "Expired";
+      const planName = subscription.plan?.name || 'Active';
+      return daysLeft > 0 ? `${planName} (${daysLeft} days left)` : "Expired";
+    } else if (subscription.status === 'expired') {
+      return "Expired";
     } else {
       return subscription.status.charAt(0).toUpperCase() + subscription.status.slice(1);
     }
+  };
+
+  const getDaysRemaining = (subscription?: AdminUser['subscription']) => {
+    if (!subscription) return 0;
+    
+    const now = new Date();
+    const endDate = new Date(subscription.endDate);
+    return Math.max(0, Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
   };
 
   return (
@@ -389,9 +400,21 @@ export function AdminDashboard() {
                               <h3 className="font-medium">{user.firstName} {user.lastName}</h3>
                               <p className="text-sm text-gray-600">{user.email}</p>
                             </div>
-                            <Badge className={getStatusColor(user.subscription)}>
-                              {getStatusDisplay(user.subscription)}
-                            </Badge>
+                            <div className="flex items-center space-x-2">
+                              <Badge className={getStatusColor(user.subscription)}>
+                                {user.subscription ? (
+                                  user.subscription.status === 'active' ? 
+                                    `Active - ${user.subscription.plan?.name || 'Plan'}` :
+                                    user.subscription.status === 'trial' ? 'Trial' :
+                                    'Expired'
+                                ) : 'No Subscription'}
+                              </Badge>
+                              {user.subscription && getDaysRemaining(user.subscription) > 0 && (
+                                <Badge variant="outline" className="text-xs">
+                                  {getDaysRemaining(user.subscription)} days left
+                                </Badge>
+                              )}
+                            </div>
                           </div>
                         </div>
                         <div className="flex items-center space-x-2 flex-wrap gap-2">
