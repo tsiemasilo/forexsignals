@@ -146,11 +146,13 @@ export function AdminDashboard() {
     
     const now = new Date();
     const endDate = new Date(subscription.endDate);
-    const isActive = endDate > now;
+    const isExpired = endDate <= now;
     
-    if (subscription.status === 'trial' && isActive) {
+    if (isExpired) {
+      return "bg-red-100 text-red-800";
+    } else if (subscription.status === 'trial') {
       return "bg-blue-100 text-blue-800";
-    } else if (subscription.status === 'active' && isActive) {
+    } else if (subscription.status === 'active') {
       return "bg-green-100 text-green-800";
     } else {
       return "bg-red-100 text-red-800";
@@ -182,7 +184,6 @@ export function AdminDashboard() {
     const now = new Date();
     const endDate = new Date(subscription.endDate);
     const daysLeft = Math.max(0, Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
-
     return daysLeft;
   };
 
@@ -344,52 +345,47 @@ export function AdminDashboard() {
                 </CardContent>
               </Card>
 
-              {/* Recent Signals */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <TrendingUp className="h-5 w-5" />
-                    <span>Recent Signals</span>
-                  </CardTitle>
-                  <CardDescription>
-                    Latest trading signals published
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    {signals?.slice(0, 6).map((signal: ForexSignal) => (
-                      <div key={signal.id} className="border rounded-lg p-4">
-                        <div className="flex items-center justify-between mb-2">
-                          <h3 className="font-medium truncate">{signal.title}</h3>
-                          <Badge className={
-                            signal.tradeAction === "Buy" ? "bg-green-100 text-green-800" :
-                            signal.tradeAction === "Sell" ? "bg-red-100 text-red-800" :
-                            "bg-yellow-100 text-yellow-800"
-                          }>
-                            {signal.tradeAction}
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-gray-600 line-clamp-2">{signal.content}</p>
-                        <p className="text-xs text-gray-500 mt-2">
+              {/* Existing Signals */}
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {signals?.map((signal: ForexSignal) => (
+                  <Card key={signal.id}>
+                    <CardHeader>
+                      <CardTitle className="text-lg">{signal.title}</CardTitle>
+                      <div className="flex items-center space-x-2">
+                        <Badge className={
+                          signal.tradeAction === "Buy" ? "bg-green-100 text-green-800" :
+                          signal.tradeAction === "Sell" ? "bg-red-100 text-red-800" :
+                          "bg-yellow-100 text-yellow-800"
+                        }>
+                          {signal.tradeAction}
+                        </Badge>
+                        <span className="text-xs text-gray-500">
                           {new Date(signal.createdAt).toLocaleDateString()}
-                        </p>
+                        </span>
                       </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+                    </CardHeader>
+                    <CardContent>
+                      {signal.imageUrl && (
+                        <img
+                          src={signal.imageUrl}
+                          alt={signal.title}
+                          className="w-full h-32 object-cover rounded-md mb-3"
+                        />
+                      )}
+                      <p className="text-sm text-gray-700">{signal.content}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             </TabsContent>
 
             <TabsContent value="users" className="space-y-6">
               {/* User Management */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <Users className="h-5 w-5" />
-                    <span>User Management</span>
-                  </CardTitle>
+                  <CardTitle>User Management</CardTitle>
                   <CardDescription>
-                    Manage user subscriptions and trials
+                    Manage user subscriptions and create trials
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -397,18 +393,19 @@ export function AdminDashboard() {
                     {users?.map((user: AdminUser) => (
                       <div key={user.id} className="flex items-center justify-between p-4 border rounded-lg">
                         <div className="flex-1">
-                          <div className="flex items-center space-x-3">
+                          <div className="flex items-center space-x-4">
                             <div>
-                              <h3 className="font-medium">{user.firstName} {user.lastName}</h3>
-                              <p className="text-sm text-gray-600">{user.email}</p>
+                              <p className="font-medium">{user.firstName} {user.lastName}</p>
+                              <p className="text-sm text-gray-500">{user.email}</p>
                             </div>
                             <div className="flex items-center space-x-2">
                               <Badge className={getStatusColor(user.subscription)}>
                                 {user.subscription ? (
-                                  user.subscription.status === 'active' ? 
-                                    `Active - ${user.subscription.plan?.name || 'Plan'}` :
+                                  user.subscription.plan?.name || (
+                                    user.subscription.status === 'active' ? 'Active' :
                                     user.subscription.status === 'trial' ? 'Trial' :
                                     'Expired'
+                                  )
                                 ) : 'No Subscription'}
                               </Badge>
                               {user.subscription && (
@@ -419,51 +416,31 @@ export function AdminDashboard() {
                             </div>
                           </div>
                         </div>
-                        <div className="flex items-center space-x-2 flex-wrap gap-2">
+                        <div className="flex items-center space-x-2">
                           <Button
-                            variant="outline"
                             size="sm"
                             onClick={() => handleCreateTrial(user.id)}
-                            disabled={createTrialMutation.isPending || updateSubscriptionMutation.isPending}
+                            disabled={createTrialMutation.isPending}
                           >
-                            7-Day Trial
+                            Create 7-Day Trial
                           </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleUpdateSubscription(user.id, "active", "Basic Plan")}
-                            disabled={createTrialMutation.isPending || updateSubscriptionMutation.isPending}
-                            className="bg-green-50 hover:bg-green-100"
+                          <select
+                            className="h-8 rounded border border-input px-2 text-xs"
+                            onChange={(e) => {
+                              if (e.target.value) {
+                                const [status, planName] = e.target.value.split('|');
+                                handleUpdateSubscription(user.id, status, planName);
+                                e.target.value = '';
+                              }
+                            }}
+                            value=""
                           >
-                            Basic Plan
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleUpdateSubscription(user.id, "active", "Pro Plan")}
-                            disabled={createTrialMutation.isPending || updateSubscriptionMutation.isPending}
-                            className="bg-blue-50 hover:bg-blue-100"
-                          >
-                            Premium Plan
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleUpdateSubscription(user.id, "active", "VIP Plan")}
-                            disabled={createTrialMutation.isPending || updateSubscriptionMutation.isPending}
-                            className="bg-purple-50 hover:bg-purple-100"
-                          >
-                            VIP Plan
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleUpdateSubscription(user.id, "expired")}
-                            disabled={createTrialMutation.isPending || updateSubscriptionMutation.isPending}
-                            className="bg-red-50 hover:bg-red-100"
-                          >
-                            Set Expired
-                          </Button>
+                            <option value="">Change Status</option>
+                            <option value="active|Basic Plan">Basic Plan</option>
+                            <option value="active|Premium Plan">Premium Plan</option>
+                            <option value="active|VIP Plan">VIP Plan</option>
+                            <option value="expired">Mark as Expired</option>
+                          </select>
                         </div>
                       </div>
                     ))}
