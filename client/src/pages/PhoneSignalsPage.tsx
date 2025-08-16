@@ -4,7 +4,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { TrendingUp, TrendingDown, Minus, Clock, Calendar, User, LogOut } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus, Clock, Calendar, User, LogOut, Signal, BarChart3, Settings, Bell } from "lucide-react";
 
 interface ForexSignal {
   id: number;
@@ -43,7 +43,7 @@ export function PhoneSignalsPage() {
     const now = new Date();
     const endDate = new Date(subscription.endDate);
     const daysLeft = Math.max(0, Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
-    return daysLeft;
+    return isNaN(daysLeft) ? 0 : daysLeft;
   };
 
   const getTradeIcon = (action: string) => {
@@ -83,135 +83,200 @@ export function PhoneSignalsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      {/* Phone Frame */}
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center p-4">
+      {/* iPhone Frame */}
       <div className="relative w-full max-w-sm mx-auto">
-        {/* Phone Outline */}
-        <div className="relative bg-black rounded-[2.5rem] p-2 shadow-2xl">
+        {/* iPhone Outline with more realistic styling */}
+        <div className="relative bg-gradient-to-b from-gray-800 to-black rounded-[3rem] p-1 shadow-2xl border border-gray-700">
+          {/* Camera Notch */}
+          <div className="absolute top-2 left-1/2 transform -translate-x-1/2 w-32 h-6 bg-black rounded-full z-20"></div>
+          
           {/* Screen */}
-          <div className="bg-white rounded-[2rem] overflow-hidden min-h-[600px] max-h-[700px] flex flex-col">
-            {/* Status Bar */}
-            <div className="bg-gray-900 text-white px-6 py-3 flex justify-between items-center text-xs">
-              <span className="font-medium">9:41</span>
-              <div className="flex space-x-1">
-                <div className="w-4 h-2 bg-white rounded-sm"></div>
-                <div className="w-1 h-2 bg-white rounded-sm"></div>
-                <div className="w-6 h-2 bg-white rounded-sm"></div>
+          <div className="bg-black rounded-[2.8rem] overflow-hidden min-h-[640px] max-h-[750px] flex flex-col relative">
+            {/* iOS Style Status Bar */}
+            <div className="bg-black text-white px-8 pt-12 pb-2 flex justify-between items-center text-sm font-medium">
+              <span>9:41</span>
+              <div className="flex items-center space-x-1">
+                <div className="flex space-x-1">
+                  <div className="w-1 h-3 bg-white rounded-full"></div>
+                  <div className="w-1 h-3 bg-white rounded-full"></div>
+                  <div className="w-1 h-3 bg-white/60 rounded-full"></div>
+                  <div className="w-1 h-3 bg-white/30 rounded-full"></div>
+                </div>
+                <div className="w-6 h-3 bg-white rounded-sm relative">
+                  <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-black rounded-full"></div>
+                </div>
               </div>
             </div>
 
-            {/* Header */}
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4">
+            {/* iOS Style Header */}
+            <div className="bg-gradient-to-b from-gray-50 to-white px-6 py-4 border-b border-gray-200">
               <div className="flex justify-between items-center">
-                <div className="flex items-center space-x-2">
-                  <User className="h-5 w-5" />
-                  <span className="font-medium">{user?.firstName}</span>
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                    <Signal className="h-4 w-4 text-white" />
+                  </div>
+                  <div>
+                    <h1 className="text-lg font-semibold text-gray-900">Signals</h1>
+                    <p className="text-xs text-gray-500">Live Trading Updates</p>
+                  </div>
                 </div>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={logout}
-                  className="text-white hover:bg-white/20"
-                >
-                  <LogOut className="h-4 w-4" />
-                </Button>
+                <div className="flex items-center space-x-2">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="w-8 h-8 p-0 rounded-full hover:bg-gray-100"
+                  >
+                    <Bell className="h-4 w-4 text-gray-600" />
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={logout}
+                    className="w-8 h-8 p-0 rounded-full hover:bg-gray-100"
+                  >
+                    <LogOut className="h-4 w-4 text-gray-600" />
+                  </Button>
+                </div>
               </div>
               
               {subscription && (
-                <div className="mt-2 text-sm">
-                  <span className="opacity-90">{subscription.plan?.name}</span>
-                  <span className="ml-2 text-xs bg-white/20 px-2 py-1 rounded-full">
-                    {getDaysRemaining(subscription)} days left
-                  </span>
+                <div className="mt-3 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl px-4 py-3">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <span className="text-sm font-medium text-gray-900">{subscription.plan?.name}</span>
+                      <p className="text-xs text-gray-600 mt-1">Hello, {user?.firstName}</p>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-lg font-bold text-blue-600">{getDaysRemaining(subscription)}</div>
+                      <div className="text-xs text-gray-500">days left</div>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
 
-            {/* Signals List */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3">
-              <div className="flex items-center space-x-2 mb-4">
-                <TrendingUp className="h-5 w-5 text-blue-600" />
-                <h2 className="text-lg font-semibold text-gray-900">Live Signals</h2>
-                <Badge variant="secondary" className="text-xs">
-                  {signals?.length || 0} Active
-                </Badge>
-              </div>
-
+            {/* iOS Style Signals List */}
+            <div className="flex-1 overflow-y-auto bg-gray-50">
               {signalsLoading ? (
-                <div className="space-y-3">
+                <div className="p-4 space-y-4">
                   {[1, 2, 3].map((i) => (
-                    <div key={i} className="bg-gray-200 rounded-lg h-24 animate-pulse"></div>
+                    <div key={i} className="bg-white rounded-2xl p-4 shadow-sm">
+                      <div className="animate-pulse">
+                        <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                        <div className="h-3 bg-gray-200 rounded w-1/2 mb-3"></div>
+                        <div className="h-20 bg-gray-200 rounded-xl mb-3"></div>
+                        <div className="h-3 bg-gray-200 rounded w-full"></div>
+                      </div>
+                    </div>
                   ))}
                 </div>
               ) : signals?.length ? (
-                <div className="space-y-3">
-                  {signals.map((signal: ForexSignal) => (
-                    <Card key={signal.id} className="border-l-4 border-l-blue-500 shadow-sm">
-                      <CardHeader className="pb-2">
-                        <div className="flex justify-between items-start">
+                <div className="p-4 space-y-4">
+                  {signals.map((signal: ForexSignal, index: number) => (
+                    <div key={signal.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                      {/* Signal Header */}
+                      <div className="p-4 pb-3">
+                        <div className="flex justify-between items-start mb-3">
                           <div className="flex-1">
-                            <h3 className="font-semibold text-sm text-gray-900 leading-tight">
+                            <h3 className="font-semibold text-gray-900 text-base leading-tight">
                               {signal.title}
                             </h3>
-                            <div className="flex items-center space-x-2 mt-1">
-                              <Badge className={`${getTradeColor(signal.tradeAction)} text-xs px-2 py-1`}>
+                            <div className="flex items-center space-x-2 mt-2">
+                              <div className={`flex items-center space-x-1 px-3 py-1.5 rounded-full text-sm font-medium ${getTradeColor(signal.tradeAction)}`}>
                                 {getTradeIcon(signal.tradeAction)}
-                                <span className="ml-1">{signal.tradeAction}</span>
-                              </Badge>
-                              <span className="text-xs text-gray-500 flex items-center">
-                                <Clock className="h-3 w-3 mr-1" />
-                                {formatDate(signal.createdAt)}
-                              </span>
+                                <span>{signal.tradeAction.toUpperCase()}</span>
+                              </div>
+                              <div className="flex items-center space-x-1 text-xs text-gray-500 bg-gray-100 px-3 py-1.5 rounded-full">
+                                <Clock className="h-3 w-3" />
+                                <span>{formatDate(signal.createdAt)}</span>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </CardHeader>
-                      
-                      <CardContent className="pt-0">
+                        
                         {signal.imageUrl && (
-                          <img
-                            src={signal.imageUrl}
-                            alt={signal.title}
-                            className="w-full h-32 object-cover rounded-md mb-3"
-                          />
+                          <div className="mb-4">
+                            <img
+                              src={signal.imageUrl}
+                              alt={signal.title}
+                              className="w-full h-40 object-cover rounded-xl border border-gray-200"
+                            />
+                          </div>
                         )}
-                        <p className="text-sm text-gray-700 leading-relaxed">
-                          {signal.content}
-                        </p>
-                      </CardContent>
-                    </Card>
+                        
+                        <div className="bg-gray-50 rounded-xl p-4">
+                          <p className="text-sm text-gray-700 leading-relaxed">
+                            {signal.content}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      {/* Action Bar */}
+                      <div className="bg-gray-50 px-4 py-3 border-t border-gray-100">
+                        <div className="flex justify-between items-center">
+                          <div className="flex space-x-4">
+                            <button className="flex items-center space-x-1 text-gray-600 hover:text-blue-600 transition-colors">
+                              <BarChart3 className="h-4 w-4" />
+                              <span className="text-sm">Analyze</span>
+                            </button>
+                            <button className="flex items-center space-x-1 text-gray-600 hover:text-green-600 transition-colors">
+                              <Signal className="h-4 w-4" />
+                              <span className="text-sm">Follow</span>
+                            </button>
+                          </div>
+                          <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        </div>
+                      </div>
+                    </div>
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8">
-                  <TrendingUp className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                  <p className="text-gray-500 text-sm">No signals available</p>
-                  <p className="text-gray-400 text-xs mt-1">Check back later for new trading signals</p>
+                <div className="flex-1 flex items-center justify-center p-8">
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Signal className="h-8 w-8 text-gray-400" />
+                    </div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No signals yet</h3>
+                    <p className="text-gray-500 text-sm">New trading signals will appear here</p>
+                  </div>
                 </div>
               )}
             </div>
 
-            {/* Bottom Navigation */}
-            <div className="bg-gray-50 border-t p-4">
-              <div className="flex justify-center space-x-6">
-                <button className="flex flex-col items-center space-y-1 text-blue-600">
-                  <TrendingUp className="h-5 w-5" />
-                  <span className="text-xs font-medium">Signals</span>
+            {/* iOS Style Tab Bar */}
+            <div className="bg-white/95 backdrop-blur-lg border-t border-gray-200">
+              <div className="flex justify-around py-2">
+                <button className="flex flex-col items-center py-2 px-4">
+                  <div className="w-6 h-6 bg-blue-600 rounded-lg flex items-center justify-center mb-1">
+                    <Signal className="h-4 w-4 text-white" />
+                  </div>
+                  <span className="text-xs font-medium text-blue-600">Signals</span>
                 </button>
-                <button className="flex flex-col items-center space-y-1 text-gray-400">
-                  <Calendar className="h-5 w-5" />
-                  <span className="text-xs">History</span>
+                <button className="flex flex-col items-center py-2 px-4">
+                  <div className="w-6 h-6 bg-gray-200 rounded-lg flex items-center justify-center mb-1">
+                    <BarChart3 className="h-4 w-4 text-gray-600" />
+                  </div>
+                  <span className="text-xs text-gray-500">Charts</span>
                 </button>
-                <button className="flex flex-col items-center space-y-1 text-gray-400">
-                  <User className="h-5 w-5" />
-                  <span className="text-xs">Profile</span>
+                <button className="flex flex-col items-center py-2 px-4">
+                  <div className="w-6 h-6 bg-gray-200 rounded-lg flex items-center justify-center mb-1">
+                    <Calendar className="h-4 w-4 text-gray-600" />
+                  </div>
+                  <span className="text-xs text-gray-500">History</span>
+                </button>
+                <button className="flex flex-col items-center py-2 px-4">
+                  <div className="w-6 h-6 bg-gray-200 rounded-lg flex items-center justify-center mb-1">
+                    <Settings className="h-4 w-4 text-gray-600" />
+                  </div>
+                  <span className="text-xs text-gray-500">Settings</span>
                 </button>
               </div>
-            </div>
-
-            {/* Home Indicator */}
-            <div className="flex justify-center py-2">
-              <div className="w-32 h-1 bg-gray-300 rounded-full"></div>
+              
+              {/* iOS Home Indicator */}
+              <div className="flex justify-center py-2">
+                <div className="w-32 h-1 bg-gray-900 rounded-full"></div>
+              </div>
             </div>
           </div>
         </div>
