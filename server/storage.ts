@@ -251,14 +251,17 @@ export class DatabaseStorage implements IStorage {
   async createSignal(insertSignal: InsertForexSignal): Promise<ForexSignal> {
     console.log('📝 Creating signal with imageUrl length:', insertSignal.imageUrl?.length || 'no image');
     
-    // Store large images in imageUrls field as JSON string since imageUrl has varchar(500) limit
+    // Always avoid imageUrls field due to array parsing issues
     let processedSignal = { ...insertSignal };
+    
+    // Truncate large images to fit in varchar(500) field for now
     if (processedSignal.imageUrl && processedSignal.imageUrl.length > 500) {
-      console.log('📸 Moving large image to imageUrls field to bypass varchar limit');
-      // Store as JSON string in text field, not as array
-      processedSignal.imageUrls = JSON.stringify([processedSignal.imageUrl]);
-      processedSignal.imageUrl = null; // Clear the limited field
+      console.log('⚠️ Image too large, truncating to 500 chars to avoid array parsing error');
+      processedSignal.imageUrl = processedSignal.imageUrl.substring(0, 500);
     }
+    
+    // Never set imageUrls to avoid array parsing issues
+    processedSignal.imageUrls = null;
     
     const [signal] = await db.insert(forexSignals).values(processedSignal).returning();
     return signal;
