@@ -6,8 +6,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Users, Plus, TrendingUp, Settings, User, Calendar } from "lucide-react";
+import { Users, Plus, TrendingUp, Settings, User, Calendar, Signal } from "lucide-react";
 
 interface AdminUser {
   id: number;
@@ -39,6 +40,7 @@ export function AdminDashboard() {
   const { user, logout } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [activeTab, setActiveTab] = useState("signals");
   const [newSignal, setNewSignal] = useState({
     title: "",
     content: "",
@@ -221,150 +223,168 @@ export function AdminDashboard() {
             </Card>
           </div>
 
-          {/* Create New Signal */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Plus className="h-5 w-5" />
-                <span>Create New Signal</span>
-              </CardTitle>
-              <CardDescription>
-                Add a new forex trading signal for subscribers
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleCreateSignal} className="space-y-4">
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Signal Title</label>
-                    <Input
-                      placeholder="EUR/USD Buy Signal"
-                      value={newSignal.title}
-                      onChange={(e) => setNewSignal({ ...newSignal, title: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Trade Action</label>
-                    <select
-                      className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm"
-                      value={newSignal.tradeAction}
-                      onChange={(e) => setNewSignal({ ...newSignal, tradeAction: e.target.value as "Buy" | "Sell" | "Hold" })}
-                    >
-                      <option value="Buy">Buy</option>
-                      <option value="Sell">Sell</option>
-                      <option value="Hold">Hold</option>
-                    </select>
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Signal Content</label>
-                  <textarea
-                    className="flex min-h-[80px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
-                    placeholder="Strong bullish momentum on EUR/USD. Entry at 1.0850, Stop Loss at 1.0820, Take Profit at 1.0920..."
-                    value={newSignal.content}
-                    onChange={(e) => setNewSignal({ ...newSignal, content: e.target.value })}
-                    required
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Image URL (Optional)</label>
-                  <Input
-                    placeholder="https://example.com/chart-image.png"
-                    value={newSignal.imageUrl}
-                    onChange={(e) => setNewSignal({ ...newSignal, imageUrl: e.target.value })}
-                  />
-                </div>
-                
-                <Button 
-                  type="submit" 
-                  className="w-full md:w-auto" 
-                  disabled={createSignalMutation.isPending}
-                >
-                  {createSignalMutation.isPending ? "Creating..." : "Create Signal"}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
+          {/* Tabs for Signals and User Management */}
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="signals" className="flex items-center">
+                <Signal className="h-4 w-4 mr-2" />
+                Signals Management
+              </TabsTrigger>
+              <TabsTrigger value="users" className="flex items-center">
+                <Users className="h-4 w-4 mr-2" />
+                User Management
+              </TabsTrigger>
+            </TabsList>
 
-          {/* User Management */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Users className="h-5 w-5" />
-                <span>User Management</span>
-              </CardTitle>
-              <CardDescription>
-                Manage user subscriptions and trials
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {users?.map((user: AdminUser) => (
-                  <div key={user.id} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3">
-                        <div>
-                          <h3 className="font-medium">{user.firstName} {user.lastName}</h3>
-                          <p className="text-sm text-gray-600">{user.email}</p>
-                        </div>
-                        <Badge className={getStatusColor(user.subscription)}>
-                          {getStatusDisplay(user.subscription)}
-                        </Badge>
+            <TabsContent value="signals" className="space-y-6">
+              {/* Create New Signal */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Plus className="h-5 w-5" />
+                    <span>Create New Signal</span>
+                  </CardTitle>
+                  <CardDescription>
+                    Add a new forex trading signal for subscribers
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={handleCreateSignal} className="space-y-4">
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Signal Title</label>
+                        <Input
+                          placeholder="EUR/USD Buy Signal"
+                          value={newSignal.title}
+                          onChange={(e) => setNewSignal({ ...newSignal, title: e.target.value })}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Trade Action</label>
+                        <select
+                          className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm"
+                          value={newSignal.tradeAction}
+                          onChange={(e) => setNewSignal({ ...newSignal, tradeAction: e.target.value as "Buy" | "Sell" | "Hold" })}
+                        >
+                          <option value="Buy">Buy</option>
+                          <option value="Sell">Sell</option>
+                          <option value="Hold">Hold</option>
+                        </select>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleCreateTrial(user.id)}
-                        disabled={createTrialMutation.isPending}
-                      >
-                        Create 7-Day Trial
-                      </Button>
+                    
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Signal Content</label>
+                      <textarea
+                        className="flex min-h-[80px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
+                        placeholder="Strong bullish momentum on EUR/USD. Entry at 1.0850, Stop Loss at 1.0820, Take Profit at 1.0920..."
+                        value={newSignal.content}
+                        onChange={(e) => setNewSignal({ ...newSignal, content: e.target.value })}
+                        required
+                      />
                     </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                    
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Image URL (Optional)</label>
+                      <Input
+                        placeholder="https://example.com/chart-image.png"
+                        value={newSignal.imageUrl}
+                        onChange={(e) => setNewSignal({ ...newSignal, imageUrl: e.target.value })}
+                      />
+                    </div>
+                    
+                    <Button 
+                      type="submit" 
+                      className="w-full md:w-auto" 
+                      disabled={createSignalMutation.isPending}
+                    >
+                      {createSignalMutation.isPending ? "Creating..." : "Create Signal"}
+                    </Button>
+                  </form>
+                </CardContent>
+              </Card>
 
-          {/* Recent Signals */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <TrendingUp className="h-5 w-5" />
-                <span>Recent Signals</span>
-              </CardTitle>
-              <CardDescription>
-                Latest trading signals published
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {signals?.slice(0, 6).map((signal: ForexSignal) => (
-                  <div key={signal.id} className="border rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="font-medium truncate">{signal.title}</h3>
-                      <Badge className={
-                        signal.tradeAction === "Buy" ? "bg-green-100 text-green-800" :
-                        signal.tradeAction === "Sell" ? "bg-red-100 text-red-800" :
-                        "bg-yellow-100 text-yellow-800"
-                      }>
-                        {signal.tradeAction}
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-gray-600 line-clamp-2">{signal.content}</p>
-                    <p className="text-xs text-gray-500 mt-2">
-                      {new Date(signal.createdAt).toLocaleDateString()}
-                    </p>
+              {/* Recent Signals */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <TrendingUp className="h-5 w-5" />
+                    <span>Recent Signals</span>
+                  </CardTitle>
+                  <CardDescription>
+                    Latest trading signals published
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    {signals?.slice(0, 6).map((signal: ForexSignal) => (
+                      <div key={signal.id} className="border rounded-lg p-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="font-medium truncate">{signal.title}</h3>
+                          <Badge className={
+                            signal.tradeAction === "Buy" ? "bg-green-100 text-green-800" :
+                            signal.tradeAction === "Sell" ? "bg-red-100 text-red-800" :
+                            "bg-yellow-100 text-yellow-800"
+                          }>
+                            {signal.tradeAction}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-gray-600 line-clamp-2">{signal.content}</p>
+                        <p className="text-xs text-gray-500 mt-2">
+                          {new Date(signal.createdAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="users" className="space-y-6">
+              {/* User Management */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Users className="h-5 w-5" />
+                    <span>User Management</span>
+                  </CardTitle>
+                  <CardDescription>
+                    Manage user subscriptions and trials
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {users?.map((user: AdminUser) => (
+                      <div key={user.id} className="flex items-center justify-between p-4 border rounded-lg">
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-3">
+                            <div>
+                              <h3 className="font-medium">{user.firstName} {user.lastName}</h3>
+                              <p className="text-sm text-gray-600">{user.email}</p>
+                            </div>
+                            <Badge className={getStatusColor(user.subscription)}>
+                              {getStatusDisplay(user.subscription)}
+                            </Badge>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleCreateTrial(user.id)}
+                            disabled={createTrialMutation.isPending}
+                          >
+                            Create 7-Day Trial
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </div>
       </main>
     </div>
