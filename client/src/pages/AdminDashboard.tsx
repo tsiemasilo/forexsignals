@@ -139,59 +139,32 @@ export function AdminDashboard() {
     updateSubscriptionMutation.mutate({ userId, status, planName });
   };
 
-  // Image upload handlers with compression
-  const compressImage = (file: File): Promise<string> => {
-    return new Promise((resolve) => {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      const img = new Image();
-      
-      img.onload = () => {
-        // Compress to max 400x400 to keep data size manageable
-        const maxWidth = 400;
-        const maxHeight = 400;
-        let { width, height } = img;
-        
-        if (width > height) {
-          if (width > maxWidth) {
-            height = (height * maxWidth) / width;
-            width = maxWidth;
-          }
-        } else {
-          if (height > maxHeight) {
-            width = (width * maxHeight) / height;
-            height = maxHeight;
-          }
-        }
-        
-        canvas.width = width;
-        canvas.height = height;
-        
-        ctx?.drawImage(img, 0, 0, width, height);
-        const compressedData = canvas.toDataURL('image/jpeg', 0.7);
-        resolve(compressedData);
-      };
-      
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        img.src = e.target?.result as string;
-      };
-      reader.readAsDataURL(file);
-    });
-  };
-
-  const handleImageUpload = async (files: FileList) => {
-    const fileArray = Array.from(files);
-    for (const file of fileArray) {
+  // Simplified image upload handlers
+  const handleImageUpload = (files: FileList) => {
+    console.log('Processing', files.length, 'files');
+    Array.from(files).forEach(file => {
       if (file.type.startsWith('image/')) {
-        try {
-          const compressedImage = await compressImage(file);
-          setUploadedImages(prev => [...prev, compressedImage]);
-        } catch (error) {
-          console.error('Image compression failed:', error);
-        }
+        console.log('Processing image:', file.name, file.size, 'bytes');
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const result = e.target?.result as string;
+          if (result) {
+            console.log('Image loaded, data length:', result.length);
+            // For now, use original image but limit to smaller files
+            if (file.size < 100000) { // 100KB limit
+              setUploadedImages(prev => [...prev, result]);
+              console.log('Image added to preview');
+            } else {
+              alert('Please use smaller images (under 100KB) for now');
+            }
+          }
+        };
+        reader.onerror = (error) => {
+          console.error('FileReader error:', error);
+        };
+        reader.readAsDataURL(file);
       }
-    }
+    });
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -445,7 +418,7 @@ export function AdminDashboard() {
                             browse files
                           </label>
                         </p>
-                        <p className="text-xs text-gray-500">Support JPG, PNG, GIF - smaller images work best</p>
+                        <p className="text-xs text-gray-500">Support JPG, PNG, GIF under 100KB</p>
                         <input
                           id="image-upload"
                           type="file"
