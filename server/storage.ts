@@ -249,7 +249,14 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createSignal(insertSignal: InsertForexSignal): Promise<ForexSignal> {
-    const [signal] = await db.insert(forexSignals).values(insertSignal).returning();
+    // Handle large imageUrl by storing without image if too long (temporary fix)
+    let processedSignal = { ...insertSignal };
+    if (processedSignal.imageUrl && processedSignal.imageUrl.length > 500) {
+      console.log('⚠️ ImageUrl too large for current schema, storing without image for now');
+      processedSignal.imageUrl = null;
+    }
+    
+    const [signal] = await db.insert(forexSignals).values(processedSignal).returning();
     return signal;
   }
 
