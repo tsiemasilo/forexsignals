@@ -133,14 +133,8 @@ function PhoneLoginForm() {
             </div>
           </div>
 
-          {/* Welcome Text */}
+          {/* Free Trial Message */}
           <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-            <div style={{ fontSize: '16px', fontWeight: 600, color: '#151717', marginBottom: '5px' }}>
-              Welcome Back
-            </div>
-            <div style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
-              Enter your email to access your signals
-            </div>
             <div style={{ 
               fontSize: '11px', 
               color: '#10b981', 
