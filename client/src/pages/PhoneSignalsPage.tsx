@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 function PhoneLoginForm() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showSignUp, setShowSignUp] = useState(false);
   const { login } = useAuth();
   const { toast } = useToast();
 
@@ -38,39 +39,53 @@ function PhoneLoginForm() {
     }
   };
 
+  if (showSignUp) {
+    return <PhoneSignUpForm onBackToLogin={() => setShowSignUp(false)} />;
+  }
+
   return (
     <div className="flex-1 flex items-center justify-center p-4">
-      <div className="w-full max-w-sm">
+      <div className="w-full" style={{ maxWidth: '320px' }}>
         <form 
           onSubmit={handleSubmit} 
-          className="flex flex-col gap-4 bg-white p-8 w-full rounded-3xl font-system shadow-xl"
-          style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif' }}
+          className="flex flex-col bg-white rounded-2xl shadow-lg"
+          style={{ 
+            gap: '10px',
+            padding: '30px',
+            borderRadius: '20px',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
+          }}
         >
           <div className="flex flex-col">
-            <label className="text-gray-900 font-semibold mb-1" style={{ color: '#151717', fontWeight: 600 }}>
-              Email
-            </label>
+            <label style={{ color: '#151717', fontWeight: 600 }}>Email</label>
           </div>
           
           <div 
-            className="border-2 rounded-xl h-14 flex items-center px-3 transition-all duration-200 ease-in-out focus-within:border-blue-500"
+            className="flex items-center transition-all duration-200"
             style={{ 
-              border: '1.5px solid #ecedec', 
+              border: '1.5px solid #ecedec',
               borderRadius: '10px',
-              height: '50px'
+              height: '50px',
+              paddingLeft: '10px'
             }}
+            onFocus={(e) => e.currentTarget.style.border = '1.5px solid #2d79f3'}
+            onBlur={(e) => e.currentTarget.style.border = '1.5px solid #ecedec'}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width={20} viewBox="0 0 32 32" height={20} className="text-gray-500">
+            <svg xmlns="http://www.w3.org/2000/svg" width={20} viewBox="0 0 32 32" height={20}>
               <g data-name="Layer 3" id="Layer_3">
-                <path d="m30.853 13.87a15 15 0 0 0 -29.729 4.082 15.1 15.1 0 0 0 12.876 12.918 15.6 15.6 0 0 0 2.016.13 14.85 14.85 0 0 0 7.715-2.145 1 1 0 1 0 -1.031-1.711 13.007 13.007 0 1 1 5.458-6.529 2.149 2.149 0 0 1 -4.158-.759v-10.856a1 1 0 0 0 -2 0v1.726a8 8 0 1 0 .2 10.325 4.135 4.135 0 0 0 7.83.274 15.2 15.2 0 0 0 .823-7.455zm-14.853 8.13a6 6 0 1 1 6-6 6.006 6.006 0 0 1 -6 6z" fill="currentColor"/>
+                <path d="m30.853 13.87a15 15 0 0 0 -29.729 4.082 15.1 15.1 0 0 0 12.876 12.918 15.6 15.6 0 0 0 2.016.13 14.85 14.85 0 0 0 7.715-2.145 1 1 0 1 0 -1.031-1.711 13.007 13.007 0 1 1 5.458-6.529 2.149 2.149 0 0 1 -4.158-.759v-10.856a1 1 0 0 0 -2 0v1.726a8 8 0 1 0 .2 10.325 4.135 4.135 0 0 0 7.83.274 15.2 15.2 0 0 0 .823-7.455zm-14.853 8.13a6 6 0 1 1 6-6 6.006 6.006 0 0 1 -6 6z"/>
               </g>
             </svg>
             <input
               placeholder="Enter your Email"
-              className="ml-3 border-none w-full h-full bg-transparent focus:outline-none"
+              className="input"
               style={{ 
                 marginLeft: '10px',
                 borderRadius: '10px',
+                border: 'none',
+                width: '100%',
+                height: '100%',
+                outline: 'none',
                 fontFamily: 'inherit'
               }}
               type="email"
@@ -83,22 +98,26 @@ function PhoneLoginForm() {
           <button 
             type="submit"
             disabled={loading || !email}
-            className="border-none text-white font-medium cursor-pointer transition-colors w-full disabled:opacity-50 disabled:cursor-not-allowed"
+            className="button-submit"
             style={{ 
               margin: '20px 0 10px 0',
               backgroundColor: '#151717',
+              border: 'none',
+              color: 'white',
               fontSize: '15px',
               fontWeight: 500,
               borderRadius: '10px',
               height: '50px',
-              cursor: loading || !email ? 'not-allowed' : 'pointer'
+              width: '100%',
+              cursor: 'pointer',
+              opacity: loading || !email ? 0.5 : 1
             }}
           >
             {loading ? "Signing In..." : "Sign In"}
           </button>
           
           <p 
-            className="text-center text-black my-1"
+            className="p"
             style={{ 
               textAlign: 'center',
               color: 'black',
@@ -108,15 +127,223 @@ function PhoneLoginForm() {
           >
             Don't have an account?{' '}
             <span 
-              className="cursor-pointer"
+              className="span"
+              onClick={() => setShowSignUp(true)}
               style={{ 
+                fontSize: '14px',
+                marginLeft: '5px',
                 color: '#2d79f3',
                 fontWeight: 500,
-                marginLeft: '5px',
                 cursor: 'pointer'
               }}
             >
               Sign Up
+            </span>
+          </p>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// Phone Sign Up Component
+function PhoneSignUpForm({ onBackToLogin }: { onBackToLogin: () => void }) {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
+  const { toast } = useToast();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!firstName || !lastName || !email) return;
+
+    setLoading(true);
+    try {
+      // Create account and login (your existing login endpoint should handle user creation)
+      await login(email);
+      toast({
+        title: "Success",
+        description: "Account created and logged in successfully!",
+      });
+    } catch (error) {
+      toast({
+        title: "Sign Up Failed",
+        description: error instanceof Error ? error.message : "Please try again",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="flex-1 flex items-center justify-center p-4">
+      <div className="w-full" style={{ maxWidth: '320px' }}>
+        <form 
+          onSubmit={handleSubmit} 
+          className="flex flex-col bg-white rounded-2xl shadow-lg"
+          style={{ 
+            gap: '10px',
+            padding: '30px',
+            borderRadius: '20px',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
+          }}
+        >
+          <div className="flex flex-col">
+            <label style={{ color: '#151717', fontWeight: 600 }}>First Name</label>
+          </div>
+          
+          <div 
+            className="inputForm"
+            style={{ 
+              border: '1.5px solid #ecedec',
+              borderRadius: '10px',
+              height: '50px',
+              display: 'flex',
+              alignItems: 'center',
+              paddingLeft: '10px',
+              transition: '0.2s ease-in-out'
+            }}
+          >
+            <input
+              placeholder="Enter your First Name"
+              className="input"
+              style={{ 
+                marginLeft: '10px',
+                borderRadius: '10px',
+                border: 'none',
+                width: '100%',
+                height: '100%',
+                outline: 'none',
+                fontFamily: 'inherit'
+              }}
+              type="text"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <label style={{ color: '#151717', fontWeight: 600 }}>Last Name</label>
+          </div>
+          
+          <div 
+            className="inputForm"
+            style={{ 
+              border: '1.5px solid #ecedec',
+              borderRadius: '10px',
+              height: '50px',
+              display: 'flex',
+              alignItems: 'center',
+              paddingLeft: '10px',
+              transition: '0.2s ease-in-out'
+            }}
+          >
+            <input
+              placeholder="Enter your Last Name"
+              className="input"
+              style={{ 
+                marginLeft: '10px',
+                borderRadius: '10px',
+                border: 'none',
+                width: '100%',
+                height: '100%',
+                outline: 'none',
+                fontFamily: 'inherit'
+              }}
+              type="text"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <label style={{ color: '#151717', fontWeight: 600 }}>Email</label>
+          </div>
+          
+          <div 
+            className="inputForm"
+            style={{ 
+              border: '1.5px solid #ecedec',
+              borderRadius: '10px',
+              height: '50px',
+              display: 'flex',
+              alignItems: 'center',
+              paddingLeft: '10px',
+              transition: '0.2s ease-in-out'
+            }}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width={20} viewBox="0 0 32 32" height={20}>
+              <g data-name="Layer 3" id="Layer_3">
+                <path d="m30.853 13.87a15 15 0 0 0 -29.729 4.082 15.1 15.1 0 0 0 12.876 12.918 15.6 15.6 0 0 0 2.016.13 14.85 14.85 0 0 0 7.715-2.145 1 1 0 1 0 -1.031-1.711 13.007 13.007 0 1 1 5.458-6.529 2.149 2.149 0 0 1 -4.158-.759v-10.856a1 1 0 0 0 -2 0v1.726a8 8 0 1 0 .2 10.325 4.135 4.135 0 0 0 7.83.274 15.2 15.2 0 0 0 .823-7.455zm-14.853 8.13a6 6 0 1 1 6-6 6.006 6.006 0 0 1 -6 6z"/>
+              </g>
+            </svg>
+            <input
+              placeholder="Enter your Email"
+              className="input"
+              style={{ 
+                marginLeft: '10px',
+                borderRadius: '10px',
+                border: 'none',
+                width: '100%',
+                height: '100%',
+                outline: 'none',
+                fontFamily: 'inherit'
+              }}
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+
+          <button 
+            type="submit"
+            disabled={loading || !firstName || !lastName || !email}
+            className="button-submit"
+            style={{ 
+              margin: '20px 0 10px 0',
+              backgroundColor: '#151717',
+              border: 'none',
+              color: 'white',
+              fontSize: '15px',
+              fontWeight: 500,
+              borderRadius: '10px',
+              height: '50px',
+              width: '100%',
+              cursor: 'pointer',
+              opacity: loading || !firstName || !lastName || !email ? 0.5 : 1
+            }}
+          >
+            {loading ? "Creating Account..." : "Sign Up"}
+          </button>
+          
+          <p 
+            className="p"
+            style={{ 
+              textAlign: 'center',
+              color: 'black',
+              fontSize: '14px',
+              margin: '5px 0'
+            }}
+          >
+            Already have an account?{' '}
+            <span 
+              className="span"
+              onClick={onBackToLogin}
+              style={{ 
+                fontSize: '14px',
+                marginLeft: '5px',
+                color: '#2d79f3',
+                fontWeight: 500,
+                cursor: 'pointer'
+              }}
+            >
+              Sign In
             </span>
           </p>
         </form>
