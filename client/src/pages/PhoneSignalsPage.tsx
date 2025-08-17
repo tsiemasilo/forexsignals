@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRealtimeSignals } from '@/hooks/useRealtimeSignals';
 import { useSubscriptionStatus } from '@/hooks/useSubscriptionStatus';
-import { TrendingUp, TrendingDown, Minus, Clock, Bell, Signal, Home, CreditCard, Settings, Users, LogOut, AlertTriangle } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, Clock, Bell, Signal, Home, CreditCard, Settings, Users, LogOut, AlertTriangle, Menu, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -496,6 +496,7 @@ export function PhoneSignalsPage() {
   const { signals = [], isLoading, error } = useRealtimeSignals();
   const { data: subscriptionStatus } = useSubscriptionStatus();
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Update time every minute
   useEffect(() => {
@@ -570,6 +571,7 @@ export function PhoneSignalsPage() {
             <div className="flex items-center space-x-6">
               {user ? (
                 <>
+                  {/* Desktop Navigation */}
                   <nav className="hidden md:flex space-x-6">
                     {!user?.isAdmin && (
                       <Link href="/plans">
@@ -581,8 +583,18 @@ export function PhoneSignalsPage() {
                     )}
                   </nav>
                   
+                  {/* Mobile Menu Button */}
+                  <div className="md:hidden">
+                    <button
+                      onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                      className="text-gray-300 hover:text-white transition-colors p-2"
+                    >
+                      {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                    </button>
+                  </div>
+                  
                   {/* User Actions */}
-                  <div className="flex items-center space-x-4">
+                  <div className="hidden md:flex items-center space-x-4">
                     <span className="text-gray-300 text-sm">
                       Hi, {user.firstName}
                     </span>
@@ -602,6 +614,39 @@ export function PhoneSignalsPage() {
             </div>
           </div>
         </div>
+        
+        {/* Mobile Menu Dropdown */}
+        {mobileMenuOpen && user && (
+          <div className="md:hidden bg-gray-800 border-t border-gray-700">
+            <div className="px-2 pt-2 pb-3 space-y-1">
+              {!user?.isAdmin && (
+                <Link href="/plans" onClick={() => setMobileMenuOpen(false)}>
+                  <div className="flex items-center space-x-3 text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium cursor-pointer">
+                    <CreditCard className="h-5 w-5" />
+                    <span>Plans</span>
+                  </div>
+                </Link>
+              )}
+              <div className="border-t border-gray-700 pt-4">
+                <div className="flex items-center px-3 py-2">
+                  <span className="text-gray-300 text-sm">
+                    Hi, {user.firstName}
+                  </span>
+                </div>
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setMobileMenuOpen(false);
+                  }}
+                  className="flex items-center space-x-3 text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium w-full text-left"
+                >
+                  <LogOut className="h-5 w-5" />
+                  <span>Sign Out</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </nav>
 
       
