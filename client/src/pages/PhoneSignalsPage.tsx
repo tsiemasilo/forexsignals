@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRealtimeSignals } from '@/hooks/useRealtimeSignals';
 import { useSubscriptionStatus } from '@/hooks/useSubscriptionStatus';
-import { TrendingUp, TrendingDown, Minus, Clock, Bell, Signal, Home, CreditCard, Settings, Users, LogOut, AlertTriangle, Star } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, Clock, Bell, Signal, Home, CreditCard, Settings, Users, LogOut, AlertTriangle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -742,32 +742,6 @@ export function PhoneSignalsPage() {
                             )) || []}
                         </div>
                         )}
-                      </div>
-
-                      {/* Mobile Navigation Bar */}
-                      <div className="bg-slate-50 border-t border-slate-200 px-4 py-2">
-                        <div className="flex justify-around items-center">
-                          <Link href="/">
-                            <div className="flex flex-col items-center p-2 text-blue-600">
-                              <Home className="w-5 h-5" />
-                              <span className="text-xs mt-1 font-medium">Home</span>
-                            </div>
-                          </Link>
-                          <div className="flex flex-col items-center p-2 text-slate-400">
-                            <TrendingUp className="w-5 h-5" />
-                            <span className="text-xs mt-1">Trending</span>
-                          </div>
-                          <Link href="/plans">
-                            <div className="flex flex-col items-center p-2 text-slate-400 hover:text-blue-600 transition-colors cursor-pointer">
-                              <CreditCard className="w-5 h-5" />
-                              <span className="text-xs mt-1">Plans</span>
-                            </div>
-                          </Link>
-                          <div className="flex flex-col items-center p-2 text-slate-400">
-                            <Star className="w-5 h-5" />
-                            <span className="text-xs mt-1">Favorites</span>
-                          </div>
-                        </div>
                       </div>
                     </>
                   )
