@@ -1,4 +1,4 @@
-import { CheckCircle, Star, CreditCard, Smartphone, Check } from 'lucide-react';
+import { CheckCircle, Star, CreditCard, Smartphone, Check, Signal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useQuery } from '@tanstack/react-query';
