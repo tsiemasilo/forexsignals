@@ -218,9 +218,9 @@ export function Plans() {
             const isPopular = plan.id === getPopularPlan()?.id;
             
             return (
-              <Card key={plan.id} className={`relative ${isPopular ? 'ring-2 ring-green-500 shadow-xl' : 'shadow-lg'} hover:shadow-xl transition-shadow`}>
+              <Card key={plan.id} className={`relative transform transition-all duration-300 hover:-translate-y-2 hover:scale-105 ${isPopular ? 'ring-2 ring-green-500 shadow-xl' : 'shadow-lg'} hover:shadow-2xl`}>
                 {isPopular && (
-                  <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-green-600 text-white">
+                  <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-green-600 text-white animate-pulse">
                     <Star className="w-3 h-3 mr-1" />
                     Most Popular
                   </Badge>
@@ -259,14 +259,14 @@ export function Plans() {
                   
                   {user ? (
                     <Button 
-                      className={`w-full ${isPopular ? 'bg-green-600 hover:bg-green-700' : 'bg-slate-600 hover:bg-slate-700'}`}
+                      className={`w-full transform transition-all duration-200 hover:scale-105 ${isPopular ? 'bg-green-600 hover:bg-green-700' : 'bg-slate-600 hover:bg-slate-700'}`}
                       onClick={() => handleSubscribe(plan)}
                     >
                       Subscribe Now
                     </Button>
                   ) : (
                     <Link href="/login" className="block">
-                      <Button className={`w-full ${isPopular ? 'bg-green-600 hover:bg-green-700' : 'bg-slate-600 hover:bg-slate-700'}`}>
+                      <Button className={`w-full transform transition-all duration-200 hover:scale-105 ${isPopular ? 'bg-green-600 hover:bg-green-700' : 'bg-slate-600 hover:bg-slate-700'}`}>
                         Get Started
                       </Button>
                     </Link>
@@ -291,7 +291,7 @@ export function Plans() {
           <div className="space-y-4">
             <Button 
               onClick={handleYocoPayment}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+              className="w-full transform transition-all duration-200 hover:scale-105 bg-blue-600 hover:bg-blue-700 text-white"
             >
               <CreditCard className="w-4 h-4 mr-2" />
               Pay with Yoco
@@ -299,7 +299,7 @@ export function Plans() {
             
             <Button 
               onClick={handleOzowPayment}
-              className="w-full bg-orange-600 hover:bg-orange-700 text-white"
+              className="w-full transform transition-all duration-200 hover:scale-105 bg-orange-600 hover:bg-orange-700 text-white"
             >
               <Smartphone className="w-4 h-4 mr-2" />
               Pay with Ozow
