@@ -37,11 +37,23 @@ export const handler = async (event, context) => {
     }
 
     if (method === 'POST' && (path === '/api/signals' || path === '/api/admin/signals')) {
-      const { title, content, tradeAction, uploadedImages } = JSON.parse(event.body);
+      console.log('📨 POST SIGNAL REQUEST:', {
+        method,
+        path,
+        body: event.body,
+        headers: event.headers,
+        timestamp: new Date().toISOString()
+      });
+      
+      const requestData = JSON.parse(event.body);
+      console.log('📋 PARSED REQUEST DATA:', requestData);
+      
+      const { title, content, tradeAction, uploadedImages, imageUrls } = requestData;
+      const finalImages = uploadedImages || imageUrls || [];
 
       const result = await sql`
         INSERT INTO forex_signals (title, content, trade_action, image_urls, created_at, updated_at)
-        VALUES (${title}, ${content}, ${tradeAction}, ${JSON.stringify(uploadedImages || [])}, NOW(), NOW())
+        VALUES (${title}, ${content}, ${tradeAction}, ${JSON.stringify(finalImages)}, NOW(), NOW())
         RETURNING *
       `;
 

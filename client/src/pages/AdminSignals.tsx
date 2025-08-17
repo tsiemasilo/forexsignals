@@ -183,7 +183,7 @@ export default function AdminSignals() {
       formData,
       editingSignal,
       user,
-      sessionId,
+      userId: user?.id,
       isAdmin: user?.isAdmin,
       timestamp: new Date().toISOString()
     });
@@ -216,7 +216,12 @@ export default function AdminSignals() {
       updateSignalMutation.mutate({ id: editingSignal.id, ...formData });
     } else {
       console.log('Creating new signal with data:', formData);
-      createSignalMutation.mutate(formData);
+      // Map imageUrls to uploadedImages for backend compatibility
+      const signalData = {
+        ...formData,
+        uploadedImages: formData.imageUrls
+      };
+      createSignalMutation.mutate(signalData);
     }
   };
 
