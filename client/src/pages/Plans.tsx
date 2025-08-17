@@ -1,7 +1,5 @@
-import { CheckCircle, Star, CreditCard, Smartphone } from 'lucide-react';
+import { CheckCircle, Star, CreditCard, Smartphone, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
@@ -61,39 +59,15 @@ export function Plans() {
         return;
       }
 
-      // Fallback to API endpoint for dynamic payment creation
-      const response = await fetch('/api/yoco/payment', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include',
-        body: JSON.stringify({ planId: selectedPlan.id })
+      toast({
+        title: "Error",
+        description: "Invalid plan selected.",
+        variant: "destructive",
       });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
-        
-        if (response.status === 401) {
-          toast({
-            title: "Session Expired",
-            description: "Please sign in again to continue with payment.",
-            variant: "destructive",
-          });
-          window.location.reload();
-          return;
-        }
-        
-        throw new Error(errorData.message || 'Failed to initiate Yoco payment');
-      }
-
-      const paymentData = await response.json();
-      window.location.href = paymentData.redirectUrl;
-      setIsPaymentDialogOpen(false);
     } catch (error) {
       toast({
-        title: "Payment failed",
-        description: "Unable to process Yoco payment. Please try again.",
+        title: "Payment Error",
+        description: "Failed to process Yoco payment.",
         variant: "destructive",
       });
     }
@@ -104,58 +78,72 @@ export function Plans() {
       const response = await fetch('/api/ozow/payment', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         credentials: 'include',
         body: JSON.stringify({ planId: selectedPlan.id })
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
-        
-        if (response.status === 401) {
-          toast({
-            title: "Session Expired",
-            description: "Please sign in again to continue with payment.",
-            variant: "destructive",
-          });
-          window.location.reload();
-          return;
-        }
-        
-        throw new Error(errorData.message || 'Failed to initiate payment');
+        throw new Error('Failed to create Ozow payment');
       }
 
       const paymentData = await response.json();
       
-      // Create and submit Ozow form in new tab
+      // Create and submit Ozow form
       const form = document.createElement('form');
       form.method = 'POST';
       form.action = paymentData.action_url;
       form.target = '_blank';
-      
-      // Add all Ozow fields
+
+      // Add all payment parameters as hidden inputs
       Object.entries(paymentData).forEach(([key, value]) => {
         if (key !== 'action_url') {
           const input = document.createElement('input');
           input.type = 'hidden';
           input.name = key;
-          input.value = value as string;
+          input.value = String(value);
           form.appendChild(input);
         }
       });
-      
+
       document.body.appendChild(form);
       form.submit();
       document.body.removeChild(form);
+      
       setIsPaymentDialogOpen(false);
     } catch (error) {
-      console.error('Ozow payment error:', error);
       toast({
-        title: "Payment failed",
-        description: error instanceof Error ? error.message : "Unable to process payment. Please try again.",
+        title: "Payment Error",
+        description: "Failed to process Ozow payment.",
         variant: "destructive",
       });
+    }
+  };
+
+  const getPlanColor = (planName: string) => {
+    switch (planName) {
+      case "Basic Plan":
+        return "from-blue-500 to-blue-600";
+      case "Premium Plan":
+        return "from-green-500 to-green-600";
+      case "VIP Plan":
+        return "from-purple-500 to-purple-600";
+      default:
+        return "from-gray-500 to-gray-600";
+    }
+  };
+
+  const getPlanIcon = (planName: string) => {
+    switch (planName) {
+      case "Basic Plan":
+        return <CreditCard className="h-6 w-6" />;
+      case "Premium Plan":
+        return <Star className="h-6 w-6" />;
+      case "VIP Plan":
+        return <Smartphone className="h-6 w-6" />;
+      default:
+        return <CreditCard className="h-6 w-6" />;
     }
   };
 
@@ -195,91 +183,126 @@ export function Plans() {
           <div className="flex justify-between items-center h-16">
             <Link href="/">
               <div className="flex items-center space-x-2 cursor-pointer">
-                <div className="h-8 w-8 bg-green-600 rounded"></div>
+                <Smartphone className="h-8 w-8 text-green-600" />
                 <span className="text-xl font-bold text-gray-900">Watchlist Fx</span>
               </div>
             </Link>
-            <Link href="/">
-              <Button variant="outline">Back to Dashboard</Button>
-            </Link>
+            
+            <nav className="hidden md:flex space-x-6">
+              <Link href="/">
+                <a className="text-gray-700 hover:text-green-600 transition-colors">Home</a>
+              </Link>
+              <Link href="/signals">
+                <a className="text-gray-700 hover:text-green-600 transition-colors">Signals</a>
+              </Link>
+              <a href="#" className="text-green-600 font-semibold">Plans</a>
+            </nav>
+            
+            <div className="flex items-center space-x-4">
+              {user ? (
+                <span className="text-gray-700">Hi, {user.firstName}</span>
+              ) : (
+                <Link href="/login">
+                  <a className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors">
+                    Sign In
+                  </a>
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Hero Section */}
-      <div className="pt-20 pb-16 text-center">
-        <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
-          Choose Your Plan
-        </h1>
-        <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
-          Get access to premium forex signals and start making profitable trades today
-        </p>
-      </div>
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div className="text-center mb-16">
+          <h1 className="text-5xl font-bold text-white mb-6">
+            Choose Your Trading Plan
+          </h1>
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+            Get premium forex trading signals delivered directly to your phone. 
+            Professional analysis, real-time alerts, and expert insights to maximize your trading potential.
+          </p>
+        </div>
 
-      {/* Pricing Cards */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
-        <div className="grid md:grid-cols-3 gap-8">
-          {plans.map((plan: any) => {
-            const isPopular = plan.id === getPopularPlan()?.id;
-            
-            return (
-              <Card key={plan.id} className={`relative ${isPopular ? 'ring-2 ring-green-500 shadow-xl' : 'shadow-lg'} hover:shadow-xl transition-shadow`}>
-                {isPopular && (
-                  <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-green-600 text-white">
-                    <Star className="w-3 h-3 mr-1" />
-                    Most Popular
-                  </Badge>
-                )}
-                
-                <CardHeader className="text-center">
-                  <CardTitle className="text-2xl">{plan.name}</CardTitle>
-                  <CardDescription className="text-gray-600 mb-4">
-                    {plan.description}
-                  </CardDescription>
-                  <div className="text-center">
-                    <span className="text-4xl font-bold">R{plan.price}</span>
-                    <span className="text-gray-500 ml-1">/{plan.duration} days</span>
-                  </div>
-                </CardHeader>
-                
-                <CardContent className="space-y-4">
-                  <div className="space-y-3">
-                    <div className="flex items-center">
-                      <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                      <span>Professional forex signals</span>
-                    </div>
-                    <div className="flex items-center">
-                      <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                      <span>Real-time notifications</span>
-                    </div>
-                    <div className="flex items-center">
-                      <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                      <span>Risk management included</span>
-                    </div>
-                    <div className="flex items-center">
-                      <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                      <span>Expert market analysis</span>
-                    </div>
-                  </div>
-                  
-                  {user ? (
-                    <Button 
-                      className={`w-full ${isPopular ? 'bg-green-600 hover:bg-green-700' : 'bg-slate-600 hover:bg-slate-700'}`}
-                      onClick={() => handleSubscribe(plan)}
-                    >
-                      Subscribe Now
-                    </Button>
-                  ) : (
-                    <Link href="/login" className="block">
-                      <Button className={`w-full ${isPopular ? 'bg-green-600 hover:bg-green-700' : 'bg-slate-600 hover:bg-slate-700'}`}>
-                        Get Started
-                      </Button>
-                    </Link>
+        {/* Pricing Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          {plans.map((plan: any) => (
+            <div key={plan.id} className="plan">
+              <div className="inner">
+                <span className="pricing">
+                  <span>
+                    R{plan.price} <small>/ {plan.duration}d</small>
+                  </span>
+                </span>
+                <p className="title">{plan.name}</p>
+                <p className="info">{plan.description}</p>
+                <ul className="features">
+                  <li>
+                    <span className="icon">
+                      <Check size={14} />
+                    </span>
+                    <span>Daily <strong>premium signals</strong></span>
+                  </li>
+                  <li>
+                    <span className="icon">
+                      <Check size={14} />
+                    </span>
+                    <span>Expert <strong>market analysis</strong></span>
+                  </li>
+                  <li>
+                    <span className="icon">
+                      <Check size={14} />
+                    </span>
+                    <span>Real-time notifications</span>
+                  </li>
+                  <li>
+                    <span className="icon">
+                      <Check size={14} />
+                    </span>
+                    <span><strong>24/7</strong> support access</span>
+                  </li>
+                  {plan.name === "VIP Plan" && (
+                    <>
+                      <li>
+                        <span className="icon">
+                          <Star size={14} />
+                        </span>
+                        <span>Priority <strong>signal delivery</strong></span>
+                      </li>
+                      <li>
+                        <span className="icon">
+                          <Star size={14} />
+                        </span>
+                        <span>Exclusive <strong>VIP signals</strong></span>
+                      </li>
+                    </>
                   )}
-                </CardContent>
-              </Card>
-            );
-          })}
+                </ul>
+                <div className="action">
+                  <button 
+                    className="button" 
+                    onClick={() => handleSubscribe(plan)}
+                  >
+                    Choose Plan
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Trust Indicators */}
+        <div className="mt-20 text-center">
+          <p className="text-gray-400 mb-8">Trusted by thousands of traders across South Africa</p>
+          <div className="flex justify-center items-center space-x-8 opacity-60">
+            <div className="text-2xl font-bold text-gray-500">1000+</div>
+            <div className="text-gray-500">Active Traders</div>
+            <div className="text-2xl font-bold text-gray-500">95%</div>
+            <div className="text-gray-500">Success Rate</div>
+            <div className="text-2xl font-bold text-gray-500">24/7</div>
+            <div className="text-gray-500">Support</div>
+          </div>
         </div>
       </div>
 
@@ -289,7 +312,7 @@ export function Plans() {
           <DialogHeader>
             <DialogTitle>Choose Payment Method</DialogTitle>
             <DialogDescription>
-              Select your preferred payment gateway for {selectedPlan?.name}
+              Select your preferred payment method for {selectedPlan?.name}
             </DialogDescription>
           </DialogHeader>
           
@@ -298,20 +321,143 @@ export function Plans() {
               onClick={handleYocoPayment}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white"
             >
-              <CreditCard className="w-4 h-4 mr-2" />
-              Pay with Yoco
+              Pay with Yoco (Card)
             </Button>
             
             <Button 
               onClick={handleOzowPayment}
-              className="w-full bg-orange-600 hover:bg-orange-700 text-white"
+              className="w-full bg-green-600 hover:bg-green-700 text-white"
             >
-              <Smartphone className="w-4 h-4 mr-2" />
-              Pay with Ozow
+              Pay with Ozow (EFT)
+            </Button>
+            
+            <Button 
+              onClick={() => setIsPaymentDialogOpen(false)}
+              variant="outline"
+              className="w-full"
+            >
+              Cancel
             </Button>
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Custom Styles */}
+      <style jsx>{`
+        .plan {
+          border-radius: 16px;
+          box-shadow: 0 30px 30px -25px rgba(0, 38, 255, 0.205);
+          padding: 10px;
+          background-color: #fff;
+          color: #697e91;
+          max-width: 300px;
+          margin: 0 auto;
+        }
+
+        .plan strong {
+          font-weight: 600;
+          color: #425275;
+        }
+
+        .plan .inner {
+          align-items: center;
+          padding: 20px;
+          padding-top: 40px;
+          background-color: #ecf0ff;
+          border-radius: 12px;
+          position: relative;
+        }
+
+        .plan .pricing {
+          position: absolute;
+          top: 0;
+          right: 0;
+          background-color: #bed6fb;
+          border-radius: 99em 0 0 99em;
+          display: flex;
+          align-items: center;
+          padding: 0.625em 0.75em;
+          font-size: 1.25rem;
+          font-weight: 600;
+          color: #425475;
+        }
+
+        .plan .pricing small {
+          color: #707a91;
+          font-size: 0.75em;
+          margin-left: 0.25em;
+        }
+
+        .plan .title {
+          font-weight: 600;
+          font-size: 1.25rem;
+          color: #425675;
+          margin-bottom: 0.75rem;
+        }
+
+        .plan .info {
+          margin-bottom: 1rem;
+        }
+
+        .plan .features {
+          display: flex;
+          flex-direction: column;
+          margin-bottom: 1.25rem;
+        }
+
+        .plan .features li {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          margin-bottom: 0.75rem;
+        }
+
+        .plan .features .icon {
+          background-color: #1FCAC5;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          color: #fff;
+          border-radius: 50%;
+          width: 20px;
+          height: 20px;
+          flex-shrink: 0;
+        }
+
+        .plan .features .icon svg {
+          width: 14px;
+          height: 14px;
+        }
+
+        .plan .action {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: end;
+        }
+
+        .plan .button {
+          background-color: #6558d3;
+          border-radius: 6px;
+          color: #fff;
+          font-weight: 500;
+          font-size: 1.125rem;
+          text-align: center;
+          border: 0;
+          outline: 0;
+          width: 100%;
+          padding: 0.625em 0.75em;
+          text-decoration: none;
+          cursor: pointer;
+          transition: background-color 0.2s ease;
+        }
+
+        .plan .button:hover, .plan .button:focus {
+          background-color: #4133B7;
+        }
+      `}</style>
     </div>
   );
 }
+
+export default Plans;
