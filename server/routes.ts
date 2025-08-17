@@ -580,52 +580,42 @@ export async function registerRoutes(app: express.Application) {
         NotifyUrl: `${origin}/api/ozow/notify`
       };
 
-      // Try Ozow hash with uppercase format and exact parameter order
-      // Based on common South African payment gateway patterns
+      // Final attempt: Try exact Ozow specification with lowercase and proper encoding
       const secretKey = process.env.OZOW_SECRET_KEY || '';
       
-      // Method A: Exact Ozow documentation order with uppercase
-      const ozowHashString = 
-        ozowData.SiteCode +
-        ozowData.CountryCode +
-        ozowData.CurrencyCode +
-        ozowData.Amount +
-        ozowData.TransactionReference +
-        ozowData.BankReference +
-        ozowData.Customer +
-        ozowData.RequestId +
-        ozowData.IsTest +
-        ozowData.SuccessUrl +
-        ozowData.CancelUrl +
-        ozowData.ErrorUrl +
-        ozowData.NotifyUrl +
-        secretKey;
-      const hashA = crypto.createHash('sha256').update(ozowHashString).digest('hex').toUpperCase();
+      // Create clean, URL-encoded parameters for hash calculation
+      const hashParams = {
+        SiteCode: ozowData.SiteCode,
+        CountryCode: ozowData.CountryCode,
+        CurrencyCode: ozowData.CurrencyCode,
+        Amount: ozowData.Amount,
+        TransactionReference: ozowData.TransactionReference,
+        BankReference: encodeURIComponent(ozowData.BankReference),
+        Customer: encodeURIComponent(ozowData.Customer),
+        RequestId: ozowData.RequestId,
+        IsTest: ozowData.IsTest,
+        SuccessUrl: encodeURIComponent(ozowData.SuccessUrl),
+        CancelUrl: encodeURIComponent(ozowData.CancelUrl),
+        ErrorUrl: encodeURIComponent(ozowData.ErrorUrl),
+        NotifyUrl: encodeURIComponent(ozowData.NotifyUrl)
+      };
       
-      // Method B: Without URLs (minimal approach)
-      const minimalString = 
-        ozowData.SiteCode +
-        ozowData.CountryCode +
-        ozowData.CurrencyCode +
-        ozowData.Amount +
-        ozowData.TransactionReference +
-        ozowData.BankReference +
-        ozowData.Customer +
-        secretKey;
-      const hashB = crypto.createHash('sha256').update(minimalString).digest('hex').toUpperCase();
+      // Method: Lowercase SHA256 with proper encoding (most common for modern gateways)
+      const hashString = Object.values(hashParams).join('') + secretKey;
+      const hashLower = crypto.createHash('sha256').update(hashString).digest('hex').toLowerCase();
       
-      // Method C: MD5 hash (some older systems use this)
-      const hashC = crypto.createHash('md5').update(ozowHashString).digest('hex').toUpperCase();
+      // Method: Try without encoding
+      const simpleHashString = Object.values(ozowData).join('') + secretKey;
+      const hashSimple = crypto.createHash('sha256').update(simpleHashString).digest('hex').toLowerCase();
       
-      // Try Method A (full parameters) in production mode
-      const hashCheck = hashA;
+      // Use simple approach (no encoding)
+      const hashCheck = hashSimple;
       
-      console.log('🔐 Ozow hash attempts (uppercase):', {
-        methodA: { type: 'SHA256-FULL-UPPER', length: ozowHashString.length, hash: hashA.substring(0, 12) + '...' },
-        methodB: { type: 'SHA256-MINIMAL-UPPER', length: minimalString.length, hash: hashB.substring(0, 12) + '...' },
-        methodC: { type: 'MD5-FULL-UPPER', length: ozowHashString.length, hash: hashC.substring(0, 12) + '...' },
-        selected: 'A (SHA256-FULL-UPPER) PRODUCTION',
-        secretKeyPresent: !!secretKey
+      console.log('🔐 Final Ozow hash attempts:', {
+        encoded: { length: hashString.length, hash: hashLower.substring(0, 16) + '...' },
+        simple: { length: simpleHashString.length, hash: hashSimple.substring(0, 16) + '...' },
+        selected: 'simple (lowercase)',
+        params: Object.keys(ozowData).join(',')
       });
 
       const ozowPayment = {
