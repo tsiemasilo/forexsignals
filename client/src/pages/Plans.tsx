@@ -27,9 +27,7 @@ export function Plans() {
     }
   });
 
-  console.log('Plans page - data:', plans);
-  console.log('Plans page - isLoading:', isLoading);
-  console.log('Plans page - error:', error);
+  // Remove console logs - keeping only for debugging if needed
 
   const handleSubscribe = (plan: any) => {
     if (!user) {
