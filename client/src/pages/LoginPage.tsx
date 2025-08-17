@@ -35,6 +35,10 @@ export function LoginPage() {
         });
       }
     } catch (error: any) {
+      console.log("Login error caught:", error);
+      console.log("Error needsRegistration:", error?.needsRegistration);
+      console.log("Error userExists:", error?.userExists);
+      
       // Handle specific error cases
       if (error?.needsRegistration) {
         setIsRegistering(true);
