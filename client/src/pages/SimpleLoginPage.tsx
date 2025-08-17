@@ -40,17 +40,23 @@ export function SimpleLoginPage() {
       if (showSignup) {
         // Sign up with all fields
         await login(email, firstName, lastName);
-        toast({
-          title: "Welcome to WatchlistFX!",
-          description: "Account created and signed in successfully! You now have a free 7-day trial to access all forex signals.",
-        });
+        // Show success toast immediately
+        setTimeout(() => {
+          toast({
+            title: "Welcome to WatchlistFX!",
+            description: "Account created successfully! You now have a free 7-day trial.",
+          });
+        }, 100);
       } else {
         // Sign in with just email
         await login(email);
-        toast({
-          title: "Welcome back!", 
-          description: "Signed in successfully. Access to forex signals restored.",
-        });
+        // Show success toast immediately
+        setTimeout(() => {
+          toast({
+            title: "Welcome back!", 
+            description: "Signed in successfully.",
+          });
+        }, 100);
       }
     } catch (error: any) {
       console.log("Auth error:", error);

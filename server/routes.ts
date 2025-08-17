@@ -114,20 +114,20 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
         console.log('🆕 Creating new user with auto trial...');
         user = await storage.createUser({ email, firstName, lastName });
         
-        // Create automatic 7-day trial for new user
-        const trial = await storage.createFreshTrial(user.id);
-        console.log('✅ Auto-trial created for new user:', trial);
+        // Create automatic 7-day trial for new user (run in background for speed)
+        storage.createFreshTrial(user.id).then(trial => {
+          console.log('✅ Auto-trial created for new user:', trial);
+        }).catch(error => {
+          console.error('❌ Failed to create trial:', error);
+        });
       }
 
       // Set session for user (new or existing)
       req.session.userId = user.id;
       
-      // Save session explicitly
-      await new Promise<void>((resolve, reject) => {
-        req.session.save((err) => {
-          if (err) reject(err);
-          else resolve();
-        });
+      // Save session explicitly but don't wait (faster response)
+      req.session.save((err) => {
+        if (err) console.error('Session save error:', err);
       });
       
       console.log('=== LOGIN SUCCESS ===');
