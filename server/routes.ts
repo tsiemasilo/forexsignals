@@ -563,58 +563,51 @@ export async function registerRoutes(app: express.Application) {
       // Get the proper origin URL
       const origin = req.headers.origin || req.headers.referer?.replace(/\/$/, '') || 'https://watchlistfx.netlify.app';
       
+      // Create clean Ozow payment data - try test mode first
       const ozowData = {
-        SiteCode: "NOS-NOS-005", // Correct site code as specified
+        SiteCode: "NOS-NOS-005",
         CountryCode: "ZA",
-        CurrencyCode: "ZAR",
-        Amount: (parseFloat(plan.price) * 100).toString(), // Ozow expects cents as string
+        CurrencyCode: "ZAR", 
+        Amount: (parseFloat(plan.price) * 100).toString(),
         TransactionReference: `WFX-${user.id}-${plan.id}-${Date.now()}`,
-        BankReference: `Watchlist Fx ${plan.name}`,
-        Customer: `${user.firstName} ${user.lastName}`,
+        BankReference: "WatchlistFx Payment",
+        Customer: user.email,
         RequestId: `req-${Date.now()}`,
-        IsTest: "false", // Set to production
+        IsTest: "true", // Try test mode first to validate
         SuccessUrl: `${origin}/payment-success`,
-        CancelUrl: `${origin}/payment-cancel`,
+        CancelUrl: `${origin}/payment-cancel`, 
         ErrorUrl: `${origin}/payment-error`,
         NotifyUrl: `${origin}/api/ozow/notify`
       };
 
-      // Ozow hash calculation - exact parameter order matters
-      // Remove any special characters from customer name that might cause issues
-      const cleanCustomer = `${user.firstName} ${user.lastName}`.replace(/[^\w\s]/g, ' ').trim();
-      const cleanBankRef = `Watchlist Fx ${plan.name}`.replace(/[^\w\s]/g, ' ').trim();
+      // Create hash string exactly as Ozow expects
+      const hashComponents = [
+        ozowData.SiteCode,
+        ozowData.CountryCode,
+        ozowData.CurrencyCode,
+        ozowData.Amount,
+        ozowData.TransactionReference,
+        ozowData.BankReference,
+        ozowData.Customer,
+        ozowData.RequestId,
+        ozowData.IsTest,
+        ozowData.SuccessUrl,
+        ozowData.CancelUrl,
+        ozowData.ErrorUrl,
+        ozowData.NotifyUrl,
+        process.env.OZOW_SECRET_KEY || ''
+      ];
       
-      // Use the cleaned values
-      ozowData.Customer = cleanCustomer;
-      ozowData.BankReference = cleanBankRef;
+      const hashString = hashComponents.join('');
+      const hashCheck = crypto.createHash('sha256').update(hashString).digest('hex').toLowerCase();
       
-      // Ozow hash calculation with exact parameter order
-      const hashString = 
-        ozowData.SiteCode +
-        ozowData.CountryCode + 
-        ozowData.CurrencyCode +
-        ozowData.Amount +
-        ozowData.TransactionReference +
-        ozowData.BankReference +
-        ozowData.Customer +
-        ozowData.RequestId +
-        ozowData.IsTest +
-        ozowData.SuccessUrl +
-        ozowData.CancelUrl +
-        ozowData.ErrorUrl +
-        ozowData.NotifyUrl +
-        (process.env.OZOW_SECRET_KEY || '');
-      
-      console.log('🔐 Ozow hash debug:', {
-        siteCode: ozowData.SiteCode,
+      console.log('🔐 Ozow TEST mode debug:', {
         amount: ozowData.Amount,
         customer: ozowData.Customer,
-        bankRef: ozowData.BankReference,
+        isTest: ozowData.IsTest,
         hashLength: hashString.length,
-        hasSecretKey: !!(process.env.OZOW_SECRET_KEY)
+        hashCheck: hashCheck.substring(0, 10) + '...'
       });
-      
-      const hashCheck = crypto.createHash('sha256').update(hashString, 'utf8').digest('hex').toUpperCase();
 
       const ozowPayment = {
         action_url: "https://pay.ozow.com",
