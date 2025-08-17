@@ -71,38 +71,41 @@ export function PhoneSignalsPage() {
               
               <nav className="hidden md:flex space-x-6">
                 <Link href="/">
-                  <a className="flex items-center space-x-1 text-gray-700 hover:text-green-600 transition-colors">
-                    <Home className="h-4 w-4"/>
+                  <span className="flex items-center space-x-1 text-gray-700 hover:text-green-600 transition-colors cursor-pointer">
+                    <Home className="h-4 w-4" />
                     <span>Home</span>
-                  </a>
+                  </span>
                 </Link>
+                
                 <Link href="/signals">
-                  <a className="flex items-center space-x-1 text-gray-700 hover:text-green-600 transition-colors">
-                    <Signal className="h-4 w-4"/>
+                  <span className="flex items-center space-x-1 text-gray-700 hover:text-green-600 transition-colors cursor-pointer">
+                    <Signal className="h-4 w-4" />
                     <span>Signals</span>
-                  </a>
+                  </span>
                 </Link>
+                
                 {!user?.isAdmin && (
                   <Link href="/plans">
-                    <a className="flex items-center space-x-1 text-gray-700 hover:text-green-600 transition-colors">
-                      <CreditCard className="h-4 w-4"/>
+                    <span className="flex items-center space-x-1 text-gray-700 hover:text-green-600 transition-colors cursor-pointer">
+                      <CreditCard className="h-4 w-4" />
                       <span>Plans</span>
-                    </a>
+                    </span>
                   </Link>
                 )}
+                
                 {user?.isAdmin && (
                   <>
                     <Link href="/admin">
-                      <a className="flex items-center space-x-1 text-gray-700 hover:text-green-600 transition-colors">
-                        <Settings className="h-4 w-4"/>
+                      <span className="flex items-center space-x-1 text-gray-700 hover:text-green-600 transition-colors cursor-pointer">
+                        <Settings className="h-4 w-4" />
                         <span>Admin</span>
-                      </a>
+                      </span>
                     </Link>
                     <Link href="/admin/users">
-                      <a className="flex items-center space-x-1 text-gray-700 hover:text-green-600 transition-colors">
-                        <Users className="h-4 w-4"/>
+                      <span className="flex items-center space-x-1 text-gray-700 hover:text-green-600 transition-colors cursor-pointer">
+                        <Users className="h-4 w-4" />
                         <span>Manage Users</span>
-                      </a>
+                      </span>
                     </Link>
                   </>
                 )}
@@ -122,13 +125,14 @@ export function PhoneSignalsPage() {
                   </p>
                   <p className="text-xs text-gray-500">{user?.email}</p>
                 </div>
+                
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={handleLogout}
                   className="flex items-center space-x-1"
                 >
-                  <LogOut className="h-4 w-4"/>
+                  <LogOut className="h-4 w-4" />
                   <span>Logout</span>
                 </Button>
               </div>
