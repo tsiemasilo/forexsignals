@@ -14,35 +14,31 @@ import { useToast } from '@/hooks/use-toast';
 function PricingCard() {
   const handlePlanSelect = (plan: string) => {
     console.log('Selected plan:', plan);
-    // You can implement plan selection logic here
     window.open('/plans', '_blank');
   };
 
   return (
-    <div className="card w-52 h-64 rounded bg-slate-900 flex gap-1 p-2">
+    <div className="pricing-cards flex flex-col gap-4">
       <div 
-        className="h-full flex-1 overflow-hidden cursor-pointer rounded-sm transition-all duration-500 bg-slate-900 border border-pink-400 flex justify-center items-center hover:flex-[4] group"
+        className="pricing-card flex items-center justify-center flex-col text-center h-20 w-60 rounded-lg text-white cursor-pointer transition-all duration-400 bg-rose-500 hover:scale-110"
         onClick={() => handlePlanSelect('basic')}
       >
-        <span className="min-w-56 p-2 text-center transform -rotate-90 transition-all duration-500 uppercase text-pink-400 tracking-widest text-sm group-hover:rotate-0">
-          BASIC PLAN
-        </span>
+        <p className="text-base font-bold">BASIC PLAN</p>
+        <p className="text-xs">R299 / month</p>
       </div>
       <div 
-        className="h-full flex-1 overflow-hidden cursor-pointer rounded-sm transition-all duration-500 bg-slate-900 border border-pink-400 flex justify-center items-center hover:flex-[4] group"
+        className="pricing-card flex items-center justify-center flex-col text-center h-20 w-60 rounded-lg text-white cursor-pointer transition-all duration-400 bg-blue-500 hover:scale-110"
         onClick={() => handlePlanSelect('premium')}
       >
-        <span className="min-w-56 p-2 text-center transform -rotate-90 transition-all duration-500 uppercase text-pink-400 tracking-widest text-sm group-hover:rotate-0">
-          PREMIUM
-        </span>
+        <p className="text-base font-bold">PREMIUM</p>
+        <p className="text-xs">R499 / month</p>
       </div>
       <div 
-        className="h-full flex-1 overflow-hidden cursor-pointer rounded-sm transition-all duration-500 bg-slate-900 border border-pink-400 flex justify-center items-center hover:flex-[4] group"
+        className="pricing-card flex items-center justify-center flex-col text-center h-20 w-60 rounded-lg text-white cursor-pointer transition-all duration-400 bg-green-500 hover:scale-110"
         onClick={() => handlePlanSelect('vip')}
       >
-        <span className="min-w-56 p-2 text-center transform -rotate-90 transition-all duration-500 uppercase text-pink-400 tracking-widest text-sm group-hover:rotate-0">
-          VIP PLAN
-        </span>
+        <p className="text-base font-bold">VIP PLAN</p>
+        <p className="text-xs">R799 / month</p>
       </div>
     </div>
   );
