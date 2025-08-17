@@ -25,7 +25,12 @@ export const handler = async (event, context) => {
     const path = event.path.split('/api/')[1];
     
     if (path === 'login' && event.httpMethod === 'POST') {
-      const { email } = JSON.parse(event.body);
+      console.log('=== NETLIFY LOGIN REQUEST ===');
+      console.log('Event body:', event.body);
+      
+      const { email } = JSON.parse(event.body || '{}');
+      
+      console.log('Email from request:', email);
       
       if (!email) {
         return {
@@ -35,33 +40,44 @@ export const handler = async (event, context) => {
         };
       }
 
-      // Find or create user
+      // Find user (using snake_case fields to match database)
       let user = await sql`SELECT * FROM users WHERE email = ${email} LIMIT 1`;
       
+      console.log('User query result:', user);
+      
       if (user.length === 0) {
-        // Create new user
-        const [firstName, lastName] = email.split('@')[0].split(/[._]/).map(
-          part => part.charAt(0).toUpperCase() + part.slice(1)
-        );
-        
-        user = await sql`
-          INSERT INTO users (email, "firstName", "lastName", "isAdmin")
-          VALUES (${email}, ${firstName || 'User'}, ${lastName || ''}, false)
-          RETURNING *
-        `;
+        console.log(`❌ User not found: ${email}`);
+        return {
+          statusCode: 400,
+          headers,
+          body: JSON.stringify({ 
+            message: 'User not found. Please register first.',
+            needsRegistration: true 
+          })
+        };
       }
+
+      const foundUser = user[0];
+      console.log('=== NETLIFY LOGIN SUCCESS ===');
+      console.log(`✅ User logged in: ${foundUser.email} (ID: ${foundUser.id})`);
+      console.log('User data being returned:', {
+        id: foundUser.id,
+        email: foundUser.email,
+        firstName: foundUser.first_name,
+        lastName: foundUser.last_name,
+        isAdmin: foundUser.is_admin
+      });
 
       return {
         statusCode: 200,
         headers,
         body: JSON.stringify({ 
-          message: 'Login successful',
           user: {
-            id: user[0].id,
-            email: user[0].email,
-            firstName: user[0].firstName,
-            lastName: user[0].lastName,
-            isAdmin: user[0].isAdmin
+            id: foundUser.id,
+            email: foundUser.email,
+            firstName: foundUser.first_name,
+            lastName: foundUser.last_name,
+            isAdmin: foundUser.is_admin
           }
         })
       };
