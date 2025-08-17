@@ -28,19 +28,18 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
     });
   }
 
-  // Session configuration with more permissive settings for development
+  // Simplified session configuration for development
   app.use(session({
-    secret: process.env.SESSION_SECRET || 'your-secret-key-here',
-    resave: false,
-    saveUninitialized: true, // Changed to true for development
+    secret: 'forex-simple-dev-secret',
+    resave: true,
+    saveUninitialized: true,
     cookie: {
-      secure: false, // Always false in development
-      httpOnly: false, // TEMPORARILY disable httpOnly for debugging
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      sameSite: 'lax',
-      path: '/' // Explicit path
+      secure: false,
+      httpOnly: false,
+      maxAge: 24 * 60 * 60 * 1000,
+      sameSite: 'lax'
     },
-    name: 'forexapp.sid' // Unique session name
+    name: 'forexsid'
   }));
   // Seed database on startup
   await seedDatabase();
@@ -122,12 +121,20 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
         });
       }
 
-      // Set session for user (new or existing)
+      // Set session for user (new or existing) - save synchronously
       req.session.userId = user.id;
       
-      // Save session explicitly but don't wait (faster response)
-      req.session.save((err) => {
-        if (err) console.error('Session save error:', err);
+      // Force session save and wait for it
+      await new Promise<void>((resolve, reject) => {
+        req.session.save((err) => {
+          if (err) {
+            console.error('Session save error:', err);
+            reject(err);
+          } else {
+            console.log('✅ Session saved successfully with userId:', user.id);
+            resolve();
+          }
+        });
       });
       
       console.log('=== LOGIN SUCCESS ===');
