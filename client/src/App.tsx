@@ -41,6 +41,31 @@ function AppRoutes() {
       <Route path="/phone-signals" component={PhoneSignalsPage} />
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/login" component={LoginPage} />
+      <Route path="/quick-admin-login" component={() => {
+        const { login } = useAuth();
+        const handleAdminLogin = async () => {
+          try {
+            await login("admin@forexsignals.com");
+            window.location.href = "/";
+          } catch (error) {
+            console.error("Admin login failed:", error);
+          }
+        };
+        
+        return (
+          <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+            <div className="bg-white p-8 rounded-lg shadow-lg">
+              <h2 className="text-xl font-bold mb-4">Quick Admin Login</h2>
+              <button 
+                onClick={handleAdminLogin}
+                className="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700"
+              >
+                Login as Admin
+              </button>
+            </div>
+          </div>
+        );
+      }} />
       <Route path="/plans" component={Plans} />
       <Route path="/payment-success" component={PaymentSuccess} />
       <Route path="/payment-cancel" component={PaymentCancel} />
