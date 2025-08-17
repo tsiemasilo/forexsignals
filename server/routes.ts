@@ -27,9 +27,15 @@ export async function registerRoutes(app: express.Application) {
 
   // Auth middleware
   const requireAuth = (req: Request, res: Response, next: any) => {
+    console.log('🔍 Auth middleware - Session ID:', req.sessionID);
+    console.log('🔍 Auth middleware - User ID:', req.session?.userId);
+    console.log('🔍 Auth middleware - Full session:', req.session);
+    
     if (!req.session?.userId) {
+      console.log('❌ Authentication failed - No user ID in session');
       return res.status(401).json({ message: "Authentication required" });
     }
+    console.log('✅ Authentication successful');
     next();
   };
 
@@ -73,19 +79,36 @@ export async function registerRoutes(app: express.Application) {
         });
       }
 
-      // Set session
-      req.session.userId = user.id;
-      
-      console.log(`✅ User logged in: ${user.email} (ID: ${user.id})`);
-      
-      res.json({
-        user: {
-          id: user.id,
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          isAdmin: user.isAdmin
+      // Regenerate session ID to prevent session fixation
+      req.session.regenerate((err) => {
+        if (err) {
+          console.error('Session regeneration error:', err);
+          return res.status(500).json({ message: "Login failed" });
         }
+        
+        // Set session
+        req.session.userId = user.id;
+        
+        // Save session explicitly
+        req.session.save((err) => {
+          if (err) {
+            console.error('Session save error:', err);
+            return res.status(500).json({ message: "Login failed" });
+          }
+          
+          console.log(`✅ User logged in: ${user.email} (ID: ${user.id})`);
+          console.log(`✅ Session saved: ${req.sessionID}`);
+          
+          res.json({
+            user: {
+              id: user.id,
+              email: user.email,
+              firstName: user.firstName,
+              lastName: user.lastName,
+              isAdmin: user.isAdmin
+            }
+          });
+        });
       });
     } catch (error) {
       console.error('Login error:', error);
@@ -104,6 +127,9 @@ export async function registerRoutes(app: express.Application) {
 
   app.get("/api/me", requireAuth, async (req: Request, res: Response) => {
     try {
+      console.log('✅ Auth check - Session ID:', req.sessionID);
+      console.log('✅ Auth check - User ID:', req.session.userId);
+      
       const user = await storage.getUser(req.session.userId!);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
