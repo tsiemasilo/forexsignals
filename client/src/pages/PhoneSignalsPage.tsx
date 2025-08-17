@@ -18,26 +18,26 @@ function PricingCard() {
   };
 
   return (
-    <div className="pricing-cards flex flex-col gap-4">
+    <div className="pricing-cards flex flex-col gap-3 items-center">
       <div 
-        className="pricing-card flex items-center justify-center flex-col text-center h-20 w-60 rounded-lg text-white cursor-pointer transition-all duration-400 bg-rose-500 hover:scale-110"
+        className="pricing-card flex items-center justify-center flex-col text-center h-16 w-48 rounded-lg text-white cursor-pointer transition-all duration-400 bg-rose-500 hover:scale-110"
         onClick={() => handlePlanSelect('basic')}
       >
-        <p className="text-base font-bold">BASIC PLAN</p>
+        <p className="text-sm font-bold">BASIC PLAN</p>
         <p className="text-xs">R299 / month</p>
       </div>
       <div 
-        className="pricing-card flex items-center justify-center flex-col text-center h-20 w-60 rounded-lg text-white cursor-pointer transition-all duration-400 bg-blue-500 hover:scale-110"
+        className="pricing-card flex items-center justify-center flex-col text-center h-16 w-48 rounded-lg text-white cursor-pointer transition-all duration-400 bg-blue-500 hover:scale-110"
         onClick={() => handlePlanSelect('premium')}
       >
-        <p className="text-base font-bold">PREMIUM</p>
+        <p className="text-sm font-bold">PREMIUM</p>
         <p className="text-xs">R499 / month</p>
       </div>
       <div 
-        className="pricing-card flex items-center justify-center flex-col text-center h-20 w-60 rounded-lg text-white cursor-pointer transition-all duration-400 bg-green-500 hover:scale-110"
+        className="pricing-card flex items-center justify-center flex-col text-center h-16 w-48 rounded-lg text-white cursor-pointer transition-all duration-400 bg-green-500 hover:scale-110"
         onClick={() => handlePlanSelect('vip')}
       >
-        <p className="text-base font-bold">VIP PLAN</p>
+        <p className="text-sm font-bold">VIP PLAN</p>
         <p className="text-xs">R799 / month</p>
       </div>
     </div>
@@ -586,16 +586,16 @@ export function PhoneSignalsPage() {
                   /* Authenticated User - Check Subscription Status */
                   subscriptionStatus?.status === 'expired' || subscriptionStatus?.status === 'inactive' ? (
                     /* Expired/Inactive Subscription - Show Upgrade Message */
-                    <div className="flex-1 flex flex-col items-center justify-center text-center px-6 py-8">
-                      <AlertTriangle className="w-16 h-16 text-red-500 mb-4" />
-                      <h3 className="text-lg font-semibold text-slate-900 mb-2">Subscription Expired</h3>
-                      <p className="text-sm text-slate-600 mb-6 leading-relaxed">
+                    <div className="flex-1 flex flex-col items-center justify-center text-center px-4 py-6">
+                      <AlertTriangle className="w-12 h-12 text-red-500 mb-3" />
+                      <h3 className="text-base font-semibold text-slate-900 mb-2">Subscription Expired</h3>
+                      <p className="text-xs text-slate-600 mb-4 leading-relaxed max-w-64">
                         Your subscription has expired. Please upgrade your plan to continue receiving premium trading signals.
                       </p>
-                      <div className="w-full max-w-xs">
+                      <div className="flex justify-center w-full">
                         <PricingCard />
                       </div>
-                      <p className="text-xs text-slate-500 mt-4">
+                      <p className="text-xs text-slate-500 mt-3">
                         Contact support if you have any questions
                       </p>
                     </div>
