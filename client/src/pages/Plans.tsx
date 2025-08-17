@@ -242,7 +242,7 @@ export function Plans() {
                   }}
                 >
                   <span>
-                    R{plan.price} <span className="text-sm ml-1 opacity-75">/ {plan.duration}d</span>
+                    R{plan.price} <span className="text-sm ml-1 opacity-75">/ {plan.duration} {plan.duration === 1 ? 'day' : 'days'}</span>
                   </span>
                 </div>
                 
