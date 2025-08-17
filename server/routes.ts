@@ -573,7 +573,7 @@ export async function registerRoutes(app: express.Application) {
         BankReference: "WatchlistFx Payment",
         Customer: user.email,
         RequestId: `req-${Date.now()}`,
-        IsTest: "true", // Try test mode first to validate
+        IsTest: "false", // Switch to production mode
         SuccessUrl: `${origin}/payment-success`,
         CancelUrl: `${origin}/payment-cancel`, 
         ErrorUrl: `${origin}/payment-error`,
@@ -617,14 +617,14 @@ export async function registerRoutes(app: express.Application) {
       // Method C: MD5 hash (some older systems use this)
       const hashC = crypto.createHash('md5').update(ozowHashString).digest('hex').toUpperCase();
       
-      // Try Method B (minimal parameters) - often what SA gateways expect
-      const hashCheck = hashB;
+      // Try Method A (full parameters) in production mode
+      const hashCheck = hashA;
       
       console.log('🔐 Ozow hash attempts (uppercase):', {
         methodA: { type: 'SHA256-FULL-UPPER', length: ozowHashString.length, hash: hashA.substring(0, 12) + '...' },
         methodB: { type: 'SHA256-MINIMAL-UPPER', length: minimalString.length, hash: hashB.substring(0, 12) + '...' },
         methodC: { type: 'MD5-FULL-UPPER', length: ozowHashString.length, hash: hashC.substring(0, 12) + '...' },
-        selected: 'B (SHA256-MINIMAL-UPPER)',
+        selected: 'A (SHA256-FULL-UPPER) PRODUCTION',
         secretKeyPresent: !!secretKey
       });
 
