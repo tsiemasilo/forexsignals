@@ -18,11 +18,11 @@ export const handler = async (event, context) => {
     const method = event.httpMethod;
     const path = event.path;
 
-    if (method === 'GET' && path === '/api/signals') {
+    if (method === 'GET' && (path === '/api/signals' || path === '/api/admin/signals')) {
       // Get all signals
       const signals = await sql`
         SELECT * FROM forex_signals 
-        ORDER BY "createdAt" DESC
+        ORDER BY created_at DESC
       `;
 
       return {
@@ -30,16 +30,17 @@ export const handler = async (event, context) => {
         headers,
         body: JSON.stringify(signals.map(signal => ({
           ...signal,
-          uploadedImages: signal.uploadedImages ? JSON.parse(signal.uploadedImages) : []
+          uploadedImages: signal.image_urls ? JSON.parse(signal.image_urls) : [],
+          tradeAction: signal.trade_action
         })))
       };
     }
 
-    if (method === 'POST' && path === '/api/signals') {
+    if (method === 'POST' && (path === '/api/signals' || path === '/api/admin/signals')) {
       const { title, content, tradeAction, uploadedImages } = JSON.parse(event.body);
 
       const result = await sql`
-        INSERT INTO forex_signals (title, content, "tradeAction", "uploadedImages", "createdAt", "updatedAt")
+        INSERT INTO forex_signals (title, content, trade_action, image_urls, created_at, updated_at)
         VALUES (${title}, ${content}, ${tradeAction}, ${JSON.stringify(uploadedImages || [])}, NOW(), NOW())
         RETURNING *
       `;
@@ -49,7 +50,8 @@ export const handler = async (event, context) => {
         headers,
         body: JSON.stringify({
           ...result[0],
-          uploadedImages: result[0].uploadedImages ? JSON.parse(result[0].uploadedImages) : []
+          uploadedImages: result[0].image_urls ? JSON.parse(result[0].image_urls) : [],
+          tradeAction: result[0].trade_action
         })
       };
     }
@@ -60,8 +62,8 @@ export const handler = async (event, context) => {
 
       const result = await sql`
         UPDATE forex_signals 
-        SET title = ${title}, content = ${content}, "tradeAction" = ${tradeAction}, 
-            "uploadedImages" = ${JSON.stringify(uploadedImages || [])}, "updatedAt" = NOW()
+        SET title = ${title}, content = ${content}, trade_action = ${tradeAction}, 
+            image_urls = ${JSON.stringify(uploadedImages || [])}, updated_at = NOW()
         WHERE id = ${signalId}
         RETURNING *
       `;
@@ -79,7 +81,8 @@ export const handler = async (event, context) => {
         headers,
         body: JSON.stringify({
           ...result[0],
-          uploadedImages: result[0].uploadedImages ? JSON.parse(result[0].uploadedImages) : []
+          uploadedImages: result[0].image_urls ? JSON.parse(result[0].image_urls) : [],
+          tradeAction: result[0].trade_action
         })
       };
     }

@@ -21,11 +21,11 @@ export function useRealtimeSignals() {
       }
       return response.json();
     },
-    refetchInterval: (user && subscriptionStatus?.status !== 'expired' && subscriptionStatus?.status !== 'inactive') ? 5000 : false, // Only auto-refresh for active users
+    refetchInterval: false, // Temporarily disabled to fix 500 errors
     refetchIntervalInBackground: false,
     staleTime: 2000,
     retry: false,
-    enabled: !!(user && subscriptionStatus?.status !== 'expired' && subscriptionStatus?.status !== 'inactive'), // Only enable for active users
+    enabled: !!user, // Enable for all logged-in users
   });
 
   // Simplified manual refresh without conflicting intervals

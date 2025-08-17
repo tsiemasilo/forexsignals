@@ -22,9 +22,9 @@ export const handler = async (event, context) => {
       const users = await sql`
         SELECT u.*, s.*, sp.name as plan_name, sp.duration as plan_duration
         FROM users u
-        LEFT JOIN subscriptions s ON u.id = s."userId"
-        LEFT JOIN subscription_plans sp ON s."planId" = sp.id
-        WHERE u."isAdmin" = false
+        LEFT JOIN subscriptions s ON u.id = s.user_id
+        LEFT JOIN subscription_plans sp ON s.plan_id = sp.id
+        WHERE u.is_admin = false
         ORDER BY u.id
       `;
 
@@ -33,19 +33,19 @@ export const handler = async (event, context) => {
           acc[row.id] = {
             id: row.id,
             email: row.email,
-            firstName: row.firstName,
-            lastName: row.lastName,
-            isAdmin: row.isAdmin,
+            firstName: row.first_name,
+            lastName: row.last_name,
+            isAdmin: row.is_admin,
             subscription: null
           };
         }
         
-        if (row.planId) {
+        if (row.plan_id) {
           acc[row.id].subscription = {
-            id: row.planId,
+            id: row.plan_id,
             status: row.status,
-            startDate: row.startDate,
-            endDate: row.endDate,
+            startDate: row.start_date,
+            endDate: row.end_date,
             planName: row.plan_name,
             duration: row.plan_duration
           };
@@ -66,11 +66,11 @@ export const handler = async (event, context) => {
       const { planId, status, endDate } = JSON.parse(event.body);
 
       // Remove existing subscription
-      await sql`DELETE FROM subscriptions WHERE "userId" = ${userId}`;
+      await sql`DELETE FROM subscriptions WHERE user_id = ${userId}`;
 
       // Create new subscription
       const result = await sql`
-        INSERT INTO subscriptions ("userId", "planId", status, "startDate", "endDate", "createdAt")
+        INSERT INTO subscriptions (user_id, plan_id, status, start_date, end_date, created_at)
         VALUES (${userId}, ${planId}, ${status}, NOW(), ${endDate}, NOW())
         RETURNING *
       `;
@@ -90,11 +90,11 @@ export const handler = async (event, context) => {
       endDate.setDate(endDate.getDate() + 7);
 
       // Remove existing subscription
-      await sql`DELETE FROM subscriptions WHERE "userId" = ${userId}`;
+      await sql`DELETE FROM subscriptions WHERE user_id = ${userId}`;
 
       // Create trial subscription
       const result = await sql`
-        INSERT INTO subscriptions ("userId", "planId", status, "startDate", "endDate", "createdAt")
+        INSERT INTO subscriptions (user_id, plan_id, status, start_date, end_date, created_at)
         VALUES (${userId}, 1, 'trial', NOW(), ${endDate.toISOString()}, NOW())
         RETURNING *
       `;

@@ -1,0 +1,309 @@
+/api/admin/signals:1  Failed to load resource: the server responded with a status of 404 ()
+/api/admin/users:1  Failed to load resource: the server responded with a status of 500 ()
+/api/admin/signals:1  Failed to load resource: the server responded with a status of 404 ()
+/api/admin/users:1  Failed to load resource: the server responded with a status of 500 ()
+/api/signals:1  Failed to load resource: the server responded with a status of 500 ()
+/api/signals:1  Failed to load resource: the server responded with a status of 500 ()
+index-105eGTIj.js:48  GET https://watchlistfx.netlify.app/api/signals 500 (Internal Server Error)
+queryFn @ index-105eGTIj.js:48
+i @ index-105eGTIj.js:40
+N @ index-105eGTIj.js:40
+start @ index-105eGTIj.js:40
+fetch @ index-105eGTIj.js:40
+ms @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+index-105eGTIj.js:48  GET https://watchlistfx.netlify.app/api/signals 500 (Internal Server Error)
+queryFn @ index-105eGTIj.js:48
+i @ index-105eGTIj.js:40
+N @ index-105eGTIj.js:40
+start @ index-105eGTIj.js:40
+fetch @ index-105eGTIj.js:40
+ms @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+setInterval
+Oa @ index-105eGTIj.js:40
+_a @ index-105eGTIj.js:40
+onQueryUpdate @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+batch @ index-105eGTIj.js:40
+kt @ index-105eGTIj.js:40
+a @ index-105eGTIj.js:40
+p @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+Promise.catch
+N @ index-105eGTIj.js:40
+start @ index-105eGTIj.js:40
+fetch @ index-105eGTIj.js:40
+ms @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+index-105eGTIj.js:48  GET https://watchlistfx.netlify.app/api/signals 500 (Internal Server Error)
+queryFn @ index-105eGTIj.js:48
+i @ index-105eGTIj.js:40
+N @ index-105eGTIj.js:40
+start @ index-105eGTIj.js:40
+fetch @ index-105eGTIj.js:40
+ms @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+setInterval
+Oa @ index-105eGTIj.js:40
+_a @ index-105eGTIj.js:40
+onQueryUpdate @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+batch @ index-105eGTIj.js:40
+kt @ index-105eGTIj.js:40
+a @ index-105eGTIj.js:40
+p @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+Promise.catch
+N @ index-105eGTIj.js:40
+start @ index-105eGTIj.js:40
+fetch @ index-105eGTIj.js:40
+ms @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+setInterval
+Oa @ index-105eGTIj.js:40
+_a @ index-105eGTIj.js:40
+onQueryUpdate @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+batch @ index-105eGTIj.js:40
+kt @ index-105eGTIj.js:40
+a @ index-105eGTIj.js:40
+p @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+Promise.catch
+N @ index-105eGTIj.js:40
+start @ index-105eGTIj.js:40
+fetch @ index-105eGTIj.js:40
+ms @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+index-105eGTIj.js:48  GET https://watchlistfx.netlify.app/api/signals 500 (Internal Server Error)
+queryFn @ index-105eGTIj.js:48
+i @ index-105eGTIj.js:40
+N @ index-105eGTIj.js:40
+start @ index-105eGTIj.js:40
+fetch @ index-105eGTIj.js:40
+ms @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+setInterval
+Oa @ index-105eGTIj.js:40
+_a @ index-105eGTIj.js:40
+onQueryUpdate @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+batch @ index-105eGTIj.js:40
+kt @ index-105eGTIj.js:40
+a @ index-105eGTIj.js:40
+p @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+Promise.catch
+N @ index-105eGTIj.js:40
+start @ index-105eGTIj.js:40
+fetch @ index-105eGTIj.js:40
+ms @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+setInterval
+Oa @ index-105eGTIj.js:40
+_a @ index-105eGTIj.js:40
+onQueryUpdate @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+batch @ index-105eGTIj.js:40
+kt @ index-105eGTIj.js:40
+a @ index-105eGTIj.js:40
+p @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+Promise.catch
+N @ index-105eGTIj.js:40
+start @ index-105eGTIj.js:40
+fetch @ index-105eGTIj.js:40
+ms @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+setInterval
+Oa @ index-105eGTIj.js:40
+_a @ index-105eGTIj.js:40
+onQueryUpdate @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+batch @ index-105eGTIj.js:40
+kt @ index-105eGTIj.js:40
+a @ index-105eGTIj.js:40
+p @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+Promise.catch
+N @ index-105eGTIj.js:40
+start @ index-105eGTIj.js:40
+fetch @ index-105eGTIj.js:40
+ms @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+index-105eGTIj.js:48  GET https://watchlistfx.netlify.app/api/signals 500 (Internal Server Error)
+queryFn @ index-105eGTIj.js:48
+i @ index-105eGTIj.js:40
+N @ index-105eGTIj.js:40
+start @ index-105eGTIj.js:40
+fetch @ index-105eGTIj.js:40
+ms @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+setInterval
+Oa @ index-105eGTIj.js:40
+_a @ index-105eGTIj.js:40
+onQueryUpdate @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+batch @ index-105eGTIj.js:40
+kt @ index-105eGTIj.js:40
+a @ index-105eGTIj.js:40
+p @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+Promise.catch
+N @ index-105eGTIj.js:40
+start @ index-105eGTIj.js:40
+fetch @ index-105eGTIj.js:40
+ms @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+setInterval
+Oa @ index-105eGTIj.js:40
+_a @ index-105eGTIj.js:40
+onQueryUpdate @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+batch @ index-105eGTIj.js:40
+kt @ index-105eGTIj.js:40
+a @ index-105eGTIj.js:40
+p @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+Promise.catch
+N @ index-105eGTIj.js:40
+start @ index-105eGTIj.js:40
+fetch @ index-105eGTIj.js:40
+ms @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+setInterval
+Oa @ index-105eGTIj.js:40
+_a @ index-105eGTIj.js:40
+onQueryUpdate @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+batch @ index-105eGTIj.js:40
+kt @ index-105eGTIj.js:40
+a @ index-105eGTIj.js:40
+p @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+Promise.catch
+N @ index-105eGTIj.js:40
+start @ index-105eGTIj.js:40
+fetch @ index-105eGTIj.js:40
+ms @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+setInterval
+Oa @ index-105eGTIj.js:40
+_a @ index-105eGTIj.js:40
+onQueryUpdate @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+batch @ index-105eGTIj.js:40
+kt @ index-105eGTIj.js:40
+a @ index-105eGTIj.js:40
+p @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+Promise.catch
+N @ index-105eGTIj.js:40
+start @ index-105eGTIj.js:40
+fetch @ index-105eGTIj.js:40
+ms @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+index-105eGTIj.js:48  GET https://watchlistfx.netlify.app/api/signals 500 (Internal Server Error)
+queryFn @ index-105eGTIj.js:48
+i @ index-105eGTIj.js:40
+N @ index-105eGTIj.js:40
+start @ index-105eGTIj.js:40
+fetch @ index-105eGTIj.js:40
+ms @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+setInterval
+Oa @ index-105eGTIj.js:40
+_a @ index-105eGTIj.js:40
+onQueryUpdate @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+batch @ index-105eGTIj.js:40
+kt @ index-105eGTIj.js:40
+a @ index-105eGTIj.js:40
+p @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+Promise.catch
+N @ index-105eGTIj.js:40
+start @ index-105eGTIj.js:40
+fetch @ index-105eGTIj.js:40
+ms @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+setInterval
+Oa @ index-105eGTIj.js:40
+_a @ index-105eGTIj.js:40
+onQueryUpdate @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+batch @ index-105eGTIj.js:40
+kt @ index-105eGTIj.js:40
+a @ index-105eGTIj.js:40
+p @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+Promise.catch
+N @ index-105eGTIj.js:40
+start @ index-105eGTIj.js:40
+fetch @ index-105eGTIj.js:40
+ms @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+setInterval
+Oa @ index-105eGTIj.js:40
+_a @ index-105eGTIj.js:40
+onQueryUpdate @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+batch @ index-105eGTIj.js:40
+kt @ index-105eGTIj.js:40
+a @ index-105eGTIj.js:40
+p @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+Promise.catch
+N @ index-105eGTIj.js:40
+start @ index-105eGTIj.js:40
+fetch @ index-105eGTIj.js:40
+ms @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+setInterval
+Oa @ index-105eGTIj.js:40
+_a @ index-105eGTIj.js:40
+onQueryUpdate @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+batch @ index-105eGTIj.js:40
+kt @ index-105eGTIj.js:40
+a @ index-105eGTIj.js:40
+p @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+Promise.catch
+N @ index-105eGTIj.js:40
+start @ index-105eGTIj.js:40
+fetch @ index-105eGTIj.js:40
+ms @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+setInterval
+Oa @ index-105eGTIj.js:40
+_a @ index-105eGTIj.js:40
+onQueryUpdate @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+batch @ index-105eGTIj.js:40
+kt @ index-105eGTIj.js:40
+a @ index-105eGTIj.js:40
+p @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
+Promise.catch
+N @ index-105eGTIj.js:40
+start @ index-105eGTIj.js:40
+fetch @ index-105eGTIj.js:40
+ms @ index-105eGTIj.js:40
+(anonymous) @ index-105eGTIj.js:40
