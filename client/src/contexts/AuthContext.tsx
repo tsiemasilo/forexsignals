@@ -59,15 +59,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Set user first
       setUser(response.user);
       
-      // Check admin status and redirect
+      // Check admin status and redirect - but only redirect to admin from root or login pages
       console.log('=== CHECKING ADMIN STATUS ===');
       if (response.user?.isAdmin === true) {
-        console.log('🔥 ADMIN USER DETECTED - REDIRECTING TO /admin 🔥');
-        console.log('Admin redirect will happen in 200ms');
-        setTimeout(() => {
-          console.log('🚀 EXECUTING ADMIN REDIRECT NOW 🚀');
-          window.location.href = "/admin";
-        }, 200);
+        console.log('🔥 ADMIN USER DETECTED 🔥');
+        const currentPath = window.location.pathname;
+        console.log('Current path:', currentPath);
+        
+        // Only auto-redirect from specific pages, not from plans or other pages where they might want to stay
+        if (currentPath === '/' || currentPath === '/login' || currentPath === '/quick-admin-login') {
+          console.log('Auto-redirecting admin to admin dashboard from path:', currentPath);
+          setTimeout(() => {
+            console.log('🚀 EXECUTING ADMIN REDIRECT NOW 🚀');
+            window.location.href = "/admin";
+          }, 200);
+        } else {
+          console.log('Admin user on path:', currentPath, '- not auto-redirecting');
+        }
       } else {
         console.log('❌ Not admin user - isAdmin:', response.user?.isAdmin);
       }

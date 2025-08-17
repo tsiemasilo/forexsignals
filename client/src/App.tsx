@@ -39,7 +39,7 @@ function AppRoutes() {
         // Force admin users to admin dashboard
         if (user.isAdmin === true) {
           console.log('Redirecting admin user to admin dashboard');
-          return <AdminDashboard />;
+          return <Redirect to="/admin" />;
         }
         
         return <PhoneSignalsPage />;
@@ -47,7 +47,14 @@ function AppRoutes() {
       <Route path="/dashboard" component={DashboardPage} />
       <Route path="/phone-signals" component={PhoneSignalsPage} />
       <Route path="/admin" component={AdminDashboard} />
-      <Route path="/login" component={LoginPage} />
+      <Route path="/login" component={() => {
+        // If user is already logged in as admin, redirect to admin dashboard
+        if (user && user.isAdmin === true) {
+          console.log('Admin user accessing login page - redirecting to admin dashboard');
+          return <Redirect to="/admin" />;
+        }
+        return <LoginPage />;
+      }} />
       <Route path="/quick-admin-login" component={() => {
         const { login } = useAuth();
         const [loading, setLoading] = useState(false);
