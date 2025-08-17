@@ -6,6 +6,13 @@ WatchlistFX is a production-ready forex signals subscription platform designed f
 
 ## Recent Changes (August 2025)
 
+### ✅ Critical Production Issues Resolved (August 17, 2025)
+- **API Errors Fixed**: Resolved all 404/500 errors in production deployment
+- **Database Column Consistency**: Fixed snake_case column naming across all Netlify functions
+- **Signal Loading**: User dashboard now properly displays forex signals without errors
+- **Auto-refresh Restored**: Re-enabled 5-second signal updates for active subscribers
+- **Route Handlers**: Added missing /api/admin/signals handler for admin functionality
+
 ### ✅ Project Cleanup Completed
 - **Codebase Optimization**: Removed all debugging files, unused components, and temporary artifacts
 - **Component Structure**: Streamlined from 15+ pages to 8 essential production pages
