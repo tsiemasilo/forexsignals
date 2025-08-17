@@ -413,18 +413,25 @@ export async function registerRoutes(app: express.Application) {
   app.post("/api/admin/signals", requireAdmin, async (req: Request, res: Response) => {
     try {
       const userId = req.session.userId!;
+      console.log('📝 Creating signal - Request body:', req.body);
+      console.log('📝 Creating signal - User ID:', userId);
+      
       const validatedData = insertForexSignalSchema.parse({
         ...req.body,
         createdBy: userId
       });
       
+      console.log('✅ Signal data validated:', validatedData);
+      
       const signal = await storage.createSignal(validatedData);
+      console.log('✅ Signal created successfully:', signal);
       res.json(signal);
     } catch (error) {
       if (error instanceof z.ZodError) {
+        console.error('❌ Signal validation error:', error.errors);
         return res.status(400).json({ message: "Invalid signal data", errors: error.errors });
       }
-      console.error('Admin signal creation error:', error);
+      console.error('❌ Admin signal creation error:', error);
       res.status(500).json({ message: "Failed to create signal" });
     }
   });
