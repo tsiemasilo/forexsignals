@@ -545,7 +545,7 @@ export async function registerRoutes(app: express.Application) {
     }
   });
 
-  // Ozow payment endpoint
+  // Ozow payment endpoint - Complete rewrite with SHA512
   app.post("/api/ozow/payment", requireAuth, async (req: Request, res: Response) => {
     try {
       const userId = req.session.userId!;
@@ -558,69 +558,68 @@ export async function registerRoutes(app: express.Application) {
         return res.status(404).json({ message: "User or plan not found" });
       }
 
-      // Create Ozow payment request
-      
-      // Get the proper origin URL
+      const privateKey = process.env.OZOW_SECRET_KEY || '';
+      if (!privateKey) {
+        throw new Error('OZOW_SECRET_KEY not configured');
+      }
+
       const origin = req.headers.origin || req.headers.referer?.replace(/\/$/, '') || 'https://watchlistfx.netlify.app';
       
-      // Create clean Ozow payment data - try test mode first
-      const ozowData = {
+      // Fresh Ozow payment data following official documentation
+      const ozowParams = {
         SiteCode: "NOS-NOS-005",
-        CountryCode: "ZA",
-        CurrencyCode: "ZAR", 
-        Amount: (parseFloat(plan.price) * 100).toString(),
+        CountryCode: "ZA", 
+        CurrencyCode: "ZAR",
+        Amount: parseFloat(plan.price).toFixed(2), // Must be decimal format like 99.99
         TransactionReference: `WFX-${user.id}-${plan.id}-${Date.now()}`,
         BankReference: "WatchlistFx Payment",
         Customer: user.email,
         RequestId: `req-${Date.now()}`,
-        IsTest: "false", // Switch to production mode
+        IsTest: "false", // Production mode
         SuccessUrl: `${origin}/payment-success`,
-        CancelUrl: `${origin}/payment-cancel`, 
-        ErrorUrl: `${origin}/payment-error`,
+        CancelUrl: `${origin}/payment-cancel`,
+        ErrorUrl: `${origin}/payment-error`, 
         NotifyUrl: `${origin}/api/ozow/notify`
       };
 
-      // Final attempt: Try exact Ozow specification with lowercase and proper encoding
-      const secretKey = process.env.OZOW_SECRET_KEY || '';
-      
-      // Create clean, URL-encoded parameters for hash calculation
-      const hashParams = {
-        SiteCode: ozowData.SiteCode,
-        CountryCode: ozowData.CountryCode,
-        CurrencyCode: ozowData.CurrencyCode,
-        Amount: ozowData.Amount,
-        TransactionReference: ozowData.TransactionReference,
-        BankReference: encodeURIComponent(ozowData.BankReference),
-        Customer: encodeURIComponent(ozowData.Customer),
-        RequestId: ozowData.RequestId,
-        IsTest: ozowData.IsTest,
-        SuccessUrl: encodeURIComponent(ozowData.SuccessUrl),
-        CancelUrl: encodeURIComponent(ozowData.CancelUrl),
-        ErrorUrl: encodeURIComponent(ozowData.ErrorUrl),
-        NotifyUrl: encodeURIComponent(ozowData.NotifyUrl)
-      };
-      
-      // Method: Lowercase SHA256 with proper encoding (most common for modern gateways)
-      const hashString = Object.values(hashParams).join('') + secretKey;
-      const hashLower = crypto.createHash('sha256').update(hashString).digest('hex').toLowerCase();
-      
-      // Method: Try without encoding
-      const simpleHashString = Object.values(ozowData).join('') + secretKey;
-      const hashSimple = crypto.createHash('sha256').update(simpleHashString).digest('hex').toLowerCase();
-      
-      // Use simple approach (no encoding)
-      const hashCheck = hashSimple;
-      
-      console.log('🔐 Final Ozow hash attempts:', {
-        encoded: { length: hashString.length, hash: hashLower.substring(0, 16) + '...' },
-        simple: { length: simpleHashString.length, hash: hashSimple.substring(0, 16) + '...' },
-        selected: 'simple (lowercase)',
-        params: Object.keys(ozowData).join(',')
+      // Official Ozow SHA512 hash calculation
+      // 1. Concatenate all parameters (excluding Hash) in exact order
+      const hashString = [
+        ozowParams.SiteCode,
+        ozowParams.CountryCode,
+        ozowParams.CurrencyCode,
+        ozowParams.Amount,
+        ozowParams.TransactionReference,
+        ozowParams.BankReference,
+        ozowParams.Customer,
+        ozowParams.RequestId,
+        ozowParams.IsTest,
+        ozowParams.SuccessUrl,
+        ozowParams.CancelUrl,
+        ozowParams.ErrorUrl,
+        ozowParams.NotifyUrl,
+        privateKey // 2. Append private key
+      ].join('');
+
+      // 3. Convert to lowercase 
+      const lowerHashString = hashString.toLowerCase();
+
+      // 4. Generate SHA512 hash (not SHA256!)
+      const hashCheck = crypto.createHash('sha512').update(lowerHashString).digest('hex');
+
+      console.log('🔥 FRESH Ozow SHA512 implementation:', {
+        algorithm: 'SHA512',
+        stringLength: hashString.length,
+        lowerStringLength: lowerHashString.length,
+        hashLength: hashCheck.length,
+        hashPreview: hashCheck.substring(0, 20) + '...',
+        parameters: Object.keys(ozowParams).length,
+        privateKeyPresent: !!privateKey
       });
 
       const ozowPayment = {
         action_url: "https://pay.ozow.com",
-        ...ozowData,
+        ...ozowParams,
         HashCheck: hashCheck
       };
 
@@ -631,30 +630,59 @@ export async function registerRoutes(app: express.Application) {
     }
   });
 
-  // Ozow notification webhook
+  // Ozow notification webhook with proper SHA512 verification
   app.post("/api/ozow/notify", async (req: Request, res: Response) => {
     try {
-      console.log('Ozow notification received:', req.body);
+      console.log('🔔 Ozow notification received:', req.body);
       
-      // In production, verify the notification signature
-      const { TransactionReference, Status } = req.body;
+      const privateKey = process.env.OZOW_SECRET_KEY || '';
+      const notificationData = req.body;
+      
+      // Verify notification authenticity using SHA512
+      if (privateKey && notificationData.Hash) {
+        // Create hash string from notification data (excluding Hash field)
+        const notificationFields = Object.keys(notificationData)
+          .filter(key => key !== 'Hash')
+          .sort() // Ensure consistent order
+          .map(key => notificationData[key])
+          .join('') + privateKey;
+          
+        const expectedHash = crypto.createHash('sha512')
+          .update(notificationFields.toLowerCase())
+          .digest('hex');
+          
+        if (expectedHash !== notificationData.Hash.toLowerCase()) {
+          console.error('❌ Ozow notification hash mismatch');
+          return res.status(400).send('Invalid notification');
+        }
+        
+        console.log('✅ Ozow notification hash verified');
+      }
+      
+      const { TransactionReference, Status } = notificationData;
       
       if (Status === "Complete") {
-        // Parse transaction reference to get user and plan info
-        const [userId, planId] = TransactionReference.split('-');
+        // Parse transaction reference: WFX-userId-planId-timestamp
+        const parts = TransactionReference.split('-');
+        const userId = parseInt(parts[1]);
+        const planId = parseInt(parts[2]);
+        
+        console.log(`💰 Processing successful payment for user ${userId}, plan ${planId}`);
         
         // Update user subscription
-        const plan = await storage.getPlan(parseInt(planId));
+        const plan = await storage.getPlan(planId);
         if (plan) {
           const endDate = new Date();
           endDate.setDate(endDate.getDate() + plan.duration);
           
           await storage.updateUserSubscriptionStatus(
-            parseInt(userId), 
-            parseInt(planId), 
+            userId, 
+            planId, 
             'active', 
             endDate
           );
+          
+          console.log(`✅ User ${userId} subscription updated to plan ${planId} until ${endDate.toISOString()}`);
         }
       }
       
