@@ -434,92 +434,74 @@ export function PhoneSignalsPage() {
 
   return (
     <div className="min-h-screen bg-slate-100">
-      {/* App Header/Navbar - Only show when user is logged in */}
-      {user && (
-        <header className="bg-gray-900 shadow-sm border-b">
+      {/* App Header/Navbar - Always show */}
+      <nav className="bg-gray-900 shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            {/* Logo and Navigation */}
-            <div className="flex items-center space-x-8">
+            {/* Logo */}
+            <div className="flex items-center">
               <Link href="/">
                 <div className="flex items-center space-x-2 cursor-pointer">
                   <Signal className="h-8 w-8 text-green-600"/>
                   <span className="text-xl font-bold text-white">Watchlist Fx</span>
                 </div>
               </Link>
-              
-              <nav className="hidden md:flex space-x-6">
-                <Link href="/">
-                  <span className="flex items-center space-x-1 text-gray-300 hover:text-green-400 transition-colors cursor-pointer">
-                    <Home className="h-4 w-4" />
-                    <span>Home</span>
-                  </span>
-                </Link>
-                
-                <Link href="/signals">
-                  <span className="flex items-center space-x-1 text-gray-300 hover:text-green-400 transition-colors cursor-pointer">
-                    <Signal className="h-4 w-4" />
-                    <span>Signals</span>
-                  </span>
-                </Link>
-                
-                {!user?.isAdmin && (
-                  <Link href="/plans">
-                    <span className="flex items-center space-x-1 text-gray-300 hover:text-green-400 transition-colors cursor-pointer">
-                      <CreditCard className="h-4 w-4" />
-                      <span>Plans</span>
-                    </span>
-                  </Link>
-                )}
-                
-                {user?.isAdmin && (
-                  <>
-                    <Link href="/admin">
-                      <span className="flex items-center space-x-1 text-gray-300 hover:text-green-400 transition-colors cursor-pointer">
-                        <Settings className="h-4 w-4" />
-                        <span>Admin</span>
-                      </span>
-                    </Link>
-                    <Link href="/admin/users">
-                      <span className="flex items-center space-x-1 text-gray-300 hover:text-green-400 transition-colors cursor-pointer">
-                        <Users className="h-4 w-4" />
-                        <span>Manage Users</span>
-                      </span>
-                    </Link>
-                  </>
-                )}
-              </nav>
             </div>
-
-            {/* User Info and Status */}
-            <div className="flex items-center space-x-4">
-              {/* Subscription Status Badge */}
-              <SubscriptionStatusBadge />
-              
-              {/* User Info */}
-              <div className="flex items-center space-x-3">
-                <div className="text-right">
-                  <p className="text-sm font-medium text-white">
-                    {user?.firstName} {user?.lastName}
-                  </p>
-                  <p className="text-xs text-gray-300">{user?.email}</p>
+            
+            {/* Navigation Links - Show based on auth state */}
+            <div className="flex items-center space-x-6">
+              {user ? (
+                <>
+                  <nav className="hidden md:flex space-x-6">
+                    <Link href="/">
+                      <span className="flex items-center space-x-1 text-gray-300 hover:text-green-400 transition-colors cursor-pointer">
+                        <Home className="h-4 w-4" />
+                        <span>Home</span>
+                      </span>
+                    </Link>
+                    
+                    <Link href="/signals">
+                      <span className="flex items-center space-x-1 text-gray-300 hover:text-green-400 transition-colors cursor-pointer">
+                        <Signal className="h-4 w-4" />
+                        <span>Signals</span>
+                      </span>
+                    </Link>
+                    
+                    {!user?.isAdmin && (
+                      <Link href="/plans">
+                        <span className="flex items-center space-x-1 text-gray-300 hover:text-green-400 transition-colors cursor-pointer">
+                          <CreditCard className="h-4 w-4" />
+                          <span>Plans</span>
+                        </span>
+                      </Link>
+                    )}
+                  </nav>
+                  
+                  {/* User Actions */}
+                  <div className="flex items-center space-x-4">
+                    <span className="text-gray-300 text-sm">
+                      Hi, {user.firstName}
+                    </span>
+                    <button
+                      onClick={handleLogout}
+                      className="text-gray-300 hover:text-white transition-colors text-sm"
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="flex items-center space-x-4">
+                  <span className="text-gray-300 text-sm">Welcome to Watchlist Fx</span>
                 </div>
-                
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleLogout}
-                  className="flex items-center space-x-1"
-                >
-                  <LogOut className="h-4 w-4" />
-                  <span>Logout</span>
-                </Button>
-              </div>
+              )}
             </div>
           </div>
         </div>
-      </header>
-      )}
+      </nav>
+
+      
+      {/* Phone Container */}
 
       {/* Phone Interface Container */}
       <div className="bg-gradient-to-br from-slate-100 to-slate-200 py-8">
@@ -633,18 +615,8 @@ export function PhoneSignalsPage() {
                     </div>
                   </>
                 ) : (
-                  /* Unauthenticated User - Show Login Form with Navbar */
+                  /* Unauthenticated User - Show Login Form */
                   <div className="flex-1 flex flex-col">
-                    {/* Phone Navbar for login */}
-                    <div className="bg-slate-900 px-4 py-3 flex justify-between items-center border-b border-slate-700">
-                      <div className="flex items-center gap-2">
-                        <Signal className="h-5 w-5 text-green-400" />
-                        <span className="text-white text-sm font-semibold">Watchlist Fx</span>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <span className="text-gray-300 text-xs">Sign In</span>
-                      </div>
-                    </div>
                     <PhoneLoginForm />
                   </div>
                 )}
