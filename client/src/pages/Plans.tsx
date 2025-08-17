@@ -378,12 +378,17 @@ export function Plans() {
               
               {/* Card Content */}
               <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center p-6">
-                <div className="w-16 h-12 mb-4 flex items-center justify-center">
-                  <svg viewBox="0 0 100 40" className="w-full h-full fill-white">
-                    <text x="50" y="25" textAnchor="middle" className="font-bold text-lg" style={{ fontSize: '16px', fontFamily: 'Arial, sans-serif' }}>
-                      YOCO
-                    </text>
-                  </svg>
+                <div className="w-20 h-8 mb-4 flex items-center justify-center bg-white rounded-md px-2">
+                  <img 
+                    src="https://cdn.brandfetch.io/idGqhiL13o/theme/dark/logo.svg?c=1bxid64Mup7aczewSAYMX&t=1667785033148" 
+                    alt="Yoco"
+                    className="w-full h-full object-contain"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                      e.currentTarget.nextElementSibling.style.display = 'block';
+                    }}
+                  />
+                  <div className="text-black font-bold text-sm hidden">YOCO</div>
                 </div>
                 <div className="text-xl font-semibold mb-2">Yoco Payment</div>
                 <div className="text-sm opacity-90">Credit & Debit Cards</div>
