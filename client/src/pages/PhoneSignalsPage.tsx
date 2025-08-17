@@ -10,6 +10,44 @@ import { Link } from 'wouter';
 import { SubscriptionStatusBadge } from '@/components/SubscriptionStatusBadge';
 import { useToast } from '@/hooks/use-toast';
 
+// Pricing Card Component
+function PricingCard() {
+  const handlePlanSelect = (plan: string) => {
+    console.log('Selected plan:', plan);
+    // You can implement plan selection logic here
+    window.open('/plans', '_blank');
+  };
+
+  return (
+    <div className="card w-52 h-64 rounded bg-slate-900 flex gap-1 p-2">
+      <div 
+        className="h-full flex-1 overflow-hidden cursor-pointer rounded-sm transition-all duration-500 bg-slate-900 border border-pink-400 flex justify-center items-center hover:flex-[4] group"
+        onClick={() => handlePlanSelect('basic')}
+      >
+        <span className="min-w-56 p-2 text-center transform -rotate-90 transition-all duration-500 uppercase text-pink-400 tracking-widest text-sm group-hover:rotate-0">
+          BASIC PLAN
+        </span>
+      </div>
+      <div 
+        className="h-full flex-1 overflow-hidden cursor-pointer rounded-sm transition-all duration-500 bg-slate-900 border border-pink-400 flex justify-center items-center hover:flex-[4] group"
+        onClick={() => handlePlanSelect('premium')}
+      >
+        <span className="min-w-56 p-2 text-center transform -rotate-90 transition-all duration-500 uppercase text-pink-400 tracking-widest text-sm group-hover:rotate-0">
+          PREMIUM
+        </span>
+      </div>
+      <div 
+        className="h-full flex-1 overflow-hidden cursor-pointer rounded-sm transition-all duration-500 bg-slate-900 border border-pink-400 flex justify-center items-center hover:flex-[4] group"
+        onClick={() => handlePlanSelect('vip')}
+      >
+        <span className="min-w-56 p-2 text-center transform -rotate-90 transition-all duration-500 uppercase text-pink-400 tracking-widest text-sm group-hover:rotate-0">
+          VIP PLAN
+        </span>
+      </div>
+    </div>
+  );
+}
+
 // Phone Login Component
 function PhoneLoginForm() {
   const [email, setEmail] = useState("");
@@ -559,12 +597,7 @@ export function PhoneSignalsPage() {
                         Your subscription has expired. Please upgrade your plan to continue receiving premium trading signals.
                       </p>
                       <div className="w-full max-w-xs">
-                        <Button 
-                          className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3"
-                          onClick={() => window.open('/plans', '_blank')}
-                        >
-                          Upgrade Plan
-                        </Button>
+                        <PricingCard />
                       </div>
                       <p className="text-xs text-slate-500 mt-4">
                         Contact support if you have any questions
