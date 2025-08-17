@@ -14,7 +14,8 @@ import { useToast } from '@/hooks/use-toast';
 function PricingCard() {
   const handlePlanSelect = (plan: string) => {
     console.log('Selected plan:', plan);
-    window.open('/plans', '_blank');
+    // Navigate to Plans tab in navbar instead of opening new window
+    window.location.href = '/plans';
   };
 
   return (
@@ -24,21 +25,21 @@ function PricingCard() {
         onClick={() => handlePlanSelect('basic')}
       >
         <p className="text-sm font-bold">BASIC PLAN</p>
-        <p className="text-xs">R299 / month</p>
+        <p className="text-xs">R49.99 / 5 days</p>
       </div>
       <div 
         className="pricing-card flex items-center justify-center flex-col text-center h-16 w-48 rounded-lg text-white cursor-pointer transition-all duration-400 bg-blue-500 hover:scale-110"
         onClick={() => handlePlanSelect('premium')}
       >
         <p className="text-sm font-bold">PREMIUM</p>
-        <p className="text-xs">R499 / month</p>
+        <p className="text-xs">R99.99 / 14 days</p>
       </div>
       <div 
         className="pricing-card flex items-center justify-center flex-col text-center h-16 w-48 rounded-lg text-white cursor-pointer transition-all duration-400 bg-green-500 hover:scale-110"
         onClick={() => handlePlanSelect('vip')}
       >
         <p className="text-sm font-bold">VIP PLAN</p>
-        <p className="text-xs">R799 / month</p>
+        <p className="text-xs">R179.99 / 30 days</p>
       </div>
     </div>
   );
