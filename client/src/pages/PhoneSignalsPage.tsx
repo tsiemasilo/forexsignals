@@ -728,7 +728,7 @@ export function PhoneSignalsPage() {
                 {/* Phone Content - Conditional Display */}
                 {user ? (
                   /* Authenticated User - Check Subscription Status */
-                  subscriptionStatus?.status === 'expired' || subscriptionStatus?.status === 'inactive' ? (
+                  subscriptionStatus && (subscriptionStatus.status === 'expired' || subscriptionStatus.status === 'inactive' || (subscriptionStatus.status !== 'trial' && subscriptionStatus.status !== 'active' && subscriptionStatus.status !== 'admin')) ? (
                     /* Expired/Inactive Subscription - Show Upgrade Message */
                     <div className="flex-1 flex flex-col items-center text-center px-4 py-4">
                       <div className="mt-8">
