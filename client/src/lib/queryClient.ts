@@ -13,6 +13,8 @@ const queryClient = new QueryClient({
 export { queryClient };
 
 export async function apiRequest(url: string, options: RequestInit = {}) {
+  console.log('Making API request to:', url, 'with credentials:', options.credentials || 'include');
+  
   const config: RequestInit = {
     headers: {
       'Content-Type': 'application/json',

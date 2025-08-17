@@ -12,23 +12,44 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
-  // Session configuration
+  // CORS middleware for development
+  if (process.env.NODE_ENV === 'development') {
+    app.use((req, res, next) => {
+      res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+      res.header('Access-Control-Allow-Credentials', 'true');
+      res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+      res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+      
+      if (req.method === 'OPTIONS') {
+        res.sendStatus(200);
+        return;
+      }
+      next();
+    });
+  }
+
+  // Session configuration with more permissive settings for development
   app.use(session({
     secret: process.env.SESSION_SECRET || 'your-secret-key-here',
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true, // Changed to true for development
     cookie: {
-      secure: false, // Set to true in production with HTTPS
+      secure: false, // Always false in development
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
       sameSite: 'lax'
-    }
+    },
+    name: 'connect.sid' // Explicit session name
   }));
   // Seed database on startup
   await seedDatabase();
 
-  // Auth middleware
+  // Auth middleware with debugging
   const requireAuth = (req: Request, res: Response, next: any) => {
+    console.log('RequireAuth - Session:', req.session);
+    console.log('RequireAuth - Session ID:', req.sessionID);
+    console.log('RequireAuth - User ID:', req.session?.userId);
+    
     if (!req.session?.userId) {
       return res.status(401).json({ message: "Authentication required" });
     }
