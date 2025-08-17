@@ -582,9 +582,9 @@ export async function registerRoutes(app: express.Application) {
         NotifyUrl: `${origin}/api/ozow/notify`
       };
 
-      // Official Ozow SHA512 hash calculation with CORRECT parameter order from GitHub examples
-      // From PHP implementation: SiteCode, Country, Currency, Amount, TxnRef, BankRef, Cancel, Error, Success, Notify, IsTest, PrivateKey
-      const hashString = [
+      // Try minimal field approach - some Ozow implementations exclude Customer/RequestId from hash
+      // Core fields only: SiteCode, Country, Currency, Amount, TxnRef, BankRef, URLs, IsTest, PrivateKey
+      const coreHashString = [
         ozowParams.SiteCode,
         ozowParams.CountryCode,
         ozowParams.CurrencyCode,
@@ -596,8 +596,29 @@ export async function registerRoutes(app: express.Application) {
         ozowParams.SuccessUrl,
         ozowParams.NotifyUrl,
         ozowParams.IsTest,
-        privateKey // Last: append private key
+        privateKey
       ].join('');
+
+      // Also try with all fields including Customer/RequestId for comparison
+      const fullHashString = [
+        ozowParams.SiteCode,
+        ozowParams.CountryCode,
+        ozowParams.CurrencyCode,
+        ozowParams.Amount,
+        ozowParams.TransactionReference,
+        ozowParams.BankReference,
+        ozowParams.Customer,
+        ozowParams.RequestId,
+        ozowParams.CancelUrl,
+        ozowParams.ErrorUrl, 
+        ozowParams.SuccessUrl,
+        ozowParams.NotifyUrl,
+        ozowParams.IsTest,
+        privateKey
+      ].join('');
+
+      // Use core fields approach (more common)
+      const hashString = coreHashString;
 
       // 3. Convert to lowercase 
       const lowerHashString = hashString.toLowerCase();
@@ -605,13 +626,15 @@ export async function registerRoutes(app: express.Application) {
       // 4. Generate SHA512 hash (not SHA256!)
       const hashCheck = crypto.createHash('sha512').update(lowerHashString).digest('hex');
 
-      console.log('🔥 FRESH Ozow SHA512 implementation:', {
+      console.log('🎯 Ozow CORE FIELDS hash (excluding Customer/RequestId):', {
         algorithm: 'SHA512',
-        stringLength: hashString.length,
+        coreStringLength: coreHashString.length,
+        fullStringLength: fullHashString.length,
         lowerStringLength: lowerHashString.length,
         hashLength: hashCheck.length,
-        hashPreview: hashCheck.substring(0, 20) + '...',
-        parameters: Object.keys(ozowParams).length,
+        coreHashPreview: crypto.createHash('sha512').update(coreHashString.toLowerCase()).digest('hex').substring(0, 20) + '...',
+        fullHashPreview: crypto.createHash('sha512').update(fullHashString.toLowerCase()).digest('hex').substring(0, 20) + '...',
+        selectedApproach: 'core-fields-only',
         privateKeyPresent: !!privateKey
       });
 
