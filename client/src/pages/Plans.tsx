@@ -30,11 +30,8 @@ export function Plans() {
 
   const handleSubscribe = (plan: any) => {
     if (!user) {
-      toast({
-        title: "Authentication required",
-        description: "Please sign in to subscribe to a plan.",
-        variant: "destructive",
-      });
+      // Redirect to signals page where they can sign up for free trial
+      window.location.href = '/signals';
       return;
     }
 
