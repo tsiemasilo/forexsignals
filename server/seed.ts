@@ -73,10 +73,11 @@ export async function seedDatabase() {
       console.log('Subscription plans already exist');
     }
 
-    // Create sample forex signals
-    const existingSignals = await db.select().from(forexSignals);
+    // Create sample forex signals - delete existing ones first to ensure fresh data
+    await db.delete(forexSignals);
+    console.log('Existing forex signals deleted');
     
-    if (existingSignals.length === 0) {
+    // Always recreate signals with correct trade actions
       // Get admin user ID for signal creation
       const [adminUser] = await db.select().from(users).where(eq(users.email, "admin@forexsignals.com"));
       
@@ -85,28 +86,28 @@ export async function seedDatabase() {
           {
             title: "EUR/USD Buy Signal",
             content: "Strong bullish momentum on EUR/USD. Entry at 1.0850, Stop Loss at 1.0820, Take Profit at 1.0920. Risk-reward ratio 1:2.3",
-            tradeAction: "Buy",
+            tradeAction: "buy",
             imageUrl: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
             createdBy: adminUser.id,
           },
           {
             title: "GBP/JPY Sell Signal",
             content: "Bearish reversal pattern confirmed on GBP/JPY. Entry at 165.50, Stop Loss at 166.00, Take Profit at 164.50. Watch for break below support.",
-            tradeAction: "Sell",
+            tradeAction: "sell",
             imageUrl: "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
             createdBy: adminUser.id,
           },
           {
             title: "USD/CHF Hold Position",
             content: "Consolidation phase on USD/CHF. Current position at 0.9150. Waiting for clear direction. Monitor closely for breakout signals.",
-            tradeAction: "Hold",
-            imageUrl: "https://images.unsplash.com/photo-1559589689-577aabd1db4f?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
+            tradeAction: "hold",
+            imageUrl: "https://images.unsplash.com/photo-1559589589-577aabd1db4f?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
             createdBy: adminUser.id,
           },
           {
             title: "AUD/USD Buy Opportunity",
             content: "Australian dollar showing strength against USD. Entry at 0.6720, Stop Loss at 0.6680, Take Profit at 0.6780. Good risk-reward setup.",
-            tradeAction: "Buy",
+            tradeAction: "buy",
             imageUrl: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200",
             createdBy: adminUser.id,
           }
@@ -114,9 +115,6 @@ export async function seedDatabase() {
         
         console.log('Sample forex signals created');
       }
-    } else {
-      console.log('Forex signals already exist');
-    }
 
     console.log('Database seeding completed successfully');
   } catch (error) {

@@ -551,7 +551,7 @@ export function PhoneSignalsPage() {
 
 
   const getTradeActionIcon = (action: string | null | undefined) => {
-    if (!action) return <TrendingUp className="w-4 h-4 text-white" />;
+    if (!action || typeof action !== 'string') return <TrendingUp className="w-4 h-4 text-white" />;
     switch (action.toLowerCase()) {
       case 'buy':
         return <TrendingUp className="w-4 h-4 text-white" />;
@@ -567,7 +567,7 @@ export function PhoneSignalsPage() {
   };
 
   const getTradeActionColor = (action: string | null | undefined) => {
-    if (!action) return 'bg-blue-100 text-blue-800';
+    if (!action || typeof action !== 'string') return 'bg-blue-100 text-blue-800';
     switch (action.toLowerCase()) {
       case 'buy':
         return 'bg-green-100 text-green-800';
@@ -798,8 +798,8 @@ export function PhoneSignalsPage() {
                                 <div className="px-4 py-3">
                                   <div className="flex items-center justify-between mb-2">
                                     <h3 className="font-semibold text-slate-900 text-sm">{signal.title}</h3>
-                                    <Badge className={`text-xs ${getTradeActionColor(signal.trade_action)}`}>
-                                      {(signal.trade_action || 'UNKNOWN').toUpperCase()}
+                                    <Badge className={`text-xs ${getTradeActionColor(signal.tradeAction)}`}>
+                                      {(signal.tradeAction || 'UNKNOWN').toUpperCase()}
                                     </Badge>
                                   </div>
                                   <p className="text-xs text-slate-600 leading-relaxed line-clamp-3">
@@ -810,7 +810,7 @@ export function PhoneSignalsPage() {
                                   <div className="flex items-center justify-between mt-3 pt-2 border-t border-slate-100">
                                     <Link href={`/signal/${signal.id}`}>
                                       <div className="flex items-center space-x-4 cursor-pointer hover:text-blue-600 transition-colors">
-                                        {getTradeActionIcon(signal.trade_action)}
+                                        {getTradeActionIcon(signal.tradeAction)}
                                         <span className="text-xs text-slate-500">Tap to view details</span>
                                       </div>
                                     </Link>
