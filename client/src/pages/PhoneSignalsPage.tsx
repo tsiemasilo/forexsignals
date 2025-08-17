@@ -60,17 +60,13 @@ function PhoneLoginForm() {
           {/* Logo */}
           <div className="flex justify-center mb-4">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm5-18v4h3V3h-3z" fill="white"/>
-                </svg>
-              </div>
+              <Signal className="h-8 w-8 text-green-600" />
               <div>
-                <div style={{ fontSize: '16px', fontWeight: 700, color: '#151717', lineHeight: '1.2' }}>
-                  ForexSignals
+                <div style={{ fontSize: '18px', fontWeight: 700, color: '#151717', lineHeight: '1.2' }}>
+                  Watchlist Fx
                 </div>
                 <div style={{ fontSize: '12px', color: '#666', lineHeight: '1.2' }}>
-                  Pro
+                  Professional Trading Signals
                 </div>
               </div>
             </div>
@@ -215,17 +211,13 @@ function PhoneSignUpForm({ onBackToLogin }: { onBackToLogin: () => void }) {
           {/* Logo */}
           <div className="flex justify-center mb-4">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm5-18v4h3V3h-3z" fill="white"/>
-                </svg>
-              </div>
+              <Signal className="h-8 w-8 text-green-600" />
               <div>
-                <div style={{ fontSize: '16px', fontWeight: 700, color: '#151717', lineHeight: '1.2' }}>
-                  ForexSignals
+                <div style={{ fontSize: '18px', fontWeight: 700, color: '#151717', lineHeight: '1.2' }}>
+                  Watchlist Fx
                 </div>
                 <div style={{ fontSize: '12px', color: '#666', lineHeight: '1.2' }}>
-                  Pro
+                  Professional Trading Signals
                 </div>
               </div>
             </div>
