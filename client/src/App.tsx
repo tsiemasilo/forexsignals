@@ -3,7 +3,7 @@ import { Route, Switch, Redirect } from "wouter";
 import { queryClient } from "@/lib/queryClient";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { LoginPage } from "@/pages/LoginPage";
-import { DashboardPage } from "@/pages/DashboardPage";
+
 import { PhoneSignalsPage } from "@/pages/PhoneSignalsPage";
 import { AdminDashboard } from "@/pages/AdminDashboard";
 import { Plans } from "@/pages/Plans";
@@ -28,7 +28,7 @@ function AppRoutes() {
         if (!user) return <PhoneSignalsPage />;
         return user.isAdmin ? <AdminDashboard /> : <PhoneSignalsPage />;
       }} />
-      <Route path="/dashboard" component={DashboardPage} />
+
       <Route path="/phone-signals" component={PhoneSignalsPage} />
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/login" component={LoginPage} />

@@ -53,6 +53,56 @@ SESSION_SECRET=your_session_secret
 ### Build Commands
 
 ```bash
+# Development
+npm run dev
+
+# Production build
+npm run build
+
+# Deploy to Netlify
+vite build
+```
+
+## Project Status
+
+### ✅ Completed Features
+- iPhone-style signal interface with notification design
+- Complete authentication flow (register/login separation)
+- Dual payment gateway integration (Yoco + Ozow)
+- Real-time signal delivery with auto-refresh
+- Admin dashboard for signal and user management
+- Responsive mobile-first design
+- PostgreSQL database with Drizzle ORM
+- Netlify serverless function architecture
+
+### 🧹 Clean Codebase
+- Removed all debugging artifacts and unused files
+- Optimized component structure for production
+- Clean Netlify function organization
+- Proper error handling and validation
+- Production-ready configuration files
+
+## Architecture
+
+### Database Schema
+- **Users**: Authentication and profile management
+- **Subscription Plans**: Basic (R49.99/5d), Premium (R99.99/14d), VIP (R179.99/30d)
+- **Subscriptions**: User subscription tracking with trial support
+- **Forex Signals**: Real-time trading signals with actions
+
+### Authentication Flow
+- Separate registration and login processes
+- Free trial activation on first login only
+- Session-based authentication for serverless compatibility
+- Role-based access control (admin/customer)
+
+### Payment Integration
+- **Yoco**: Credit card processing with hosted checkout
+- **Ozow**: EFT payments with SHA512 hash validation
+- Automatic subscription activation post-payment
+- Webhook handling for payment notifications
+
+The project is production-ready for Netlify deployment!
 # Install dependencies
 npm install
 
