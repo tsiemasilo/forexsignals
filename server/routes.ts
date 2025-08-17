@@ -1,5 +1,6 @@
 import express, { Request, Response } from "express";
 import session from "express-session";
+import crypto from "crypto";
 import { storage } from "./storage";
 import { seedDatabase } from "./seed";
 import { insertUserSchema, insertForexSignalSchema, insertSubscriptionSchema } from "@shared/schema";
@@ -558,7 +559,6 @@ export async function registerRoutes(app: express.Application) {
       }
 
       // Create Ozow payment request
-      const crypto = require('crypto');
       
       const ozowData = {
         SiteCode: process.env.OZOW_SITE_CODE || "WATCHLISTFX",
