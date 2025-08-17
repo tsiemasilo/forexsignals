@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useAutoRefresh } from './useAutoRefresh';
+import { useAuth } from '@/contexts/AuthContext';
 
 export function useRealtimeSignals() {
+  const { user } = useAuth();
   const queryClient = useQueryClient();
   const [lastUpdateTime, setLastUpdateTime] = useState<Date>(new Date());
 
-  // Fetch signals with optimized refresh strategy
+  // Fetch signals with optimized refresh strategy - only when authenticated
   const { data: signals, isLoading, error } = useQuery({
     queryKey: ['/api/signals'],
     queryFn: async () => {
@@ -18,10 +19,11 @@ export function useRealtimeSignals() {
       }
       return response.json();
     },
-    refetchInterval: 5000, // Reduced to 5 seconds to prevent too frequent updates
-    refetchIntervalInBackground: false, // Disable background refresh to reduce conflicts
-    staleTime: 2000, // Allow data to be fresh for 2 seconds before forcing refresh
-    retry: false, // Don't retry failed requests automatically
+    refetchInterval: user ? 5000 : false, // Only auto-refresh when user is authenticated
+    refetchIntervalInBackground: false,
+    staleTime: 2000,
+    retry: false,
+    enabled: !!user, // Only enable query when user is authenticated
   });
 
   // Simplified manual refresh without conflicting intervals
