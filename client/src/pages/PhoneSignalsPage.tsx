@@ -133,18 +133,35 @@ function PhoneLoginForm() {
             </div>
           </div>
 
-          {/* Free Trial Message */}
-          <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+          {/* Free Trial Promotion */}
+          <div style={{ 
+            textAlign: 'center', 
+            marginBottom: '25px',
+            padding: '15px',
+            background: 'linear-gradient(135deg, #10b981, #059669)',
+            borderRadius: '12px',
+            boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)',
+            border: '2px solid rgba(255, 255, 255, 0.2)'
+          }}>
             <div style={{ 
-              fontSize: '11px', 
-              color: '#10b981', 
-              fontWeight: 600,
-              background: 'linear-gradient(135deg, #10b981, #059669)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text'
+              fontSize: '16px', 
+              color: '#ffffff', 
+              fontWeight: 700,
+              textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+              letterSpacing: '0.5px',
+              lineHeight: '1.3'
             }}>
-              ✨ New users get 7-day FREE trial ✨
+              ✨ NEW USERS GET ✨
+            </div>
+            <div style={{ 
+              fontSize: '20px', 
+              color: '#ffffff', 
+              fontWeight: 800,
+              textShadow: '0 1px 3px rgba(0, 0, 0, 0.2)',
+              letterSpacing: '1px',
+              marginTop: '3px'
+            }}>
+              7-DAY FREE TRIAL
             </div>
           </div>
 
