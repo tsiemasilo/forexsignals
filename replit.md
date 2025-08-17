@@ -8,6 +8,16 @@ WatchlistFX is a modern forex signals subscription platform designed for the Sou
 
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes
+
+**August 17, 2025**
+- Fixed critical frontend bug causing blank pages after login
+- Updated all database column references from camelCase (createdAt) to snake_case (created_at)
+- Fixed field name mismatch from tradeAction to trade_action across all components  
+- Added null safety checks for toLowerCase() calls in trade action functions
+- Updated all Netlify serverless functions to use NETLIFY_DATABASE_URL priority
+- Comprehensive error handling added to prevent undefined data crashes
+
 ## System Architecture
 
 ### Frontend Architecture

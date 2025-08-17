@@ -161,7 +161,7 @@ export default function SignalDetails() {
           <CardHeader>
             <div className="flex items-start justify-between">
               <div className="flex items-center space-x-4">
-                {getTradeActionIcon(signal?.tradeAction)}
+                {getTradeActionIcon(signal?.trade_action)}
                 <div>
                   <CardTitle className="text-2xl mb-2">{signal?.title || 'Signal Title Not Available'}</CardTitle>
                   <div className="flex items-center space-x-4 text-sm text-gray-500">
@@ -176,8 +176,8 @@ export default function SignalDetails() {
                   </div>
                 </div>
               </div>
-              <Badge className={`text-sm ${getTradeActionColor(signal?.tradeAction)}`}>
-                {(signal?.tradeAction?.toUpperCase()) || 'PENDING'}
+              <Badge className={`text-sm ${getTradeActionColor(signal?.trade_action)}`}>
+                {(signal?.trade_action?.toUpperCase()) || 'PENDING'}
               </Badge>
             </div>
           </CardHeader>
