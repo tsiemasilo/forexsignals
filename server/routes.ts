@@ -400,6 +400,56 @@ export async function registerRoutes(app: express.Application) {
     }
   });
 
+  // Admin user management endpoints
+  app.delete("/api/admin/users/:id", requireAdmin, async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const currentUserId = req.session.userId!;
+      
+      // Prevent admin from deleting themselves
+      if (userId === currentUserId) {
+        return res.status(400).json({ message: "Cannot delete your own account" });
+      }
+      
+      const success = await storage.deleteUser(userId);
+      
+      if (!success) {
+        return res.status(404).json({ message: "User not found or deletion failed" });
+      }
+      
+      res.json({ message: "User account and all associated data deleted successfully" });
+    } catch (error) {
+      console.error('Admin user deletion error:', error);
+      res.status(500).json({ message: "Failed to delete user account" });
+    }
+  });
+
+  app.post("/api/admin/users/:id/promote", requireAdmin, async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.id);
+      
+      const updatedUser = await storage.promoteUserToAdmin(userId);
+      
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found or promotion failed" });
+      }
+      
+      res.json({ 
+        message: "User promoted to admin successfully",
+        user: {
+          id: updatedUser.id,
+          email: updatedUser.email,
+          firstName: updatedUser.firstName,
+          lastName: updatedUser.lastName,
+          isAdmin: updatedUser.isAdmin
+        }
+      });
+    } catch (error) {
+      console.error('Admin user promotion error:', error);
+      res.status(500).json({ message: "Failed to promote user to admin" });
+    }
+  });
+
   // Public plans endpoint
   app.get("/api/plans", async (req: Request, res: Response) => {
     try {

@@ -10,6 +10,8 @@ export interface IStorage {
   createUser(insertUser: InsertUser): Promise<User>;
   getAllUsers(): Promise<User[]>;
   getAllUsersWithSubscriptions(): Promise<any[]>;
+  deleteUser(id: number): Promise<boolean>;
+  promoteUserToAdmin(id: number): Promise<User | undefined>;
 
   // Subscription Plans
   getAllPlans(): Promise<SubscriptionPlan[]>;
@@ -52,6 +54,37 @@ export class DatabaseStorage implements IStorage {
   async getAllUsers(): Promise<User[]> {
     const allUsers = await db.select().from(users).where(eq(users.isAdmin, false));
     return allUsers;
+  }
+
+  async deleteUser(id: number): Promise<boolean> {
+    try {
+      // First delete all user's subscriptions
+      await db.delete(subscriptions).where(eq(subscriptions.userId, id));
+      
+      // Then delete the user
+      await db.delete(users).where(eq(users.id, id));
+      
+      console.log(`✅ DATABASE STORAGE: Deleted user ${id} and all associated data`);
+      return true;
+    } catch (error) {
+      console.error('❌ DATABASE STORAGE: Error deleting user:', error);
+      return false;
+    }
+  }
+
+  async promoteUserToAdmin(id: number): Promise<User | undefined> {
+    try {
+      const [updatedUser] = await db.update(users)
+        .set({ isAdmin: true })
+        .where(eq(users.id, id))
+        .returning();
+      
+      console.log(`✅ DATABASE STORAGE: Promoted user ${id} to admin`);
+      return updatedUser || undefined;
+    } catch (error) {
+      console.error('❌ DATABASE STORAGE: Error promoting user to admin:', error);
+      return undefined;
+    }
   }
 
   async getAllUsersWithSubscriptions(): Promise<any[]> {
