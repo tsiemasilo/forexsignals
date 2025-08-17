@@ -579,26 +579,42 @@ export async function registerRoutes(app: express.Application) {
         NotifyUrl: `${origin}/api/ozow/notify`
       };
 
-      // Create hash string in the order Ozow expects
-      const hashInputs = [
-        ozowData.SiteCode,
-        ozowData.CountryCode, 
-        ozowData.CurrencyCode,
-        ozowData.Amount,
-        ozowData.TransactionReference,
-        ozowData.BankReference,
-        ozowData.Customer,
-        ozowData.RequestId,
-        ozowData.IsTest,
-        ozowData.SuccessUrl,
-        ozowData.CancelUrl,
-        ozowData.ErrorUrl,
-        ozowData.NotifyUrl,
-        process.env.OZOW_API_KEY || ''
-      ];
+      // Ozow hash calculation - exact parameter order matters
+      // Remove any special characters from customer name that might cause issues
+      const cleanCustomer = `${user.firstName} ${user.lastName}`.replace(/[^\w\s]/g, ' ').trim();
+      const cleanBankRef = `Watchlist Fx ${plan.name}`.replace(/[^\w\s]/g, ' ').trim();
       
-      const hashString = hashInputs.join('');
-      const hashCheck = crypto.createHash('sha256').update(hashString).digest('hex').toLowerCase();
+      // Use the cleaned values
+      ozowData.Customer = cleanCustomer;
+      ozowData.BankReference = cleanBankRef;
+      
+      // Ozow hash calculation with exact parameter order
+      const hashString = 
+        ozowData.SiteCode +
+        ozowData.CountryCode + 
+        ozowData.CurrencyCode +
+        ozowData.Amount +
+        ozowData.TransactionReference +
+        ozowData.BankReference +
+        ozowData.Customer +
+        ozowData.RequestId +
+        ozowData.IsTest +
+        ozowData.SuccessUrl +
+        ozowData.CancelUrl +
+        ozowData.ErrorUrl +
+        ozowData.NotifyUrl +
+        (process.env.OZOW_SECRET_KEY || '');
+      
+      console.log('🔐 Ozow hash debug:', {
+        siteCode: ozowData.SiteCode,
+        amount: ozowData.Amount,
+        customer: ozowData.Customer,
+        bankRef: ozowData.BankReference,
+        hashLength: hashString.length,
+        hasSecretKey: !!(process.env.OZOW_SECRET_KEY)
+      });
+      
+      const hashCheck = crypto.createHash('sha256').update(hashString, 'utf8').digest('hex').toUpperCase();
 
       const ozowPayment = {
         action_url: "https://pay.ozow.com",
