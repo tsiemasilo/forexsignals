@@ -133,6 +133,27 @@ function PhoneLoginForm() {
             </div>
           </div>
 
+          {/* Welcome Text */}
+          <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+            <div style={{ fontSize: '16px', fontWeight: 600, color: '#151717', marginBottom: '5px' }}>
+              Welcome Back
+            </div>
+            <div style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
+              Enter your email to access your signals
+            </div>
+            <div style={{ 
+              fontSize: '11px', 
+              color: '#10b981', 
+              fontWeight: 600,
+              background: 'linear-gradient(135deg, #10b981, #059669)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text'
+            }}>
+              ✨ New users get 7-day FREE trial ✨
+            </div>
+          </div>
+
           <div className="flex flex-col">
             <label style={{ color: '#151717', fontWeight: 600 }}>Email</label>
           </div>
