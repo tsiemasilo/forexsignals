@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Users, Plus, TrendingUp, Settings, User, Calendar, Signal } from "lucide-react";
+import { Users, Plus, TrendingUp, Settings, User, Calendar, Signal, Trash2, UserCheck } from "lucide-react";
 
 interface AdminUser {
   id: number;
@@ -127,6 +127,69 @@ export function AdminDashboard() {
     },
   });
 
+  const deleteSignalMutation = useMutation({
+    mutationFn: (signalId: number) => 
+      apiRequest(`/api/admin/signals/${signalId}`, {
+        method: "DELETE",
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/signals"] });
+      toast({
+        title: "Success",
+        description: "Signal deleted successfully!",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to delete signal",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteUserMutation = useMutation({
+    mutationFn: (userId: number) => 
+      apiRequest(`/api/admin/users/${userId}`, {
+        method: "DELETE",
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      toast({
+        title: "Success",
+        description: "User account deleted successfully!",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to delete user account",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const promoteUserMutation = useMutation({
+    mutationFn: (userId: number) => 
+      apiRequest(`/api/admin/users/${userId}/promote`, {
+        method: "POST",
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      toast({
+        title: "Success",
+        description: "User promoted to admin successfully!",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to promote user to admin",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleCreateTrial = (userId: number) => {
     createTrialMutation.mutate(userId);
   };
@@ -139,6 +202,24 @@ export function AdminDashboard() {
     e.preventDefault();
     if (!newSignal.title || !newSignal.content) return;
     createSignalMutation.mutate(newSignal);
+  };
+
+  const handleDeleteSignal = (signalId: number) => {
+    if (confirm("Are you sure you want to delete this signal? This action cannot be undone.")) {
+      deleteSignalMutation.mutate(signalId);
+    }
+  };
+
+  const handleDeleteUser = (userId: number, userName: string) => {
+    if (confirm(`Are you sure you want to delete ${userName}'s account? This will permanently delete their account and all associated data. This action cannot be undone.`)) {
+      deleteUserMutation.mutate(userId);
+    }
+  };
+
+  const handlePromoteUser = (userId: number, userName: string) => {
+    if (confirm(`Are you sure you want to promote ${userName} to admin? They will have full administrative access to the system.`)) {
+      promoteUserMutation.mutate(userId);
+    }
   };
 
   const getStatusColor = (subscription?: AdminUser['subscription']) => {
@@ -372,7 +453,19 @@ export function AdminDashboard() {
                           className="w-full h-32 object-cover rounded-md mb-3"
                         />
                       )}
-                      <p className="text-sm text-gray-700">{signal.content}</p>
+                      <p className="text-sm text-gray-700 mb-3">{signal.content}</p>
+                      <div className="flex justify-end">
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => handleDeleteSignal(signal.id)}
+                          disabled={deleteSignalMutation.isPending}
+                          className="flex items-center space-x-1"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                          <span>{deleteSignalMutation.isPending ? "Deleting..." : "Delete"}</span>
+                        </Button>
+                      </div>
                     </CardContent>
                   </Card>
                 ))}
@@ -441,6 +534,26 @@ export function AdminDashboard() {
                             <option value="active|VIP Plan">VIP Plan</option>
                             <option value="expired">Mark as Expired</option>
                           </select>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handlePromoteUser(user.id, `${user.firstName} ${user.lastName}`)}
+                            disabled={promoteUserMutation.isPending}
+                            className="flex items-center space-x-1"
+                          >
+                            <UserCheck className="h-3 w-3" />
+                            <span>Admin</span>
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => handleDeleteUser(user.id, `${user.firstName} ${user.lastName}`)}
+                            disabled={deleteUserMutation.isPending}
+                            className="flex items-center space-x-1"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                            <span>Delete</span>
+                          </Button>
                         </div>
                       </div>
                     ))}
