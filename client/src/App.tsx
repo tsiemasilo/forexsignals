@@ -6,6 +6,7 @@ import { LoginPage } from "@/pages/LoginPage";
 import { DashboardPage } from "@/pages/DashboardPage";
 import { PhoneSignalsPage } from "@/pages/PhoneSignalsPage";
 import { AdminDashboard } from "@/pages/AdminDashboard";
+import { SignupPage } from "@/pages/SignupPage";
 
 function AppRoutes() {
   const { user, loading } = useAuth();
@@ -22,6 +23,7 @@ function AppRoutes() {
     <Switch>
       <Route path="/" component={user?.isAdmin ? AdminDashboard : PhoneSignalsPage} />
       <Route path="/login" component={LoginPage} />
+      <Route path="/signup" component={SignupPage} />
       <Route path="/dashboard" component={DashboardPage} />
       <Route path="/phone-signals" component={PhoneSignalsPage} />
       <Route path="/admin" component={AdminDashboard} />

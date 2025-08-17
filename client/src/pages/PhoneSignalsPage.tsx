@@ -81,7 +81,7 @@ function PhoneLoginForm() {
           </form>
           
           <div className="mt-4 text-center text-xs text-gray-500">
-            <p>New user? Simply enter your email to create an account.</p>
+            <p>New user? <Link href="/signup"><span className="text-blue-600 hover:text-blue-800 cursor-pointer font-medium">Create an account</span></Link></p>
           </div>
         </div>
       </div>

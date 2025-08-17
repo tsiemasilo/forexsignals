@@ -62,21 +62,11 @@ export async function registerRoutes(app: express.Application) {
         return res.status(400).json({ message: "Email is required" });
       }
 
-      // Find or create user
-      let user = await storage.getUserByEmail(email);
+      // Find user by email
+      const user = await storage.getUserByEmail(email);
       
       if (!user) {
-        // Create new user
-        const [firstName, lastName] = email.split('@')[0].split('.').map((name: string) => 
-          name.charAt(0).toUpperCase() + name.slice(1)
-        );
-        
-        user = await storage.createUser({
-          email,
-          firstName: firstName || "User",
-          lastName: lastName || "Name",
-          isAdmin: false
-        });
+        return res.status(404).json({ message: "User not found. Please sign up first." });
       }
 
       // Regenerate session ID to prevent session fixation
@@ -113,6 +103,53 @@ export async function registerRoutes(app: express.Application) {
     } catch (error) {
       console.error('Login error:', error);
       res.status(500).json({ message: "Login failed" });
+    }
+  });
+
+  // Signup endpoint
+  app.post("/api/signup", async (req: Request, res: Response) => {
+    try {
+      console.log('Signup request body:', req.body);
+      const { name, email, phone } = req.body || {};
+      
+      if (!name || !email || !phone) {
+        return res.status(400).json({ message: "Name, email, and phone are required" });
+      }
+
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.status(409).json({ message: "User with this email already exists" });
+      }
+
+      // Parse name into first and last name
+      const nameParts = name.trim().split(' ');
+      const firstName = nameParts[0] || "User";
+      const lastName = nameParts.slice(1).join(' ') || "Name";
+
+      // Create new user
+      const newUser = await storage.createUser({
+        email,
+        firstName,
+        lastName,
+        isAdmin: false
+      });
+
+      console.log(`✅ User created: ${newUser.email} (ID: ${newUser.id})`);
+      
+      res.status(201).json({
+        message: "Account created successfully",
+        user: {
+          id: newUser.id,
+          email: newUser.email,
+          firstName: newUser.firstName,
+          lastName: newUser.lastName,
+          isAdmin: newUser.isAdmin
+        }
+      });
+    } catch (error) {
+      console.error('Signup error:', error);
+      res.status(500).json({ message: "Signup failed" });
     }
   });
 
