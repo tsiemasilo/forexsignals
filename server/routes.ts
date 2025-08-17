@@ -580,33 +580,44 @@ export async function registerRoutes(app: express.Application) {
         NotifyUrl: `${origin}/api/ozow/notify`
       };
 
-      // Create hash string exactly as Ozow expects
-      const hashComponents = [
-        ozowData.SiteCode,
-        ozowData.CountryCode,
-        ozowData.CurrencyCode,
-        ozowData.Amount,
-        ozowData.TransactionReference,
-        ozowData.BankReference,
-        ozowData.Customer,
-        ozowData.RequestId,
-        ozowData.IsTest,
-        ozowData.SuccessUrl,
-        ozowData.CancelUrl,
-        ozowData.ErrorUrl,
-        ozowData.NotifyUrl,
-        process.env.OZOW_SECRET_KEY || ''
+      // Ozow hash: Try query string format as many gateways expect this
+      const queryParams = new URLSearchParams();
+      Object.entries(ozowData).forEach(([key, value]) => {
+        queryParams.append(key, value);
+      });
+      
+      // Sort parameters alphabetically (common requirement)
+      queryParams.sort();
+      const sortedParamString = queryParams.toString();
+      
+      // Hash approaches to try
+      const hashApproaches = [
+        // Approach 1: Query string + secret
+        sortedParamString + (process.env.OZOW_SECRET_KEY || ''),
+        
+        // Approach 2: Direct concatenation (original)
+        Object.values(ozowData).join('') + (process.env.OZOW_SECRET_KEY || ''),
+        
+        // Approach 3: Just the secret key (some gateways do this)
+        (process.env.OZOW_SECRET_KEY || '') + Object.values(ozowData).join(''),
+        
+        // Approach 4: Key-value pairs
+        Object.entries(ozowData).map(([k,v]) => `${k}=${v}`).join('&') + (process.env.OZOW_SECRET_KEY || '')
       ];
       
-      const hashString = hashComponents.join('');
-      const hashCheck = crypto.createHash('sha256').update(hashString).digest('hex').toLowerCase();
+      const hashes = hashApproaches.map((str, i) => ({
+        approach: i + 1,
+        length: str.length,
+        hash: crypto.createHash('sha256').update(str).digest('hex').toLowerCase()
+      }));
       
-      console.log('🔐 Ozow TEST mode debug:', {
-        amount: ozowData.Amount,
-        customer: ozowData.Customer,
-        isTest: ozowData.IsTest,
-        hashLength: hashString.length,
-        hashCheck: hashCheck.substring(0, 10) + '...'
+      // Try approach 1 (query string format) as it's more standardized
+      const hashCheck = hashes[0].hash.toLowerCase();
+      
+      console.log('🔐 Ozow hash test approaches:', {
+        attempts: hashes.map(h => ({ approach: h.approach, length: h.length, hash: h.hash.substring(0, 10) + '...' })),
+        selectedHash: hashCheck.substring(0, 10) + '...',
+        queryString: sortedParamString
       });
 
       const ozowPayment = {
