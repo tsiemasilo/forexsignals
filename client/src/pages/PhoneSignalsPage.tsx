@@ -41,16 +41,16 @@ function PhoneLoginForm({ onSignupClick }: { onSignupClick: () => void }) {
   };
 
   return (
-    <div className="h-full flex flex-col items-center p-4 overflow-y-auto">
-      <div className="text-center mb-4 mt-4">
-        <div className="flex items-center justify-center space-x-2 mb-2">
-          <Signal className="h-6 w-6 text-green-600" />
-          <h1 className="text-xl font-bold text-gray-900">Watchlist Fx</h1>
+    <div className="h-full flex flex-col items-center p-2 overflow-y-auto bg-white" style={{ isolation: 'isolate' }}>
+      <div className="text-center mb-3 mt-2">
+        <div className="flex items-center justify-center space-x-2 mb-1">
+          <Signal className="h-5 w-5 text-green-600" />
+          <h1 className="text-lg font-bold text-gray-900">Watchlist Fx</h1>
         </div>
         <p className="text-gray-600 text-xs">Professional Trading Signals</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="w-full max-w-sm bg-white p-3 rounded-2xl shadow-lg space-y-2 mb-4">
+      <form onSubmit={handleSubmit} className="w-full max-w-xs bg-white p-3 rounded-2xl shadow-lg space-y-2 mb-4" style={{ isolation: 'isolate' }}>
         <div className="space-y-1">
           <label className="text-gray-900 font-semibold text-xs">Email</label>
           <div className="border border-gray-300 rounded-lg h-9 flex items-center px-2 focus-within:border-blue-500 transition-colors">
@@ -211,16 +211,16 @@ function PhoneSignupForm({ onSigninClick }: { onSigninClick: () => void }) {
   };
 
   return (
-    <div className="h-full flex flex-col items-center p-4 overflow-y-auto">
-      <div className="text-center mb-3 mt-2">
-        <div className="flex items-center justify-center space-x-2 mb-2">
-          <Signal className="h-6 w-6 text-green-600" />
-          <h1 className="text-xl font-bold text-gray-900">Watchlist Fx</h1>
+    <div className="h-full flex flex-col items-center p-2 overflow-y-auto bg-white" style={{ isolation: 'isolate' }}>
+      <div className="text-center mb-2 mt-1">
+        <div className="flex items-center justify-center space-x-2 mb-1">
+          <Signal className="h-5 w-5 text-green-600" />
+          <h1 className="text-lg font-bold text-gray-900">Watchlist Fx</h1>
         </div>
         <p className="text-gray-600 text-xs">Create Your Account</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="w-full max-w-sm bg-white p-3 rounded-2xl shadow-lg space-y-2 mb-4">
+      <form onSubmit={handleSubmit} className="w-full max-w-xs bg-white p-3 rounded-2xl shadow-lg space-y-2 mb-4" style={{ isolation: 'isolate' }}>
         <div className="space-y-1">
           <label className="text-gray-900 font-semibold text-xs">Full Name</label>
           <div className="border border-gray-300 rounded-lg h-8 flex items-center px-2 focus-within:border-blue-500 transition-colors">
@@ -590,7 +590,7 @@ export function PhoneSignalsPage() {
                   </>
                 ) : (
                   /* Unauthenticated User - Show Login/Signup Form */
-                  <div className="flex-1 bg-gradient-to-br from-blue-50 to-slate-100">
+                  <div className="flex-1 bg-white" style={{ isolation: 'isolate' }}>
                     {showSignup ? 
                       <PhoneSignupForm onSigninClick={() => setShowSignup(false)} /> : 
                       <PhoneLoginForm onSignupClick={() => setShowSignup(true)} />
