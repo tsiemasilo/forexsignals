@@ -361,10 +361,10 @@ export function Plans() {
             </DialogDescription>
           </DialogHeader>
           
-          <div className="flex flex-col gap-4 md:gap-6 justify-center items-center py-2 md:py-4">
+          <div className="flex flex-col md:flex-row gap-4 md:gap-6 justify-center items-center py-2 md:py-4">
             {/* Yoco Payment Card */}
             <div 
-              className="payment-card relative w-full max-w-xs md:w-60 h-72 md:h-80 bg-transparent rounded-2xl overflow-hidden cursor-pointer transform transition-transform duration-200 hover:scale-105"
+              className="payment-card relative w-60 h-80 bg-transparent rounded-2xl overflow-hidden cursor-pointer transform transition-transform duration-200 hover:scale-105"
               style={{ boxShadow: '0px 8px 28px -9px rgba(0,0,0,0.45)' }}
               onClick={handleYocoPayment}
             >
@@ -413,7 +413,7 @@ export function Plans() {
 
             {/* Ozow Payment Card */}
             <div 
-              className="payment-card relative w-full max-w-xs md:w-60 h-72 md:h-80 bg-transparent rounded-2xl overflow-hidden cursor-pointer transform transition-transform duration-200 hover:scale-105"
+              className="payment-card relative w-60 h-80 bg-transparent rounded-2xl overflow-hidden cursor-pointer transform transition-transform duration-200 hover:scale-105"
               style={{ boxShadow: '0px 8px 28px -9px rgba(0,0,0,0.45)' }}
               onClick={handleOzowPayment}
             >
