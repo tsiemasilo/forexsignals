@@ -16,8 +16,8 @@ function PricingCard() {
 
   const handlePlanSelect = (plan: string) => {
     console.log('Selected plan:', plan);
-    // Fast navigation using React Router
-    setLocation('/plans');
+    // Navigate to login for logged-out users
+    setLocation('/login');
   };
 
   return (

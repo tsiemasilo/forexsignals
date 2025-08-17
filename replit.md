@@ -33,6 +33,7 @@ Preferred communication style: Simple, everyday language.
 - **LOGOUT OPTIMIZATION**: Replaced window.location.href with router navigation to eliminate blank page loading delays
 - **TOAST DISPLAY FIX**: Success messages now appear before login completion to prevent redirect interference
 - **BACKGROUND PROCESSING**: Trial creation and session cleanup run asynchronously for faster response times
+- **SIMPLIFIED ROUTING**: Removed standalone plans page - logged-out users stay on main phone signals page with integrated pricing cards
 
 ## System Architecture
 

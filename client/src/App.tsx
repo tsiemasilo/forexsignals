@@ -34,6 +34,7 @@ function AppRoutes() {
   return (
     <Switch>
       <Route path="/" component={() => {
+        // Always show PhoneSignalsPage for both logged-in and logged-out users
         if (!user) return <PhoneSignalsPage />;
         console.log('Root route - User:', user, 'IsAdmin:', user.isAdmin);
         
@@ -101,7 +102,7 @@ function AppRoutes() {
           </div>
         );
       }} />
-      <Route path="/plans" component={Plans} />
+
       <Route path="/payment-success" component={PaymentSuccess} />
       <Route path="/payment-cancel" component={PaymentCancel} />
       <Route path="/payment-error" component={PaymentError} />
