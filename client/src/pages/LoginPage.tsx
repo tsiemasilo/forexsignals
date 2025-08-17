@@ -7,27 +7,54 @@ import { useToast } from "@/hooks/use-toast";
 
 export function LoginPage() {
   const [email, setEmail] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const [isRegistering, setIsRegistering] = useState(false);
+  const { login, register } = useAuth();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
+    if (isRegistering && (!firstName || !lastName)) return;
 
     setLoading(true);
     try {
-      await login(email);
-      toast({
-        title: "Success",
-        description: "Logged in successfully!",
-      });
-    } catch (error) {
-      toast({
-        title: "Login Failed",
-        description: error instanceof Error ? error.message : "Please try again",
-        variant: "destructive",
-      });
+      if (isRegistering) {
+        await register(email, firstName, lastName);
+        toast({
+          title: "Success",
+          description: "Account created and logged in successfully!",
+        });
+      } else {
+        await login(email);
+        toast({
+          title: "Success",
+          description: "Logged in successfully!",
+        });
+      }
+    } catch (error: any) {
+      // Handle specific error cases
+      if (error?.needsRegistration) {
+        setIsRegistering(true);
+        toast({
+          title: "Registration Required",
+          description: "Please complete your registration to create an account.",
+        });
+      } else if (error?.userExists) {
+        setIsRegistering(false);
+        toast({
+          title: "Account Exists",
+          description: "This account already exists. Please sign in instead.",
+        });
+      } else {
+        toast({
+          title: isRegistering ? "Registration Failed" : "Login Failed",
+          description: error instanceof Error ? error.message : "Please try again",
+          variant: "destructive",
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -43,9 +70,12 @@ export function LoginPage() {
 
         <Card>
           <CardHeader className="text-center">
-            <CardTitle>Welcome Back</CardTitle>
+            <CardTitle>{isRegistering ? "Create Account" : "Welcome Back"}</CardTitle>
             <CardDescription>
-              Enter your email address to access your trading signals
+              {isRegistering 
+                ? "Create your account to access premium trading signals"
+                : "Enter your email address to access your trading signals"
+              }
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -64,14 +94,66 @@ export function LoginPage() {
                   className="w-full"
                 />
               </div>
+
+              {isRegistering && (
+                <>
+                  <div className="space-y-2">
+                    <label htmlFor="firstName" className="text-sm font-medium text-gray-700">
+                      First Name
+                    </label>
+                    <Input
+                      id="firstName"
+                      type="text"
+                      placeholder="John"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      required
+                      className="w-full"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <label htmlFor="lastName" className="text-sm font-medium text-gray-700">
+                      Last Name
+                    </label>
+                    <Input
+                      id="lastName"
+                      type="text"
+                      placeholder="Doe"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      required
+                      className="w-full"
+                    />
+                  </div>
+                </>
+              )}
               
               <Button 
                 type="submit" 
                 className="w-full bg-blue-600 hover:bg-blue-700" 
-                disabled={loading || !email}
+                disabled={loading || !email || (isRegistering && (!firstName || !lastName))}
               >
-                {loading ? "Signing In..." : "Sign In"}
+                {loading 
+                  ? (isRegistering ? "Creating Account..." : "Signing In...") 
+                  : (isRegistering ? "Create Account" : "Sign In")
+                }
               </Button>
+
+              {isRegistering && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => {
+                    setIsRegistering(false);
+                    setFirstName("");
+                    setLastName("");
+                  }}
+                >
+                  Already have an account? Sign In
+                </Button>
+              )}
             </form>
             
             <div className="mt-6 text-center text-sm text-gray-600">

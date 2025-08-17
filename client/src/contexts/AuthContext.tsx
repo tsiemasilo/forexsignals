@@ -12,6 +12,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   login: (email: string) => Promise<void>;
+  register: (email: string, firstName: string, lastName: string) => Promise<void>;
   logout: () => Promise<void>;
   loading: boolean;
 }
@@ -45,13 +46,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(response.user);
   };
 
+  const register = async (email: string, firstName: string, lastName: string) => {
+    const response = await apiRequest("/api/register", {
+      method: "POST",
+      body: JSON.stringify({ email, firstName, lastName }),
+    });
+    setUser(response.user);
+  };
+
   const logout = async () => {
     await apiRequest("/api/logout", { method: "POST" });
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, register, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

@@ -56,24 +56,18 @@ export async function registerRoutes(app: express.Application) {
         return res.status(400).json({ message: "Email is required" });
       }
 
-      // Find or create user
-      let user = await storage.getUserByEmail(email);
+      // Check if user exists
+      const user = await storage.getUserByEmail(email);
       
       if (!user) {
-        // Create new user
-        const [firstName, lastName] = email.split('@')[0].split('.').map((name: string) => 
-          name.charAt(0).toUpperCase() + name.slice(1)
-        );
-        
-        user = await storage.createUser({
-          email,
-          firstName: firstName || "User",
-          lastName: lastName || "Name",
-          isAdmin: false
+        // User doesn't exist - redirect to register
+        return res.status(404).json({ 
+          message: "Account not found. Please register first to create your account.",
+          needsRegistration: true 
         });
       }
 
-      // Set session
+      // Set session for existing user
       req.session.userId = user.id;
       
       console.log(`✅ User logged in: ${user.email} (ID: ${user.id})`);
@@ -90,6 +84,53 @@ export async function registerRoutes(app: express.Application) {
     } catch (error) {
       console.error('Login error:', error);
       res.status(500).json({ message: "Login failed" });
+    }
+  });
+
+  app.post("/api/register", async (req: Request, res: Response) => {
+    try {
+      console.log('Register request body:', req.body);
+      const { email, firstName, lastName } = req.body || {};
+      
+      if (!email || !firstName || !lastName) {
+        return res.status(400).json({ message: "Email, first name, and last name are required" });
+      }
+
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(email);
+      
+      if (existingUser) {
+        return res.status(409).json({ 
+          message: "Account already exists. Please sign in instead.",
+          userExists: true 
+        });
+      }
+
+      // Create new user
+      const user = await storage.createUser({
+        email,
+        firstName,
+        lastName,
+        isAdmin: false
+      });
+
+      // Set session for new user
+      req.session.userId = user.id;
+      
+      console.log(`✅ New user registered: ${user.email} (ID: ${user.id})`);
+      
+      res.json({
+        user: {
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          isAdmin: user.isAdmin
+        }
+      });
+    } catch (error) {
+      console.error('Registration error:', error);
+      res.status(500).json({ message: "Registration failed" });
     }
   });
 
