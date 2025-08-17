@@ -1,7 +1,7 @@
 import { neon } from '@neondatabase/serverless';
 import crypto from 'crypto';
 
-const sql = neon(process.env.DATABASE_URL || process.env.NETLIFY_DATABASE_URL);
+const sql = neon("postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require");
 
 export const handler = async (event, context) => {
   const headers = {
