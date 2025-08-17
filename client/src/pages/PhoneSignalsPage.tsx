@@ -6,16 +6,18 @@ import { TrendingUp, TrendingDown, Minus, Clock, Bell, Signal, Home, CreditCard,
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Link } from 'wouter';
+import { Link, useLocation } from 'wouter';
 import { SubscriptionStatusBadge } from '@/components/SubscriptionStatusBadge';
 import { useToast } from '@/hooks/use-toast';
 
 // Pricing Card Component
 function PricingCard() {
+  const [, setLocation] = useLocation();
+
   const handlePlanSelect = (plan: string) => {
     console.log('Selected plan:', plan);
-    // Navigate to Plans tab in navbar instead of opening new window
-    window.location.href = '/plans';
+    // Fast navigation using React Router
+    setLocation('/plans');
   };
 
   return (
