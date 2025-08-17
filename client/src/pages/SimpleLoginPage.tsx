@@ -41,15 +41,15 @@ export function SimpleLoginPage() {
         // Sign up with all fields
         await login(email, firstName, lastName);
         toast({
-          title: "Success",
-          description: "Account created successfully! You now have a free 7-day trial.",
+          title: "Welcome to WatchlistFX!",
+          description: "Account created and signed in successfully! You now have a free 7-day trial to access all forex signals.",
         });
       } else {
         // Sign in with just email
         await login(email);
         toast({
-          title: "Success", 
-          description: "Signed in successfully!",
+          title: "Welcome back!", 
+          description: "Signed in successfully. Access to forex signals restored.",
         });
       }
     } catch (error: any) {
