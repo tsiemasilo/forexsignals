@@ -564,7 +564,7 @@ export async function registerRoutes(app: express.Application) {
       const origin = req.headers.origin || req.headers.referer?.replace(/\/$/, '') || 'https://watchlistfx.netlify.app';
       
       const ozowData = {
-        SiteCode: "NOS-NOS-005", // Use the actual site code from environment
+        SiteCode: "NOS-NOS-005", // Correct site code as specified
         CountryCode: "ZA",
         CurrencyCode: "ZAR",
         Amount: (parseFloat(plan.price) * 100).toString(), // Ozow expects cents as string
