@@ -133,35 +133,46 @@ function PhoneLoginForm() {
             </div>
           </div>
 
-          {/* Free Trial Promotion */}
+          {/* Free Trial Badge */}
           <div style={{ 
-            textAlign: 'center', 
-            marginBottom: '25px',
-            padding: '15px',
-            background: 'linear-gradient(135deg, #10b981, #059669)',
-            borderRadius: '12px',
-            boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)',
-            border: '2px solid rgba(255, 255, 255, 0.2)'
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginBottom: '25px'
           }}>
             <div style={{ 
-              fontSize: '16px', 
-              color: '#ffffff', 
-              fontWeight: 700,
-              textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
-              letterSpacing: '0.5px',
-              lineHeight: '1.3'
+              position: 'relative',
+              display: 'inline-block',
+              background: 'linear-gradient(45deg, #ff6b6b, #ee5a24)',
+              padding: '12px 20px',
+              borderRadius: '25px',
+              boxShadow: '0 8px 25px rgba(255, 107, 107, 0.4)',
+              transform: 'rotate(-2deg)',
+              border: '3px solid #ffffff'
             }}>
-              ✨ NEW USERS GET ✨
-            </div>
-            <div style={{ 
-              fontSize: '20px', 
-              color: '#ffffff', 
-              fontWeight: 800,
-              textShadow: '0 1px 3px rgba(0, 0, 0, 0.2)',
-              letterSpacing: '1px',
-              marginTop: '3px'
-            }}>
-              7-DAY FREE TRIAL
+              <div style={{ 
+                fontSize: '14px', 
+                color: '#ffffff', 
+                fontWeight: 800,
+                textTransform: 'uppercase',
+                letterSpacing: '1.5px',
+                textAlign: 'center',
+                textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
+                lineHeight: '1.2'
+              }}>
+                🎁 7-Day FREE Trial
+              </div>
+              {/* Shine effect */}
+              <div style={{
+                position: 'absolute',
+                top: '3px',
+                left: '3px',
+                right: '3px',
+                height: '40%',
+                background: 'linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 50%, transparent 100%)',
+                borderRadius: '20px',
+                pointerEvents: 'none'
+              }}></div>
             </div>
           </div>
 
