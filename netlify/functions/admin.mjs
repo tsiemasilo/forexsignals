@@ -77,7 +77,7 @@ export const handler = async (event, context) => {
 
       // Create new subscription
       const result = await sql`
-        INSERT INTO subscriptions ("userId", "planId", status, "startDate", "endDate", "createdAt")
+        INSERT INTO subscriptions ("userId", "planId", status, "startDate", "endDate", created_at)
         VALUES (${userId}, ${planId}, ${status}, NOW(), ${endDate}, NOW())
         RETURNING *
       `;
@@ -101,7 +101,7 @@ export const handler = async (event, context) => {
 
       // Create trial subscription
       const result = await sql`
-        INSERT INTO subscriptions ("userId", "planId", status, "startDate", "endDate", "createdAt")
+        INSERT INTO subscriptions ("userId", "planId", status, "startDate", "endDate", created_at)
         VALUES (${userId}, 1, 'trial', NOW(), ${endDate.toISOString()}, NOW())
         RETURNING *
       `;

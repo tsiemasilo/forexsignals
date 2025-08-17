@@ -41,7 +41,7 @@ export const handler = async (event, context) => {
       // Get all signals
       const signals = await sql`
         SELECT * FROM forex_signals 
-        ORDER BY "createdAt" DESC
+        ORDER BY created_at DESC
       `;
 
       return {
