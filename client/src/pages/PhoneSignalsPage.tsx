@@ -394,36 +394,36 @@ export function PhoneSignalsPage() {
       {user && (
         <header className="bg-gray-900 shadow-sm border-b relative z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16 md:h-20">
+          <div className="flex justify-between items-center h-16 md:h-24 lg:h-28">
             {/* Logo and Navigation */}
             <div className="flex items-center space-x-8">
               <Link href="/">
                 <div className="flex items-center space-x-2 cursor-pointer">
-                  <Signal className="h-8 w-8 md:h-10 md:w-10 text-green-600"/>
-                  <span className="text-xl md:text-2xl font-bold text-white">Watchlist Fx</span>
+                  <Signal className="h-8 w-8 md:h-12 md:w-12 lg:h-14 lg:w-14 text-green-600"/>
+                  <span className="text-xl md:text-3xl lg:text-4xl font-bold text-white">Watchlist Fx</span>
                 </div>
               </Link>
               
-              <nav className="hidden md:flex space-x-6">
+              <nav className="hidden md:flex space-x-6 lg:space-x-8">
                 <Link href="/">
                   <span className="flex items-center space-x-1 text-gray-300 hover:text-green-400 transition-colors cursor-pointer">
-                    <Home className="h-4 w-4" />
-                    <span>Home</span>
+                    <Home className="h-4 w-4 md:h-5 md:w-5 lg:h-6 lg:w-6" />
+                    <span className="text-sm md:text-base lg:text-lg">Home</span>
                   </span>
                 </Link>
                 
                 <Link href="/signals">
                   <span className="flex items-center space-x-1 text-gray-300 hover:text-green-400 transition-colors cursor-pointer">
-                    <Signal className="h-4 w-4" />
-                    <span>Signals</span>
+                    <Signal className="h-4 w-4 md:h-5 md:w-5 lg:h-6 lg:w-6" />
+                    <span className="text-sm md:text-base lg:text-lg">Signals</span>
                   </span>
                 </Link>
                 
                 {!user?.isAdmin && (
                   <Link href="/plans">
                     <span className="flex items-center space-x-1 text-gray-300 hover:text-green-400 transition-colors cursor-pointer">
-                      <CreditCard className="h-4 w-4" />
-                      <span>Plans</span>
+                      <CreditCard className="h-4 w-4 md:h-5 md:w-5 lg:h-6 lg:w-6" />
+                      <span className="text-sm md:text-base lg:text-lg">Plans</span>
                     </span>
                   </Link>
                 )}
@@ -432,8 +432,8 @@ export function PhoneSignalsPage() {
                   <>
                     <Link href="/admin">
                       <span className="flex items-center space-x-1 text-gray-300 hover:text-green-400 transition-colors cursor-pointer">
-                        <Settings className="h-4 w-4" />
-                        <span>Admin</span>
+                        <Settings className="h-4 w-4 md:h-5 md:w-5 lg:h-6 lg:w-6" />
+                        <span className="text-sm md:text-base lg:text-lg">Admin</span>
                       </span>
                     </Link>
                     <Link href="/admin/users">
@@ -455,20 +455,20 @@ export function PhoneSignalsPage() {
               {/* User Info */}
               <div className="flex items-center space-x-3">
                 <div className="text-right">
-                  <p className="text-sm font-medium text-white">
+                  <p className="text-sm md:text-base lg:text-lg font-medium text-white">
                     {user?.firstName} {user?.lastName}
                   </p>
-                  <p className="text-xs text-gray-300">{user?.email}</p>
+                  <p className="text-xs md:text-sm lg:text-base text-gray-300">{user?.email}</p>
                 </div>
                 
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={handleLogout}
-                  className="flex items-center space-x-1 md:px-4 md:py-2"
+                  className="flex items-center space-x-1 md:px-6 md:py-3 lg:px-8 lg:py-4"
                 >
-                  <LogOut className="h-4 w-4 md:h-5 md:w-5" />
-                  <span className="text-sm md:text-base">Logout</span>
+                  <LogOut className="h-4 w-4 md:h-5 md:w-5 lg:h-6 lg:w-6" />
+                  <span className="text-sm md:text-base lg:text-lg">Logout</span>
                 </Button>
               </div>
             </div>
@@ -478,7 +478,7 @@ export function PhoneSignalsPage() {
       )}
 
       {/* Phone Interface Container */}
-      <div className={`py-8 flex items-center justify-center ${user ? 'min-h-[calc(100vh-4rem)] md:min-h-[calc(100vh-5rem)]' : 'min-h-screen'}`}>
+      <div className={`py-8 flex items-center justify-center ${user ? 'min-h-[calc(100vh-4rem)] md:min-h-[calc(100vh-6rem)] lg:min-h-[calc(100vh-7rem)]' : 'min-h-screen'}`}>
         <div className="w-full max-w-6xl mx-auto px-4">
           <div className="flex justify-center">
           {/* Phone Mockup */}
