@@ -180,11 +180,11 @@ export function Plans() {
       {/* Header */}
       <div className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex justify-between items-center h-14 md:h-16">
             <Link href="/">
               <div className="flex items-center space-x-2 cursor-pointer">
-                <Signal className="h-8 w-8 text-green-600" />
-                <span className="text-xl font-bold text-gray-900">Watchlist Fx</span>
+                <Signal className="h-6 w-6 md:h-8 md:w-8 text-green-600" />
+                <span className="text-lg md:text-xl font-bold text-gray-900">Watchlist Fx</span>
               </div>
             </Link>
             
@@ -207,14 +207,14 @@ export function Plans() {
               </div>
             </nav>
             
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 md:space-x-4">
               {user ? (
-                <span className="text-gray-700">Hi, {user.firstName}</span>
+                <span className="text-gray-700 text-sm md:text-base">Hi, {user.firstName}</span>
               ) : (
-                <Link href="/login">
-                  <a className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors">
-                    Sign In
-                  </a>
+                <Link href="/signals">
+                  <div className="bg-green-600 text-white px-3 py-1.5 md:px-4 md:py-2 rounded-md hover:bg-green-700 transition-colors text-sm md:text-base cursor-pointer">
+                    Back to Signals
+                  </div>
                 </Link>
               )}
             </div>
@@ -223,35 +223,35 @@ export function Plans() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="text-center mb-16">
-          <h1 className="text-5xl font-bold text-white mb-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-20">
+        <div className="text-center mb-8 md:mb-16">
+          <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 md:mb-6 leading-tight">
             Choose Your Trading Plan
           </h1>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+          <p className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto px-2">
             Get premium forex trading signals delivered directly to your phone. 
             Professional analysis, real-time alerts, and expert insights to maximize your trading potential.
           </p>
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto">
           {plans.map((plan: any) => (
             <div 
               key={plan.id} 
-              className="rounded-2xl p-2.5 bg-white text-gray-600 max-w-sm mx-auto h-full"
+              className="rounded-2xl p-2 md:p-2.5 bg-white text-gray-600 max-w-sm mx-auto h-full"
               style={{ boxShadow: '0 30px 30px -25px rgba(0, 38, 255, 0.205)' }}
             >
-              <div className="relative bg-blue-50 rounded-xl p-5 pt-10 h-full flex flex-col">
+              <div className="relative bg-blue-50 rounded-xl p-4 md:p-5 pt-8 md:pt-10 h-full flex flex-col">
                 <div 
-                  className="absolute top-0 right-0 flex items-center px-3 py-2 text-xl font-semibold text-blue-800"
+                  className="absolute top-0 right-0 flex items-center px-2 md:px-3 py-1.5 md:py-2 text-lg md:text-xl font-semibold text-blue-800"
                   style={{ 
                     backgroundColor: '#bed6fb',
                     borderRadius: '99em 0 0 99em'
                   }}
                 >
-                  <span>
-                    R{plan.price} <span className="text-sm ml-1 opacity-75">/ {plan.duration} {plan.duration === 1 ? 'day' : 'days'}</span>
+                  <span className="text-sm md:text-base">
+                    R{plan.price} <span className="text-xs md:text-sm ml-1 opacity-75">/ {plan.duration} {plan.duration === 1 ? 'day' : 'days'}</span>
                   </span>
                 </div>
                 
@@ -320,7 +320,7 @@ export function Plans() {
                 
                 <div className="mt-auto">
                   <button 
-                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-lg rounded-md px-4 py-2.5 transition-colors duration-200"
+                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-base md:text-lg rounded-md px-4 py-2 md:py-2.5 transition-colors duration-200"
                     onClick={() => handleSubscribe(plan)}
                   >
                     Choose Plan
@@ -332,33 +332,39 @@ export function Plans() {
         </div>
 
         {/* Trust Indicators */}
-        <div className="mt-20 text-center">
-          <p className="text-gray-400 mb-8">Trusted by thousands of traders across South Africa</p>
-          <div className="flex justify-center items-center space-x-8 opacity-60">
-            <div className="text-2xl font-bold text-gray-500">1000+</div>
-            <div className="text-gray-500">Active Traders</div>
-            <div className="text-2xl font-bold text-gray-500">95%</div>
-            <div className="text-gray-500">Success Rate</div>
-            <div className="text-2xl font-bold text-gray-500">24/7</div>
-            <div className="text-gray-500">Support</div>
+        <div className="mt-12 md:mt-20 text-center">
+          <p className="text-gray-400 mb-6 md:mb-8 px-4 text-sm md:text-base">Trusted by thousands of traders across South Africa</p>
+          <div className="grid grid-cols-3 gap-4 md:flex md:justify-center md:items-center md:space-x-8 opacity-60">
+            <div className="text-center">
+              <div className="text-xl md:text-2xl font-bold text-gray-500">1000+</div>
+              <div className="text-gray-500 text-xs md:text-sm">Active Traders</div>
+            </div>
+            <div className="text-center">
+              <div className="text-xl md:text-2xl font-bold text-gray-500">95%</div>
+              <div className="text-gray-500 text-xs md:text-sm">Success Rate</div>
+            </div>
+            <div className="text-center">
+              <div className="text-xl md:text-2xl font-bold text-gray-500">24/7</div>
+              <div className="text-gray-500 text-xs md:text-sm">Support</div>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Payment Dialog */}
       <Dialog open={isPaymentDialogOpen} onOpenChange={setIsPaymentDialogOpen}>
-        <DialogContent className="sm:max-w-2xl">
+        <DialogContent className="sm:max-w-2xl mx-4 max-w-[calc(100vw-2rem)]">
           <DialogHeader>
-            <DialogTitle className="text-center text-2xl font-bold">Choose Payment Method</DialogTitle>
-            <DialogDescription className="text-center">
+            <DialogTitle className="text-center text-xl md:text-2xl font-bold">Choose Payment Method</DialogTitle>
+            <DialogDescription className="text-center text-sm md:text-base">
               Select your preferred payment method for {selectedPlan?.name}
             </DialogDescription>
           </DialogHeader>
           
-          <div className="flex flex-col md:flex-row gap-6 justify-center items-center py-4">
+          <div className="flex flex-col gap-4 md:gap-6 justify-center items-center py-2 md:py-4">
             {/* Yoco Payment Card */}
             <div 
-              className="payment-card relative w-60 h-80 bg-transparent rounded-2xl overflow-hidden cursor-pointer transform transition-transform duration-200 hover:scale-105"
+              className="payment-card relative w-full max-w-xs md:w-60 h-72 md:h-80 bg-transparent rounded-2xl overflow-hidden cursor-pointer transform transition-transform duration-200 hover:scale-105"
               style={{ boxShadow: '0px 8px 28px -9px rgba(0,0,0,0.45)' }}
               onClick={handleYocoPayment}
             >
@@ -407,7 +413,7 @@ export function Plans() {
 
             {/* Ozow Payment Card */}
             <div 
-              className="payment-card relative w-60 h-80 bg-transparent rounded-2xl overflow-hidden cursor-pointer transform transition-transform duration-200 hover:scale-105"
+              className="payment-card relative w-full max-w-xs md:w-60 h-72 md:h-80 bg-transparent rounded-2xl overflow-hidden cursor-pointer transform transition-transform duration-200 hover:scale-105"
               style={{ boxShadow: '0px 8px 28px -9px rgba(0,0,0,0.45)' }}
               onClick={handleOzowPayment}
             >
