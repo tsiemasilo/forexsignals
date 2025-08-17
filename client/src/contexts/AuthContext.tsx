@@ -42,13 +42,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string) => {
     try {
+      console.log("=== FRONTEND LOGIN ATTEMPT ===");
+      console.log("Email:", email);
+      
       const response = await apiRequest("/api/login", {
         method: "POST",
         body: JSON.stringify({ email }),
       });
+      
+      console.log('Login response:', response);
       console.log('Login response user:', response.user);
       setUser(response.user);
     } catch (error: any) {
+      console.log("Frontend login error:", error);
       // Re-throw the error with all its properties preserved
       throw error;
     }
