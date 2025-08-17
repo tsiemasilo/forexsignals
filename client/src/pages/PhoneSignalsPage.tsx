@@ -1,13 +1,18 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useRealtimeSignals } from '@/hooks/useRealtimeSignals';
-import { TrendingUp, TrendingDown, Minus, Clock, Bell } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, Clock, Bell, Signal, Home, CreditCard, Settings, Users, LogOut } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Link } from 'wouter';
 import { SubscriptionStatusBadge } from '@/components/SubscriptionStatusBadge';
 
 export function PhoneSignalsPage() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const { signals = [], isLoading, error } = useRealtimeSignals();
+
+  const handleLogout = () => {
+    logout();
+  };
 
 
 
@@ -50,9 +55,92 @@ export function PhoneSignalsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 py-8">
-      <div className="max-w-4xl mx-auto px-4">
-        <div className="flex justify-center">
+    <div className="min-h-screen bg-slate-100">
+      {/* App Header/Navbar */}
+      <header className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            {/* Logo and Navigation */}
+            <div className="flex items-center space-x-8">
+              <Link href="/">
+                <div className="flex items-center space-x-2 cursor-pointer">
+                  <Signal className="h-8 w-8 text-green-600"/>
+                  <span className="text-xl font-bold text-gray-900">Watchlist Fx</span>
+                </div>
+              </Link>
+              
+              <nav className="hidden md:flex space-x-6">
+                <Link href="/">
+                  <a className="flex items-center space-x-1 text-gray-700 hover:text-green-600 transition-colors">
+                    <Home className="h-4 w-4"/>
+                    <span>Home</span>
+                  </a>
+                </Link>
+                <Link href="/signals">
+                  <a className="flex items-center space-x-1 text-gray-700 hover:text-green-600 transition-colors">
+                    <Signal className="h-4 w-4"/>
+                    <span>Signals</span>
+                  </a>
+                </Link>
+                {!user?.isAdmin && (
+                  <Link href="/plans">
+                    <a className="flex items-center space-x-1 text-gray-700 hover:text-green-600 transition-colors">
+                      <CreditCard className="h-4 w-4"/>
+                      <span>Plans</span>
+                    </a>
+                  </Link>
+                )}
+                {user?.isAdmin && (
+                  <>
+                    <Link href="/admin">
+                      <a className="flex items-center space-x-1 text-gray-700 hover:text-green-600 transition-colors">
+                        <Settings className="h-4 w-4"/>
+                        <span>Admin</span>
+                      </a>
+                    </Link>
+                    <Link href="/admin/users">
+                      <a className="flex items-center space-x-1 text-gray-700 hover:text-green-600 transition-colors">
+                        <Users className="h-4 w-4"/>
+                        <span>Manage Users</span>
+                      </a>
+                    </Link>
+                  </>
+                )}
+              </nav>
+            </div>
+
+            {/* User Info and Status */}
+            <div className="flex items-center space-x-4">
+              {/* Subscription Status Badge */}
+              <SubscriptionStatusBadge />
+              
+              {/* User Info */}
+              <div className="flex items-center space-x-3">
+                <div className="text-right">
+                  <p className="text-sm font-medium text-gray-900">
+                    {user?.firstName} {user?.lastName}
+                  </p>
+                  <p className="text-xs text-gray-500">{user?.email}</p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleLogout}
+                  className="flex items-center space-x-1"
+                >
+                  <LogOut className="h-4 w-4"/>
+                  <span>Logout</span>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Phone Interface Container */}
+      <div className="bg-gradient-to-br from-slate-100 to-slate-200 py-8">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="flex justify-center">
           {/* Phone Mockup */}
           <div className="relative scale-85 md:scale-100">
             {/* Phone Frame */}
@@ -160,6 +248,7 @@ export function PhoneSignalsPage() {
                 <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-slate-900 rounded-full"></div>
               </div>
             </div>
+          </div>
           </div>
         </div>
       </div>
