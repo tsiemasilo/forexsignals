@@ -77,7 +77,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Always redirect admin users to admin dashboard after login
         console.log('Auto-redirecting admin to admin dashboard from path:', currentPath);
         // Use immediate redirect without setTimeout to prevent issues
-        window.location.href = "/admin";
+        setTimeout(() => {
+          console.log('🚀 REDIRECTING ADMIN TO DASHBOARD 🚀');
+          window.location.href = "/admin";
+        }, 500); // Give a moment for session to fully save
       } else {
         console.log('❌ Not admin user - isAdmin:', response.user?.isAdmin);
       }
