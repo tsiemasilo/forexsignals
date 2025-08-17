@@ -41,16 +41,16 @@ function PhoneLoginForm({ onSignupClick }: { onSignupClick: () => void }) {
   };
 
   return (
-    <div className="h-full flex flex-col items-center p-2 pb-8">
-      <div className="text-center mb-3 mt-2">
-        <div className="flex items-center justify-center space-x-2 mb-1">
-          <Signal className="h-5 w-5 text-green-600" />
-          <h1 className="text-lg font-bold text-gray-900">Watchlist Fx</h1>
+    <div className="h-full flex flex-col items-center p-4 overflow-y-auto bg-gray-600">
+      <div className="text-center mb-4 mt-4">
+        <div className="flex items-center justify-center space-x-2 mb-2">
+          <Signal className="h-6 w-6 text-green-600" />
+          <h1 className="text-xl font-bold text-white">Watchlist Fx</h1>
         </div>
-        <p className="text-gray-600 text-xs">Professional Trading Signals</p>
+        <p className="text-gray-200 text-xs">Professional Trading Signals</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="w-full max-w-xs bg-white p-3 rounded-xl shadow-lg space-y-2">
+      <form onSubmit={handleSubmit} className="w-full max-w-sm bg-white p-3 rounded-2xl shadow-lg space-y-2 mb-4">
         <div className="space-y-1">
           <label className="text-gray-900 font-semibold text-xs">Email</label>
           <div className="border border-gray-300 rounded-lg h-9 flex items-center px-2 focus-within:border-blue-500 transition-colors">
@@ -211,94 +211,111 @@ function PhoneSignupForm({ onSigninClick }: { onSigninClick: () => void }) {
   };
 
   return (
-    <div className="h-full flex flex-col items-center p-2 pb-8">
-      <div className="text-center mb-2 mt-1">
-        <div className="flex items-center justify-center space-x-2 mb-1">
-          <Signal className="h-5 w-5 text-green-600" />
-          <h1 className="text-lg font-bold text-gray-900">Watchlist Fx</h1>
+    <div className="h-full flex flex-col items-center p-4 overflow-y-auto bg-gray-600">
+      <div className="text-center mb-3 mt-2">
+        <div className="flex items-center justify-center space-x-2 mb-2">
+          <Signal className="h-6 w-6 text-green-600" />
+          <h1 className="text-xl font-bold text-white">Watchlist Fx</h1>
         </div>
-        <p className="text-gray-600 text-xs">Create Your Account</p>
+        <p className="text-gray-200 text-xs">Create Your Account</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="w-full max-w-xs bg-white p-2 rounded-xl shadow-lg space-y-1">
-        <div className="grid grid-cols-2 gap-2">
-          <div>
-            <label className="text-gray-900 font-semibold text-xs">Name</label>
-            <div className="border border-gray-300 rounded h-7 flex items-center px-2 focus-within:border-blue-500 transition-colors">
-              <input 
-                placeholder="Full name" 
-                className="border-none outline-none w-full h-full text-xs"
-                type="text" 
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-          </div>
-          <div>
-            <label className="text-gray-900 font-semibold text-xs">Email</label>
-            <div className="border border-gray-300 rounded h-7 flex items-center px-2 focus-within:border-blue-500 transition-colors">
-              <input 
-                placeholder="Email" 
-                className="border-none outline-none w-full h-full text-xs"
-                type="email" 
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
+      <form onSubmit={handleSubmit} className="w-full max-w-sm bg-white p-3 rounded-2xl shadow-lg space-y-2 mb-4">
+        <div className="space-y-1">
+          <label className="text-gray-900 font-semibold text-xs">Full Name</label>
+          <div className="border border-gray-300 rounded-lg h-8 flex items-center px-2 focus-within:border-blue-500 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+            <input 
+              placeholder="Enter your full name" 
+              className="ml-2 border-none outline-none w-full h-full text-xs"
+              type="text" 
+              name="name"
+              value={formData.name}
+              onChange={handleInputChange}
+              required
+            />
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-2">
-          <div>
-            <label className="text-gray-900 font-semibold text-xs">Password</label>
-            <div className="border border-gray-300 rounded h-7 flex items-center px-2 focus-within:border-blue-500 transition-colors">
-              <input 
-                placeholder="Password" 
-                className="border-none outline-none w-full h-full text-xs"
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
+        <div className="space-y-1">
+          <label className="text-gray-900 font-semibold text-xs">Email</label>
+          <div className="border border-gray-300 rounded-lg h-8 flex items-center px-2 focus-within:border-blue-500 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width={12} viewBox="0 0 32 32" height={12} className="text-gray-400">
+              <g data-name="Layer 3" id="Layer_3">
+                <path d="m30.853 13.87a15 15 0 0 0 -29.729 4.082 15.1 15.1 0 0 0 12.876 12.918 15.6 15.6 0 0 0 2.016.13 14.85 14.85 0 0 0 7.715-2.145 1 1 0 1 0 -1.031-1.711 13.007 13.007 0 1 1 5.458-6.529 2.149 2.149 0 0 1 -4.158-.759v-10.856a1 1 0 0 0 -2 0v1.726a8 8 0 1 0 .2 10.325 4.135 4.135 0 0 0 7.83.274 15.2 15.2 0 0 0 .823-7.455zm-14.853 8.13a6 6 0 1 1 6-6 6.006 6.006 0 0 1 -6 6z" fill="currentColor"/>
+              </g>
+            </svg>
+            <input 
+              placeholder="Enter your Email" 
+              className="ml-2 border-none outline-none w-full h-full text-xs"
+              type="email" 
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              required
+            />
           </div>
-          <div>
-            <label className="text-gray-900 font-semibold text-xs">Confirm</label>
-            <div className="border border-gray-300 rounded h-7 flex items-center px-2 focus-within:border-blue-500 transition-colors">
-              <input 
-                placeholder="Confirm" 
-                className="border-none outline-none w-full h-full text-xs"
-                type="password"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
+        </div>
+
+        <div className="space-y-1">
+          <label className="text-gray-900 font-semibold text-xs">Password</label>
+          <div className="border border-gray-300 rounded-lg h-8 flex items-center px-2 focus-within:border-blue-500 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width={12} viewBox="-64 0 512 512" height={12} className="text-gray-400">
+              <path d="m336 512h-288c-26.453125 0-48-21.523438-48-48v-224c0-26.476562 21.546875-48 48-48h288c26.453125 0 48 21.523438 48 48v224c0 26.476562-21.546875 48-48 48zm-288-288c-8.8125 0-16 7.167969-16 16v224c0 8.832031 7.1875 16 16 16h288c8.8125 0 16-7.167969 16-16v-224c0-8.832031-7.1875-16-16-16zm0 0" fill="currentColor"/>
+              <path d="m304 224c-8.832031 0-16-7.167969-16-16v-80c0-52.929688-43.070312-96-96-96s-96 43.070312-96 96v80c0 8.832031-7.167969 16-16 16s-16-7.167969-16-16v-80c0-70.59375 57.40625-128 128-128s128 57.40625 128 128v80c0 8.832031-7.167969 16-16 16zm0 0" fill="currentColor"/>
+            </svg>
+            <input 
+              placeholder="Create a password" 
+              className="ml-2 border-none outline-none w-full h-full text-xs"
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
+        </div>
+
+        <div className="space-y-1">
+          <label className="text-gray-900 font-semibold text-xs">Confirm Password</label>
+          <div className="border border-gray-300 rounded-lg h-8 flex items-center px-2 focus-within:border-blue-500 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width={12} viewBox="-64 0 512 512" height={12} className="text-gray-400">
+              <path d="m336 512h-288c-26.453125 0-48-21.523438-48-48v-224c0-26.476562 21.546875-48 48-48h288c26.453125 0 48 21.523438 48 48v224c0 26.476562-21.546875 48-48 48zm-288-288c-8.8125 0-16 7.167969-16 16v224c0 8.832031 7.1875 16 16 16h288c8.8125 0 16-7.167969 16-16v-224c0-8.832031-7.1875-16-16-16zm0 0" fill="currentColor"/>
+              <path d="m304 224c-8.832031 0-16-7.167969-16-16v-80c0-52.929688-43.070312-96-96-96s-96 43.070312-96 96v80c0 8.832031-7.167969 16-16 16s-16-7.167969-16-16v-80c0-70.59375 57.40625-128 128-128s128 57.40625 128 128v80c0 8.832031-7.167969 16-16 16zm0 0" fill="currentColor"/>
+            </svg>
+            <input 
+              placeholder="Confirm your password" 
+              className="ml-2 border-none outline-none w-full h-full text-xs"
+              type="password"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleInputChange}
+              required
+            />
           </div>
         </div>
 
         <button 
-          className="w-full bg-gray-900 text-white py-1.5 rounded-lg font-medium hover:bg-gray-800 transition-colors disabled:opacity-60 text-xs mt-2"
+          className="w-full bg-gray-900 text-white py-2 rounded-lg font-medium hover:bg-gray-800 transition-colors disabled:opacity-60 text-sm mt-3"
           type="submit"
           disabled={loading || !formData.name || !formData.email || !formData.password || !formData.confirmPassword}
         >
-          {loading ? "Creating..." : "Sign Up"}
+          {loading ? "Creating Account..." : "Sign Up"}
         </button>
 
         <p className="text-center text-xs text-black">
-          Have an account? 
+          Already have an account? 
           <span onClick={onSigninClick} className="text-blue-500 font-medium cursor-pointer ml-1">Sign In</span>
         </p>
 
+        <p className="text-center text-xs text-black border-t pt-2">Or With</p>
+
         <button 
           type="button"
-          className="w-full h-7 rounded-lg flex justify-center items-center font-medium gap-2 border border-gray-300 bg-white hover:border-blue-500 transition-colors text-xs"
+          className="w-full h-8 rounded-lg flex justify-center items-center font-medium gap-2 border border-gray-300 bg-white hover:border-blue-500 transition-colors text-sm"
         >
           <svg xmlSpace="preserve" viewBox="0 0 512 512" y="0px" x="0px" xmlnsXlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" id="Layer_1" width={16} version="1.1">
             <path d="M113.47,309.408L95.648,375.94l-65.139,1.378C11.042,341.211,0,299.9,0,256
@@ -365,14 +382,14 @@ export function PhoneSignalsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-600 flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-100">
+    <div className="min-h-screen bg-gray-600">
       {/* App Header/Navbar - Only show when user is logged in */}
       {user && (
         <header className="bg-gray-900 shadow-sm border-b">
@@ -461,7 +478,7 @@ export function PhoneSignalsPage() {
       )}
 
       {/* Phone Interface Container */}
-      <div className="bg-gradient-to-br from-slate-100 to-slate-200 py-8">
+      <div className="bg-gray-600 py-8">
         <div className="max-w-4xl mx-auto px-4">
           <div className="flex justify-center">
           {/* Phone Mockup */}
@@ -474,12 +491,12 @@ export function PhoneSignalsPage() {
                 <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-24 h-6 bg-black rounded-b-2xl z-10"></div>
                 
                 {/* Status Bar */}
-                <div className="flex justify-between items-center px-6 pt-8 pb-2 bg-slate-50 flex-shrink-0">
-                  <span className="text-sm font-medium text-slate-900">9:41</span>
+                <div className="flex justify-between items-center px-6 pt-8 pb-2 bg-gray-600 flex-shrink-0">
+                  <span className="text-sm font-medium text-white">9:41</span>
                   <div className="flex items-center space-x-1">
-                    <div className="w-4 h-2 bg-slate-900 rounded-sm"></div>
-                    <div className="w-1 h-2 bg-slate-900 rounded-sm"></div>
-                    <div className="w-6 h-3 border border-slate-900 rounded-sm">
+                    <div className="w-4 h-2 bg-white rounded-sm"></div>
+                    <div className="w-1 h-2 bg-white rounded-sm"></div>
+                    <div className="w-6 h-3 border border-white rounded-sm">
                       <div className="w-4 h-1.5 bg-green-500 rounded-sm m-0.5"></div>
                     </div>
                   </div>
@@ -573,7 +590,7 @@ export function PhoneSignalsPage() {
                   </>
                 ) : (
                   /* Unauthenticated User - Show Login/Signup Form */
-                  <div className="flex-1 bg-gradient-to-br from-blue-50 to-slate-100 overflow-y-auto">
+                  <div className="flex-1 bg-gradient-to-br from-blue-50 to-slate-100">
                     {showSignup ? 
                       <PhoneSignupForm onSigninClick={() => setShowSignup(false)} /> : 
                       <PhoneLoginForm onSignupClick={() => setShowSignup(true)} />
