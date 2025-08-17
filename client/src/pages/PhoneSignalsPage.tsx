@@ -236,12 +236,12 @@ export function PhoneSignalsPage() {
             {/* Phone Frame */}
             <div className="w-80 h-[640px] bg-black rounded-[3rem] p-2 shadow-2xl">
               {/* Phone Screen */}
-              <div className="w-full h-full bg-white rounded-[2.5rem] relative overflow-hidden">
+              <div className="w-full h-full bg-white rounded-[2.5rem] relative overflow-hidden flex flex-col">
                 {/* Phone Notch */}
                 <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-24 h-6 bg-black rounded-b-2xl z-10"></div>
                 
                 {/* Status Bar */}
-                <div className="flex justify-between items-center px-6 pt-8 pb-2 bg-slate-50">
+                <div className="flex justify-between items-center px-6 pt-8 pb-2 bg-slate-50 flex-shrink-0">
                   <span className="text-sm font-medium text-slate-900">9:41</span>
                   <div className="flex items-center space-x-1">
                     <div className="w-4 h-2 bg-slate-900 rounded-sm"></div>
