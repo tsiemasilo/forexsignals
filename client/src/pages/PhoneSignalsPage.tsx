@@ -105,7 +105,7 @@ function PhoneLoginForm() {
   }
 
   return (
-    <div className="flex-1 flex justify-center px-4" style={{ paddingTop: '80px', paddingBottom: '40px' }}>
+    <div className="flex-1 flex justify-center px-4" style={{ paddingTop: '40px', paddingBottom: '40px' }}>
       <div className="w-full flex justify-center">
         <form 
           onSubmit={handleSubmit} 
@@ -119,7 +119,7 @@ function PhoneLoginForm() {
           }}
         >
           {/* Logo */}
-          <div className="flex justify-center mb-4">
+          <div className="flex justify-center mb-6" style={{ marginTop: '-10px' }}>
             <div className="flex items-center gap-2">
               <Signal className="h-8 w-8 text-green-600" />
               <div>
