@@ -10,7 +10,7 @@ import { SubscriptionStatusBadge } from '@/components/SubscriptionStatusBadge';
 import { useToast } from '@/hooks/use-toast';
 
 // Phone Login Component
-function PhoneLoginForm() {
+function PhoneLoginForm({ onSignupClick }: { onSignupClick: () => void }) {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
@@ -39,51 +39,296 @@ function PhoneLoginForm() {
   };
 
   return (
-    <div className="h-full flex items-center justify-center p-6">
-      <div className="w-full max-w-sm space-y-6">
-        <div className="text-center">
-          <div className="flex items-center justify-center space-x-2 mb-4">
-            <Signal className="h-8 w-8 text-green-600" />
-            <h1 className="text-2xl font-bold text-gray-900">Watchlist Fx</h1>
-          </div>
-          <p className="text-gray-600 text-sm">Professional Trading Signals</p>
+    <div className="h-full flex flex-col items-center justify-center p-6">
+      <div className="text-center mb-8">
+        <div className="flex items-center justify-center space-x-2 mb-4">
+          <Signal className="h-8 w-8 text-green-600" />
+          <h1 className="text-2xl font-bold text-gray-900">Watchlist Fx</h1>
         </div>
+        <p className="text-gray-600 text-sm">Professional Trading Signals</p>
+      </div>
 
-        <div className="bg-white rounded-xl shadow-lg p-6">
-          <div className="text-center mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Welcome Back</h2>
-            <p className="text-sm text-gray-600">Enter your email to access signals</p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Email Address
-              </label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="your.email@example.com"
+      {/* 3D Isometric Login Form */}
+      <div className="flex justify-center items-center mb-6" style={{ perspective: '1000px' }}>
+        <form onSubmit={handleSubmit}>
+          <ul className="relative list-none p-0 m-0" style={{ transform: 'skewY(-14deg)' }}>
+            <li 
+              className="relative list-none w-52 transition-all duration-300 text-white mb-5 hover:-translate-x-5"
+              style={{ zIndex: 2 }}
+            >
+              <div 
+                className="absolute content-[''] w-10 h-10 top-0 -left-10 transition-all duration-300"
+                style={{ 
+                  background: '#989deb',
+                  transformOrigin: 'right',
+                  transform: 'skewY(45deg)'
+                }}
+              />
+              <div 
+                className="absolute content-[''] w-52 h-10 -top-10 left-0 transition-all duration-300"
+                style={{ 
+                  background: '#989deb',
+                  transformOrigin: 'bottom',
+                  transform: 'skewX(45deg)'
+                }}
+              />
+              <input 
+                className="w-full h-10 relative p-2.5 text-black outline-none border-none text-sm font-medium placeholder-black"
+                style={{ 
+                  background: '#989deb',
+                  border: '0.1px solid #575cb5'
+                }}
+                type="email" 
+                placeholder="Email Address" 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full"
+                required 
               />
-            </div>
-            
-            <Button 
-              type="submit" 
-              className="w-full bg-green-600 hover:bg-green-700" 
+            </li>
+            <button 
+              className="relative list-none w-52 h-10 p-2.5 text-white font-medium cursor-pointer border-none transition-all duration-300 hover:-translate-x-5 disabled:opacity-60 disabled:cursor-not-allowed"
+              style={{ 
+                zIndex: 1,
+                background: '#6d74e3',
+                border: '0.1px solid #575cb5'
+              }}
+              type="submit"
               disabled={loading || !email}
             >
-              {loading ? "Signing In..." : "Sign In"}
-            </Button>
-          </form>
-          
-          <div className="mt-4 text-center text-xs text-gray-500">
-            <p>New user? <Link href="/signup"><span className="text-blue-600 hover:text-blue-800 cursor-pointer font-medium">Create an account</span></Link></p>
-          </div>
+              <div 
+                className="absolute content-[''] w-10 h-10 top-0 -left-10 transition-all duration-300 hover:bg-[#575cb5]"
+                style={{ 
+                  background: '#6d74e3',
+                  transformOrigin: 'right',
+                  transform: 'skewY(45deg)'
+                }}
+              />
+              <div 
+                className="absolute content-[''] w-52 h-10 -top-10 left-0 transition-all duration-300 hover:bg-[#575cb5]"
+                style={{ 
+                  background: '#6d74e3',
+                  transformOrigin: 'bottom',
+                  transform: 'skewX(45deg)'
+                }}
+              />
+              <span className="text-black font-semibold">{loading ? "Signing In..." : "Sign In"}</span>
+            </button>
+          </ul>
+        </form>
+      </div>
+
+      <div className="text-center text-sm text-gray-600">
+        <p>New user? <span onClick={onSignupClick} className="text-blue-600 hover:text-blue-800 cursor-pointer font-medium">Create an account</span></p>
+      </div>
+    </div>
+  );
+}
+
+// Phone Signup Component
+function PhoneSignupForm({ onSigninClick }: { onSigninClick: () => void }) {
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    email: ''
+  });
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.name || !formData.email || !formData.phone) return;
+
+    setLoading(true);
+    try {
+      const response = await fetch('/api/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        throw new Error('Signup failed');
+      }
+
+      toast({
+        title: "Success",
+        description: "Account created successfully! You can now sign in.",
+      });
+
+      // Reset form
+      setFormData({ name: '', phone: '', email: '' });
+    } catch (error) {
+      toast({
+        title: "Signup Failed",
+        description: error instanceof Error ? error.message : "Please try again",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="h-full flex flex-col items-center justify-center p-6">
+      <div className="text-center mb-6">
+        <div className="flex items-center justify-center space-x-2 mb-4">
+          <Signal className="h-8 w-8 text-green-600" />
+          <h1 className="text-2xl font-bold text-gray-900">Watchlist Fx</h1>
         </div>
+        <p className="text-gray-600 text-sm">Create Your Account</p>
+      </div>
+
+      {/* 3D Isometric Signup Form */}
+      <div className="flex justify-center items-center mb-6" style={{ perspective: '1000px' }}>
+        <form onSubmit={handleSubmit}>
+          <ul className="relative list-none p-0 m-0" style={{ transform: 'skewY(-14deg)' }}>
+            <li 
+              className="relative list-none w-52 transition-all duration-300 text-white mb-5 hover:-translate-x-5"
+              style={{ zIndex: 4 }}
+            >
+              <div 
+                className="absolute content-[''] w-10 h-10 top-0 -left-10 transition-all duration-300"
+                style={{ 
+                  background: '#d8daf7',
+                  transformOrigin: 'right',
+                  transform: 'skewY(45deg)'
+                }}
+              />
+              <div 
+                className="absolute content-[''] w-52 h-10 -top-10 left-0 transition-all duration-300"
+                style={{ 
+                  background: '#d8daf7',
+                  transformOrigin: 'bottom',
+                  transform: 'skewX(45deg)'
+                }}
+              />
+              <input 
+                className="w-full h-10 relative p-2.5 text-black outline-none border-none text-sm font-medium placeholder-black"
+                style={{ 
+                  background: '#d8daf7',
+                  border: '0.1px solid #575cb5'
+                }}
+                type="text" 
+                placeholder="Full Name" 
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                required 
+              />
+            </li>
+            <li 
+              className="relative list-none w-52 transition-all duration-300 text-white mb-5 hover:-translate-x-5"
+              style={{ zIndex: 3 }}
+            >
+              <div 
+                className="absolute content-[''] w-10 h-10 top-0 -left-10 transition-all duration-300"
+                style={{ 
+                  background: '#c2c5f3',
+                  transformOrigin: 'right',
+                  transform: 'skewY(45deg)'
+                }}
+              />
+              <div 
+                className="absolute content-[''] w-52 h-10 -top-10 left-0 transition-all duration-300"
+                style={{ 
+                  background: '#c2c5f3',
+                  transformOrigin: 'bottom',
+                  transform: 'skewX(45deg)'
+                }}
+              />
+              <input 
+                className="w-full h-10 relative p-2.5 text-black outline-none border-none text-sm font-medium placeholder-black"
+                style={{ 
+                  background: '#c2c5f3',
+                  border: '0.1px solid #575cb5'
+                }}
+                type="tel"
+                placeholder="Phone Number" 
+                name="phone"
+                value={formData.phone}
+                onChange={handleInputChange}
+                required 
+              />
+            </li>
+            <li 
+              className="relative list-none w-52 transition-all duration-300 text-white mb-5 hover:-translate-x-5"
+              style={{ zIndex: 2 }}
+            >
+              <div 
+                className="absolute content-[''] w-10 h-10 top-0 -left-10 transition-all duration-300"
+                style={{ 
+                  background: '#989deb',
+                  transformOrigin: 'right',
+                  transform: 'skewY(45deg)'
+                }}
+              />
+              <div 
+                className="absolute content-[''] w-52 h-10 -top-10 left-0 transition-all duration-300"
+                style={{ 
+                  background: '#989deb',
+                  transformOrigin: 'bottom',
+                  transform: 'skewX(45deg)'
+                }}
+              />
+              <input 
+                className="w-full h-10 relative p-2.5 text-black outline-none border-none text-sm font-medium placeholder-black"
+                style={{ 
+                  background: '#989deb',
+                  border: '0.1px solid #575cb5'
+                }}
+                type="email" 
+                placeholder="Email Address" 
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                required 
+              />
+            </li>
+            <button 
+              className="relative list-none w-52 h-10 p-2.5 text-white font-medium cursor-pointer border-none transition-all duration-300 hover:-translate-x-5 disabled:opacity-60 disabled:cursor-not-allowed"
+              style={{ 
+                zIndex: 1,
+                background: '#6d74e3',
+                border: '0.1px solid #575cb5'
+              }}
+              type="submit"
+              disabled={loading || !formData.name || !formData.email || !formData.phone}
+            >
+              <div 
+                className="absolute content-[''] w-10 h-10 top-0 -left-10 transition-all duration-300 hover:bg-[#575cb5]"
+                style={{ 
+                  background: '#6d74e3',
+                  transformOrigin: 'right',
+                  transform: 'skewY(45deg)'
+                }}
+              />
+              <div 
+                className="absolute content-[''] w-52 h-10 -top-10 left-0 transition-all duration-300 hover:bg-[#575cb5]"
+                style={{ 
+                  background: '#6d74e3',
+                  transformOrigin: 'bottom',
+                  transform: 'skewX(45deg)'
+                }}
+              />
+              <span className="text-black font-semibold">{loading ? 'Creating Account...' : 'Create Account'}</span>
+            </button>
+          </ul>
+        </form>
+      </div>
+
+      <div className="text-center text-sm text-gray-600">
+        <p>Already have an account? <span onClick={onSigninClick} className="text-blue-600 hover:text-blue-800 cursor-pointer font-medium">Sign In</span></p>
       </div>
     </div>
   );
@@ -93,6 +338,7 @@ export function PhoneSignalsPage() {
   const { user, logout } = useAuth();
   // Only fetch signals if user is authenticated
   const { signals = [], isLoading, error } = useRealtimeSignals();
+  const [showSignup, setShowSignup] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -339,9 +585,12 @@ export function PhoneSignalsPage() {
                     </div>
                   </>
                 ) : (
-                  /* Unauthenticated User - Show Login Form */
+                  /* Unauthenticated User - Show Login/Signup Form */
                   <div className="flex-1 bg-gradient-to-br from-blue-50 to-slate-100">
-                    <PhoneLoginForm />
+                    {showSignup ? 
+                      <PhoneSignupForm onSigninClick={() => setShowSignup(false)} /> : 
+                      <PhoneLoginForm onSignupClick={() => setShowSignup(true)} />
+                    }
                   </div>
                 )}
 
