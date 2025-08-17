@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { apiRequest } from "@/lib/queryClient";
+import { useLocation } from "wouter";
 
 interface User {
   id: number;
@@ -22,6 +23,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [, setLocation] = useLocation();
 
   useEffect(() => {
     checkAuth();
@@ -102,14 +104,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Set user to null immediately for faster UI response
     setUser(null);
     
+    // Use router navigation instead of window.location for smoother transition
+    setLocation("/");
+    
     // Make logout API call in background (don't wait)
     apiRequest("/api/logout", { method: "POST" }).catch(error => {
       console.error("Logout error:", error);
     });
     
-    // Immediate redirect for faster logout experience
-    console.log("🚀 Redirecting to home page after logout");
-    window.location.href = "/";
+    console.log("🚀 Navigated to home page after logout");
   };
 
   return (

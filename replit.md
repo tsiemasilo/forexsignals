@@ -30,6 +30,9 @@ Preferred communication style: Simple, everyday language.
 - Automatic 7-day free trials created instantly upon new user registration
 - Session configuration updated (httpOnly disabled temporarily, unique session name) - browser cookie persistence now working perfectly
 - Users can signup with email+name or signin with just email - seamless experience with immediate access
+- **LOGOUT OPTIMIZATION**: Replaced window.location.href with router navigation to eliminate blank page loading delays
+- **TOAST DISPLAY FIX**: Success messages now appear before login completion to prevent redirect interference
+- **BACKGROUND PROCESSING**: Trial creation and session cleanup run asynchronously for faster response times
 
 ## System Architecture
 
