@@ -133,45 +133,40 @@ function PhoneLoginForm() {
             </div>
           </div>
 
-          {/* Free Trial Badge */}
+          {/* Free Trial Ribbon */}
           <div style={{ 
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginBottom: '25px'
+            position: 'relative',
+            marginBottom: '25px',
+            textAlign: 'center'
           }}>
             <div style={{ 
-              position: 'relative',
               display: 'inline-block',
-              background: 'linear-gradient(45deg, #ff6b6b, #ee5a24)',
-              padding: '12px 20px',
-              borderRadius: '25px',
-              boxShadow: '0 8px 25px rgba(255, 107, 107, 0.4)',
-              transform: 'rotate(-2deg)',
-              border: '3px solid #ffffff'
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              color: '#ffffff',
+              padding: '8px 25px',
+              borderRadius: '20px 20px 20px 20px',
+              fontSize: '13px',
+              fontWeight: 700,
+              letterSpacing: '0.8px',
+              textTransform: 'uppercase',
+              boxShadow: '0 4px 20px rgba(102, 126, 234, 0.4)',
+              border: '2px solid rgba(255, 255, 255, 0.9)',
+              position: 'relative',
+              overflow: 'hidden'
             }}>
-              <div style={{ 
-                fontSize: '14px', 
-                color: '#ffffff', 
-                fontWeight: 800,
-                textTransform: 'uppercase',
-                letterSpacing: '1.5px',
-                textAlign: 'center',
-                textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
-                lineHeight: '1.2'
-              }}>
-                🎁 7-Day FREE Trial
-              </div>
-              {/* Shine effect */}
+              <span style={{ position: 'relative', zIndex: 2 }}>
+                ⚡ 7 Days FREE • Start Now ⚡
+              </span>
+              {/* Animated shimmer effect */}
               <div style={{
                 position: 'absolute',
-                top: '3px',
-                left: '3px',
-                right: '3px',
-                height: '40%',
-                background: 'linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 50%, transparent 100%)',
-                borderRadius: '20px',
-                pointerEvents: 'none'
+                top: 0,
+                left: '-100%',
+                width: '100%',
+                height: '100%',
+                background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)',
+                animation: 'shimmer 2s infinite',
+                zIndex: 1
               }}></div>
             </div>
           </div>
