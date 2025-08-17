@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSubscriptionStatus } from '@/hooks/useSubscriptionStatus';
 
 export function useRealtimeSignals() {
   const { user } = useAuth();
+  const { data: subscriptionStatus } = useSubscriptionStatus();
   const queryClient = useQueryClient();
   const [lastUpdateTime, setLastUpdateTime] = useState<Date>(new Date());
 
@@ -19,11 +21,11 @@ export function useRealtimeSignals() {
       }
       return response.json();
     },
-    refetchInterval: user ? 5000 : false, // Only auto-refresh when user is authenticated
+    refetchInterval: (user && subscriptionStatus?.status !== 'expired' && subscriptionStatus?.status !== 'inactive') ? 5000 : false, // Only auto-refresh for active users
     refetchIntervalInBackground: false,
     staleTime: 2000,
     retry: false,
-    enabled: !!user, // Only enable query when user is authenticated
+    enabled: !!(user && subscriptionStatus?.status !== 'expired' && subscriptionStatus?.status !== 'inactive'), // Only enable for active users
   });
 
   // Simplified manual refresh without conflicting intervals
