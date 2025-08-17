@@ -92,10 +92,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await apiRequest("/api/logout", { method: "POST" });
       console.log("✅ Logout API call successful");
       setUser(null);
+      // Redirect to home page after successful logout
+      console.log("🚀 Redirecting to home page after logout");
+      window.location.href = "/";
     } catch (error) {
       console.error("Logout error:", error);
-      // Even if API fails, clear user locally
+      // Even if API fails, clear user locally and redirect
       setUser(null);
+      window.location.href = "/";
     }
   };
 
