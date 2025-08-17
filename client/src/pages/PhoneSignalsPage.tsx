@@ -655,21 +655,21 @@ export function PhoneSignalsPage() {
       {/* Phone Container */}
 
       {/* Phone Interface Container */}
-      <div className="bg-gradient-to-br from-slate-100 to-slate-200 py-4 md:py-8">
-        <div className="max-w-4xl mx-auto px-2 md:px-4">
+      <div className="bg-gradient-to-br from-slate-100 to-slate-200 py-8">
+        <div className="max-w-4xl mx-auto px-4">
           <div className="flex justify-center">
           {/* Phone Mockup */}
-          <div className="relative w-full max-w-sm md:max-w-none md:scale-100">
+          <div className="relative scale-85 md:scale-100">
             {/* Phone Frame */}
-            <div className="w-full md:w-80 h-[600px] md:h-[640px] bg-black rounded-[2rem] md:rounded-[3rem] p-1 md:p-2 shadow-2xl">
+            <div className="w-80 h-[640px] bg-black rounded-[3rem] p-2 shadow-2xl">
               {/* Phone Screen */}
-              <div className="w-full h-full bg-white rounded-[1.8rem] md:rounded-[2.5rem] relative overflow-hidden">
+              <div className="w-full h-full bg-white rounded-[2.5rem] relative overflow-hidden">
                 {/* Phone Notch */}
-                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-20 md:w-24 h-5 md:h-6 bg-black rounded-b-xl md:rounded-b-2xl z-10"></div>
+                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-24 h-6 bg-black rounded-b-2xl z-10"></div>
                 
                 {/* Status Bar */}
-                <div className="flex justify-between items-center px-4 md:px-6 pt-6 md:pt-8 pb-2 bg-slate-50">
-                  <span className="text-xs md:text-sm font-medium text-slate-900">
+                <div className="flex justify-between items-center px-6 pt-8 pb-2 bg-slate-50">
+                  <span className="text-sm font-medium text-slate-900">
                     {currentTime.toLocaleTimeString('en-US', { 
                       timeZone: 'Africa/Johannesburg',
                       hour: '2-digit', 
@@ -678,10 +678,10 @@ export function PhoneSignalsPage() {
                     })}
                   </span>
                   <div className="flex items-center space-x-1">
-                    <div className="w-3 md:w-4 h-1.5 md:h-2 bg-slate-900 rounded-sm"></div>
-                    <div className="w-0.5 md:w-1 h-1.5 md:h-2 bg-slate-900 rounded-sm"></div>
-                    <div className="w-5 md:w-6 h-2.5 md:h-3 border border-slate-900 rounded-sm">
-                      <div className="w-3 md:w-4 h-1 md:h-1.5 bg-green-500 rounded-sm m-0.5"></div>
+                    <div className="w-4 h-2 bg-slate-900 rounded-sm"></div>
+                    <div className="w-1 h-2 bg-slate-900 rounded-sm"></div>
+                    <div className="w-6 h-3 border border-slate-900 rounded-sm">
+                      <div className="w-4 h-1.5 bg-green-500 rounded-sm m-0.5"></div>
                     </div>
                   </div>
                 </div>
@@ -691,11 +691,11 @@ export function PhoneSignalsPage() {
                   /* Authenticated User - Check Subscription Status */
                   subscriptionStatus?.status === 'expired' || subscriptionStatus?.status === 'inactive' ? (
                     /* Expired/Inactive Subscription - Show Upgrade Message */
-                    <div className="flex-1 flex flex-col items-center text-center px-3 md:px-4 py-3 md:py-4">
-                      <div className="mt-6 md:mt-8">
-                        <AlertTriangle className="w-10 md:w-12 h-10 md:h-12 text-red-500 mb-2 md:mb-3 mx-auto" />
-                        <h3 className="text-sm md:text-base font-semibold text-slate-900 mb-2">Subscription Expired</h3>
-                        <p className="text-xs text-slate-600 mb-4 md:mb-6 leading-relaxed max-w-60 md:max-w-64">
+                    <div className="flex-1 flex flex-col items-center text-center px-4 py-4">
+                      <div className="mt-8">
+                        <AlertTriangle className="w-12 h-12 text-red-500 mb-3 mx-auto" />
+                        <h3 className="text-base font-semibold text-slate-900 mb-2">Subscription Expired</h3>
+                        <p className="text-xs text-slate-600 mb-6 leading-relaxed max-w-64">
                           Your subscription has expired. Please upgrade your plan to continue receiving premium trading signals.
                         </p>
                       </div>
@@ -710,24 +710,23 @@ export function PhoneSignalsPage() {
                     /* Active Subscription - Show Signals */
                     <>
                       {/* Notifications Header */}
-                      <div className="px-3 md:px-6 py-3 md:py-4 border-b border-slate-200">
+                      <div className="px-6 py-4 border-b border-slate-200">
                         <div className="flex items-center justify-between">
-                          <h2 className="text-base md:text-lg font-semibold text-slate-900 flex items-center">
-                            <Bell className="w-4 md:w-5 h-4 md:h-5 mr-2 text-blue-600" />
-                            <span className="hidden sm:inline">Trading Signals</span>
-                            <span className="sm:hidden">Signals</span>
+                          <h2 className="text-lg font-semibold text-slate-900 flex items-center">
+                            <Bell className="w-5 h-5 mr-2 text-blue-600" />
+                            Trading Signals
                           </h2>
                           <SubscriptionStatusBadge />
                         </div>
                       </div>
 
                       {/* Signals Notifications */}
-                      <div className="flex-1 overflow-y-auto max-h-[440px] md:max-h-[480px]">
+                      <div className="flex-1 overflow-y-auto max-h-[480px]">
                         {signals?.length === 0 ? (
-                          <div className="flex flex-col items-center justify-center h-80 md:h-96 text-center px-4 md:px-6">
-                            <Bell className="w-12 md:w-16 h-12 md:h-16 text-slate-300 mb-3 md:mb-4" />
-                            <h3 className="text-base md:text-lg font-medium text-slate-600 mb-2">No New Signals</h3>
-                            <p className="text-xs md:text-sm text-slate-500">
+                          <div className="flex flex-col items-center justify-center h-96 text-center px-6">
+                            <Bell className="w-16 h-16 text-slate-300 mb-4" />
+                            <h3 className="text-lg font-medium text-slate-600 mb-2">No New Signals</h3>
+                            <p className="text-sm text-slate-500">
                               New trading signals will appear here
                             </p>
                           </div>
@@ -736,16 +735,16 @@ export function PhoneSignalsPage() {
                           {signals
                             ?.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
                             ?.map((signal: any) => (
-                              <div key={signal.id} className="mx-2 md:mx-4 my-1.5 md:my-2 bg-white border border-slate-200 rounded-lg md:rounded-xl shadow-sm active:bg-slate-50 transition-colors">
+                              <div key={signal.id} className="mx-4 my-2 bg-white border border-slate-200 rounded-xl shadow-sm">
                                 {/* Notification Header */}
-                                <div className="flex items-center px-3 md:px-4 py-2.5 md:py-3 border-b border-slate-100">
-                                  <div className="w-7 md:w-8 h-7 md:h-8 bg-blue-600 rounded-full flex items-center justify-center mr-2.5 md:mr-3">
-                                    <TrendingUp className="w-3.5 md:w-4 h-3.5 md:h-4 text-white" />
+                                <div className="flex items-center px-4 py-3 border-b border-slate-100">
+                                  <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center mr-3">
+                                    <TrendingUp className="w-4 h-4 text-white" />
                                   </div>
-                                  <div className="flex-1 min-w-0">
+                                  <div className="flex-1">
                                     <div className="flex items-center justify-between">
-                                      <span className="text-xs md:text-sm font-medium text-slate-900 truncate">NAS100 Pro Signals</span>
-                                      <span className="text-xs text-slate-500 ml-2 flex-shrink-0">
+                                      <span className="text-sm font-medium text-slate-900">NAS100 Pro Signals</span>
+                                      <span className="text-xs text-slate-500">
                                         {new Date(signal.createdAt).toLocaleTimeString('en-US', {
                                           hour: '2-digit',
                                           minute: '2-digit'
@@ -757,10 +756,10 @@ export function PhoneSignalsPage() {
                                 </div>
 
                                 {/* Notification Content */}
-                                <div className="px-3 md:px-4 py-2.5 md:py-3">
-                                  <div className="flex items-start justify-between mb-2 gap-2">
-                                    <h3 className="font-semibold text-slate-900 text-xs md:text-sm flex-1 min-w-0">{signal.title}</h3>
-                                    <Badge className={`text-xs ${getTradeActionColor(signal.tradeAction)} flex-shrink-0`}>
+                                <div className="px-4 py-3">
+                                  <div className="flex items-center justify-between mb-2">
+                                    <h3 className="font-semibold text-slate-900 text-sm">{signal.title}</h3>
+                                    <Badge className={`text-xs ${getTradeActionColor(signal.tradeAction)}`}>
                                       {signal.tradeAction.toUpperCase()}
                                     </Badge>
                                   </div>
@@ -769,19 +768,18 @@ export function PhoneSignalsPage() {
                                   </p>
                                   
                                   {/* Quick Action Icons */}
-                                  <div className="flex items-center justify-between mt-2.5 md:mt-3 pt-2 border-t border-slate-100">
+                                  <div className="flex items-center justify-between mt-3 pt-2 border-t border-slate-100">
                                     <Link href={`/signal/${signal.id}`}>
-                                      <div className="flex items-center space-x-2 md:space-x-4 cursor-pointer hover:text-blue-600 transition-colors touch-manipulation">
+                                      <div className="flex items-center space-x-4 cursor-pointer hover:text-blue-600 transition-colors">
                                         {getTradeActionIcon(signal.tradeAction)}
-                                        <span className="text-xs text-slate-500 hidden sm:inline">Tap to view details</span>
-                                        <span className="text-xs text-slate-500 sm:hidden">Details</span>
+                                        <span className="text-xs text-slate-500">Tap to view details</span>
                                       </div>
                                     </Link>
-                                    <div className="flex space-x-1.5 md:space-x-2">
-                                      <div className="w-5 md:w-6 h-5 md:h-6 rounded-full bg-slate-100 flex items-center justify-center touch-manipulation">
+                                    <div className="flex space-x-2">
+                                      <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center">
                                         <span className="text-xs">💰</span>
                                       </div>
-                                      <div className="w-5 md:w-6 h-5 md:h-6 rounded-full bg-slate-100 flex items-center justify-center touch-manipulation">
+                                      <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center">
                                         <span className="text-xs">📊</span>
                                       </div>
                                     </div>
@@ -802,7 +800,7 @@ export function PhoneSignalsPage() {
                 )}
 
                 {/* Home Indicator */}
-                <div className="absolute bottom-1 md:bottom-2 left-1/2 transform -translate-x-1/2 w-28 md:w-32 h-1 bg-slate-900 rounded-full"></div>
+                <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-slate-900 rounded-full"></div>
               </div>
             </div>
           </div>
