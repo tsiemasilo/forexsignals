@@ -26,11 +26,16 @@ export function LoginPage() {
     setLoading(true);
     try {
       if (isRegistering) {
-        await register(email, firstName, lastName);
+        const response = await register(email, firstName, lastName);
         toast({
           title: "Success",
-          description: "Account created and logged in successfully!",
+          description: response.message || "Account created successfully! Please sign in with your email.",
         });
+        // Switch to login mode and clear form fields
+        setIsRegistering(false);
+        setEmail("");
+        setFirstName("");
+        setLastName("");
       } else {
         await login(email);
         toast({

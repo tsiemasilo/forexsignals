@@ -174,18 +174,16 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
         console.log(`✅ Created 7-day trial for new user: ${user.email}`);
       }
 
-      // Set session for new user
-      req.session.userId = user.id;
-      
+      // Don't auto-login after registration - user should login separately
       console.log(`✅ New user registered: ${user.email} (ID: ${user.id})`);
       
       res.json({
+        message: "Account created successfully! Please sign in with your email to continue.",
+        success: true,
         user: {
-          id: user.id,
           email: user.email,
           firstName: user.firstName,
-          lastName: user.lastName,
-          isAdmin: user.isAdmin
+          lastName: user.lastName
         }
       });
     } catch (error) {

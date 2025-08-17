@@ -91,7 +91,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       method: "POST",
       body: JSON.stringify({ email, firstName, lastName }),
     });
-    setUser(response.user);
+    // Don't auto-login after registration - return success response for handling by UI
+    return response;
   };
 
   const logout = async () => {
