@@ -7,6 +7,9 @@ import { DashboardPage } from "@/pages/DashboardPage";
 import { PhoneSignalsPage } from "@/pages/PhoneSignalsPage";
 import { AdminDashboard } from "@/pages/AdminDashboard";
 import { Plans } from "@/pages/Plans";
+import { PaymentSuccess } from "@/pages/PaymentSuccess";
+import { PaymentCancel } from "@/pages/PaymentCancel";
+import { PaymentError } from "@/pages/PaymentError";
 
 function AppRoutes() {
   const { user, loading } = useAuth();
@@ -30,6 +33,9 @@ function AppRoutes() {
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/login" component={LoginPage} />
       <Route path="/plans" component={Plans} />
+      <Route path="/payment-success" component={PaymentSuccess} />
+      <Route path="/payment-cancel" component={PaymentCancel} />
+      <Route path="/payment-error" component={PaymentError} />
       <Route>
         <Redirect to="/" />
       </Route>

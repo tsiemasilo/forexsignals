@@ -560,8 +560,11 @@ export async function registerRoutes(app: express.Application) {
 
       // Create Ozow payment request
       
+      // Get the proper origin URL
+      const origin = req.headers.origin || req.headers.referer?.replace(/\/$/, '') || 'https://watchlistfx.netlify.app';
+      
       const ozowData = {
-        SiteCode: process.env.OZOW_SITE_CODE || "WATCHLISTFX",
+        SiteCode: "NOS-NOS-005", // Use the actual site code from environment
         CountryCode: "ZA",
         CurrencyCode: "ZAR",
         Amount: (parseFloat(plan.price) * 100).toString(), // Ozow expects cents as string
@@ -570,14 +573,31 @@ export async function registerRoutes(app: express.Application) {
         Customer: `${user.firstName} ${user.lastName}`,
         RequestId: `req-${Date.now()}`,
         IsTest: "false", // Set to production
-        SuccessUrl: `${req.headers.origin}/payment-success`,
-        CancelUrl: `${req.headers.origin}/payment-cancel`,
-        ErrorUrl: `${req.headers.origin}/payment-error`,
-        NotifyUrl: `${req.headers.origin}/api/ozow/notify`
+        SuccessUrl: `${origin}/payment-success`,
+        CancelUrl: `${origin}/payment-cancel`,
+        ErrorUrl: `${origin}/payment-error`,
+        NotifyUrl: `${origin}/api/ozow/notify`
       };
 
-      // Calculate hash check (simplified - in production use proper HMAC-SHA256)
-      const hashString = Object.values(ozowData).join('') + (process.env.OZOW_API_KEY || '');
+      // Create hash string in the order Ozow expects
+      const hashInputs = [
+        ozowData.SiteCode,
+        ozowData.CountryCode, 
+        ozowData.CurrencyCode,
+        ozowData.Amount,
+        ozowData.TransactionReference,
+        ozowData.BankReference,
+        ozowData.Customer,
+        ozowData.RequestId,
+        ozowData.IsTest,
+        ozowData.SuccessUrl,
+        ozowData.CancelUrl,
+        ozowData.ErrorUrl,
+        ozowData.NotifyUrl,
+        process.env.OZOW_API_KEY || ''
+      ];
+      
+      const hashString = hashInputs.join('');
       const hashCheck = crypto.createHash('sha256').update(hashString).digest('hex').toLowerCase();
 
       const ozowPayment = {
