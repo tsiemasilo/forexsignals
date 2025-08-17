@@ -379,12 +379,9 @@ export function Plans() {
               {/* Card Content */}
               <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center p-6">
                 <div className="w-16 h-12 mb-4 flex items-center justify-center">
-                  <img 
-                    src="https://cdn.brandfetch.io/idGqhiL13o/theme/dark/logo.svg?c=1bxid64Mup7aczewSAYMX&t=1667785033148" 
-                    alt="Yoco Logo"
-                    className="w-full h-full object-contain"
-                    style={{ filter: 'brightness(0) invert(1)' }}
-                  />
+                  <div className="text-white font-bold text-2xl bg-white/20 rounded-lg px-3 py-1 backdrop-blur-sm">
+                    YOCO
+                  </div>
                 </div>
                 <div className="text-xl font-semibold mb-2">Yoco Payment</div>
                 <div className="text-sm opacity-90">Credit & Debit Cards</div>
