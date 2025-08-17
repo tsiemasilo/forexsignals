@@ -14,18 +14,20 @@ interface SubscriptionStatus {
 }
 
 export function useSubscriptionStatus() {
-  const { user } = useAuth();
+  const { sessionId, user } = useAuth();
 
   return useQuery<SubscriptionStatus>({
     queryKey: ['/api/user/subscription-status'],
-    enabled: !!user, // Only enabled when user is authenticated
-    refetchInterval: user ? 5000 : false, // Only refetch when user is authenticated
+    enabled: true, // Always enabled - let the API handle authorization
+    refetchInterval: 5000, // More frequent refetch - every 5 seconds
     staleTime: 0, // Always consider data stale to force refetch
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     queryFn: () => 
       fetch(`/api/user/subscription-status?t=${Date.now()}`, {
-        credentials: 'include'
+        headers: {
+          'Authorization': `Bearer ${sessionId || 'guest_session'}`
+        }
       }).then(res => {
         if (!res.ok) {
           throw new Error(`${res.status}: ${res.statusText}`);

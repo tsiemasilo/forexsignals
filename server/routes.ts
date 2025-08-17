@@ -27,15 +27,9 @@ export async function registerRoutes(app: express.Application) {
 
   // Auth middleware
   const requireAuth = (req: Request, res: Response, next: any) => {
-    console.log('🔍 Auth middleware - Session ID:', req.sessionID);
-    console.log('🔍 Auth middleware - User ID:', req.session?.userId);
-    console.log('🔍 Auth middleware - Full session:', req.session);
-    
     if (!req.session?.userId) {
-      console.log('❌ Authentication failed - No user ID in session');
       return res.status(401).json({ message: "Authentication required" });
     }
-    console.log('✅ Authentication successful');
     next();
   };
 
@@ -62,94 +56,40 @@ export async function registerRoutes(app: express.Application) {
         return res.status(400).json({ message: "Email is required" });
       }
 
-      // Find user by email
-      const user = await storage.getUserByEmail(email);
+      // Find or create user
+      let user = await storage.getUserByEmail(email);
       
       if (!user) {
-        return res.status(404).json({ message: "User not found. Please sign up first." });
+        // Create new user
+        const [firstName, lastName] = email.split('@')[0].split('.').map((name: string) => 
+          name.charAt(0).toUpperCase() + name.slice(1)
+        );
+        
+        user = await storage.createUser({
+          email,
+          firstName: firstName || "User",
+          lastName: lastName || "Name",
+          isAdmin: false
+        });
       }
 
-      // Regenerate session ID to prevent session fixation
-      req.session.regenerate((err) => {
-        if (err) {
-          console.error('Session regeneration error:', err);
-          return res.status(500).json({ message: "Login failed" });
+      // Set session
+      req.session.userId = user.id;
+      
+      console.log(`✅ User logged in: ${user.email} (ID: ${user.id})`);
+      
+      res.json({
+        user: {
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          isAdmin: user.isAdmin
         }
-        
-        // Set session
-        req.session.userId = user.id;
-        
-        // Save session explicitly
-        req.session.save((err) => {
-          if (err) {
-            console.error('Session save error:', err);
-            return res.status(500).json({ message: "Login failed" });
-          }
-          
-          console.log(`✅ User logged in: ${user.email} (ID: ${user.id})`);
-          console.log(`✅ Session saved: ${req.sessionID}`);
-          
-          res.json({
-            user: {
-              id: user.id,
-              email: user.email,
-              firstName: user.firstName,
-              lastName: user.lastName,
-              isAdmin: user.isAdmin
-            }
-          });
-        });
       });
     } catch (error) {
       console.error('Login error:', error);
       res.status(500).json({ message: "Login failed" });
-    }
-  });
-
-  // Signup endpoint
-  app.post("/api/signup", async (req: Request, res: Response) => {
-    try {
-      console.log('Signup request body:', req.body);
-      const { name, email, phone } = req.body || {};
-      
-      if (!name || !email || !phone) {
-        return res.status(400).json({ message: "Name, email, and phone are required" });
-      }
-
-      // Check if user already exists
-      const existingUser = await storage.getUserByEmail(email);
-      if (existingUser) {
-        return res.status(409).json({ message: "User with this email already exists" });
-      }
-
-      // Parse name into first and last name
-      const nameParts = name.trim().split(' ');
-      const firstName = nameParts[0] || "User";
-      const lastName = nameParts.slice(1).join(' ') || "Name";
-
-      // Create new user
-      const newUser = await storage.createUser({
-        email,
-        firstName,
-        lastName,
-        isAdmin: false
-      });
-
-      console.log(`✅ User created: ${newUser.email} (ID: ${newUser.id})`);
-      
-      res.status(201).json({
-        message: "Account created successfully",
-        user: {
-          id: newUser.id,
-          email: newUser.email,
-          firstName: newUser.firstName,
-          lastName: newUser.lastName,
-          isAdmin: newUser.isAdmin
-        }
-      });
-    } catch (error) {
-      console.error('Signup error:', error);
-      res.status(500).json({ message: "Signup failed" });
     }
   });
 
@@ -164,9 +104,6 @@ export async function registerRoutes(app: express.Application) {
 
   app.get("/api/me", requireAuth, async (req: Request, res: Response) => {
     try {
-      console.log('✅ Auth check - Session ID:', req.sessionID);
-      console.log('✅ Auth check - User ID:', req.session.userId);
-      
       const user = await storage.getUser(req.session.userId!);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
@@ -413,25 +350,18 @@ export async function registerRoutes(app: express.Application) {
   app.post("/api/admin/signals", requireAdmin, async (req: Request, res: Response) => {
     try {
       const userId = req.session.userId!;
-      console.log('📝 Creating signal - Request body:', req.body);
-      console.log('📝 Creating signal - User ID:', userId);
-      
       const validatedData = insertForexSignalSchema.parse({
         ...req.body,
         createdBy: userId
       });
       
-      console.log('✅ Signal data validated:', validatedData);
-      
       const signal = await storage.createSignal(validatedData);
-      console.log('✅ Signal created successfully:', signal);
       res.json(signal);
     } catch (error) {
       if (error instanceof z.ZodError) {
-        console.error('❌ Signal validation error:', error.errors);
         return res.status(400).json({ message: "Invalid signal data", errors: error.errors });
       }
-      console.error('❌ Admin signal creation error:', error);
+      console.error('Admin signal creation error:', error);
       res.status(500).json({ message: "Failed to create signal" });
     }
   });
