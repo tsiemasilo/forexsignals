@@ -72,7 +72,11 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
   // Auth endpoints
   app.post("/api/login", async (req: Request, res: Response) => {
     try {
+      console.log('=== LOGIN REQUEST ===');
       console.log('Login request body:', req.body);
+      console.log('Session before login:', req.session);
+      console.log('Session ID before login:', req.sessionID);
+      
       const { email } = req.body || {};
       
       if (!email) {
@@ -93,7 +97,17 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
       // Set session for existing user
       req.session.userId = user.id;
       
+      console.log('=== LOGIN SUCCESS ===');
       console.log(`✅ User logged in: ${user.email} (ID: ${user.id})`);
+      console.log('Session after login:', req.session);
+      console.log('Session ID after login:', req.sessionID);
+      console.log('User data being returned:', {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        isAdmin: user.isAdmin
+      });
       
       res.json({
         user: {
