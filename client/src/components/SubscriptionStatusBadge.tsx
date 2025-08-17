@@ -7,6 +7,11 @@ export function SubscriptionStatusBadge() {
   const { user } = useAuth();
   const { data: subscriptionStatus, isLoading, error } = useSubscriptionStatus();
 
+  // Don't render if no user is authenticated
+  if (!user) {
+    return null;
+  }
+
   // Debug logging
   console.log('Badge Debug:', { user, subscriptionStatus, isLoading, error });
 

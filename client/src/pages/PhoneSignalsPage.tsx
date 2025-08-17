@@ -91,6 +91,7 @@ function PhoneLoginForm() {
 
 export function PhoneSignalsPage() {
   const { user, logout } = useAuth();
+  // Only fetch signals if user is authenticated
   const { signals = [], isLoading, error } = useRealtimeSignals();
 
   const handleLogout = () => {
@@ -262,7 +263,7 @@ export function PhoneSignalsPage() {
                           <Bell className="w-5 h-5 mr-2 text-blue-600" />
                           Trading Signals
                         </h2>
-                        <SubscriptionStatusBadge />
+                        {user && <SubscriptionStatusBadge />}
                       </div>
                     </div>
 
