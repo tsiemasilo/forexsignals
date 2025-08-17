@@ -190,12 +190,12 @@ export function Plans() {
             
             <nav className="hidden md:flex space-x-6">
               <Link href="/">
-                <a className="text-gray-700 hover:text-green-600 transition-colors">Home</a>
+                <span className="text-gray-700 hover:text-green-600 transition-colors cursor-pointer">Home</span>
               </Link>
               <Link href="/signals">
-                <a className="text-gray-700 hover:text-green-600 transition-colors">Signals</a>
+                <span className="text-gray-700 hover:text-green-600 transition-colors cursor-pointer">Signals</span>
               </Link>
-              <a href="#" className="text-green-600 font-semibold">Plans</a>
+              <span className="text-green-600 font-semibold">Plans</span>
             </nav>
             
             <div className="flex items-center space-x-4">
@@ -230,10 +230,10 @@ export function Plans() {
           {plans.map((plan: any) => (
             <div 
               key={plan.id} 
-              className="rounded-2xl p-2.5 bg-white text-gray-600 max-w-sm mx-auto"
+              className="rounded-2xl p-2.5 bg-white text-gray-600 max-w-sm mx-auto h-full"
               style={{ boxShadow: '0 30px 30px -25px rgba(0, 38, 255, 0.205)' }}
             >
-              <div className="relative bg-blue-50 rounded-xl p-5 pt-10">
+              <div className="relative bg-blue-50 rounded-xl p-5 pt-10 h-full flex flex-col">
                 <div 
                   className="absolute top-0 right-0 flex items-center px-3 py-2 text-xl font-semibold text-blue-800"
                   style={{ 
@@ -246,53 +246,70 @@ export function Plans() {
                   </span>
                 </div>
                 
-                <p className="text-xl font-semibold text-blue-900 mb-3">{plan.name}</p>
-                <p className="text-gray-600 mb-4">{plan.description}</p>
+                <div className="flex-grow">
+                  <p className="text-xl font-semibold text-blue-900 mb-3">{plan.name}</p>
+                  <p className="text-gray-600 mb-6 min-h-[48px]">{plan.description}</p>
+                  
+                  <ul className="space-y-3 mb-6">
+                    <li className="flex items-center gap-2 min-h-[24px]">
+                      <div className="w-5 h-5 bg-teal-400 rounded-full flex items-center justify-center flex-shrink-0">
+                        <Check size={14} className="text-white" />
+                      </div>
+                      <span>Daily <span className="font-semibold text-blue-800">premium signals</span></span>
+                    </li>
+                    <li className="flex items-center gap-2 min-h-[24px]">
+                      <div className="w-5 h-5 bg-teal-400 rounded-full flex items-center justify-center flex-shrink-0">
+                        <Check size={14} className="text-white" />
+                      </div>
+                      <span>Expert <span className="font-semibold text-blue-800">market analysis</span></span>
+                    </li>
+                    <li className="flex items-center gap-2 min-h-[24px]">
+                      <div className="w-5 h-5 bg-teal-400 rounded-full flex items-center justify-center flex-shrink-0">
+                        <Check size={14} className="text-white" />
+                      </div>
+                      <span>Real-time notifications</span>
+                    </li>
+                    <li className="flex items-center gap-2 min-h-[24px]">
+                      <div className="w-5 h-5 bg-teal-400 rounded-full flex items-center justify-center flex-shrink-0">
+                        <Check size={14} className="text-white" />
+                      </div>
+                      <span><span className="font-semibold text-blue-800">24/7</span> support access</span>
+                    </li>
+                    {plan.name === "VIP Plan" ? (
+                      <>
+                        <li className="flex items-center gap-2 min-h-[24px]">
+                          <div className="w-5 h-5 bg-yellow-400 rounded-full flex items-center justify-center flex-shrink-0">
+                            <Star size={14} className="text-white" />
+                          </div>
+                          <span>Priority <span className="font-semibold text-blue-800">signal delivery</span></span>
+                        </li>
+                        <li className="flex items-center gap-2 min-h-[24px]">
+                          <div className="w-5 h-5 bg-yellow-400 rounded-full flex items-center justify-center flex-shrink-0">
+                            <Star size={14} className="text-white" />
+                          </div>
+                          <span>Exclusive <span className="font-semibold text-blue-800">VIP signals</span></span>
+                        </li>
+                      </>
+                    ) : (
+                      <>
+                        <li className="flex items-center gap-2 min-h-[24px] opacity-0">
+                          <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0">
+                            <div className="w-5 h-5"></div>
+                          </div>
+                          <span>Placeholder</span>
+                        </li>
+                        <li className="flex items-center gap-2 min-h-[24px] opacity-0">
+                          <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0">
+                            <div className="w-5 h-5"></div>
+                          </div>
+                          <span>Placeholder</span>
+                        </li>
+                      </>
+                    )}
+                  </ul>
+                </div>
                 
-                <ul className="space-y-3 mb-5">
-                  <li className="flex items-center gap-2">
-                    <div className="w-5 h-5 bg-teal-400 rounded-full flex items-center justify-center flex-shrink-0">
-                      <Check size={14} className="text-white" />
-                    </div>
-                    <span>Daily <span className="font-semibold text-blue-800">premium signals</span></span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-5 h-5 bg-teal-400 rounded-full flex items-center justify-center flex-shrink-0">
-                      <Check size={14} className="text-white" />
-                    </div>
-                    <span>Expert <span className="font-semibold text-blue-800">market analysis</span></span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-5 h-5 bg-teal-400 rounded-full flex items-center justify-center flex-shrink-0">
-                      <Check size={14} className="text-white" />
-                    </div>
-                    <span>Real-time notifications</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-5 h-5 bg-teal-400 rounded-full flex items-center justify-center flex-shrink-0">
-                      <Check size={14} className="text-white" />
-                    </div>
-                    <span><span className="font-semibold text-blue-800">24/7</span> support access</span>
-                  </li>
-                  {plan.name === "VIP Plan" && (
-                    <>
-                      <li className="flex items-center gap-2">
-                        <div className="w-5 h-5 bg-yellow-400 rounded-full flex items-center justify-center flex-shrink-0">
-                          <Star size={14} className="text-white" />
-                        </div>
-                        <span>Priority <span className="font-semibold text-blue-800">signal delivery</span></span>
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <div className="w-5 h-5 bg-yellow-400 rounded-full flex items-center justify-center flex-shrink-0">
-                          <Star size={14} className="text-white" />
-                        </div>
-                        <span>Exclusive <span className="font-semibold text-blue-800">VIP signals</span></span>
-                      </li>
-                    </>
-                  )}
-                </ul>
-                
-                <div className="flex justify-end">
+                <div className="mt-auto">
                   <button 
                     className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-lg rounded-md px-4 py-2.5 transition-colors duration-200"
                     onClick={() => handleSubscribe(plan)}
