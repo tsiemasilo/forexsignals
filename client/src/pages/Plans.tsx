@@ -4,12 +4,13 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { Link } from 'wouter';
+import { Link, useLocation } from 'wouter';
 import { useState } from 'react';
 
 export function Plans() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
   const [selectedPlan, setSelectedPlan] = useState<any>(null);
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
 
@@ -30,8 +31,8 @@ export function Plans() {
 
   const handleSubscribe = (plan: any) => {
     if (!user) {
-      // Redirect to signals page where they can sign up for free trial
-      window.location.href = '/signals';
+      // Fast redirect to signals page for sign-up using React Router
+      setLocation('/signals');
       return;
     }
 
