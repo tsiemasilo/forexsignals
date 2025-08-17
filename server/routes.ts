@@ -617,14 +617,14 @@ export async function registerRoutes(app: express.Application) {
       // Method C: MD5 hash (some older systems use this)
       const hashC = crypto.createHash('md5').update(ozowHashString).digest('hex').toUpperCase();
       
-      // Try Method A (full parameters with uppercase) first
-      const hashCheck = hashA;
+      // Try Method B (minimal parameters) - often what SA gateways expect
+      const hashCheck = hashB;
       
       console.log('🔐 Ozow hash attempts (uppercase):', {
         methodA: { type: 'SHA256-FULL-UPPER', length: ozowHashString.length, hash: hashA.substring(0, 12) + '...' },
         methodB: { type: 'SHA256-MINIMAL-UPPER', length: minimalString.length, hash: hashB.substring(0, 12) + '...' },
         methodC: { type: 'MD5-FULL-UPPER', length: ozowHashString.length, hash: hashC.substring(0, 12) + '...' },
-        selected: 'A (SHA256-FULL-UPPER)',
+        selected: 'B (SHA256-MINIMAL-UPPER)',
         secretKeyPresent: !!secretKey
       });
 
