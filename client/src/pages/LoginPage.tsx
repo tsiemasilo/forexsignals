@@ -38,21 +38,24 @@ export function LoginPage() {
       console.log("Login error caught:", error);
       console.log("Error needsRegistration:", error?.needsRegistration);
       console.log("Error userExists:", error?.userExists);
+      console.log("Full error object:", JSON.stringify(error, Object.getOwnPropertyNames(error)));
       
       // Handle specific error cases
-      if (error?.needsRegistration) {
+      if (error?.needsRegistration === true) {
+        console.log("Setting isRegistering to true");
         setIsRegistering(true);
         toast({
           title: "Registration Required",
           description: "Please complete your registration to create an account.",
         });
-      } else if (error?.userExists) {
+      } else if (error?.userExists === true) {
         setIsRegistering(false);
         toast({
           title: "Account Exists",
           description: "This account already exists. Please sign in instead.",
         });
       } else {
+        console.log("Falling through to generic error handling");
         toast({
           title: isRegistering ? "Registration Failed" : "Login Failed",
           description: error instanceof Error ? error.message : "Please try again",
