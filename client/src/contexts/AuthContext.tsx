@@ -99,19 +99,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     console.log("=== LOGOUT FUNCTION CALLED ===");
-    try {
-      await apiRequest("/api/logout", { method: "POST" });
-      console.log("✅ Logout API call successful");
-      setUser(null);
-      // Redirect to home page after successful logout
-      console.log("🚀 Redirecting to home page after logout");
-      window.location.href = "/";
-    } catch (error) {
+    // Set user to null immediately for faster UI response
+    setUser(null);
+    
+    // Make logout API call in background (don't wait)
+    apiRequest("/api/logout", { method: "POST" }).catch(error => {
       console.error("Logout error:", error);
-      // Even if API fails, clear user locally and redirect
-      setUser(null);
-      window.location.href = "/";
-    }
+    });
+    
+    // Immediate redirect for faster logout experience
+    console.log("🚀 Redirecting to home page after logout");
+    window.location.href = "/";
   };
 
   return (

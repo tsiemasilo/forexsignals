@@ -38,25 +38,21 @@ export function SimpleLoginPage() {
     setLoading(true);
     try {
       if (showSignup) {
-        // Sign up with all fields
+        // Show toast first for signup
+        toast({
+          title: "Welcome to WatchlistFX!",
+          description: "Account created successfully! You now have a free 7-day trial.",
+        });
+        // Then complete login
         await login(email, firstName, lastName);
-        // Show success toast immediately
-        setTimeout(() => {
-          toast({
-            title: "Welcome to WatchlistFX!",
-            description: "Account created successfully! You now have a free 7-day trial.",
-          });
-        }, 100);
       } else {
-        // Sign in with just email
+        // Show toast first for signin
+        toast({
+          title: "Welcome back!", 
+          description: "Signed in successfully.",
+        });
+        // Then complete login
         await login(email);
-        // Show success toast immediately
-        setTimeout(() => {
-          toast({
-            title: "Welcome back!", 
-            description: "Signed in successfully.",
-          });
-        }, 100);
       }
     } catch (error: any) {
       console.log("Auth error:", error);
