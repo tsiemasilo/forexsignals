@@ -51,7 +51,13 @@ function PricingCard() {
 function PhoneLoginForm() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showSignUp, setShowSignUp] = useState(false);
+  
+  // Check URL for signup parameter to show signup form directly
+  const [location] = useLocation();
+  const urlParams = new URLSearchParams(location.split('?')[1] || '');
+  const shouldShowSignUp = urlParams.get('signup') === 'true';
+  const [showSignUp, setShowSignUp] = useState(shouldShowSignUp);
+  
   const { login } = useAuth();
   const { toast } = useToast();
 
@@ -530,6 +536,12 @@ export function PhoneSignalsPage() {
   const { data: subscriptionStatus } = useSubscriptionStatus();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  
+  // Check URL for signup parameter to show signup form directly
+  const [location] = useLocation();
+  const urlParams = new URLSearchParams(location.split('?')[1] || '');
+  const shouldShowSignUp = urlParams.get('signup') === 'true';
+  const [showSignUp, setShowSignUp] = useState(shouldShowSignUp);
 
   // Update time every minute
   useEffect(() => {
