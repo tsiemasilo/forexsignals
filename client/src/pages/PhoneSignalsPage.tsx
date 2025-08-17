@@ -60,12 +60,19 @@ function PhoneLoginForm() {
     console.log("=== PHONE LOGIN FORM SUBMIT ===");
     console.log("Email:", email);
     
-    if (!email) return;
+    if (!email.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter an email address",
+        variant: "destructive",
+      });
+      return;
+    }
 
     setLoading(true);
     try {
       console.log("=== PHONE LOGIN CALLING AuthContext.login() ===");
-      await login(email);
+      await login(email.trim());
       
       console.log("=== PHONE LOGIN SUCCESS - AuthContext.login() completed ===");
       

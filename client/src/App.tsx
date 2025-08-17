@@ -12,6 +12,7 @@ import { Plans } from "@/pages/Plans";
 import { PaymentSuccess } from "@/pages/PaymentSuccess";
 import { PaymentCancel } from "@/pages/PaymentCancel";
 import { PaymentError } from "@/pages/PaymentError";
+import { AdminLoginTest } from "@/pages/AdminLoginTest";
 
 function AppRoutes() {
   const { user, loading } = useAuth();
@@ -103,6 +104,7 @@ function AppRoutes() {
         );
       }} />
 
+      <Route path="/admin-test" component={AdminLoginTest} />
       <Route path="/payment-success" component={PaymentSuccess} />
       <Route path="/payment-cancel" component={PaymentCancel} />
       <Route path="/payment-error" component={PaymentError} />
