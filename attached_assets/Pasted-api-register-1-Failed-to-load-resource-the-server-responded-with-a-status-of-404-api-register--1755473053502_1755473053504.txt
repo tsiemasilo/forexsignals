@@ -1,0 +1,33 @@
+api/register:1  Failed to load resource: the server responded with a status of 404 ()
+api/register:1  Failed to load resource: the server responded with a status of 404 ()
+api/register:1  Failed to load resource: the server responded with a status of 404 ()
+api/register:1  Failed to load resource: the server responded with a status of 404 ()
+api/register:1  Failed to load resource: the server responded with a status of 404 ()
+api/register:1  Failed to load resource: the server responded with a status of 404 ()
+api/register:1  Failed to load resource: the server responded with a status of 404 ()
+api/register:1  Failed to load resource: the server responded with a status of 404 ()
+api/register:1  Failed to load resource: the server responded with a status of 404 ()
+api/register:1  Failed to load resource: the server responded with a status of 404 ()
+api/register:1  Failed to load resource: the server responded with a status of 404 ()
+api/register:1  Failed to load resource: the server responded with a status of 404 ()
+api/register:1  Failed to load resource: the server responded with a status of 404 ()
+api/register:1  Failed to load resource: the server responded with a status of 404 ()
+api/ozow/payment:1  Failed to load resource: the server responded with a status of 500 ()
+api/ozow/payment:1  Failed to load resource: the server responded with a status of 500 ()
+api/ozow/payment:1  Failed to load resource: the server responded with a status of 500 ()
+api/ozow/payment:1  Failed to load resource: the server responded with a status of 500 ()
+api/ozow/payment:1  Failed to load resource: the server responded with a status of 500 ()
+api/ozow/payment:1  Failed to load resource: the server responded with a status of 500 ()
+index-CI26z_eU.js:252  POST https://watchlistfx.netlify.app/api/ozow/payment 500 (Internal Server Error)
+p @ index-CI26z_eU.js:252
+Hg @ index-CI26z_eU.js:37
+Kg @ index-CI26z_eU.js:37
+Gg @ index-CI26z_eU.js:37
+Lc @ index-CI26z_eU.js:37
+mh @ index-CI26z_eU.js:37
+(anonymous) @ index-CI26z_eU.js:37
+Lu @ index-CI26z_eU.js:40
+zf @ index-CI26z_eU.js:37
+cl @ index-CI26z_eU.js:37
+lu @ index-CI26z_eU.js:37
+cv @ index-CI26z_eU.js:37

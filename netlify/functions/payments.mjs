@@ -73,15 +73,15 @@ export const handler = async (event, context) => {
         };
       }
 
-      // Ozow payment parameters
+      // Ozow payment parameters - using correct site code "NOS-NOS-005"
       const ozowParams = {
         SiteCode: "NOS-NOS-005",
         CountryCode: "ZA", 
         CurrencyCode: "ZAR",
         Amount: parseFloat(plan[0].price).toFixed(2),
-        TransactionReference: `WFX-${Date.now()}-${planId}`,
+        TransactionReference: `WFX-USER-${planId}-${Date.now()}`,
         BankReference: "WatchlistFx Payment",
-        Customer: "customer@example.com",
+        Customer: "customer@watchlistfx.com",
         IsTest: "false",
         SuccessUrl: `${origin}/payment-success`,
         CancelUrl: `${origin}/payment-cancel`,

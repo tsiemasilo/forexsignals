@@ -27,25 +27,43 @@ export const handler = async (event, context) => {
     const path = event.path;
     const notificationData = JSON.parse(event.body);
 
-    if (path === '/api/ozow/notify') {
+    if (path === '/api/ozow/notify' || path.includes('/webhooks')) {
       console.log('Ozow webhook received:', notificationData);
       
-      const { TransactionReference, Status } = notificationData;
+      const { TransactionReference, Status, Amount } = notificationData;
       
       if (Status === "Complete") {
-        // Parse transaction reference: WFX-timestamp-planId
-        const parts = TransactionReference.split('-');
-        const planId = parseInt(parts[2]);
-        
-        if (planId) {
-          // Get plan details
-          const plan = await sql`SELECT * FROM subscription_plans WHERE id = ${planId}`;
-          
-          if (plan.length > 0) {
-            console.log(`Ozow payment successful for plan ${planId}`);
-            // In a full implementation, you would update user subscription here
-            // For now, just log the successful payment
+        try {
+          // Parse transaction reference: WFX-userId-planId-timestamp  
+          const parts = TransactionReference.split('-');
+          if (parts.length >= 4 && parts[0] === 'WFX') {
+            const userId = parseInt(parts[1]);
+            const planId = parseInt(parts[2]);
+            
+            console.log(`Processing Ozow payment: User ${userId}, Plan ${planId}, Amount ${Amount}`);
+            
+            // Get plan details
+            const plan = await sql`SELECT * FROM subscription_plans WHERE id = ${planId}`;
+            
+            if (plan.length > 0 && userId) {
+              // Create active subscription for the user
+              const endDate = new Date();
+              endDate.setDate(endDate.getDate() + plan[0].duration);
+              
+              // Delete any existing subscription for this user
+              await sql`DELETE FROM subscriptions WHERE user_id = ${userId}`;
+              
+              // Create new active subscription
+              await sql`
+                INSERT INTO subscriptions (user_id, plan_id, status, start_date, end_date, created_at)
+                VALUES (${userId}, ${planId}, 'active', ${new Date()}, ${endDate}, ${new Date()})
+              `;
+              
+              console.log(`✅ Ozow payment successful: Created active ${plan[0].name} subscription for user ${userId}`);
+            }
           }
+        } catch (error) {
+          console.error('Error processing Ozow webhook:', error);
         }
       }
 
