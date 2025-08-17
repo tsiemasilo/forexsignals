@@ -65,10 +65,7 @@ function PhoneLoginForm() {
     setLoading(true);
     try {
       await login(email);
-      toast({
-        title: "Success",
-        description: "Logged in successfully!",
-      });
+      // Don't show toast - user will be redirected to signals page automatically
     } catch (error: any) {
       console.log("Phone login error caught:", error);
       console.log("Error needsRegistration:", error?.needsRegistration);
@@ -178,6 +175,7 @@ function PhoneLoginForm() {
           }}>
             <Link href="/plans">
               <button
+                type="button"
                 style={{
                   background: 'transparent',
                   color: '#2563eb',
@@ -197,6 +195,10 @@ function PhoneLoginForm() {
                 onMouseOut={(e) => {
                   e.currentTarget.style.background = 'transparent';
                   e.currentTarget.style.color = '#2563eb';
+                }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.location.href = '/plans';
                 }}
               >
                 See Plans & Pricing
@@ -309,11 +311,12 @@ function PhoneSignUpForm({ onBackToLogin }: { onBackToLogin: () => void }) {
 
     setLoading(true);
     try {
-      // Create account with 7-day free trial
+      // Create account (no auto-login, no trial until first sign-in)
       await register(email, firstName, lastName);
+      onBackToLogin();
       toast({
-        title: "Welcome! 🎉",
-        description: "Account created with 7-day FREE trial activated!",
+        title: "Account Created Successfully!",
+        description: "Your account has been created. Please sign in to start your free trial.",
       });
     } catch (error: any) {
       if (error?.userExists === true) {

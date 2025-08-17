@@ -66,16 +66,6 @@ export function LoginPage() {
           title: "Account Already Exists",
           description: "This account already exists. Please sign in instead.",
         });
-      } else if (error?.registrationComplete === true) {
-        // Handle successful registration
-        setIsRegistering(false);
-        setFirstName("");
-        setLastName("");
-        setEmail("");
-        toast({
-          title: "Account Created Successfully!",
-          description: "Your account has been created. Please sign in to start your free trial.",
-        });
       } else {
         console.log("Falling through to generic error handling");
         console.log("Error type:", typeof error);
