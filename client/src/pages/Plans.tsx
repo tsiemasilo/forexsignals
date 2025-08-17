@@ -338,29 +338,99 @@ export function Plans() {
 
       {/* Payment Dialog */}
       <Dialog open={isPaymentDialogOpen} onOpenChange={setIsPaymentDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Choose Payment Method</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-center text-2xl font-bold">Choose Payment Method</DialogTitle>
+            <DialogDescription className="text-center">
               Select your preferred payment method for {selectedPlan?.name}
             </DialogDescription>
           </DialogHeader>
           
-          <div className="space-y-4">
-            <Button 
+          <div className="flex flex-col md:flex-row gap-6 justify-center items-center py-4">
+            {/* Yoco Payment Card */}
+            <div 
+              className="payment-card relative w-60 h-80 bg-transparent rounded-2xl overflow-hidden cursor-pointer transform transition-transform duration-200 hover:scale-105"
+              style={{ boxShadow: '0px 8px 28px -9px rgba(0,0,0,0.45)' }}
               onClick={handleYocoPayment}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
             >
-              Pay with Yoco (Card)
-            </Button>
-            
-            <Button 
+              {/* Animated Wave Background */}
+              <div 
+                className="wave absolute w-[540px] h-[700px] opacity-60 left-0 top-0 -ml-[50%] -mt-[70%] rounded-[40%] animate-spin"
+                style={{ 
+                  background: 'linear-gradient(744deg, #2563eb, #1d4ed8 60%, #1e40af)',
+                  animationDuration: '55s'
+                }}
+              />
+              <div 
+                className="wave absolute w-[540px] h-[700px] opacity-60 left-0 top-52 -ml-[50%] rounded-[40%] animate-spin"
+                style={{ 
+                  background: 'linear-gradient(744deg, #2563eb, #1d4ed8 60%, #1e40af)',
+                  animationDuration: '50s'
+                }}
+              />
+              <div 
+                className="wave absolute w-[540px] h-[700px] opacity-60 left-0 top-52 -ml-[50%] rounded-[40%] animate-spin"
+                style={{ 
+                  background: 'linear-gradient(744deg, #2563eb, #1d4ed8 60%, #1e40af)',
+                  animationDuration: '45s'
+                }}
+              />
+              
+              {/* Card Content */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center p-6">
+                <div className="w-12 h-12 mb-4 text-white">
+                  <CreditCard size={48} />
+                </div>
+                <div className="text-xl font-semibold mb-2">Yoco Payment</div>
+                <div className="text-sm opacity-90">Credit & Debit Cards</div>
+                <div className="text-xs opacity-75 mt-2">Secure card processing</div>
+              </div>
+            </div>
+
+            {/* Ozow Payment Card */}
+            <div 
+              className="payment-card relative w-60 h-80 bg-transparent rounded-2xl overflow-hidden cursor-pointer transform transition-transform duration-200 hover:scale-105"
+              style={{ boxShadow: '0px 8px 28px -9px rgba(0,0,0,0.45)' }}
               onClick={handleOzowPayment}
-              className="w-full bg-green-600 hover:bg-green-700 text-white"
             >
-              Pay with Ozow (EFT)
-            </Button>
-            
+              {/* Animated Wave Background */}
+              <div 
+                className="wave absolute w-[540px] h-[700px] opacity-60 left-0 top-0 -ml-[50%] -mt-[70%] rounded-[40%] animate-spin"
+                style={{ 
+                  background: 'linear-gradient(744deg, #059669, #047857 60%, #065f46)',
+                  animationDuration: '55s'
+                }}
+              />
+              <div 
+                className="wave absolute w-[540px] h-[700px] opacity-60 left-0 top-52 -ml-[50%] rounded-[40%] animate-spin"
+                style={{ 
+                  background: 'linear-gradient(744deg, #059669, #047857 60%, #065f46)',
+                  animationDuration: '50s'
+                }}
+              />
+              <div 
+                className="wave absolute w-[540px] h-[700px] opacity-60 left-0 top-52 -ml-[50%] rounded-[40%] animate-spin"
+                style={{ 
+                  background: 'linear-gradient(744deg, #059669, #047857 60%, #065f46)',
+                  animationDuration: '45s'
+                }}
+              />
+              
+              {/* Card Content */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center p-6">
+                <div className="w-12 h-12 mb-4 text-white">
+                  <svg viewBox="0 0 24 24" fill="currentColor" className="w-12 h-12">
+                    <path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 11 5.16-1.26 9-5.45 9-11V7l-10-5z"/>
+                  </svg>
+                </div>
+                <div className="text-xl font-semibold mb-2">Ozow Payment</div>
+                <div className="text-sm opacity-90">Instant EFT</div>
+                <div className="text-xs opacity-75 mt-2">Bank to bank transfer</div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="mt-6">
             <Button 
               onClick={() => setIsPaymentDialogOpen(false)}
               variant="outline"
