@@ -427,14 +427,21 @@ export function Plans() {
               
               {/* Card Content */}
               <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center p-6">
-                <div className="w-12 h-12 mb-4 text-white">
-                  <svg viewBox="0 0 24 24" fill="currentColor" className="w-12 h-12">
-                    <path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 11 5.16-1.26 9-5.45 9-11V7l-10-5z"/>
-                  </svg>
+                <div className="w-32 h-20 mb-6 flex items-center justify-center bg-white/15 backdrop-blur-md rounded-xl px-4 border border-white/20">
+                  <img 
+                    src="https://cdn.brandfetch.io/idy9gzLXq0/w/358/h/100/theme/dark/logo.png?c=1bxid64Mup7aczewSAYMX&t=1672151446656" 
+                    alt="Ozow"
+                    className="w-full h-full object-contain"
+                    onError={(e: any) => {
+                      e.currentTarget.style.display = 'none';
+                      e.currentTarget.nextElementSibling!.style.display = 'block';
+                    }}
+                  />
+                  <div className="text-white font-bold text-2xl hidden">OZOW</div>
                 </div>
-                <div className="text-xl font-semibold mb-2">Ozow Payment</div>
+                <div className="text-lg font-semibold mb-1">Ozow Payment</div>
                 <div className="text-sm opacity-90">Instant EFT</div>
-                <div className="text-xs opacity-75 mt-2">Bank to bank transfer</div>
+                <div className="text-xs opacity-75 mt-1">Bank to bank transfer</div>
               </div>
             </div>
           </div>
