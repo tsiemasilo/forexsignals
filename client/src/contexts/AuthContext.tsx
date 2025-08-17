@@ -39,11 +39,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const login = async (email: string) => {
-    const response = await apiRequest("/api/login", {
-      method: "POST",
-      body: JSON.stringify({ email }),
-    });
-    setUser(response.user);
+    try {
+      const response = await apiRequest("/api/login", {
+        method: "POST",
+        body: JSON.stringify({ email }),
+      });
+      setUser(response.user);
+    } catch (error: any) {
+      // Re-throw the error with all its properties preserved
+      throw error;
+    }
   };
 
   const register = async (email: string, firstName: string, lastName: string) => {

@@ -34,10 +34,12 @@ export async function apiRequest(url: string, options: RequestInit = {}) {
     const contentType = response.headers.get('content-type');
     if (contentType?.includes('application/json')) {
       const errorData = await response.json();
-      // Throw the parsed error data to preserve structure
+      console.log('API Error Data:', errorData); // Debug log
+      // Create a custom error that preserves all properties
       const error = new Error(errorData.message || `HTTP ${response.status}`);
-      // Attach additional error properties
+      // Attach all properties from the error response
       Object.assign(error, errorData);
+      console.log('Throwing error with properties:', error); // Debug log
       throw error;
     } else {
       const errorText = await response.text();
