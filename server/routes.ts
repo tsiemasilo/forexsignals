@@ -35,11 +35,12 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
     saveUninitialized: true, // Changed to true for development
     cookie: {
       secure: false, // Always false in development
-      httpOnly: true,
+      httpOnly: false, // TEMPORARILY disable httpOnly for debugging
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      sameSite: 'lax'
+      sameSite: 'lax',
+      path: '/' // Explicit path
     },
-    name: 'connect.sid' // Explicit session name
+    name: 'forexapp.sid' // Unique session name
   }));
   // Seed database on startup
   await seedDatabase();
@@ -84,45 +85,55 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
     }
   };
 
-  // Auth endpoints
+  // Auth endpoints - Combined login/register
   app.post("/api/login", async (req: Request, res: Response) => {
     try {
-      console.log('=== LOGIN REQUEST ===');
-      console.log('Login request body:', req.body);
-      console.log('Session before login:', req.session);
-      console.log('Session ID before login:', req.sessionID);
+      console.log('=== LOGIN/REGISTER REQUEST ===');
+      console.log('Request body:', req.body);
+      console.log('Session before:', req.session);
+      console.log('Session ID before:', req.sessionID);
       
-      const { email } = req.body || {};
+      const { email, firstName, lastName } = req.body || {};
       
       if (!email) {
         return res.status(400).json({ message: "Email is required" });
       }
 
       // Check if user exists
-      const user = await storage.getUserByEmail(email);
+      let user = await storage.getUserByEmail(email);
       
       if (!user) {
-        // User doesn't exist - redirect to register
-        return res.status(404).json({ 
-          message: "Account not found. Please register first to create your account.",
-          needsRegistration: true 
-        });
+        // User doesn't exist - create new user with trial
+        if (!firstName || !lastName) {
+          return res.status(400).json({ 
+            message: "First name and last name are required for registration",
+            needsRegistration: true 
+          });
+        }
+
+        console.log('🆕 Creating new user with auto trial...');
+        user = await storage.createUser({ email, firstName, lastName });
+        
+        // Create automatic 7-day trial for new user
+        const trial = await storage.createFreshTrial(user.id);
+        console.log('✅ Auto-trial created for new user:', trial);
       }
 
-      // Set session for existing user
+      // Set session for user (new or existing)
       req.session.userId = user.id;
+      
+      // Save session explicitly
+      await new Promise<void>((resolve, reject) => {
+        req.session.save((err) => {
+          if (err) reject(err);
+          else resolve();
+        });
+      });
       
       console.log('=== LOGIN SUCCESS ===');
       console.log(`✅ User logged in: ${user.email} (ID: ${user.id})`);
       console.log('Session after login:', req.session);
       console.log('Session ID after login:', req.sessionID);
-      console.log('User data being returned:', {
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        isAdmin: user.isAdmin
-      });
       
       res.json({
         user: {
@@ -134,62 +145,16 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
         }
       });
     } catch (error) {
-      console.error('Login error:', error);
-      res.status(500).json({ message: "Login failed" });
+      console.error('Login/Register error:', error);
+      res.status(500).json({ message: "Authentication failed" });
     }
   });
 
+  // Legacy register endpoint - removed, use /api/login for both
   app.post("/api/register", async (req: Request, res: Response) => {
-    try {
-      console.log('Register request body:', req.body);
-      const { email, firstName, lastName } = req.body || {};
-      
-      if (!email || !firstName || !lastName) {
-        return res.status(400).json({ message: "Email, first name, and last name are required" });
-      }
-
-      // Check if user already exists
-      const existingUser = await storage.getUserByEmail(email);
-      
-      if (existingUser) {
-        return res.status(409).json({ 
-          message: "Account already exists. Please sign in instead.",
-          userExists: true 
-        });
-      }
-
-      // Create new user
-      const user = await storage.createUser({
-        email,
-        firstName,
-        lastName,
-        isAdmin: false
-      });
-
-      // Create 7-day free trial for new user
-      const trial = await storage.createFreshTrial(user.id);
-      if (!trial) {
-        console.error('❌ Failed to create trial for new user:', user.id);
-      } else {
-        console.log(`✅ Created 7-day trial for new user: ${user.email}`);
-      }
-
-      // Don't auto-login after registration - user should login separately
-      console.log(`✅ New user registered: ${user.email} (ID: ${user.id})`);
-      
-      res.json({
-        message: "Account created successfully! Please sign in with your email to continue.",
-        success: true,
-        user: {
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName
-        }
-      });
-    } catch (error) {
-      console.error('Registration error:', error);
-      res.status(500).json({ message: "Registration failed" });
-    }
+    return res.status(410).json({ 
+      message: "Registration endpoint deprecated. Use /api/login for both login and registration."
+    });
   });
 
   app.post("/api/logout", (req: Request, res: Response) => {

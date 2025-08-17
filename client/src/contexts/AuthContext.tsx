@@ -11,7 +11,7 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
-  login: (email: string) => Promise<void>;
+  login: (email: string, firstName?: string, lastName?: string) => Promise<void>;
   register: (email: string, firstName: string, lastName: string) => Promise<void>;
   logout: () => Promise<void>;
   loading: boolean;
@@ -42,14 +42,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const login = async (email: string) => {
+  const login = async (email: string, firstName?: string, lastName?: string) => {
     try {
-      console.log("=== FRONTEND LOGIN ATTEMPT ===");
-      console.log("Email:", email);
+      console.log("=== FRONTEND LOGIN/REGISTER ATTEMPT ===");
+      console.log("Email:", email, "First:", firstName, "Last:", lastName);
+      
+      const requestBody = firstName && lastName 
+        ? { email, firstName, lastName }  // Registration data
+        : { email }; // Login only
       
       const response = await apiRequest("/api/login", {
         method: "POST",
-        body: JSON.stringify({ email }),
+        body: JSON.stringify(requestBody),
       });
       
       console.log('=== LOGIN RESPONSE RECEIVED ===');
@@ -89,12 +93,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const register = async (email: string, firstName: string, lastName: string) => {
-    const response = await apiRequest("/api/register", {
-      method: "POST",
-      body: JSON.stringify({ email, firstName, lastName }),
-    });
-    // Don't auto-login after registration - return success response for handling by UI
-    return response;
+    // Registration now goes through login endpoint
+    return login(email, firstName, lastName);
   };
 
   const logout = async () => {

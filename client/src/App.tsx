@@ -3,7 +3,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Route, Switch, Redirect } from "wouter";
 import { queryClient } from "@/lib/queryClient";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
-import { LoginPage } from "@/pages/LoginPage";
+import { SimpleLoginPage } from "@/pages/SimpleLoginPage";
 import { DashboardPage } from "@/pages/DashboardPage";
 import { PhoneSignalsPage } from "@/pages/PhoneSignalsPage";
 import { AdminDashboard } from "@/pages/AdminDashboard";
@@ -53,7 +53,7 @@ function AppRoutes() {
           console.log('Admin user accessing login page - redirecting to admin dashboard');
           return <Redirect to="/admin" />;
         }
-        return <LoginPage />;
+        return <SimpleLoginPage />;
       }} />
       <Route path="/quick-admin-login" component={() => {
         const { login } = useAuth();
