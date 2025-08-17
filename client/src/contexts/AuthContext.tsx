@@ -52,7 +52,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       console.log('Login response:', response);
       console.log('Login response user:', response.user);
+      
       setUser(response.user);
+      
+      // Immediate admin redirect
+      if (response.user?.isAdmin) {
+        console.log("Admin user detected in login - redirecting to admin dashboard");
+        setTimeout(() => {
+          window.location.href = "/admin";
+        }, 100);
+      }
     } catch (error: any) {
       console.log("Frontend login error:", error);
       // Re-throw the error with all its properties preserved
