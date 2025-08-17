@@ -1,4 +1,5 @@
 import express, { Request, Response } from "express";
+import { createServer, type Server } from "http";
 import session from "express-session";
 import crypto from "crypto";
 import { storage } from "./storage";
@@ -6,7 +7,7 @@ import { seedDatabase } from "./seed";
 import { insertUserSchema, insertForexSignalSchema, insertSubscriptionSchema } from "@shared/schema";
 import { z } from "zod";
 
-export async function registerRoutes(app: express.Application) {
+export async function registerRoutes(app: express.Application): Promise<Server> {
   // Middleware
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ extended: true, limit: "50mb" }));
@@ -673,11 +674,11 @@ export async function registerRoutes(app: express.Application) {
         const userId = parseInt(parts[1]);
         const planId = parseInt(parts[2]);
         
-        console.log(`💰 Processing successful payment for user ${userId}, plan ${planId}`);
+        console.log(`💰 Ozow payment successful for user ${userId}, plan ${planId}`);
         
-        // Update user subscription
+        // Update user subscription with proper duration
         const plan = await storage.getPlan(planId);
-        if (plan) {
+        if (plan && userId && planId) {
           const endDate = new Date();
           endDate.setDate(endDate.getDate() + plan.duration);
           
@@ -688,8 +689,12 @@ export async function registerRoutes(app: express.Application) {
             endDate
           );
           
-          console.log(`✅ User ${userId} subscription updated to plan ${planId} until ${endDate.toISOString()}`);
+          console.log(`✅ Ozow: User ${userId} activated with ${plan.name} (${plan.duration} days) until ${endDate.toISOString()}`);
+        } else {
+          console.error(`❌ Ozow: Invalid plan or user data - userId: ${userId}, planId: ${planId}`);
         }
+      } else {
+        console.log(`📋 Ozow payment status: ${Status} for transaction ${TransactionReference}`);
       }
       
       res.status(200).send('OK');
@@ -698,6 +703,57 @@ export async function registerRoutes(app: express.Application) {
       res.status(500).json({ message: "Failed to process notification" });
     }
   });
+
+  // Yoco payment webhook for successful payments
+  app.post("/api/yoco/notify", async (req: Request, res: Response) => {
+    try {
+      console.log('🔔 Yoco notification received:', req.body);
+      
+      const { type, payload } = req.body;
+      
+      if (type === 'payment.succeeded' && payload) {
+        const { metadata } = payload;
+        
+        if (metadata && metadata.userId && metadata.planId) {
+          const userId = parseInt(metadata.userId);
+          const planId = parseInt(metadata.planId);
+          
+          console.log(`💰 Yoco payment successful for user ${userId}, plan ${planId}`);
+          
+          // Update user subscription
+          const plan = await storage.getPlan(planId);
+          if (plan && userId && planId) {
+            const endDate = new Date();
+            endDate.setDate(endDate.getDate() + plan.duration);
+            
+            await storage.updateUserSubscriptionStatus(
+              userId, 
+              planId, 
+              'active', 
+              endDate
+            );
+            
+            console.log(`✅ Yoco: User ${userId} activated with ${plan.name} (${plan.duration} days) until ${endDate.toISOString()}`);
+          } else {
+            console.error(`❌ Yoco: Invalid plan or user data - userId: ${userId}, planId: ${planId}`);
+          }
+        } else {
+          console.log('📋 Yoco payment succeeded but missing user/plan metadata');
+        }
+      } else {
+        console.log(`📋 Yoco notification type: ${type}`);
+      }
+      
+      res.status(200).send('OK');
+    } catch (error) {
+      console.error('Yoco notification error:', error);
+      res.status(500).json({ message: "Failed to process Yoco notification" });
+    }
+  });
+
+  const httpServer = createServer(app);
+
+  return httpServer;
 }
 
 export default registerRoutes;
