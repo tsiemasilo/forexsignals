@@ -228,60 +228,73 @@ export function Plans() {
         {/* Pricing Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {plans.map((plan: any) => (
-            <div key={plan.id} className="plan">
-              <div className="inner">
-                <span className="pricing">
+            <div 
+              key={plan.id} 
+              className="rounded-2xl p-2.5 bg-white text-gray-600 max-w-sm mx-auto"
+              style={{ boxShadow: '0 30px 30px -25px rgba(0, 38, 255, 0.205)' }}
+            >
+              <div className="relative bg-blue-50 rounded-xl p-5 pt-10">
+                <div 
+                  className="absolute top-0 right-0 flex items-center px-3 py-2 text-xl font-semibold text-blue-800"
+                  style={{ 
+                    backgroundColor: '#bed6fb',
+                    borderRadius: '99em 0 0 99em'
+                  }}
+                >
                   <span>
-                    R{plan.price} <small>/ {plan.duration}d</small>
+                    R{plan.price} <span className="text-sm ml-1 opacity-75">/ {plan.duration}d</span>
                   </span>
-                </span>
-                <p className="title">{plan.name}</p>
-                <p className="info">{plan.description}</p>
-                <ul className="features">
-                  <li>
-                    <span className="icon">
-                      <Check size={14} />
-                    </span>
-                    <span>Daily <strong>premium signals</strong></span>
+                </div>
+                
+                <p className="text-xl font-semibold text-blue-900 mb-3">{plan.name}</p>
+                <p className="text-gray-600 mb-4">{plan.description}</p>
+                
+                <ul className="space-y-3 mb-5">
+                  <li className="flex items-center gap-2">
+                    <div className="w-5 h-5 bg-teal-400 rounded-full flex items-center justify-center flex-shrink-0">
+                      <Check size={14} className="text-white" />
+                    </div>
+                    <span>Daily <span className="font-semibold text-blue-800">premium signals</span></span>
                   </li>
-                  <li>
-                    <span className="icon">
-                      <Check size={14} />
-                    </span>
-                    <span>Expert <strong>market analysis</strong></span>
+                  <li className="flex items-center gap-2">
+                    <div className="w-5 h-5 bg-teal-400 rounded-full flex items-center justify-center flex-shrink-0">
+                      <Check size={14} className="text-white" />
+                    </div>
+                    <span>Expert <span className="font-semibold text-blue-800">market analysis</span></span>
                   </li>
-                  <li>
-                    <span className="icon">
-                      <Check size={14} />
-                    </span>
+                  <li className="flex items-center gap-2">
+                    <div className="w-5 h-5 bg-teal-400 rounded-full flex items-center justify-center flex-shrink-0">
+                      <Check size={14} className="text-white" />
+                    </div>
                     <span>Real-time notifications</span>
                   </li>
-                  <li>
-                    <span className="icon">
-                      <Check size={14} />
-                    </span>
-                    <span><strong>24/7</strong> support access</span>
+                  <li className="flex items-center gap-2">
+                    <div className="w-5 h-5 bg-teal-400 rounded-full flex items-center justify-center flex-shrink-0">
+                      <Check size={14} className="text-white" />
+                    </div>
+                    <span><span className="font-semibold text-blue-800">24/7</span> support access</span>
                   </li>
                   {plan.name === "VIP Plan" && (
                     <>
-                      <li>
-                        <span className="icon">
-                          <Star size={14} />
-                        </span>
-                        <span>Priority <strong>signal delivery</strong></span>
+                      <li className="flex items-center gap-2">
+                        <div className="w-5 h-5 bg-yellow-400 rounded-full flex items-center justify-center flex-shrink-0">
+                          <Star size={14} className="text-white" />
+                        </div>
+                        <span>Priority <span className="font-semibold text-blue-800">signal delivery</span></span>
                       </li>
-                      <li>
-                        <span className="icon">
-                          <Star size={14} />
-                        </span>
-                        <span>Exclusive <strong>VIP signals</strong></span>
+                      <li className="flex items-center gap-2">
+                        <div className="w-5 h-5 bg-yellow-400 rounded-full flex items-center justify-center flex-shrink-0">
+                          <Star size={14} className="text-white" />
+                        </div>
+                        <span>Exclusive <span className="font-semibold text-blue-800">VIP signals</span></span>
                       </li>
                     </>
                   )}
                 </ul>
-                <div className="action">
+                
+                <div className="flex justify-end">
                   <button 
-                    className="button" 
+                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-lg rounded-md px-4 py-2.5 transition-colors duration-200"
                     onClick={() => handleSubscribe(plan)}
                   >
                     Choose Plan
@@ -342,120 +355,7 @@ export function Plans() {
         </DialogContent>
       </Dialog>
 
-      {/* Custom Styles */}
-      <style jsx>{`
-        .plan {
-          border-radius: 16px;
-          box-shadow: 0 30px 30px -25px rgba(0, 38, 255, 0.205);
-          padding: 10px;
-          background-color: #fff;
-          color: #697e91;
-          max-width: 300px;
-          margin: 0 auto;
-        }
 
-        .plan strong {
-          font-weight: 600;
-          color: #425275;
-        }
-
-        .plan .inner {
-          align-items: center;
-          padding: 20px;
-          padding-top: 40px;
-          background-color: #ecf0ff;
-          border-radius: 12px;
-          position: relative;
-        }
-
-        .plan .pricing {
-          position: absolute;
-          top: 0;
-          right: 0;
-          background-color: #bed6fb;
-          border-radius: 99em 0 0 99em;
-          display: flex;
-          align-items: center;
-          padding: 0.625em 0.75em;
-          font-size: 1.25rem;
-          font-weight: 600;
-          color: #425475;
-        }
-
-        .plan .pricing small {
-          color: #707a91;
-          font-size: 0.75em;
-          margin-left: 0.25em;
-        }
-
-        .plan .title {
-          font-weight: 600;
-          font-size: 1.25rem;
-          color: #425675;
-          margin-bottom: 0.75rem;
-        }
-
-        .plan .info {
-          margin-bottom: 1rem;
-        }
-
-        .plan .features {
-          display: flex;
-          flex-direction: column;
-          margin-bottom: 1.25rem;
-        }
-
-        .plan .features li {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          margin-bottom: 0.75rem;
-        }
-
-        .plan .features .icon {
-          background-color: #1FCAC5;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          color: #fff;
-          border-radius: 50%;
-          width: 20px;
-          height: 20px;
-          flex-shrink: 0;
-        }
-
-        .plan .features .icon svg {
-          width: 14px;
-          height: 14px;
-        }
-
-        .plan .action {
-          width: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: end;
-        }
-
-        .plan .button {
-          background-color: #6558d3;
-          border-radius: 6px;
-          color: #fff;
-          font-weight: 500;
-          font-size: 1.125rem;
-          text-align: center;
-          border: 0;
-          outline: 0;
-          width: 100%;
-          padding: 0.625em 0.75em;
-          text-decoration: none;
-          cursor: pointer;
-          transition: background-color 0.2s ease;
-        }
-
-        .plan .button:hover, .plan .button:focus {
-          background-color: #4133B7;
-        }
-      `}</style>
     </div>
   );
 }
