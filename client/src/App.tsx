@@ -18,13 +18,10 @@ function AppRoutes() {
     );
   }
 
-  if (!user) {
-    return <LoginPage />;
-  }
-
   return (
     <Switch>
-      <Route path="/" component={user.isAdmin ? AdminDashboard : PhoneSignalsPage} />
+      <Route path="/" component={user?.isAdmin ? AdminDashboard : PhoneSignalsPage} />
+      <Route path="/login" component={LoginPage} />
       <Route path="/dashboard" component={DashboardPage} />
       <Route path="/phone-signals" component={PhoneSignalsPage} />
       <Route path="/admin" component={AdminDashboard} />
