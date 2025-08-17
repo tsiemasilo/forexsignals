@@ -1,4 +1,4 @@
-import { CheckCircle, Star, CreditCard, Smartphone, Check, Signal } from 'lucide-react';
+import { CheckCircle, Star, CreditCard, Smartphone, Check, Signal, Home, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useQuery } from '@tanstack/react-query';
@@ -190,12 +190,21 @@ export function Plans() {
             
             <nav className="hidden md:flex space-x-6">
               <Link href="/">
-                <span className="text-gray-700 hover:text-green-600 transition-colors cursor-pointer">Home</span>
+                <div className="flex items-center space-x-1 text-gray-700 hover:text-green-600 transition-colors cursor-pointer">
+                  <Home className="h-4 w-4" />
+                  <span>Home</span>
+                </div>
               </Link>
               <Link href="/signals">
-                <span className="text-gray-700 hover:text-green-600 transition-colors cursor-pointer">Signals</span>
+                <div className="flex items-center space-x-1 text-gray-700 hover:text-green-600 transition-colors cursor-pointer">
+                  <TrendingUp className="h-4 w-4" />
+                  <span>Signals</span>
+                </div>
               </Link>
-              <span className="text-green-600 font-semibold">Plans</span>
+              <div className="flex items-center space-x-1 text-green-600 font-semibold">
+                <Star className="h-4 w-4" />
+                <span>Plans</span>
+              </div>
             </nav>
             
             <div className="flex items-center space-x-4">
