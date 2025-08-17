@@ -87,8 +87,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = async () => {
-    await apiRequest("/api/logout", { method: "POST" });
-    setUser(null);
+    console.log("=== LOGOUT FUNCTION CALLED ===");
+    try {
+      await apiRequest("/api/logout", { method: "POST" });
+      console.log("✅ Logout API call successful");
+      setUser(null);
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Even if API fails, clear user locally
+      setUser(null);
+    }
   };
 
   return (

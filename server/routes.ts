@@ -57,16 +57,31 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
   };
 
   const requireAdmin = async (req: Request, res: Response, next: any) => {
+    console.log('=== REQUIRE ADMIN CHECK ===');
+    console.log('Session:', req.session);
+    console.log('Session ID:', req.sessionID);
+    console.log('User ID:', req.session?.userId);
+    
     if (!req.session?.userId) {
+      console.log('❌ Admin check failed: No session userId');
       return res.status(401).json({ message: "Authentication required" });
     }
     
-    const user = await storage.getUser(req.session.userId);
-    if (!user?.isAdmin) {
-      return res.status(403).json({ message: "Admin access required" });
+    try {
+      const user = await storage.getUser(req.session.userId);
+      console.log('User found for admin check:', user);
+      
+      if (!user?.isAdmin) {
+        console.log('❌ Admin check failed: User is not admin', user?.isAdmin);
+        return res.status(403).json({ message: "Admin access required" });
+      }
+      
+      console.log('✅ Admin check passed for user:', user.email);
+      next();
+    } catch (error) {
+      console.error('Admin check error:', error);
+      return res.status(500).json({ message: "Admin verification failed" });
     }
-    
-    next();
   };
 
   // Auth endpoints
