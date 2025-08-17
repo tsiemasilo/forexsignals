@@ -379,9 +379,11 @@ export function Plans() {
               {/* Card Content */}
               <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center p-6">
                 <div className="w-16 h-12 mb-4 flex items-center justify-center">
-                  <div className="text-white font-bold text-2xl bg-white/20 rounded-lg px-3 py-1 backdrop-blur-sm">
-                    YOCO
-                  </div>
+                  <svg viewBox="0 0 100 40" className="w-full h-full fill-white">
+                    <text x="50" y="25" textAnchor="middle" className="font-bold text-lg" style={{ fontSize: '16px', fontFamily: 'Arial, sans-serif' }}>
+                      YOCO
+                    </text>
+                  </svg>
                 </div>
                 <div className="text-xl font-semibold mb-2">Yoco Payment</div>
                 <div className="text-sm opacity-90">Credit & Debit Cards</div>
