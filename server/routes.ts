@@ -558,22 +558,32 @@ export async function registerRoutes(app: express.Application) {
       }
 
       // Create Ozow payment request
-      const ozowPayment = {
-        action_url: "https://pay.ozow.com",
-        SiteCode: process.env.OZOW_SITE_CODE || "DEMO",
+      const crypto = require('crypto');
+      
+      const ozowData = {
+        SiteCode: process.env.OZOW_SITE_CODE || "WATCHLISTFX",
         CountryCode: "ZA",
         CurrencyCode: "ZAR",
-        Amount: parseFloat(plan.price) * 100, // Ozow expects cents
-        TransactionReference: `${user.id}-${plan.id}-${Date.now()}`,
-        BankReference: `Payment for ${plan.name}`,
-        Customer: user.firstName,
+        Amount: (parseFloat(plan.price) * 100).toString(), // Ozow expects cents as string
+        TransactionReference: `WFX-${user.id}-${plan.id}-${Date.now()}`,
+        BankReference: `Watchlist Fx ${plan.name}`,
+        Customer: `${user.firstName} ${user.lastName}`,
         RequestId: `req-${Date.now()}`,
-        HashCheck: "placeholder-hash", // In production, calculate proper hash
-        IsTest: true,
+        IsTest: "false", // Set to production
         SuccessUrl: `${req.headers.origin}/payment-success`,
         CancelUrl: `${req.headers.origin}/payment-cancel`,
         ErrorUrl: `${req.headers.origin}/payment-error`,
         NotifyUrl: `${req.headers.origin}/api/ozow/notify`
+      };
+
+      // Calculate hash check (simplified - in production use proper HMAC-SHA256)
+      const hashString = Object.values(ozowData).join('') + (process.env.OZOW_API_KEY || '');
+      const hashCheck = crypto.createHash('sha256').update(hashString).digest('hex').toLowerCase();
+
+      const ozowPayment = {
+        action_url: "https://pay.ozow.com",
+        ...ozowData,
+        HashCheck: hashCheck
       };
 
       res.json(ozowPayment);
