@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRealtimeSignals } from '@/hooks/useRealtimeSignals';
-import { TrendingUp, TrendingDown, Minus, Clock, Bell, Signal, Home, CreditCard, Settings, Users, LogOut } from 'lucide-react';
+import { useSubscriptionStatus } from '@/hooks/useSubscriptionStatus';
+import { TrendingUp, TrendingDown, Minus, Clock, Bell, Signal, Home, CreditCard, Settings, Users, LogOut, AlertTriangle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -387,6 +388,7 @@ function PhoneSignUpForm({ onBackToLogin }: { onBackToLogin: () => void }) {
 export function PhoneSignalsPage() {
   const { user, logout } = useAuth();
   const { signals = [], isLoading, error } = useRealtimeSignals();
+  const { data: subscriptionStatus } = useSubscriptionStatus();
   const [currentTime, setCurrentTime] = useState(new Date());
 
   // Update time every minute
@@ -547,30 +549,52 @@ export function PhoneSignalsPage() {
                 
                 {/* Phone Content - Conditional Display */}
                 {user ? (
-                  /* Authenticated User - Show Signals */
-                  <>
-                    {/* Notifications Header */}
-                    <div className="px-6 py-4 border-b border-slate-200">
-                      <div className="flex items-center justify-between">
-                        <h2 className="text-lg font-semibold text-slate-900 flex items-center">
-                          <Bell className="w-5 h-5 mr-2 text-blue-600" />
-                          Trading Signals
-                        </h2>
-                        <SubscriptionStatusBadge />
+                  /* Authenticated User - Check Subscription Status */
+                  subscriptionStatus?.status === 'expired' || subscriptionStatus?.status === 'inactive' ? (
+                    /* Expired/Inactive Subscription - Show Upgrade Message */
+                    <div className="flex-1 flex flex-col items-center justify-center text-center px-6 py-8">
+                      <AlertTriangle className="w-16 h-16 text-red-500 mb-4" />
+                      <h3 className="text-lg font-semibold text-slate-900 mb-2">Subscription Expired</h3>
+                      <p className="text-sm text-slate-600 mb-6 leading-relaxed">
+                        Your subscription has expired. Please upgrade your plan to continue receiving premium trading signals.
+                      </p>
+                      <div className="w-full max-w-xs">
+                        <Button 
+                          className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3"
+                          onClick={() => window.open('/plans', '_blank')}
+                        >
+                          Upgrade Plan
+                        </Button>
                       </div>
+                      <p className="text-xs text-slate-500 mt-4">
+                        Contact support if you have any questions
+                      </p>
                     </div>
-
-                    {/* Signals Notifications */}
-                    <div className="flex-1 overflow-y-auto max-h-[480px]">
-                      {signals?.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center h-96 text-center px-6">
-                          <Bell className="w-16 h-16 text-slate-300 mb-4" />
-                          <h3 className="text-lg font-medium text-slate-600 mb-2">No New Signals</h3>
-                          <p className="text-sm text-slate-500">
-                            New trading signals will appear here
-                          </p>
+                  ) : (
+                    /* Active Subscription - Show Signals */
+                    <>
+                      {/* Notifications Header */}
+                      <div className="px-6 py-4 border-b border-slate-200">
+                        <div className="flex items-center justify-between">
+                          <h2 className="text-lg font-semibold text-slate-900 flex items-center">
+                            <Bell className="w-5 h-5 mr-2 text-blue-600" />
+                            Trading Signals
+                          </h2>
+                          <SubscriptionStatusBadge />
                         </div>
-                      ) : (
+                      </div>
+
+                      {/* Signals Notifications */}
+                      <div className="flex-1 overflow-y-auto max-h-[480px]">
+                        {signals?.length === 0 ? (
+                          <div className="flex flex-col items-center justify-center h-96 text-center px-6">
+                            <Bell className="w-16 h-16 text-slate-300 mb-4" />
+                            <h3 className="text-lg font-medium text-slate-600 mb-2">No New Signals</h3>
+                            <p className="text-sm text-slate-500">
+                              New trading signals will appear here
+                            </p>
+                          </div>
+                        ) : (
                         <div className="space-y-1">
                           {signals
                             ?.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
@@ -628,9 +652,10 @@ export function PhoneSignalsPage() {
                               </div>
                             )) || []}
                         </div>
-                      )}
-                    </div>
-                  </>
+                        )}
+                      </div>
+                    </>
+                  )
                 ) : (
                   /* Unauthenticated User - Show Login Form */
                   <div className="flex-1 flex flex-col">
