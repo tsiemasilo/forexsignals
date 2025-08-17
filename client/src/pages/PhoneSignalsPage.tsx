@@ -838,9 +838,13 @@ export function PhoneSignalsPage() {
                     </>
                   )
                 ) : (
-                  /* Unauthenticated User - Show Login Form */
+                  /* Unauthenticated User - Show Login or Sign Up Form */
                   <div className="flex-1 flex flex-col">
-                    <PhoneLoginForm />
+                    {showSignUp ? (
+                      <PhoneSignUpForm onBackToLogin={() => setShowSignUp(false)} />
+                    ) : (
+                      <PhoneLoginForm />
+                    )}
                   </div>
                 )}
 
