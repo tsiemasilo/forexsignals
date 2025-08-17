@@ -28,18 +28,19 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
     });
   }
 
-  // Simplified session configuration for development
+  // Ultra-simple session for development - force fresh sessions
   app.use(session({
-    secret: 'forex-simple-dev-secret',
+    secret: 'forex-dev-2025-new',
     resave: true,
     saveUninitialized: true,
+    rolling: false, // Don't extend session on each request
     cookie: {
       secure: false,
       httpOnly: false,
       maxAge: 24 * 60 * 60 * 1000,
       sameSite: 'lax'
     },
-    name: 'forexsid'
+    name: 'fxsession'
   }));
   // Seed database on startup
   await seedDatabase();
@@ -142,8 +143,9 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
       console.log('Session after login:', req.session);
       console.log('Session ID after login:', req.sessionID);
       
-      // Clear old session cookie to prevent conflicts
+      // Clear ALL old session cookies to prevent conflicts
       res.clearCookie('forexapp.sid', { path: '/' });
+      res.clearCookie('forexsid', { path: '/' });
       
       res.json({
         user: {
@@ -172,9 +174,10 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
       if (err) {
         return res.status(500).json({ message: "Logout failed" });
       }
-      // Clear both old and new session cookies
+      // Clear all session cookies
       res.clearCookie('forexapp.sid', { path: '/' });
       res.clearCookie('forexsid', { path: '/' });
+      res.clearCookie('fxsession', { path: '/' });
       res.json({ message: "Logged out successfully" });
     });
   });
