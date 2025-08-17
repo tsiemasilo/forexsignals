@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { AppHeader } from '@/components/AppHeader';
 import { Link } from 'wouter';
 import { useState } from 'react';
 
@@ -165,53 +166,47 @@ export function Plans() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
-        <div className="text-white text-xl">Loading plans...</div>
+      <div className="min-h-screen bg-gray-50">
+        <AppHeader />
+        <div className="flex items-center justify-center pt-20">
+          <div className="text-gray-600 text-xl">Loading plans...</div>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
-        <div className="text-red-400 text-xl">Error loading plans: {error.message}</div>
+      <div className="min-h-screen bg-gray-50">
+        <AppHeader />
+        <div className="flex items-center justify-center pt-20">
+          <div className="text-red-600 text-xl">Error loading plans: {error.message}</div>
+        </div>
       </div>
     );
   }
 
   if (!plans || plans.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
-        <div className="text-white text-xl">No plans available</div>
+      <div className="min-h-screen bg-gray-50">
+        <AppHeader />
+        <div className="flex items-center justify-center pt-20">
+          <div className="text-gray-600 text-xl">No plans available</div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      {/* Header */}
-      <div className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <Link href="/">
-              <div className="flex items-center space-x-2 cursor-pointer">
-                <div className="h-8 w-8 bg-green-600 rounded"></div>
-                <span className="text-xl font-bold text-gray-900">Watchlist Fx</span>
-              </div>
-            </Link>
-            <Link href="/">
-              <Button variant="outline">Back to Dashboard</Button>
-            </Link>
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen bg-gray-50">
+      <AppHeader />
 
       {/* Hero Section */}
       <div className="pt-20 pb-16 text-center">
-        <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
+        <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
           Choose Your Plan
         </h1>
-        <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
+        <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
           Get access to premium forex signals and start making profitable trades today
         </p>
       </div>
