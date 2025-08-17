@@ -9,6 +9,15 @@ export function useRealtimeSignals() {
   // Fetch signals with optimized refresh strategy
   const { data: signals, isLoading, error } = useQuery({
     queryKey: ['/api/signals'],
+    queryFn: async () => {
+      const response = await fetch('/api/signals', {
+        credentials: 'include'
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+      }
+      return response.json();
+    },
     refetchInterval: 5000, // Reduced to 5 seconds to prevent too frequent updates
     refetchIntervalInBackground: false, // Disable background refresh to reduce conflicts
     staleTime: 2000, // Allow data to be fresh for 2 seconds before forcing refresh

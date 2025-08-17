@@ -9,6 +9,8 @@ export function PhoneSignalsPage() {
   const { user } = useAuth();
   const { signals = [], isLoading, error } = useRealtimeSignals();
 
+
+
   const getTradeActionIcon = (action: string) => {
     switch (action.toLowerCase()) {
       case 'buy':
