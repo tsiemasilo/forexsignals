@@ -114,6 +114,14 @@ export async function registerRoutes(app: express.Application) {
         isAdmin: false
       });
 
+      // Create 7-day free trial for new user
+      const trial = await storage.createFreshTrial(user.id);
+      if (!trial) {
+        console.error('❌ Failed to create trial for new user:', user.id);
+      } else {
+        console.log(`✅ Created 7-day trial for new user: ${user.email}`);
+      }
+
       // Set session for new user
       req.session.userId = user.id;
       

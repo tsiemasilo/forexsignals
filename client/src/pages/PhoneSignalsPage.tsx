@@ -267,7 +267,7 @@ function PhoneSignUpForm({ onBackToLogin }: { onBackToLogin: () => void }) {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { register } = useAuth();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -276,18 +276,26 @@ function PhoneSignUpForm({ onBackToLogin }: { onBackToLogin: () => void }) {
 
     setLoading(true);
     try {
-      // Create account and login (your existing login endpoint should handle user creation)
-      await login(email);
+      // Create account with 7-day free trial
+      await register(email, firstName, lastName);
       toast({
-        title: "Success",
-        description: "Account created and logged in successfully!",
+        title: "Welcome! 🎉",
+        description: "Account created with 7-day FREE trial activated!",
       });
-    } catch (error) {
-      toast({
-        title: "Sign Up Failed",
-        description: error instanceof Error ? error.message : "Please try again",
-        variant: "destructive",
-      });
+    } catch (error: any) {
+      if (error?.userExists === true) {
+        onBackToLogin();
+        toast({
+          title: "Account Exists",
+          description: "This account already exists. Please sign in instead.",
+        });
+      } else {
+        toast({
+          title: "Sign Up Failed",
+          description: error instanceof Error ? error.message : "Please try again",
+          variant: "destructive",
+        });
+      }
     } finally {
       setLoading(false);
     }
