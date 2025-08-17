@@ -582,43 +582,29 @@ export async function registerRoutes(app: express.Application) {
         NotifyUrl: `${origin}/api/ozow/notify`
       };
 
-      // Try minimal field approach - some Ozow implementations exclude Customer/RequestId from hash
-      // Core fields only: SiteCode, Country, Currency, Amount, TxnRef, BankRef, URLs, IsTest, PrivateKey
-      const coreHashString = [
-        ozowParams.SiteCode,
-        ozowParams.CountryCode,
-        ozowParams.CurrencyCode,
-        ozowParams.Amount,
-        ozowParams.TransactionReference,
-        ozowParams.BankReference,
-        ozowParams.CancelUrl,
-        ozowParams.ErrorUrl, 
-        ozowParams.SuccessUrl,
-        ozowParams.NotifyUrl,
-        ozowParams.IsTest,
-        privateKey
-      ].join('');
-
-      // Also try with all fields including Customer/RequestId for comparison
-      const fullHashString = [
-        ozowParams.SiteCode,
-        ozowParams.CountryCode,
-        ozowParams.CurrencyCode,
-        ozowParams.Amount,
-        ozowParams.TransactionReference,
-        ozowParams.BankReference,
-        ozowParams.Customer,
-        ozowParams.RequestId,
-        ozowParams.CancelUrl,
-        ozowParams.ErrorUrl, 
-        ozowParams.SuccessUrl,
-        ozowParams.NotifyUrl,
-        ozowParams.IsTest,
-        privateKey
-      ].join('');
-
-      // Use core fields approach (more common)
-      const hashString = coreHashString;
+      // WORKING RUBY GITHUB IMPLEMENTATION ORDER (compact_blank removes empty values):
+      // From Ruby code: SiteCode, CountryCode, CurrencyCode, Amount, TransactionReference, BankReference, 
+      // [Optional1-5 removed by compact_blank], Customer, CancelUrl, ErrorUrl, SuccessUrl, NotifyUrl, IsTest, PrivateKey
+      
+      // Note: Ruby compact_blank removes nil values, so we only include non-empty fields
+      const hashParams = [
+        ozowParams.SiteCode,                // 'SiteCode': 'SOME_SITE_CODE'
+        ozowParams.CountryCode,             // 'CountryCode': 'ZA'  
+        ozowParams.CurrencyCode,            // 'CurrencyCode': 'ZAR'
+        ozowParams.Amount,                  // 'Amount': 1000
+        ozowParams.TransactionReference,    // 'TransactionReference': 'SOME_TEST'
+        ozowParams.BankReference,           // 'BankReference': "Nice Reference"
+        // Optional1-5 are nil in Ruby, so compact_blank removes them
+        ozowParams.Customer,                // 'Customer': nil -> but we have email, so include it
+        ozowParams.CancelUrl,               // 'CancelUrl': 'https://www.example.com/webhooks/ozow/success'
+        ozowParams.ErrorUrl,                // 'ErrorUrl': 'https://www.example.com/webhooks/ozow/error'  
+        ozowParams.SuccessUrl,              // 'SuccessUrl': 'https://www.example.com/webhooks/ozow/success'
+        ozowParams.NotifyUrl,               // 'NotifyUrl': 'https://www.example.com/webhooks/ozow/notify'
+        ozowParams.IsTest,                  // "IsTest": true
+        privateKey                          // + "SOME_SECRET_KEY"
+      ];
+      
+      const hashString = hashParams.join('');
 
       // 3. Convert to lowercase 
       const lowerHashString = hashString.toLowerCase();
@@ -626,16 +612,15 @@ export async function registerRoutes(app: express.Application) {
       // 4. Generate SHA512 hash (not SHA256!)
       const hashCheck = crypto.createHash('sha512').update(lowerHashString).digest('hex');
 
-      console.log('🎯 Ozow CORE FIELDS hash (excluding Customer/RequestId):', {
+      console.log('🎯 RUBY GITHUB IMPLEMENTATION (compact_blank - no empty optionals):', {
         algorithm: 'SHA512',
-        coreStringLength: coreHashString.length,
-        fullStringLength: fullHashString.length,
+        originalStringLength: hashString.length,
         lowerStringLength: lowerHashString.length,
         hashLength: hashCheck.length,
-        coreHashPreview: crypto.createHash('sha512').update(coreHashString.toLowerCase()).digest('hex').substring(0, 20) + '...',
-        fullHashPreview: crypto.createHash('sha512').update(fullHashString.toLowerCase()).digest('hex').substring(0, 20) + '...',
-        selectedApproach: 'core-fields-only',
-        privateKeyPresent: !!privateKey
+        hashPreview: hashCheck.substring(0, 32) + '...',
+        parameterOrder: 'SiteCode→Country→Currency→Amount→TxnRef→BankRef→Customer→CancelUrl→ErrorUrl→SuccessUrl→NotifyUrl→IsTest→PrivateKey',
+        privateKeyPresent: !!privateKey,
+        optionalsSkipped: 'Ruby compact_blank removes Optional1-5'
       });
 
       const ozowPayment = {
