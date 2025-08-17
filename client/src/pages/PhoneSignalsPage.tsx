@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRealtimeSignals } from '@/hooks/useRealtimeSignals';
 import { TrendingUp, TrendingDown, Minus, Clock, Bell, Signal, Home, CreditCard, Settings, Users, LogOut } from 'lucide-react';
@@ -387,6 +387,16 @@ function PhoneSignUpForm({ onBackToLogin }: { onBackToLogin: () => void }) {
 export function PhoneSignalsPage() {
   const { user, logout } = useAuth();
   const { signals = [], isLoading, error } = useRealtimeSignals();
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  // Update time every minute
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000); // Update every minute
+
+    return () => clearInterval(interval);
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -518,7 +528,14 @@ export function PhoneSignalsPage() {
                 
                 {/* Status Bar */}
                 <div className="flex justify-between items-center px-6 pt-8 pb-2 bg-slate-50">
-                  <span className="text-sm font-medium text-slate-900">9:41</span>
+                  <span className="text-sm font-medium text-slate-900">
+                    {currentTime.toLocaleTimeString('en-US', { 
+                      timeZone: 'Africa/Johannesburg',
+                      hour: '2-digit', 
+                      minute: '2-digit',
+                      hour12: false 
+                    })}
+                  </span>
                   <div className="flex items-center space-x-1">
                     <div className="w-4 h-2 bg-slate-900 rounded-sm"></div>
                     <div className="w-1 h-2 bg-slate-900 rounded-sm"></div>
