@@ -30,8 +30,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const checkAuth = async () => {
     try {
       const response = await apiRequest("/api/me");
+      console.log('CheckAuth response user:', response.user);
       setUser(response.user);
     } catch (error) {
+      console.log('CheckAuth error:', error);
       setUser(null);
     } finally {
       setLoading(false);
@@ -44,6 +46,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         method: "POST",
         body: JSON.stringify({ email }),
       });
+      console.log('Login response user:', response.user);
       setUser(response.user);
     } catch (error: any) {
       // Re-throw the error with all its properties preserved

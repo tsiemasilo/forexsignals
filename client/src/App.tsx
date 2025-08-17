@@ -22,10 +22,19 @@ function AppRoutes() {
     );
   }
 
+  // Debug logging to help identify admin routing issues
+  console.log('AppRoutes Debug:', { 
+    user, 
+    isAdmin: user?.isAdmin,
+    email: user?.email,
+    loading 
+  });
+
   return (
     <Switch>
       <Route path="/" component={() => {
         if (!user) return <PhoneSignalsPage />;
+        console.log('Root route - User:', user, 'IsAdmin:', user.isAdmin);
         return user.isAdmin ? <AdminDashboard /> : <PhoneSignalsPage />;
       }} />
       <Route path="/dashboard" component={DashboardPage} />
