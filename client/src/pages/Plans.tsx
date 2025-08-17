@@ -17,6 +17,13 @@ export function Plans() {
 
   const { data: plans = [], isLoading, error } = useQuery<any[]>({
     queryKey: ['/api/plans'],
+    queryFn: async () => {
+      const response = await fetch('/api/plans');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    }
   });
 
   console.log('Plans page - data:', plans);
