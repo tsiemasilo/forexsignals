@@ -142,6 +142,9 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
       console.log('Session after login:', req.session);
       console.log('Session ID after login:', req.sessionID);
       
+      // Clear old session cookie to prevent conflicts
+      res.clearCookie('forexapp.sid', { path: '/' });
+      
       res.json({
         user: {
           id: user.id,
@@ -169,6 +172,9 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
       if (err) {
         return res.status(500).json({ message: "Logout failed" });
       }
+      // Clear both old and new session cookies
+      res.clearCookie('forexapp.sid', { path: '/' });
+      res.clearCookie('forexsid', { path: '/' });
       res.json({ message: "Logged out successfully" });
     });
   });

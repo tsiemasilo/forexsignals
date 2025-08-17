@@ -49,6 +49,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.log("=== FRONTEND LOGIN/REGISTER ATTEMPT ===");
       console.log("Email:", email, "First:", firstName, "Last:", lastName);
       
+      // Clear any existing cookies before login to prevent conflicts
+      document.cookie = "forexapp.sid=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+      console.log("Cleared old session cookies before login");
+      
       const requestBody = firstName && lastName 
         ? { email, firstName, lastName }  // Registration data
         : { email }; // Login only
