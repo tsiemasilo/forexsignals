@@ -182,6 +182,20 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
     });
   });
 
+  // Debug endpoint to clear all session data
+  app.post("/api/clear-session", (req: Request, res: Response) => {
+    req.session.destroy((err) => {
+      if (err) {
+        console.log("Session destroy error:", err);
+      }
+      // Clear all possible session cookies
+      res.clearCookie('forexapp.sid', { path: '/' });
+      res.clearCookie('forexsid', { path: '/' }); 
+      res.clearCookie('fxsession', { path: '/' });
+      res.json({ message: "All sessions cleared" });
+    });
+  });
+
   app.get("/api/me", requireAuth, async (req: Request, res: Response) => {
     try {
       const user = await storage.getUser(req.session.userId!);
