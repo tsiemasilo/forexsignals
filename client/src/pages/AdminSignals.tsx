@@ -16,7 +16,7 @@ import { apiRequest } from '@/lib/queryClient';
 import { useRealtimeUpdates } from '@/hooks/useRealtimeUpdates';
 
 export default function AdminSignals() {
-  const { user, sessionId, isLoading: authLoading } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -59,7 +59,7 @@ export default function AdminSignals() {
 
   const { data: signals = [], isLoading } = useQuery<any[]>({
     queryKey: ['/api/signals'],
-    enabled: !!sessionId,
+    enabled: !!user,
     refetchInterval: 4000, // Auto-refresh every 4 seconds
     refetchIntervalInBackground: true, // Continue refreshing in background
     staleTime: 0, // Always consider data stale
@@ -69,14 +69,14 @@ export default function AdminSignals() {
     mutationFn: async (signalData: any) => {
       console.log('🚀 CREATING SIGNAL - REQUEST DATA:', {
         signalData,
-        url: '/api/signals',
+        url: '/api/admin/signals',
         method: 'POST',
         timestamp: new Date().toISOString(),
-        sessionId,
+        userId: user?.id,
         user: { id: user?.id, email: user?.email, isAdmin: user?.isAdmin }
       });
       
-      const response = await apiRequest('POST', '/api/signals', signalData);
+      const response = await apiRequest('POST', '/api/admin/signals', signalData);
       const result = await response.json();
       
       console.log('✅ SIGNAL CREATION - RESPONSE:', {
@@ -103,7 +103,7 @@ export default function AdminSignals() {
         error: error.message,
         fullError: error,
         timestamp: new Date().toISOString(),
-        sessionId,
+        userId: user?.id,
         user: { id: user?.id, email: user?.email, isAdmin: user?.isAdmin },
         formData
       });
@@ -118,7 +118,7 @@ export default function AdminSignals() {
 
   const updateSignalMutation = useMutation({
     mutationFn: async ({ id, ...signalData }: any) => {
-      const response = await apiRequest('PUT', `/api/signals/${id}`, signalData);
+      const response = await apiRequest('PUT', `/api/admin/signals/${id}`, signalData);
       return response.json();
     },
     onSuccess: () => {
@@ -141,7 +141,7 @@ export default function AdminSignals() {
 
   const deleteSignalMutation = useMutation({
     mutationFn: async (id: number) => {
-      const response = await apiRequest('DELETE', `/api/signals/${id}`);
+      const response = await apiRequest('DELETE', `/api/admin/signals/${id}`);
       return response.json();
     },
     onSuccess: () => {

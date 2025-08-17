@@ -56,8 +56,9 @@ export const handler = async (event, context) => {
       };
     }
 
-    if (method === 'PUT' && path.startsWith('/api/signals/')) {
-      const signalId = parseInt(path.split('/')[3]);
+    if (method === 'PUT' && (path.startsWith('/api/signals/') || path.startsWith('/api/admin/signals/'))) {
+      const pathParts = path.split('/');
+      const signalId = parseInt(pathParts[pathParts.length - 1]);
       const { title, content, tradeAction, uploadedImages } = JSON.parse(event.body);
 
       const result = await sql`
@@ -87,8 +88,9 @@ export const handler = async (event, context) => {
       };
     }
 
-    if (method === 'DELETE' && path.startsWith('/api/signals/')) {
-      const signalId = parseInt(path.split('/')[3]);
+    if (method === 'DELETE' && (path.startsWith('/api/signals/') || path.startsWith('/api/admin/signals/'))) {
+      const pathParts = path.split('/');
+      const signalId = parseInt(pathParts[pathParts.length - 1]);
 
       const result = await sql`
         DELETE FROM forex_signals 
@@ -118,11 +120,23 @@ export const handler = async (event, context) => {
     };
 
   } catch (error) {
-    console.error('Signals error:', error);
+    console.error('Signals function error:', {
+      error: error.message,
+      stack: error.stack,
+      method: event.httpMethod,
+      path: event.path,
+      body: event.body,
+      headers: event.headers,
+      timestamp: new Date().toISOString()
+    });
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ message: 'Internal server error' })
+      body: JSON.stringify({ 
+        message: 'Internal server error',
+        error: error.message,
+        details: `Method: ${event.httpMethod}, Path: ${event.path}`
+      })
     };
   }
 };
