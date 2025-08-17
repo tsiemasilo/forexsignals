@@ -27,9 +27,13 @@ export function LoginPage() {
     try {
       if (isRegistering) {
         await register(email, firstName, lastName);
+        // Reset form and switch to login mode
+        setIsRegistering(false);
+        setFirstName("");
+        setLastName("");
         toast({
-          title: "Success",
-          description: "Account created and logged in successfully!",
+          title: "Account Created",
+          description: "Your account has been created! Please sign in to continue.",
         });
       } else {
         await login(email);

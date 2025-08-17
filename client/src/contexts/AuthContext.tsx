@@ -56,7 +56,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       method: "POST",
       body: JSON.stringify({ email, firstName, lastName }),
     });
-    setUser(response.user);
+    // Don't set user after registration - they need to sign in separately
+    return response;
   };
 
   const logout = async () => {

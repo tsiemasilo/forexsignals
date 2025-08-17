@@ -28,20 +28,36 @@ export const handler = async (event, context) => {
         };
       }
 
-      // Find or create user
-      let user = await sql`SELECT * FROM users WHERE email = ${email} LIMIT 1`;
+      // Check if user exists
+      const user = await sql`SELECT * FROM users WHERE email = ${email} LIMIT 1`;
       
       if (user.length === 0) {
-        // Create new user
-        const [firstName, lastName] = email.split('@')[0].split(/[._]/).map(
-          part => part.charAt(0).toUpperCase() + part.slice(1)
-        );
+        return {
+          statusCode: 404,
+          headers,
+          body: JSON.stringify({ 
+            message: 'Account not found. Please register first to create your account.',
+            needsRegistration: true 
+          })
+        };
+      }
+
+      // Check if this is the user's first login (no subscription exists)
+      const existingSubscription = await sql`
+        SELECT * FROM subscriptions WHERE "userId" = ${user[0].id} LIMIT 1
+      `;
+      
+      if (existingSubscription.length === 0) {
+        // First login - create 7-day free trial
+        const endDate = new Date();
+        endDate.setDate(endDate.getDate() + 7);
         
-        user = await sql`
-          INSERT INTO users (email, "firstName", "lastName", "isAdmin")
-          VALUES (${email}, ${firstName || 'User'}, ${lastName || ''}, false)
-          RETURNING *
+        await sql`
+          INSERT INTO subscriptions ("userId", "planId", status, "startDate", "endDate", "createdAt")
+          VALUES (${user[0].id}, 1, 'trial', NOW(), ${endDate.toISOString()}, NOW())
         `;
+        
+        console.log(`✅ Created 7-day trial for first login: ${email}`);
       }
 
       return {
@@ -56,6 +72,49 @@ export const handler = async (event, context) => {
             lastName: user[0].lastName,
             isAdmin: user[0].isAdmin
           }
+        })
+      };
+    }
+
+    if (path === 'register' && event.httpMethod === 'POST') {
+      const { email, firstName, lastName } = JSON.parse(event.body);
+      
+      if (!email || !firstName || !lastName) {
+        return {
+          statusCode: 400,
+          headers,
+          body: JSON.stringify({ message: 'Email, first name, and last name are required' })
+        };
+      }
+
+      // Check if user already exists
+      const existingUser = await sql`SELECT * FROM users WHERE email = ${email} LIMIT 1`;
+      
+      if (existingUser.length > 0) {
+        return {
+          statusCode: 409,
+          headers,
+          body: JSON.stringify({ 
+            message: 'Account already exists. Please sign in instead.',
+            userExists: true 
+          })
+        };
+      }
+
+      // Create new user WITHOUT logging them in or creating a trial
+      await sql`
+        INSERT INTO users (email, "firstName", "lastName", "isAdmin")
+        VALUES (${email}, ${firstName}, ${lastName}, false)
+      `;
+      
+      console.log(`✅ New user registered: ${email} - Account created, please sign in`);
+      
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({
+          message: 'Account created successfully! Please sign in to access your account.',
+          registrationComplete: true
         })
       };
     }

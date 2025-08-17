@@ -69,6 +69,19 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
         });
       }
 
+      // Check if this is the user's first login (no subscription exists)
+      const existingSubscription = await storage.getUserSubscription(user.id);
+      
+      if (!existingSubscription) {
+        // First login - create 7-day free trial
+        const trial = await storage.createFreshTrial(user.id);
+        if (trial) {
+          console.log(`✅ Created 7-day trial for first login: ${user.email}`);
+        } else {
+          console.error('❌ Failed to create trial for user:', user.id);
+        }
+      }
+
       // Set session for existing user
       req.session.userId = user.id;
       
@@ -108,35 +121,20 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
         });
       }
 
-      // Create new user
+      // Create new user WITHOUT logging them in or creating a trial
       const user = await storage.createUser({
         email,
         firstName,
         lastName,
         isAdmin: false
       });
-
-      // Create 7-day free trial for new user
-      const trial = await storage.createFreshTrial(user.id);
-      if (!trial) {
-        console.error('❌ Failed to create trial for new user:', user.id);
-      } else {
-        console.log(`✅ Created 7-day trial for new user: ${user.email}`);
-      }
-
-      // Set session for new user
-      req.session.userId = user.id;
       
-      console.log(`✅ New user registered: ${user.email} (ID: ${user.id})`);
+      console.log(`✅ New user registered: ${user.email} (ID: ${user.id}) - Account created, please sign in`);
       
+      // Return success without setting session or user data
       res.json({
-        user: {
-          id: user.id,
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          isAdmin: user.isAdmin
-        }
+        message: "Account created successfully! Please sign in to access your account.",
+        registrationComplete: true
       });
     } catch (error) {
       console.error('Registration error:', error);
