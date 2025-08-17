@@ -51,13 +51,7 @@ function PricingCard() {
 function PhoneLoginForm() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
-  
-  // Check URL for signup parameter to show signup form directly
-  const [location] = useLocation();
-  const urlParams = new URLSearchParams(location.split('?')[1] || '');
-  const shouldShowSignUp = urlParams.get('signup') === 'true';
-  const [showSignUp, setShowSignUp] = useState(shouldShowSignUp);
-  
+  const [showSignUp, setShowSignUp] = useState(false);
   const { login } = useAuth();
   const { toast } = useToast();
 
@@ -536,12 +530,6 @@ export function PhoneSignalsPage() {
   const { data: subscriptionStatus } = useSubscriptionStatus();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  
-  // Check URL for signup parameter to show signup form directly
-  const [location] = useLocation();
-  const urlParams = new URLSearchParams(location.split('?')[1] || '');
-  const shouldShowSignUp = urlParams.get('signup') === 'true';
-  const [showSignUp, setShowSignUp] = useState(shouldShowSignUp);
 
   // Update time every minute
   useEffect(() => {
@@ -838,13 +826,9 @@ export function PhoneSignalsPage() {
                     </>
                   )
                 ) : (
-                  /* Unauthenticated User - Show Login or Sign Up Form */
+                  /* Unauthenticated User - Show Login Form */
                   <div className="flex-1 flex flex-col">
-                    {showSignUp ? (
-                      <PhoneSignUpForm onBackToLogin={() => setShowSignUp(false)} />
-                    ) : (
-                      <PhoneLoginForm />
-                    )}
+                    <PhoneLoginForm />
                   </div>
                 )}
 

@@ -25,7 +25,6 @@ function AppRoutes() {
         if (!user) return <PhoneSignalsPage />;
         return user.isAdmin ? <AdminDashboard /> : <PhoneSignalsPage />;
       }} />
-      <Route path="/signals" component={PhoneSignalsPage} />
       <Route path="/dashboard" component={DashboardPage} />
       <Route path="/phone-signals" component={PhoneSignalsPage} />
       <Route path="/admin" component={AdminDashboard} />

@@ -31,8 +31,8 @@ export function Plans() {
 
   const handleSubscribe = (plan: any) => {
     if (!user) {
-      // Fast redirect to signals page with sign-up mode using React Router
-      setLocation('/signals?signup=true');
+      // Fast redirect to signals page for sign-up using React Router
+      setLocation('/signals');
       return;
     }
 
