@@ -16,7 +16,7 @@ export function AppHeader() {
   };
 
   return (
-    <header className="bg-gray-900 shadow-sm border-b">
+    <header className="bg-white shadow-sm border-b">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo and Navigation */}
@@ -24,47 +24,47 @@ export function AppHeader() {
             <Link href="/">
               <div className="flex items-center space-x-2 cursor-pointer">
                 <Signal className="h-8 w-8 text-green-600" />
-                <span className="text-xl font-bold text-white">Watchlist Fx</span>
+                <span className="text-xl font-bold text-gray-900">Watchlist Fx</span>
               </div>
             </Link>
             
             <nav className="hidden md:flex space-x-6">
               <Link href="/">
-                <span className="flex items-center space-x-1 text-gray-300 hover:text-green-400 transition-colors cursor-pointer">
+                <a className="flex items-center space-x-1 text-gray-700 hover:text-green-600 transition-colors">
                   <Home className="h-4 w-4" />
                   <span>Home</span>
-                </span>
+                </a>
               </Link>
               
               <Link href="/signals">
-                <span className="flex items-center space-x-1 text-gray-300 hover:text-green-400 transition-colors cursor-pointer">
+                <a className="flex items-center space-x-1 text-gray-700 hover:text-green-600 transition-colors">
                   <Signal className="h-4 w-4" />
                   <span>Signals</span>
-                </span>
+                </a>
               </Link>
               
               {!user.isAdmin && (
                 <Link href="/plans">
-                  <span className="flex items-center space-x-1 text-gray-300 hover:text-green-400 transition-colors cursor-pointer">
+                  <a className="flex items-center space-x-1 text-gray-700 hover:text-green-600 transition-colors">
                     <CreditCard className="h-4 w-4" />
                     <span>Plans</span>
-                  </span>
+                  </a>
                 </Link>
               )}
               
               {user.isAdmin && (
                 <>
                   <Link href="/admin">
-                    <span className="flex items-center space-x-1 text-gray-300 hover:text-green-400 transition-colors cursor-pointer">
+                    <a className="flex items-center space-x-1 text-gray-700 hover:text-green-600 transition-colors">
                       <Settings className="h-4 w-4" />
                       <span>Admin</span>
-                    </span>
+                    </a>
                   </Link>
                   <Link href="/admin/users">
-                    <span className="flex items-center space-x-1 text-gray-300 hover:text-green-400 transition-colors cursor-pointer">
+                    <a className="flex items-center space-x-1 text-gray-700 hover:text-green-600 transition-colors">
                       <Users className="h-4 w-4" />
                       <span>Manage Users</span>
-                    </span>
+                    </a>
                   </Link>
                 </>
               )}
@@ -79,10 +79,10 @@ export function AppHeader() {
             {/* User Info */}
             <div className="flex items-center space-x-3">
               <div className="text-right">
-                <p className="text-sm font-medium text-white">
+                <p className="text-sm font-medium text-gray-900">
                   {user.firstName} {user.lastName}
                 </p>
-                <p className="text-xs text-gray-300">{user.email}</p>
+                <p className="text-xs text-gray-500">{user.email}</p>
               </div>
               
               <Button
