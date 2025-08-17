@@ -195,7 +195,7 @@ function PhoneSignUpForm({ onBackToLogin }: { onBackToLogin: () => void }) {
   };
 
   return (
-    <div className="flex-1 flex justify-center px-4" style={{ paddingTop: '80px', paddingBottom: '40px' }}>
+    <div className="flex-1 flex justify-center px-4" style={{ paddingTop: '40px', paddingBottom: '40px' }}>
       <div className="w-full flex justify-center">
         <form 
           onSubmit={handleSubmit} 
