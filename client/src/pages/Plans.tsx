@@ -183,7 +183,7 @@ export function Plans() {
           <div className="flex justify-between items-center h-16">
             <Link href="/">
               <div className="flex items-center space-x-2 cursor-pointer">
-                <Smartphone className="h-8 w-8 text-green-600" />
+                <Signal className="h-8 w-8 text-green-600" />
                 <span className="text-xl font-bold text-gray-900">Watchlist Fx</span>
               </div>
             </Link>
