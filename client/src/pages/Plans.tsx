@@ -27,7 +27,10 @@ export function Plans() {
     }
   });
 
-  // Remove console logs - keeping only for debugging if needed
+  console.log('Plans page - data:', plans);
+  console.log('Plans page - isLoading:', isLoading);
+  console.log('Plans page - error:', error);
+  console.log('Plans length:', plans?.length);
 
   const handleSubscribe = (plan: any) => {
     if (!user) {
@@ -211,6 +214,9 @@ export function Plans() {
 
       {/* Pricing Cards */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+        <div className="text-center mb-8">
+          <p className="text-gray-500">Found {plans.length} plans</p>
+        </div>
         <div className="grid md:grid-cols-3 gap-8">
           {plans.map((plan: any) => {
             const isPopular = plan.id === getPopularPlan()?.id;
