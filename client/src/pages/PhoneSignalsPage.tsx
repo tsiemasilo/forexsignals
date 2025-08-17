@@ -389,7 +389,7 @@ export function PhoneSignalsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-100">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* App Header/Navbar - Only show when user is logged in */}
       {user && (
         <header className="bg-gray-900 shadow-sm border-b">
@@ -478,7 +478,7 @@ export function PhoneSignalsPage() {
       )}
 
       {/* Phone Interface Container */}
-      <div className="bg-gradient-to-br from-slate-100 to-slate-200 py-8">
+      <div className="py-8">
         <div className="max-w-4xl mx-auto px-4">
           <div className="flex justify-center">
           {/* Phone Mockup */}
