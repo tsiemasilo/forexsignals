@@ -211,72 +211,294 @@ export function Plans() {
         </p>
       </div>
 
-      {/* Pricing Cards */}
+      {/* Animated Flip Cards */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-3 gap-8 justify-items-center">
           {plans.map((plan: any) => {
             const isPopular = plan.id === getPopularPlan()?.id;
             
             return (
-              <Card key={plan.id} className={`relative ${isPopular ? 'ring-2 ring-green-500 shadow-xl' : 'shadow-lg'} hover:shadow-xl transition-shadow`}>
-                {isPopular && (
-                  <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-green-600 text-white">
-                    <Star className="w-3 h-3 mr-1" />
-                    Most Popular
-                  </Badge>
-                )}
-                
-                <CardHeader className="text-center">
-                  <CardTitle className="text-2xl">{plan.name}</CardTitle>
-                  <CardDescription className="text-gray-600 mb-4">
-                    {plan.description}
-                  </CardDescription>
-                  <div className="text-center">
-                    <span className="text-4xl font-bold">R{plan.price}</span>
-                    <span className="text-gray-500 ml-1">/{plan.duration} days</span>
-                  </div>
-                </CardHeader>
-                
-                <CardContent className="space-y-4">
-                  <div className="space-y-3">
-                    <div className="flex items-center">
-                      <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                      <span>Professional forex signals</span>
-                    </div>
-                    <div className="flex items-center">
-                      <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                      <span>Real-time notifications</span>
-                    </div>
-                    <div className="flex items-center">
-                      <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                      <span>Risk management included</span>
-                    </div>
-                    <div className="flex items-center">
-                      <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                      <span>Expert market analysis</span>
+              <div key={plan.id} className="flip-card">
+                <div className="flip-card-content">
+                  {/* Back of card - shows on hover */}
+                  <div className="flip-card-back">
+                    <div className="rotating-border"></div>
+                    <div className="back-content">
+                      <div className="plan-icon">
+                        <CreditCard className="w-12 h-12 text-white" />
+                      </div>
+                      <div className="back-text">
+                        <h3 className="text-xl font-bold text-white mb-4">Ready to Subscribe?</h3>
+                        <Button
+                          onClick={() => handleSubscribe(plan)}
+                          className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+                        >
+                          Choose {plan.name}
+                        </Button>
+                      </div>
                     </div>
                   </div>
-                  
-                  {user ? (
-                    <Button 
-                      className={`w-full ${isPopular ? 'bg-green-600 hover:bg-green-700' : 'bg-slate-600 hover:bg-slate-700'}`}
-                      onClick={() => handleSubscribe(plan)}
-                    >
-                      Subscribe Now
-                    </Button>
-                  ) : (
-                    <Link href="/login" className="block">
-                      <Button className={`w-full ${isPopular ? 'bg-green-600 hover:bg-green-700' : 'bg-slate-600 hover:bg-slate-700'}`}>
-                        Get Started
-                      </Button>
-                    </Link>
-                  )}
-                </CardContent>
-              </Card>
+
+                  {/* Front of card - default view */}
+                  <div className="flip-card-front">
+                    <div className="floating-circles">
+                      <div className="circle circle-1"></div>
+                      <div className="circle circle-2"></div>
+                      <div className="circle circle-3"></div>
+                    </div>
+                    
+                    <div className="front-content">
+                      {isPopular && (
+                        <div className="popular-badge">
+                          <Star className="w-3 h-3 mr-1" />
+                          Most Popular
+                        </div>
+                      )}
+                      
+                      <div className="plan-details">
+                        <div className="plan-info">
+                          <h3 className="plan-title">{plan.name}</h3>
+                          <div className="plan-price">
+                            <span className="currency">R</span>
+                            <span className="amount">{plan.price}</span>
+                            <span className="period">/{plan.duration} days</span>
+                          </div>
+                        </div>
+                        
+                        <div className="features">
+                          <div className="feature-item">
+                            <CheckCircle className="w-4 h-4 text-green-400" />
+                            <span>Premium Signals</span>
+                          </div>
+                          <div className="feature-item">
+                            <CheckCircle className="w-4 h-4 text-green-400" />
+                            <span>Market Analysis</span>
+                          </div>
+                          <div className="feature-item">
+                            <CheckCircle className="w-4 h-4 text-green-400" />
+                            <span>24/7 Support</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             );
           })}
         </div>
       </div>
+
+      <style jsx>{`
+        .flip-card {
+          width: 280px;
+          height: 350px;
+          perspective: 1000px;
+        }
+
+        .flip-card-content {
+          width: 100%;
+          height: 100%;
+          transform-style: preserve-3d;
+          transition: transform 300ms ease-in-out;
+          box-shadow: 0px 0px 20px 2px rgba(0,0,0,0.15);
+          border-radius: 15px;
+        }
+
+        .flip-card:hover .flip-card-content {
+          transform: rotateY(180deg);
+        }
+
+        .flip-card-front, .flip-card-back {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          backface-visibility: hidden;
+          border-radius: 15px;
+          overflow: hidden;
+        }
+
+        .flip-card-back {
+          background: #151515;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transform: rotateY(180deg);
+          position: relative;
+        }
+
+        .rotating-border {
+          position: absolute;
+          content: '';
+          width: 160px;
+          height: 160%;
+          background: linear-gradient(90deg, transparent, #10b981, #10b981, #10b981, #10b981, transparent);
+          animation: rotation 5s infinite linear;
+        }
+
+        .back-content {
+          position: absolute;
+          width: 99%;
+          height: 99%;
+          background-color: #151515;
+          border-radius: 12px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 30px;
+          z-index: 10;
+        }
+
+        @keyframes rotation {
+          0% { transform: rotateZ(0deg); }
+          100% { transform: rotateZ(360deg); }
+        }
+
+        .flip-card-front {
+          background-color: #151515;
+          color: white;
+          transform: rotateY(180deg);
+          position: relative;
+        }
+
+        .floating-circles {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+        }
+
+        .circle {
+          position: absolute;
+          border-radius: 50%;
+          filter: blur(15px);
+        }
+
+        .circle-1 {
+          width: 90px;
+          height: 90px;
+          background-color: #10b981;
+          top: 20px;
+          left: 20px;
+          animation: floating 2600ms infinite linear;
+        }
+
+        .circle-2 {
+          width: 30px;
+          height: 30px;
+          background-color: #ef4444;
+          top: 80px;
+          right: 40px;
+          animation: floating 2600ms infinite linear;
+          animation-delay: -1800ms;
+        }
+
+        .circle-3 {
+          width: 150px;
+          height: 150px;
+          background-color: #f97316;
+          bottom: 20px;
+          left: 50px;
+          animation: floating 2600ms infinite linear;
+          animation-delay: -800ms;
+        }
+
+        @keyframes floating {
+          0% { transform: translateY(0px); }
+          50% { transform: translateY(10px); }
+          100% { transform: translateY(0px); }
+        }
+
+        .front-content {
+          position: relative;
+          z-index: 10;
+          width: 100%;
+          height: 100%;
+          padding: 20px;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+        }
+
+        .popular-badge {
+          background-color: rgba(0, 0, 0, 0.55);
+          color: #10b981;
+          padding: 2px 10px;
+          border-radius: 10px;
+          backdrop-filter: blur(2px);
+          width: fit-content;
+          display: flex;
+          align-items: center;
+          font-size: 12px;
+          font-weight: 600;
+        }
+
+        .plan-details {
+          box-shadow: 0px 0px 10px 5px rgba(0,0,0,0.5);
+          background-color: rgba(0,0,0,0.6);
+          backdrop-filter: blur(5px);
+          border-radius: 12px;
+          padding: 20px;
+        }
+
+        .plan-title {
+          font-size: 18px;
+          font-weight: 700;
+          color: white;
+          margin-bottom: 15px;
+        }
+
+        .plan-price {
+          display: flex;
+          align-items: baseline;
+          margin-bottom: 20px;
+          justify-content: space-between;
+          width: 100%;
+        }
+
+        .currency {
+          font-size: 24px;
+          color: #10b981;
+          font-weight: 600;
+        }
+
+        .amount {
+          font-size: 28px;
+          font-weight: 800;
+          color: white;
+        }
+
+        .period {
+          font-size: 12px;
+          color: rgba(255, 255, 255, 0.7);
+          font-weight: 500;
+        }
+
+        .features {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .feature-item {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 12px;
+          color: rgba(255, 255, 255, 0.9);
+        }
+
+        .plan-icon {
+          padding: 20px;
+          border-radius: 50%;
+          background: rgba(16, 185, 129, 0.2);
+          border: 2px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .back-text {
+          text-align: center;
+        }
+      `}</style>
 
       {/* Payment Dialog */}
       <Dialog open={isPaymentDialogOpen} onOpenChange={setIsPaymentDialogOpen}>
