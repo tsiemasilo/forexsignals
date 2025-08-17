@@ -392,15 +392,15 @@ export function PhoneSignalsPage() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* App Header/Navbar - Only show when user is logged in */}
       {user && (
-        <header className="bg-gray-900 shadow-sm border-b">
+        <header className="bg-gray-900 shadow-sm border-b relative z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex justify-between items-center h-16 md:h-20">
             {/* Logo and Navigation */}
             <div className="flex items-center space-x-8">
               <Link href="/">
                 <div className="flex items-center space-x-2 cursor-pointer">
-                  <Signal className="h-8 w-8 text-green-600"/>
-                  <span className="text-xl font-bold text-white">Watchlist Fx</span>
+                  <Signal className="h-8 w-8 md:h-10 md:w-10 text-green-600"/>
+                  <span className="text-xl md:text-2xl font-bold text-white">Watchlist Fx</span>
                 </div>
               </Link>
               
@@ -465,10 +465,10 @@ export function PhoneSignalsPage() {
                   variant="outline"
                   size="sm"
                   onClick={handleLogout}
-                  className="flex items-center space-x-1"
+                  className="flex items-center space-x-1 md:px-4 md:py-2"
                 >
-                  <LogOut className="h-4 w-4" />
-                  <span>Logout</span>
+                  <LogOut className="h-4 w-4 md:h-5 md:w-5" />
+                  <span className="text-sm md:text-base">Logout</span>
                 </Button>
               </div>
             </div>
@@ -478,11 +478,11 @@ export function PhoneSignalsPage() {
       )}
 
       {/* Phone Interface Container */}
-      <div className="py-8">
-        <div className="max-w-4xl mx-auto px-4">
+      <div className={`py-8 flex items-center justify-center ${user ? 'min-h-[calc(100vh-4rem)] md:min-h-[calc(100vh-5rem)]' : 'min-h-screen'}`}>
+        <div className="w-full max-w-6xl mx-auto px-4">
           <div className="flex justify-center">
           {/* Phone Mockup */}
-          <div className="relative scale-85 md:scale-100">
+          <div className="relative scale-100 sm:scale-110 md:scale-125 lg:scale-150 xl:scale-175 transform-gpu">
             {/* Phone Frame */}
             <div className="w-80 h-[640px] bg-black rounded-[3rem] p-2 shadow-2xl">
               {/* Phone Screen */}
