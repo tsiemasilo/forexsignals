@@ -44,7 +44,7 @@ export const handler = async (event, context) => {
 
       // Check if this is the user's first login (no subscription exists)
       const existingSubscription = await sql`
-        SELECT * FROM subscriptions WHERE "userId" = ${user[0].id} LIMIT 1
+        SELECT * FROM subscriptions WHERE user_id = ${user[0].id} LIMIT 1
       `;
       
       if (existingSubscription.length === 0) {
@@ -53,7 +53,7 @@ export const handler = async (event, context) => {
         endDate.setDate(endDate.getDate() + 7);
         
         await sql`
-          INSERT INTO subscriptions ("userId", "planId", status, "startDate", "endDate", "createdAt")
+          INSERT INTO subscriptions (user_id, plan_id, status, start_date, end_date, created_at)
           VALUES (${user[0].id}, 1, 'trial', NOW(), ${endDate.toISOString()}, NOW())
         `;
         
@@ -68,9 +68,9 @@ export const handler = async (event, context) => {
           user: {
             id: user[0].id,
             email: user[0].email,
-            firstName: user[0].firstName,
-            lastName: user[0].lastName,
-            isAdmin: user[0].isAdmin
+            firstName: user[0].first_name,
+            lastName: user[0].last_name,
+            isAdmin: user[0].is_admin
           }
         })
       };
@@ -103,7 +103,7 @@ export const handler = async (event, context) => {
 
       // Create new user WITHOUT logging them in or creating a trial
       await sql`
-        INSERT INTO users (email, "firstName", "lastName", "isAdmin")
+        INSERT INTO users (email, first_name, last_name, is_admin)
         VALUES (${email}, ${firstName}, ${lastName}, false)
       `;
       

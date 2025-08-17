@@ -79,7 +79,10 @@ export function Plans() {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify({ planId: selectedPlan.id })
+        body: JSON.stringify({ 
+          planId: selectedPlan.id,
+          userId: user?.id 
+        })
       });
 
       if (!response.ok) {

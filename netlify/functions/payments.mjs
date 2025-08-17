@@ -25,7 +25,25 @@ export const handler = async (event, context) => {
 
   try {
     const path = event.path;
-    const { planId } = JSON.parse(event.body);
+    const { planId, userId } = JSON.parse(event.body);
+
+    if (!userId) {
+      return {
+        statusCode: 401,
+        headers,
+        body: JSON.stringify({ message: 'Authentication required - userId missing' })
+      };
+    }
+
+    // Get user details
+    const user = await sql`SELECT * FROM users WHERE id = ${userId} LIMIT 1`;
+    if (user.length === 0) {
+      return {
+        statusCode: 404,
+        headers,
+        body: JSON.stringify({ message: 'User not found' })
+      };
+    }
 
     // Get plan details
     const plan = await sql`SELECT * FROM subscription_plans WHERE id = ${planId}`;
@@ -79,9 +97,9 @@ export const handler = async (event, context) => {
         CountryCode: "ZA", 
         CurrencyCode: "ZAR",
         Amount: parseFloat(plan[0].price).toFixed(2),
-        TransactionReference: `WFX-USER-${planId}-${Date.now()}`,
+        TransactionReference: `WFX-${userId}-${planId}-${Date.now()}`,
         BankReference: "WatchlistFx Payment",
-        Customer: "customer@watchlistfx.com",
+        Customer: user[0].email,
         IsTest: "false",
         SuccessUrl: `${origin}/payment-success`,
         CancelUrl: `${origin}/payment-cancel`,
