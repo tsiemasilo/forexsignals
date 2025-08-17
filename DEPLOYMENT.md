@@ -1,114 +1,91 @@
-# Watchlist Fx - Netlify Deployment Guide
+# WatchlistFX - Netlify Deployment Guide
 
-## Quick Setup Instructions
+## Pre-Deployment Checklist
 
-### 1. Push to GitHub Repository
-Since Git operations are restricted in Replit, you'll need to manually push this code to your GitHub repository:
+### ✅ Project Cleaned
+- Removed all debug files (.txt, .mjs, .sh, .md)
+- Cleaned up attached_assets directory
+- Organized project structure
+- Updated documentation
 
-1. Download this entire project as a ZIP file from Replit
-2. Extract it to your local machine
-3. Navigate to the project directory in your terminal
-4. Run these commands:
+### ✅ Netlify Functions Created
+- `auth.mjs` - Login/logout functionality
+- `signals.mjs` - Forex signals CRUD operations  
+- `payments.mjs` - Yoco and Ozow payment processing
+- `webhooks.mjs` - Payment gateway notifications
+- `plans.mjs` - Subscription plans
+- `admin.mjs` - Admin user management
+- `user.mjs` - User subscription status
 
-```bash
-git init
-git add .
-git commit -m "Initial commit: Watchlist Fx trading signals platform"
-git remote add origin https://github.com/tsiemasilo/forexsignals.git
-git push -u origin main
+### ✅ Configuration Files Ready
+- `netlify.toml` - Clean routing configuration
+- `README.md` - Project documentation
+- All API routes properly mapped to functions
+
+## Environment Variables Required
+
+Set these in Netlify dashboard under Site settings → Environment variables:
+
+```
+DATABASE_URL=your_postgresql_connection_string
+YOCO_PUBLIC_KEY=your_yoco_public_key  
+YOCO_SECRET_KEY=your_yoco_secret_key
+OZOW_API_KEY=your_ozow_api_key
+OZOW_SECRET_KEY=your_ozow_secret_key
+SESSION_SECRET=your_session_secret_key
 ```
 
-### 2. Deploy to Netlify
+## Deployment Steps
 
-1. Go to [Netlify](https://netlify.com) and sign in
-2. Click "Add new site" → "Import an existing project"
-3. Choose "GitHub" and select your `forexsignals` repository
-4. Configure the build settings:
-   - **Build command**: `npm run build`
-   - **Publish directory**: `dist/public`
-   - **Node version**: `20`
+1. **Connect Repository**
+   - Connect your GitHub repository to Netlify
+   - Select the main branch for deployment
 
-### 3. Environment Variables
+2. **Configure Build Settings**
+   - Build command: `vite build`
+   - Publish directory: `dist/public`
+   - Node version: 20
 
-Add these environment variables in Netlify dashboard (Site settings → Environment variables):
+3. **Set Environment Variables**
+   - Add all required environment variables listed above
+   - Ensure DATABASE_URL points to your Neon PostgreSQL database
 
-**Required:**
-- `NETLIFY_DATABASE_URL` - `postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require`
-- `OZOW_SITE_CODE` - Your Ozow payment gateway site code
-- `OZOW_PRIVATE_KEY` - Your Ozow private key
+4. **Deploy**
+   - Netlify will automatically build and deploy
+   - Functions will be available at `/.netlify/functions/`
 
-**Note:** Netlify provides the database URL as `NETLIFY_DATABASE_URL` and `NETLIFY_DATABASE_URL_UNPOOLED`. Use the standard `NETLIFY_DATABASE_URL` for your connection.
+## Post-Deployment
 
-**Optional (if using additional features):**
-- `GITHUB_TOKEN` - For any GitHub integrations
+### Testing Checklist
+- [ ] Login functionality works
+- [ ] Signals load correctly
+- [ ] Payment flow (Yoco & Ozow) functional
+- [ ] Admin panel accessible
+- [ ] iPhone-style interface displays properly
+- [ ] Real-time features working
 
-### 4. Trigger New Deployment ✅ READY
+### Payment Gateway URLs
+Update payment success URLs in gateway dashboards:
+- Success URL: `https://your-domain.netlify.app/payment-success`
+- Cancel URL: `https://your-domain.netlify.app/payment-cancel`
+- Error URL: `https://your-domain.netlify.app/payment-error`
+- Notify URL: `https://your-domain.netlify.app/api/[gateway]/notify`
 
-**All missing files have been uploaded!** Your deployment should now succeed:
+## Architecture Notes
 
-1. Go to your **Netlify dashboard**
-2. Find your site and click **"Trigger deploy"** → **"Deploy site"**
-3. The build should now complete successfully
+- **Frontend**: React SPA with mobile-first design
+- **Backend**: Netlify serverless functions
+- **Database**: PostgreSQL (Neon) with Drizzle ORM
+- **Authentication**: Session-based (simplified for serverless)
+- **Payments**: Dual gateway (Yoco + Ozow) integration
 
-**Fixed Issues:**
-- ✅ Missing `./lib/queryClient` resolved
-- ✅ Missing `SubscriptionStatusBadge` component uploaded
-- ✅ All UI components and context files uploaded
-- ✅ Complete project structure now available
+## Success Indicators
 
-### 5. Database Setup
+✅ Clean codebase ready for professional deployment  
+✅ All debugging artifacts removed  
+✅ Proper serverless function architecture  
+✅ Complete payment integration  
+✅ iPhone-style signal interface  
+✅ Admin management capabilities
 
-This project uses PostgreSQL. You can use:
-- **Neon** (recommended): https://neon.tech
-- **Supabase**: https://supabase.com
-- **Railway**: https://railway.app
-
-Get your connection string and add it as `NETLIFY_DATABASE_URL` in Netlify.
-
-**For Netlify Deployment:** Set the new Neon database URL:
-```
-NETLIFY_DATABASE_URL=postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
-```
-
-### 5. Post-Deployment
-
-After successful deployment:
-1. The site will be available at your Netlify URL (e.g., `https://watchlist-fx-123456.netlify.app`)
-2. Test the login/signup functionality
-3. Test payment integration with Ozow
-4. Verify signal creation and viewing works properly
-
-## Project Structure
-
-- `client/` - React frontend application
-- `server/` - Express.js backend API
-- `shared/` - Shared TypeScript types and schemas
-- `netlify/` - Netlify Functions configuration
-- `netlify.toml` - Netlify deployment configuration
-
-## Features
-
-✅ **Complete Trading Signals Platform:**
-- User authentication with trial accounts
-- Admin dashboard for signal management
-- Multiple image upload support for charts
-- Ozow payment integration (South African market)
-- Responsive mobile-first design
-- PostgreSQL database with session management
-
-✅ **Recent Updates:**
-- Brand updated to "Watchlist Fx"
-- Multiple image support for trading signals
-- Enhanced SignalDetails page without risk disclaimer
-- Fixed date display issues
-- Improved admin interface for signal management
-
-## Support
-
-If you encounter any issues during deployment, check:
-1. Netlify build logs for error details
-2. Environment variables are correctly set
-3. Database connection is working
-4. Domain DNS settings (if using custom domain)
-
-The application is fully configured for production deployment with proper error handling and security measures.
+The project is now ready for production deployment on Netlify!

@@ -1,18 +1,18 @@
 [build]
   publish = "dist/public"
-  command = "node build-netlify.js"
+  command = "vite build"
 
 [build.environment]
   NODE_VERSION = "20"
-  # Netlify automatically provides NETLIFY_DATABASE_URL for Neon database connections
 
+# Core API Routes
 [[redirects]]
   from = "/api/login"
-  to = "/.netlify/functions/emergency-login"
+  to = "/.netlify/functions/auth"
   status = 200
 
 [[redirects]]
-  from = "/api/auth"
+  from = "/api/logout"
   to = "/.netlify/functions/auth"
   status = 200
 
@@ -31,19 +31,41 @@
   to = "/.netlify/functions/signals"
   status = 200
 
+# Payment Gateway Routes
+[[redirects]]
+  from = "/api/yoco/payment"
+  to = "/.netlify/functions/payments"
+  status = 200
+
+[[redirects]]
+  from = "/api/ozow/payment"
+  to = "/.netlify/functions/payments"
+  status = 200
+
+[[redirects]]
+  from = "/api/yoco/notify"
+  to = "/.netlify/functions/webhooks"
+  status = 200
+
+[[redirects]]
+  from = "/api/ozow/notify"
+  to = "/.netlify/functions/webhooks"
+  status = 200
+
+# Admin Routes
 [[redirects]]
   from = "/api/admin/users"
-  to = "/.netlify/functions/admin-users-fixed"
+  to = "/.netlify/functions/admin"
   status = 200
 
 [[redirects]]
   from = "/api/admin/users/*/subscription"
-  to = "/.netlify/functions/admin-subscription"
+  to = "/.netlify/functions/admin"
   status = 200
 
 [[redirects]]
   from = "/api/admin/users/*/create-trial"
-  to = "/.netlify/functions/admin-create-trial"
+  to = "/.netlify/functions/admin"
   status = 200
 
 [[redirects]]
@@ -51,32 +73,11 @@
   to = "/.netlify/functions/signals"
   status = 200
 
+# User Routes
 [[redirects]]
   from = "/api/user/subscription-status"
-  to = "/.netlify/functions/user-subscription-status"
+  to = "/.netlify/functions/user"
   status = 200
-
-[[redirects]]
-  from = "/api/logout"
-  to = "/.netlify/functions/logout"
-  status = 200
-
-[[redirects]]
-  from = "/api/debug-session"
-  to = "/.netlify/functions/debug-session"
-  status = 200
-
-[[redirects]]
-  from = "/api/test-login"
-  to = "/.netlify/functions/test-login"
-  status = 200
-
-[[redirects]]
-  from = "/api/placeholder/*/*"
-  to = "/.netlify/functions/placeholder"
-  status = 200
-
-# Server catch-all removed - using specific function routing only
 
 [[redirects]]
   from = "/*"

@@ -1,83 +1,86 @@
-# Watchlist Fx - Professional Trading Signals Platform
+# WatchlistFX - Forex Signals Platform
 
-A comprehensive forex signals subscription platform providing professional trading insights with advanced multi-image signal management for South African financial markets.
+A modern forex signals subscription platform with advanced payment integration and real-time signal delivery.
 
-## 🚀 Features
+## Features
 
-- **User Authentication**: Secure login/signup with automatic 7-day free trials
-- **Admin Dashboard**: Complete signal management with multiple image uploads
-- **Payment Integration**: Ozow payment gateway for South African market
-- **Real-time Signals**: Professional trading signals with chart analysis
-- **Responsive Design**: Mobile-first design optimized for all devices
-- **PostgreSQL Database**: Persistent data storage with session management
+- **iPhone-Style Signal Interface**: Authentic mobile experience with iOS design elements
+- **Dual Payment Gateway**: Yoco and Ozow payment integration for South African market
+- **Real-time Signals**: Live forex signal delivery with trade actions and analysis
+- **Subscription Management**: Multi-tier plans (Basic, Premium, VIP) with automatic activation
+- **Admin Dashboard**: Complete signal management and user administration
+- **Responsive Design**: Mobile-first approach with desktop compatibility
 
-## 🛠️ Tech Stack
+## Tech Stack
 
-- **Frontend**: React 18, TypeScript, Tailwind CSS, Shadcn/UI
-- **Backend**: Express.js, Node.js, PostgreSQL
-- **Database**: Drizzle ORM with PostgreSQL
-- **Payments**: Ozow integration
-- **Deployment**: Netlify with serverless functions
+### Frontend
+- **React 18** with TypeScript
+- **Tailwind CSS** for styling
+- **Shadcn/UI** component library
+- **Wouter** for client-side routing
+- **TanStack Query** for server state management
 
-## 📱 Key Pages
+### Backend
+- **Node.js** with Express
+- **PostgreSQL** with Drizzle ORM
+- **Session-based authentication**
+- **Serverless functions** for Netlify deployment
 
-- **Landing Page**: Bold poster-style design with call-to-action
-- **Signals Dashboard**: View all trading signals with filtering
-- **Signal Details**: Comprehensive analysis with multiple chart images
-- **Admin Panel**: Manage signals, users, and subscriptions
-- **Pricing Plans**: Subscription options with South African pricing
+### Payment Gateways
+- **Yoco**: South African payment processing
+- **Ozow**: EFT payment solution with SHA512 hash validation
 
-## 🔧 Recent Updates
+## Deployment
 
-- ✅ Brand updated to "Watchlist Fx"
-- ✅ Multiple image upload support for signals
-- ✅ Enhanced SignalDetails page (removed risk disclaimer)
-- ✅ Fixed invalid date display issues
-- ✅ Improved admin signal management interface
-- ✅ PostgreSQL database integration
-- ✅ Ozow payment gateway integration
+### Netlify Configuration
 
-## 🚀 Deployment
+The project is configured for Netlify deployment with:
+- Serverless functions in `/netlify/functions/`
+- Build configuration in `netlify.toml`
+- Environment variables for payment gateways
 
-See [DEPLOYMENT.md](DEPLOYMENT.md) for complete deployment instructions to Netlify.
+### Required Environment Variables
 
-## 💡 Usage
+```
+DATABASE_URL=your_postgresql_connection_string
+YOCO_PUBLIC_KEY=your_yoco_public_key
+YOCO_SECRET_KEY=your_yoco_secret_key
+OZOW_API_KEY=your_ozow_api_key
+OZOW_SECRET_KEY=your_ozow_secret_key
+SESSION_SECRET=your_session_secret
+```
 
-1. **For Customers**:
-   - Sign up for automatic 7-day free trial
-   - Browse professional trading signals
-   - View detailed chart analysis with multiple images
-   - Subscribe to paid plans for continued access
+### Build Commands
 
-2. **For Admins**:
-   - Create and manage trading signals
-   - Upload multiple chart images per signal
-   - Manage user subscriptions and status
-   - Monitor platform analytics
+```bash
+# Install dependencies
+npm install
 
-## 🎯 Business Model
+# Build for production
+npm run build
 
-- **Free Trial**: 7 days automatic trial for new users
-- **Subscription Plans**: 
-  - Basic Plan: R49.99 (5 days)
-  - Premium Plan: R99.99 (14 days)
-  - VIP Plan: R179.99 (30 days)
+# Deploy to Netlify
+netlify deploy --prod
+```
 
-## 📊 Database Schema
+## Project Structure
 
-- Users with subscription tracking
-- Trading signals with multiple image support
-- Subscription plans and payment records
-- Session management for security
+```
+├── client/                 # React frontend
+│   ├── src/pages/         # Page components
+│   ├── src/components/    # Reusable components
+│   └── src/lib/          # Utilities and configuration
+├── server/                # Express backend
+│   ├── routes.ts         # API routes and payment handlers
+│   ├── storage.ts        # Database operations
+│   └── db.ts             # Database configuration
+├── shared/                # Shared types and schemas
+│   └── schema.ts         # Drizzle database schema
+├── netlify/               # Netlify serverless functions
+│   └── functions/        # API endpoints for production
+└── netlify.toml          # Netlify configuration
+```
 
-## 🔐 Security Features
+## License
 
-- Secure session management
-- Environment-based configuration
-- Protected admin routes
-- Payment gateway security
-
----
-
-**Watchlist Fx** - Professional Trading Signals Platform
-Built with modern web technologies for the South African forex market.
+Private project - All rights reserved

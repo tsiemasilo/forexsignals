@@ -1,16 +1,13 @@
 import { neon } from '@neondatabase/serverless';
 
-// Use direct HTTP connection for Netlify
-const DATABASE_URL = process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
-const sql = neon(DATABASE_URL);
+const sql = neon(process.env.DATABASE_URL || process.env.NETLIFY_DATABASE_URL);
 
 export const handler = async (event, context) => {
   const headers = {
-    'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization, Cookie',
-    'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
-    'Access-Control-Allow-Credentials': 'true'
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+    'Content-Type': 'application/json'
   };
 
   if (event.httpMethod === 'OPTIONS') {
@@ -18,59 +15,71 @@ export const handler = async (event, context) => {
   }
 
   try {
-    // Get user from session
-    const cookies = event.headers.cookie || '';
-    const sessionMatch = cookies.match(/sessionId=([^;]+)/);
+    const path = event.path.split('/api/')[1];
     
-    if (!sessionMatch) {
+    if (path === 'login' && event.httpMethod === 'POST') {
+      const { email } = JSON.parse(event.body);
+      
+      if (!email) {
+        return {
+          statusCode: 400,
+          headers,
+          body: JSON.stringify({ message: 'Email is required' })
+        };
+      }
+
+      // Find or create user
+      let user = await sql`SELECT * FROM users WHERE email = ${email} LIMIT 1`;
+      
+      if (user.length === 0) {
+        // Create new user
+        const [firstName, lastName] = email.split('@')[0].split(/[._]/).map(
+          part => part.charAt(0).toUpperCase() + part.slice(1)
+        );
+        
+        user = await sql`
+          INSERT INTO users (email, "firstName", "lastName", "isAdmin")
+          VALUES (${email}, ${firstName || 'User'}, ${lastName || ''}, false)
+          RETURNING *
+        `;
+      }
+
       return {
-        statusCode: 401,
+        statusCode: 200,
         headers,
-        body: JSON.stringify({ message: 'No session found' })
+        body: JSON.stringify({ 
+          message: 'Login successful',
+          user: {
+            id: user[0].id,
+            email: user[0].email,
+            firstName: user[0].firstName,
+            lastName: user[0].lastName,
+            isAdmin: user[0].isAdmin
+          }
+        })
       };
     }
 
-    const sessionId = sessionMatch[1];
-    
-    const result = await sql`
-      SELECT u.id, u.email, u.first_name, u.last_name, u.is_admin, s.expire
-      FROM sessions s
-      JOIN users u ON (s.sess->>'user')::jsonb->>'id' = u.id::text
-      WHERE s.sid = ${sessionId} AND s.expire > NOW()
-    `;
-    
-    const user = result[0];
-    
-    if (!user) {
+    if (path === 'logout' && event.httpMethod === 'POST') {
       return {
-        statusCode: 401,
+        statusCode: 200,
         headers,
-        body: JSON.stringify({ message: 'Session expired' })
+        body: JSON.stringify({ message: 'Logout successful' })
       };
     }
 
-    // Return user information
     return {
-      statusCode: 200,
+      statusCode: 404,
       headers,
-      body: JSON.stringify({
-        id: user.id,
-        email: user.email,
-        firstName: user.first_name,
-        lastName: user.last_name,
-        isAdmin: user.is_admin
-      })
+      body: JSON.stringify({ message: 'Route not found' })
     };
 
   } catch (error) {
-    console.error('Auth function error:', error);
+    console.error('Auth error:', error);
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ 
-        message: 'Internal server error',
-        error: error.message 
-      })
+      body: JSON.stringify({ message: 'Internal server error' })
     };
   }
 };
