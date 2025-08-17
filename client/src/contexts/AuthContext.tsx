@@ -29,6 +29,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const checkAuth = async () => {
     try {
+      console.log('=== CHECKING AUTH ===');
+      console.log('Current cookies:', document.cookie);
       const response = await apiRequest("/api/me");
       console.log('CheckAuth response user:', response.user);
       setUser(response.user);
