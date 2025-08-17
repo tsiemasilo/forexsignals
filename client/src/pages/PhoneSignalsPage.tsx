@@ -16,7 +16,7 @@ function PricingCard() {
 
   const handlePlanSelect = (plan: string) => {
     console.log('Selected plan:', plan);
-    // Fast navigation using React Router
+    // Fast navigation using wouter
     setLocation('/plans');
   };
 
@@ -54,6 +54,7 @@ function PhoneLoginForm() {
   const [showSignUp, setShowSignUp] = useState(false);
   const { login } = useAuth();
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -173,37 +174,35 @@ function PhoneLoginForm() {
             textAlign: 'center',
             marginBottom: '20px'
           }}>
-            <Link href="/plans">
-              <button
-                type="button"
-                style={{
-                  background: 'transparent',
-                  color: '#2563eb',
-                  border: '1.5px solid #2563eb',
-                  padding: '6px 20px',
-                  borderRadius: '15px',
-                  fontSize: '12px',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  fontFamily: 'inherit'
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.background = '#2563eb';
-                  e.currentTarget.style.color = '#ffffff';
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.background = 'transparent';
-                  e.currentTarget.style.color = '#2563eb';
-                }}
-                onClick={(e) => {
-                  e.preventDefault();
-                  window.location.href = '/plans';
-                }}
-              >
-                See Plans & Pricing
-              </button>
-            </Link>
+            <button
+              type="button"
+              style={{
+                background: 'transparent',
+                color: '#2563eb',
+                border: '1.5px solid #2563eb',
+                padding: '6px 20px',
+                borderRadius: '15px',
+                fontSize: '12px',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                fontFamily: 'inherit'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.background = '#2563eb';
+                e.currentTarget.style.color = '#ffffff';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.background = 'transparent';
+                e.currentTarget.style.color = '#2563eb';
+              }}
+              onClick={() => {
+                // Fast navigation using wouter
+                setLocation('/plans');
+              }}
+            >
+              See Plans & Pricing
+            </button>
           </div>
 
           <div className="flex flex-col">
