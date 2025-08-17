@@ -21,7 +21,7 @@ export function useRealtimeSignals() {
       return response.json();
     },
     enabled: !!user, // Only run query when user is authenticated
-    refetchInterval: user ? 5000 : false, // Only refresh when user is authenticated
+    refetchInterval: false, // Disable auto-refresh to stop constant refreshing
     refetchIntervalInBackground: false, // Disable background refresh to reduce conflicts
     staleTime: 2000, // Allow data to be fresh for 2 seconds before forcing refresh
     retry: false, // Don't retry failed requests automatically
