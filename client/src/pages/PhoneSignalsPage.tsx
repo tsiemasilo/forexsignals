@@ -502,20 +502,6 @@ export function PhoneSignalsPage() {
               {user ? (
                 <>
                   <nav className="hidden md:flex space-x-6">
-                    <Link href="/">
-                      <span className="flex items-center space-x-1 text-gray-300 hover:text-green-400 transition-colors cursor-pointer">
-                        <Home className="h-4 w-4" />
-                        <span>Home</span>
-                      </span>
-                    </Link>
-                    
-                    <Link href="/signals">
-                      <span className="flex items-center space-x-1 text-gray-300 hover:text-green-400 transition-colors cursor-pointer">
-                        <Signal className="h-4 w-4" />
-                        <span>Signals</span>
-                      </span>
-                    </Link>
-                    
                     {!user?.isAdmin && (
                       <Link href="/plans">
                         <span className="flex items-center space-x-1 text-gray-300 hover:text-green-400 transition-colors cursor-pointer">
