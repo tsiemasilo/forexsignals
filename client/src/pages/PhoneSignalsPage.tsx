@@ -44,14 +44,15 @@ function PhoneLoginForm() {
   }
 
   return (
-    <div className="flex-1 flex items-center justify-center p-4">
-      <div className="w-full" style={{ maxWidth: '320px' }}>
+    <div className="flex-1 flex items-center justify-center px-4 py-6">
+      <div className="w-full flex justify-center">
         <form 
           onSubmit={handleSubmit} 
           className="flex flex-col bg-white rounded-2xl shadow-lg"
           style={{ 
             gap: '10px',
             padding: '30px',
+            width: '280px',
             borderRadius: '20px',
             fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
           }}
@@ -179,14 +180,15 @@ function PhoneSignUpForm({ onBackToLogin }: { onBackToLogin: () => void }) {
   };
 
   return (
-    <div className="flex-1 flex items-center justify-center p-4">
-      <div className="w-full" style={{ maxWidth: '320px' }}>
+    <div className="flex-1 flex items-center justify-center px-4 py-6">
+      <div className="w-full flex justify-center">
         <form 
           onSubmit={handleSubmit} 
           className="flex flex-col bg-white rounded-2xl shadow-lg"
           style={{ 
             gap: '10px',
             padding: '30px',
+            width: '280px',
             borderRadius: '20px',
             fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
           }}
