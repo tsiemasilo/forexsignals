@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Ozow Payment</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .hash-option { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+        button { padding: 10px 20px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Test Ozow Payment Hash Methods</h1>
+    
+    <div class="hash-option">
+        <h3>Method A: SHA256 Full Uppercase</h3>
+        <form action="https://pay.ozow.com" method="POST" target="_blank">
+            <input type="hidden" name="SiteCode" value="NOS-NOS-005">
+            <input type="hidden" name="CountryCode" value="ZA">
+            <input type="hidden" name="CurrencyCode" value="ZAR">
+            <input type="hidden" name="Amount" value="9999">
+            <input type="hidden" name="TransactionReference" value="WFX-TEST-001">
+            <input type="hidden" name="BankReference" value="WatchlistFx Payment">
+            <input type="hidden" name="Customer" value="tsiemasilo@gmail.com">
+            <input type="hidden" name="RequestId" value="req-test-001">
+            <input type="hidden" name="IsTest" value="true">
+            <input type="hidden" name="SuccessUrl" value="https://watchlistfx.netlify.app/payment-success">
+            <input type="hidden" name="CancelUrl" value="https://watchlistfx.netlify.app/payment-cancel">
+            <input type="hidden" name="ErrorUrl" value="https://watchlistfx.netlify.app/payment-error">
+            <input type="hidden" name="NotifyUrl" value="https://watchlistfx.netlify.app/api/ozow/notify">
+            <input type="hidden" name="HashCheck" id="hashA" value="">
+            <button type="submit">Test Method A</button>
+        </form>
+    </div>
+
+    <div class="hash-option">
+        <h3>Method B: SHA256 Minimal Uppercase</h3>
+        <form action="https://pay.ozow.com" method="POST" target="_blank">
+            <input type="hidden" name="SiteCode" value="NOS-NOS-005">
+            <input type="hidden" name="CountryCode" value="ZA">
+            <input type="hidden" name="CurrencyCode" value="ZAR">
+            <input type="hidden" name="Amount" value="9999">
+            <input type="hidden" name="TransactionReference" value="WFX-TEST-002">
+            <input type="hidden" name="BankReference" value="WatchlistFx Payment">
+            <input type="hidden" name="Customer" value="tsiemasilo@gmail.com">
+            <input type="hidden" name="RequestId" value="req-test-002">
+            <input type="hidden" name="IsTest" value="true">
+            <input type="hidden" name="SuccessUrl" value="https://watchlistfx.netlify.app/payment-success">
+            <input type="hidden" name="CancelUrl" value="https://watchlistfx.netlify.app/payment-cancel">
+            <input type="hidden" name="ErrorUrl" value="https://watchlistfx.netlify.app/payment-error">
+            <input type="hidden" name="NotifyUrl" value="https://watchlistfx.netlify.app/api/ozow/notify">
+            <input type="hidden" name="HashCheck" id="hashB" value="">
+            <button type="submit">Test Method B</button>
+        </form>
+    </div>
+
+    <script>
+        // Calculate Method A hash (full parameters)
+        async function calculateHashA() {
+            const data = "NOS-NOS-005ZAZAZar9999WFX-TEST-001WatchlistFx Paymenttsiemasilo@gmail.comreq-test-001truehttps://watchlistfx.netlify.app/payment-successhttps://watchlistfx.netlify.app/payment-cancelhttps://watchlistfx.netlify.app/payment-errorhttps://watchlistfx.netlify.app/api/ozow/notify" + "SECRET_KEY_PLACEHOLDER";
+            const encoder = new TextEncoder();
+            const dataBuffer = encoder.encode(data);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', dataBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
+            document.getElementById('hashA').value = hashHex;
+        }
+
+        // Calculate Method B hash (minimal parameters)
+        async function calculateHashB() {
+            const data = "NOS-NOS-005ZAZAr9999WFX-TEST-002WatchlistFx Paymenttsiemasilo@gmail.com" + "SECRET_KEY_PLACEHOLDER";
+            const encoder = new TextEncoder();
+            const dataBuffer = encoder.encode(data);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', dataBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
+            document.getElementById('hashB').value = hashHex;
+        }
+
+        // For testing purposes - you would replace SECRET_KEY_PLACEHOLDER with actual secret
+        calculateHashA();
+        calculateHashB();
+    </script>
+</body>
+</html>

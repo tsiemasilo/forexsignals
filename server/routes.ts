@@ -580,41 +580,52 @@ export async function registerRoutes(app: express.Application) {
         NotifyUrl: `${origin}/api/ozow/notify`
       };
 
-      // Try Ozow-specific hash calculation based on their documentation pattern
-      // Many South African payment gateways use this specific format
-      const hashData = {
-        siteCode: ozowData.SiteCode,
-        countryCode: ozowData.CountryCode,
-        currencyCode: ozowData.CurrencyCode,
-        amount: ozowData.Amount,
-        transactionReference: ozowData.TransactionReference,
-        bankReference: ozowData.BankReference,
-        customer: ozowData.Customer,
-        isTest: ozowData.IsTest,
-        privateKey: process.env.OZOW_SECRET_KEY || ''
-      };
+      // Try Ozow hash with uppercase format and exact parameter order
+      // Based on common South African payment gateway patterns
+      const secretKey = process.env.OZOW_SECRET_KEY || '';
       
-      // Method 1: Simple concatenation without URLs (common for South African gateways)
-      const simpleString = `${hashData.siteCode}${hashData.countryCode}${hashData.currencyCode}${hashData.amount}${hashData.transactionReference}${hashData.bankReference}${hashData.customer}${hashData.isTest}${hashData.privateKey}`;
-      const hash1 = crypto.createHash('sha256').update(simpleString).digest('hex').toLowerCase();
+      // Method A: Exact Ozow documentation order with uppercase
+      const ozowHashString = 
+        ozowData.SiteCode +
+        ozowData.CountryCode +
+        ozowData.CurrencyCode +
+        ozowData.Amount +
+        ozowData.TransactionReference +
+        ozowData.BankReference +
+        ozowData.Customer +
+        ozowData.RequestId +
+        ozowData.IsTest +
+        ozowData.SuccessUrl +
+        ozowData.CancelUrl +
+        ozowData.ErrorUrl +
+        ozowData.NotifyUrl +
+        secretKey;
+      const hashA = crypto.createHash('sha256').update(ozowHashString).digest('hex').toUpperCase();
       
-      // Method 2: Include request ID (some gateways require this)
-      const withRequestId = `${hashData.siteCode}${hashData.countryCode}${hashData.currencyCode}${hashData.amount}${hashData.transactionReference}${hashData.bankReference}${hashData.customer}${ozowData.RequestId}${hashData.isTest}${hashData.privateKey}`;
-      const hash2 = crypto.createHash('sha256').update(withRequestId).digest('hex').toLowerCase();
+      // Method B: Without URLs (minimal approach)
+      const minimalString = 
+        ozowData.SiteCode +
+        ozowData.CountryCode +
+        ozowData.CurrencyCode +
+        ozowData.Amount +
+        ozowData.TransactionReference +
+        ozowData.BankReference +
+        ozowData.Customer +
+        secretKey;
+      const hashB = crypto.createHash('sha256').update(minimalString).digest('hex').toUpperCase();
       
-      // Method 3: Traditional format with all parameters
-      const fullString = Object.values(ozowData).join('') + hashData.privateKey;
-      const hash3 = crypto.createHash('sha256').update(fullString).digest('hex').toLowerCase();
+      // Method C: MD5 hash (some older systems use this)
+      const hashC = crypto.createHash('md5').update(ozowHashString).digest('hex').toUpperCase();
       
-      // Use method 1 (simple concatenation) as primary
-      const hashCheck = hash1;
+      // Try Method A (full parameters with uppercase) first
+      const hashCheck = hashA;
       
-      console.log('🔐 Ozow hash methods:', {
-        method1: { length: simpleString.length, hash: hash1.substring(0, 10) + '...' },
-        method2: { length: withRequestId.length, hash: hash2.substring(0, 10) + '...' },
-        method3: { length: fullString.length, hash: hash3.substring(0, 10) + '...' },
-        selected: 'method1 (simple)',
-        hasPrivateKey: !!(process.env.OZOW_SECRET_KEY)
+      console.log('🔐 Ozow hash attempts (uppercase):', {
+        methodA: { type: 'SHA256-FULL-UPPER', length: ozowHashString.length, hash: hashA.substring(0, 12) + '...' },
+        methodB: { type: 'SHA256-MINIMAL-UPPER', length: minimalString.length, hash: hashB.substring(0, 12) + '...' },
+        methodC: { type: 'MD5-FULL-UPPER', length: ozowHashString.length, hash: hashC.substring(0, 12) + '...' },
+        selected: 'A (SHA256-FULL-UPPER)',
+        secretKeyPresent: !!secretKey
       });
 
       const ozowPayment = {
