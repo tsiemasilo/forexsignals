@@ -41,13 +41,13 @@ function PhoneLoginForm({ onSignupClick }: { onSignupClick: () => void }) {
   };
 
   return (
-    <div className="h-full flex flex-col items-center p-4 overflow-y-auto bg-gray-600">
+    <div className="h-full flex flex-col items-center p-4 overflow-y-auto">
       <div className="text-center mb-4 mt-4">
         <div className="flex items-center justify-center space-x-2 mb-2">
           <Signal className="h-6 w-6 text-green-600" />
-          <h1 className="text-xl font-bold text-white">Watchlist Fx</h1>
+          <h1 className="text-xl font-bold text-gray-900">Watchlist Fx</h1>
         </div>
-        <p className="text-gray-200 text-xs">Professional Trading Signals</p>
+        <p className="text-gray-600 text-xs">Professional Trading Signals</p>
       </div>
 
       <form onSubmit={handleSubmit} className="w-full max-w-sm bg-white p-3 rounded-2xl shadow-lg space-y-2 mb-4">
@@ -211,13 +211,13 @@ function PhoneSignupForm({ onSigninClick }: { onSigninClick: () => void }) {
   };
 
   return (
-    <div className="h-full flex flex-col items-center p-4 overflow-y-auto bg-gray-600">
+    <div className="h-full flex flex-col items-center p-4 overflow-y-auto">
       <div className="text-center mb-3 mt-2">
         <div className="flex items-center justify-center space-x-2 mb-2">
           <Signal className="h-6 w-6 text-green-600" />
-          <h1 className="text-xl font-bold text-white">Watchlist Fx</h1>
+          <h1 className="text-xl font-bold text-gray-900">Watchlist Fx</h1>
         </div>
-        <p className="text-gray-200 text-xs">Create Your Account</p>
+        <p className="text-gray-600 text-xs">Create Your Account</p>
       </div>
 
       <form onSubmit={handleSubmit} className="w-full max-w-sm bg-white p-3 rounded-2xl shadow-lg space-y-2 mb-4">
@@ -382,14 +382,14 @@ export function PhoneSignalsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-600 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-600">
+    <div className="min-h-screen bg-slate-100">
       {/* App Header/Navbar - Only show when user is logged in */}
       {user && (
         <header className="bg-gray-900 shadow-sm border-b">
@@ -478,7 +478,7 @@ export function PhoneSignalsPage() {
       )}
 
       {/* Phone Interface Container */}
-      <div className="bg-gray-600 py-8">
+      <div className="bg-gradient-to-br from-slate-100 to-slate-200 py-8">
         <div className="max-w-4xl mx-auto px-4">
           <div className="flex justify-center">
           {/* Phone Mockup */}
@@ -491,12 +491,12 @@ export function PhoneSignalsPage() {
                 <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-24 h-6 bg-black rounded-b-2xl z-10"></div>
                 
                 {/* Status Bar */}
-                <div className="flex justify-between items-center px-6 pt-8 pb-2 bg-gray-600 flex-shrink-0">
-                  <span className="text-sm font-medium text-white">9:41</span>
+                <div className="flex justify-between items-center px-6 pt-8 pb-2 bg-slate-50 flex-shrink-0">
+                  <span className="text-sm font-medium text-slate-900">9:41</span>
                   <div className="flex items-center space-x-1">
-                    <div className="w-4 h-2 bg-white rounded-sm"></div>
-                    <div className="w-1 h-2 bg-white rounded-sm"></div>
-                    <div className="w-6 h-3 border border-white rounded-sm">
+                    <div className="w-4 h-2 bg-slate-900 rounded-sm"></div>
+                    <div className="w-1 h-2 bg-slate-900 rounded-sm"></div>
+                    <div className="w-6 h-3 border border-slate-900 rounded-sm">
                       <div className="w-4 h-1.5 bg-green-500 rounded-sm m-0.5"></div>
                     </div>
                   </div>
