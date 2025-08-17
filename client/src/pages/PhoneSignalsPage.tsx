@@ -586,16 +586,18 @@ export function PhoneSignalsPage() {
                   /* Authenticated User - Check Subscription Status */
                   subscriptionStatus?.status === 'expired' || subscriptionStatus?.status === 'inactive' ? (
                     /* Expired/Inactive Subscription - Show Upgrade Message */
-                    <div className="flex-1 flex flex-col items-center justify-center text-center px-4 py-6">
-                      <AlertTriangle className="w-12 h-12 text-red-500 mb-3" />
-                      <h3 className="text-base font-semibold text-slate-900 mb-2">Subscription Expired</h3>
-                      <p className="text-xs text-slate-600 mb-4 leading-relaxed max-w-64">
-                        Your subscription has expired. Please upgrade your plan to continue receiving premium trading signals.
-                      </p>
-                      <div className="flex justify-center w-full">
+                    <div className="flex-1 flex flex-col items-center text-center px-4 py-4">
+                      <div className="mt-8">
+                        <AlertTriangle className="w-12 h-12 text-red-500 mb-3 mx-auto" />
+                        <h3 className="text-base font-semibold text-slate-900 mb-2">Subscription Expired</h3>
+                        <p className="text-xs text-slate-600 mb-6 leading-relaxed max-w-64">
+                          Your subscription has expired. Please upgrade your plan to continue receiving premium trading signals.
+                        </p>
+                      </div>
+                      <div className="flex justify-center w-full mt-4">
                         <PricingCard />
                       </div>
-                      <p className="text-xs text-slate-500 mt-3">
+                      <p className="text-xs text-slate-500 mt-4">
                         Contact support if you have any questions
                       </p>
                     </div>
