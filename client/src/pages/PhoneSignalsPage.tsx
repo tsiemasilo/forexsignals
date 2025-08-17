@@ -39,51 +39,41 @@ function PhoneLoginForm() {
   };
 
   return (
-    <div className="flex-1 bg-gradient-to-br from-blue-50 to-slate-100 flex items-center justify-center p-6">
-      <div className="w-full max-w-sm space-y-6">
-        <div className="text-center">
-          <div className="flex items-center justify-center space-x-2 mb-4">
-            <Signal className="h-8 w-8 text-green-600" />
-            <h1 className="text-2xl font-bold text-gray-900">Watchlist Fx</h1>
+    <div className="flex-1 flex items-center justify-center p-6">
+      <div className="w-full max-w-xs">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-2.5 bg-white p-7 rounded-2xl shadow-lg font-system">
+          <div className="flex flex-col">
+            <label className="text-gray-800 font-semibold text-sm mb-1">Email</label>
           </div>
-          <p className="text-gray-600 text-sm">Professional Trading Signals</p>
-        </div>
-
-        <div className="bg-white rounded-xl shadow-lg p-6">
-          <div className="text-center mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Welcome Back</h2>
-            <p className="text-sm text-gray-600">Enter your email to access signals</p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Email Address
-              </label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="your.email@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full"
-              />
-            </div>
-            
-            <Button 
-              type="submit" 
-              className="w-full bg-green-600 hover:bg-green-700" 
-              disabled={loading || !email}
-            >
-              {loading ? "Signing In..." : "Sign In"}
-            </Button>
-          </form>
           
-          <div className="mt-4 text-center text-xs text-gray-500">
-            <p>New user? Simply enter your email to create an account.</p>
+          <div className="border-2 border-gray-200 rounded-xl h-12 flex items-center px-3 transition-colors focus-within:border-blue-500">
+            <svg xmlns="http://www.w3.org/2000/svg" width={18} viewBox="0 0 32 32" height={18} className="text-gray-500">
+              <g data-name="Layer 3" id="Layer_3">
+                <path d="m30.853 13.87a15 15 0 0 0 -29.729 4.082 15.1 15.1 0 0 0 12.876 12.918 15.6 15.6 0 0 0 2.016.13 14.85 14.85 0 0 0 7.715-2.145 1 1 0 1 0 -1.031-1.711 13.007 13.007 0 1 1 5.458-6.529 2.149 2.149 0 0 1 -4.158-.759v-10.856a1 1 0 0 0 -2 0v1.726a8 8 0 1 0 .2 10.325 4.135 4.135 0 0 0 7.83.274 15.2 15.2 0 0 0 .823-7.455zm-14.853 8.13a6 6 0 1 1 6-6 6.006 6.006 0 0 1 -6 6z" fill="currentColor"/>
+              </g>
+            </svg>
+            <input
+              placeholder="Enter your Email"
+              className="ml-3 rounded-xl border-none w-full h-full bg-transparent focus:outline-none text-sm"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
           </div>
-        </div>
+
+          <button 
+            type="submit"
+            disabled={loading || !email}
+            className="mt-5 mb-2 bg-gray-800 border-none text-white text-sm font-medium rounded-xl h-12 w-full cursor-pointer transition-opacity disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-900"
+          >
+            {loading ? "Signing In..." : "Sign In"}
+          </button>
+          
+          <p className="text-center text-gray-800 text-sm my-1">
+            Don't have an account? <span className="text-blue-500 font-medium cursor-pointer ml-1">Sign Up</span>
+          </p>
+        </form>
       </div>
     </div>
   );
