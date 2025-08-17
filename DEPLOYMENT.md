@@ -24,16 +24,18 @@
 
 ## Environment Variables Required
 
-Set these in Netlify dashboard under Site settings → Environment variables:
+**CRITICAL:** Set these in Netlify dashboard under Site settings → Environment variables:
 
 ```
-DATABASE_URL=your_postgresql_connection_string
+DATABASE_URL=postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
 YOCO_PUBLIC_KEY=your_yoco_public_key  
 YOCO_SECRET_KEY=your_yoco_secret_key
 OZOW_API_KEY=your_ozow_api_key
 OZOW_SECRET_KEY=your_ozow_secret_key
 SESSION_SECRET=your_session_secret_key
 ```
+
+**Important Note:** The DATABASE_URL is hardcoded in the functions as a fallback, but setting it as an environment variable is the recommended approach for production.
 
 ## Deployment Steps
 
@@ -57,12 +59,24 @@ SESSION_SECRET=your_session_secret_key
 ## Post-Deployment
 
 ### Testing Checklist
-- [ ] Login functionality works
-- [ ] Signals load correctly
+- [ ] Test endpoint works: `/api/test`
+- [ ] Login functionality works: `/api/login`
+- [ ] Plans load correctly: `/api/plans` 
+- [ ] Signals load correctly: `/api/signals`
 - [ ] Payment flow (Yoco & Ozow) functional
 - [ ] Admin panel accessible
 - [ ] iPhone-style interface displays properly
 - [ ] Real-time features working
+
+### Debugging 500 Errors
+
+If you see 500 errors on deployment:
+
+1. **Check Function Logs**: Go to Netlify dashboard → Functions → View logs
+2. **Test Basic Function**: Visit `https://your-domain.netlify.app/api/test`
+3. **Verify Database**: Functions include fallback database connection
+4. **Check Environment Variables**: Ensure DATABASE_URL is set in Netlify
+5. **Review Function Timeout**: Default is 10s, can be increased to 26s
 
 ### Payment Gateway URLs
 Update payment success URLs in gateway dashboards:

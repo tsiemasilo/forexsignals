@@ -79,6 +79,12 @@
   to = "/.netlify/functions/user"
   status = 200
 
+# Test Route
+[[redirects]]
+  from = "/api/test"
+  to = "/.netlify/functions/test"
+  status = 200
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
