@@ -582,8 +582,8 @@ export async function registerRoutes(app: express.Application) {
         NotifyUrl: `${origin}/api/ozow/notify`
       };
 
-      // Official Ozow SHA512 hash calculation
-      // 1. Concatenate all parameters (excluding Hash) in exact order
+      // Official Ozow SHA512 hash calculation with CORRECT parameter order from GitHub examples
+      // From PHP implementation: SiteCode, Country, Currency, Amount, TxnRef, BankRef, Cancel, Error, Success, Notify, IsTest, PrivateKey
       const hashString = [
         ozowParams.SiteCode,
         ozowParams.CountryCode,
@@ -591,14 +591,12 @@ export async function registerRoutes(app: express.Application) {
         ozowParams.Amount,
         ozowParams.TransactionReference,
         ozowParams.BankReference,
-        ozowParams.Customer,
-        ozowParams.RequestId,
-        ozowParams.IsTest,
-        ozowParams.SuccessUrl,
         ozowParams.CancelUrl,
-        ozowParams.ErrorUrl,
+        ozowParams.ErrorUrl, 
+        ozowParams.SuccessUrl,
         ozowParams.NotifyUrl,
-        privateKey // 2. Append private key
+        ozowParams.IsTest,
+        privateKey // Last: append private key
       ].join('');
 
       // 3. Convert to lowercase 
