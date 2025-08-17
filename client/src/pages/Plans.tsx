@@ -1,17 +1,11 @@
 import { CheckCircle, Star, CreditCard, Smartphone, Check } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
-import { useToast } from '@/hooks/use-toast';
 import { Link } from 'wouter';
 import { useState } from 'react';
 
 export function Plans() {
   const { user } = useAuth();
-  const { toast } = useToast();
-  const [selectedPlan, setSelectedPlan] = useState<any>(null);
-  const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
 
   const { data: plans = [], isLoading, error } = useQuery<any[]>({
     queryKey: ['/api/plans'],
@@ -29,97 +23,11 @@ export function Plans() {
   console.log('Plans page - error:', error);
 
   const handleSubscribe = (plan: any) => {
-    if (!user) {
-      toast({
-        title: "Authentication required",
-        description: "Please sign in to subscribe to a plan.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setSelectedPlan(plan);
-    setIsPaymentDialogOpen(true);
+    // Navigate to plans tab with selected plan
+    window.location.href = `/plans?selected=${plan.name.toLowerCase().replace(' ', '-')}`;
   };
 
-  const handleYocoPayment = async () => {
-    try {
-      // Direct Yoco checkout URLs for each plan
-      if (selectedPlan.name === "Basic Plan") {
-        window.open("https://c.yoco.com/checkout/ch_PLmQ2BJ7wp8h3Qu4Z9F1l6Lm", "_blank");
-        setIsPaymentDialogOpen(false);
-        return;
-      } else if (selectedPlan.name === "Premium Plan") {
-        window.open("https://c.yoco.com/checkout/ch_QLOBkND8RDvfb3Vh207tyk0x", "_blank");
-        setIsPaymentDialogOpen(false);
-        return;
-      } else if (selectedPlan.name === "VIP Plan") {
-        window.open("https://pay.yoco.com/r/mEQXAD", "_blank");
-        setIsPaymentDialogOpen(false);
-        return;
-      }
 
-      toast({
-        title: "Error",
-        description: "Invalid plan selected.",
-        variant: "destructive",
-      });
-    } catch (error) {
-      toast({
-        title: "Payment Error",
-        description: "Failed to process Yoco payment.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleOzowPayment = async () => {
-    try {
-      const response = await fetch('/api/ozow/payment', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({ planId: selectedPlan.id })
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to create Ozow payment');
-      }
-
-      const paymentData = await response.json();
-      
-      // Create and submit Ozow form
-      const form = document.createElement('form');
-      form.method = 'POST';
-      form.action = paymentData.action_url;
-      form.target = '_blank';
-
-      // Add all payment parameters as hidden inputs
-      Object.entries(paymentData).forEach(([key, value]) => {
-        if (key !== 'action_url') {
-          const input = document.createElement('input');
-          input.type = 'hidden';
-          input.name = key;
-          input.value = String(value);
-          form.appendChild(input);
-        }
-      });
-
-      document.body.appendChild(form);
-      form.submit();
-      document.body.removeChild(form);
-      
-      setIsPaymentDialogOpen(false);
-    } catch (error) {
-      toast({
-        title: "Payment Error",
-        description: "Failed to process Ozow payment.",
-        variant: "destructive",
-      });
-    }
-  };
 
   const getPlanColor = (planName: string) => {
     switch (planName) {
@@ -336,41 +244,7 @@ export function Plans() {
         </div>
       </div>
 
-      {/* Payment Dialog */}
-      <Dialog open={isPaymentDialogOpen} onOpenChange={setIsPaymentDialogOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Choose Payment Method</DialogTitle>
-            <DialogDescription>
-              Select your preferred payment method for {selectedPlan?.name}
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-4">
-            <Button 
-              onClick={handleYocoPayment}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              Pay with Yoco (Card)
-            </Button>
-            
-            <Button 
-              onClick={handleOzowPayment}
-              className="w-full bg-green-600 hover:bg-green-700 text-white"
-            >
-              Pay with Ozow (EFT)
-            </Button>
-            
-            <Button 
-              onClick={() => setIsPaymentDialogOpen(false)}
-              variant="outline"
-              className="w-full"
-            >
-              Cancel
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+
 
 
     </div>
