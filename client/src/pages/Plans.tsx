@@ -15,9 +15,13 @@ export function Plans() {
   const [selectedPlan, setSelectedPlan] = useState<any>(null);
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
 
-  const { data: plans = [] } = useQuery<any[]>({
+  const { data: plans = [], isLoading, error } = useQuery<any[]>({
     queryKey: ['/api/plans'],
   });
+
+  console.log('Plans page - data:', plans);
+  console.log('Plans page - isLoading:', isLoading);
+  console.log('Plans page - error:', error);
 
   const handleSubscribe = (plan: any) => {
     if (!user) {
@@ -151,6 +155,30 @@ export function Plans() {
   const getPopularPlan = () => {
     return plans.find((plan: any) => plan.name === "Premium Plan");
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+        <div className="text-white text-xl">Loading plans...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+        <div className="text-red-400 text-xl">Error loading plans: {error.message}</div>
+      </div>
+    );
+  }
+
+  if (!plans || plans.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+        <div className="text-white text-xl">No plans available</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
