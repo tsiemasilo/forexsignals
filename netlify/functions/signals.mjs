@@ -1,7 +1,7 @@
 import { neon } from '@neondatabase/serverless';
 
-// Use environment variable first, fallback to hardcoded URL
-const databaseUrl = process.env.DATABASE_URL || "postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require";
+// Use NETLIFY_DATABASE_URL first, then DATABASE_URL, then fallback
+const databaseUrl = process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL || "postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require";
 
 let sql;
 try {
