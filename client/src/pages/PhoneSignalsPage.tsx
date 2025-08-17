@@ -1,10 +1,93 @@
+import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRealtimeSignals } from '@/hooks/useRealtimeSignals';
 import { TrendingUp, TrendingDown, Minus, Clock, Bell, Signal, Home, CreditCard, Settings, Users, LogOut } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Link } from 'wouter';
 import { SubscriptionStatusBadge } from '@/components/SubscriptionStatusBadge';
+import { useToast } from '@/hooks/use-toast';
+
+// Phone Login Component
+function PhoneLoginForm() {
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
+  const { toast } = useToast();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+
+    setLoading(true);
+    try {
+      await login(email);
+      toast({
+        title: "Success",
+        description: "Logged in successfully!",
+      });
+    } catch (error) {
+      toast({
+        title: "Login Failed",
+        description: error instanceof Error ? error.message : "Please try again",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="flex-1 bg-gradient-to-br from-blue-50 to-slate-100 flex items-center justify-center p-6">
+      <div className="w-full max-w-sm space-y-6">
+        <div className="text-center">
+          <div className="flex items-center justify-center space-x-2 mb-4">
+            <Signal className="h-8 w-8 text-green-600" />
+            <h1 className="text-2xl font-bold text-gray-900">Watchlist Fx</h1>
+          </div>
+          <p className="text-gray-600 text-sm">Professional Trading Signals</p>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <div className="text-center mb-4">
+            <h2 className="text-lg font-semibold text-gray-900">Welcome Back</h2>
+            <p className="text-sm text-gray-600">Enter your email to access signals</p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                Email Address
+              </label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="your.email@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full"
+              />
+            </div>
+            
+            <Button 
+              type="submit" 
+              className="w-full bg-green-600 hover:bg-green-700" 
+              disabled={loading || !email}
+            >
+              {loading ? "Signing In..." : "Sign In"}
+            </Button>
+          </form>
+          
+          <div className="mt-4 text-center text-xs text-gray-500">
+            <p>New user? Simply enter your email to create an account.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function PhoneSignalsPage() {
   const { user, logout } = useAuth();
@@ -56,8 +139,9 @@ export function PhoneSignalsPage() {
 
   return (
     <div className="min-h-screen bg-slate-100">
-      {/* App Header/Navbar */}
-      <header className="bg-gray-900 shadow-sm border-b">
+      {/* App Header/Navbar - Only show when user is logged in */}
+      {user && (
+        <header className="bg-gray-900 shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo and Navigation */}
@@ -140,6 +224,7 @@ export function PhoneSignalsPage() {
           </div>
         </div>
       </header>
+      )}
 
       {/* Phone Interface Container */}
       <div className="bg-gradient-to-br from-slate-100 to-slate-200 py-8">
@@ -166,87 +251,98 @@ export function PhoneSignalsPage() {
                   </div>
                 </div>
                 
-                {/* Notifications Header */}
-                <div className="px-6 py-4 border-b border-slate-200">
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-lg font-semibold text-slate-900 flex items-center">
-                      <Bell className="w-5 h-5 mr-2 text-blue-600" />
-                      Trading Signals
-                    </h2>
-                    <SubscriptionStatusBadge />
+                {/* Phone Content - Conditional Display */}
+                {user ? (
+                  /* Authenticated User - Show Signals */
+                  <>
+                    {/* Notifications Header */}
+                    <div className="px-6 py-4 border-b border-slate-200">
+                      <div className="flex items-center justify-between">
+                        <h2 className="text-lg font-semibold text-slate-900 flex items-center">
+                          <Bell className="w-5 h-5 mr-2 text-blue-600" />
+                          Trading Signals
+                        </h2>
+                        <SubscriptionStatusBadge />
+                      </div>
+                    </div>
+
+                    {/* Signals Notifications */}
+                    <div className="flex-1 overflow-y-auto max-h-[480px]">
+                      {signals?.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center h-96 text-center px-6">
+                          <Bell className="w-16 h-16 text-slate-300 mb-4" />
+                          <h3 className="text-lg font-medium text-slate-600 mb-2">No New Signals</h3>
+                          <p className="text-sm text-slate-500">
+                            New trading signals will appear here
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="space-y-1">
+                          {signals
+                            ?.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                            ?.map((signal: any) => (
+                              <div key={signal.id} className="mx-4 my-2 bg-white border border-slate-200 rounded-xl shadow-sm">
+                                {/* Notification Header */}
+                                <div className="flex items-center px-4 py-3 border-b border-slate-100">
+                                  <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center mr-3">
+                                    <TrendingUp className="w-4 h-4 text-white" />
+                                  </div>
+                                  <div className="flex-1">
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-sm font-medium text-slate-900">NAS100 Pro Signals</span>
+                                      <span className="text-xs text-slate-500">
+                                        {new Date(signal.createdAt).toLocaleTimeString('en-US', {
+                                          hour: '2-digit',
+                                          minute: '2-digit'
+                                        })}
+                                      </span>
+                                    </div>
+                                    <span className="text-xs text-slate-500">now</span>
+                                  </div>
+                                </div>
+
+                                {/* Notification Content */}
+                                <div className="px-4 py-3">
+                                  <div className="flex items-center justify-between mb-2">
+                                    <h3 className="font-semibold text-slate-900 text-sm">{signal.title}</h3>
+                                    <Badge className={`text-xs ${getTradeActionColor(signal.tradeAction)}`}>
+                                      {signal.tradeAction.toUpperCase()}
+                                    </Badge>
+                                  </div>
+                                  <p className="text-xs text-slate-600 leading-relaxed line-clamp-3">
+                                    {signal.content}
+                                  </p>
+                                  
+                                  {/* Quick Action Icons */}
+                                  <div className="flex items-center justify-between mt-3 pt-2 border-t border-slate-100">
+                                    <Link href={`/signal/${signal.id}`}>
+                                      <div className="flex items-center space-x-4 cursor-pointer hover:text-blue-600 transition-colors">
+                                        {getTradeActionIcon(signal.tradeAction)}
+                                        <span className="text-xs text-slate-500">Tap to view details</span>
+                                      </div>
+                                    </Link>
+                                    <div className="flex space-x-2">
+                                      <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center">
+                                        <span className="text-xs">💰</span>
+                                      </div>
+                                      <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center">
+                                        <span className="text-xs">📊</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            )) || []}
+                        </div>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  /* Unauthenticated User - Show Login Form */
+                  <div className="flex-1 flex flex-col">
+                    <PhoneLoginForm />
                   </div>
-                </div>
-
-                {/* Signals Notifications */}
-                <div className="flex-1 overflow-y-auto max-h-[480px]">
-                  {signals?.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-96 text-center px-6">
-                      <Bell className="w-16 h-16 text-slate-300 mb-4" />
-                      <h3 className="text-lg font-medium text-slate-600 mb-2">No New Signals</h3>
-                      <p className="text-sm text-slate-500">
-                        New trading signals will appear here
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="space-y-1">
-                      {signals
-                        ?.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-                        ?.map((signal: any) => (
-                          <div key={signal.id} className="mx-4 my-2 bg-white border border-slate-200 rounded-xl shadow-sm">
-                            {/* Notification Header */}
-                            <div className="flex items-center px-4 py-3 border-b border-slate-100">
-                              <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center mr-3">
-                                <TrendingUp className="w-4 h-4 text-white" />
-                              </div>
-                              <div className="flex-1">
-                                <div className="flex items-center justify-between">
-                                  <span className="text-sm font-medium text-slate-900">NAS100 Pro Signals</span>
-                                  <span className="text-xs text-slate-500">
-                                    {new Date(signal.createdAt).toLocaleTimeString('en-US', {
-                                      hour: '2-digit',
-                                      minute: '2-digit'
-                                    })}
-                                  </span>
-                                </div>
-                                <span className="text-xs text-slate-500">now</span>
-                              </div>
-                            </div>
-
-                            {/* Notification Content */}
-                            <div className="px-4 py-3">
-                              <div className="flex items-center justify-between mb-2">
-                                <h3 className="font-semibold text-slate-900 text-sm">{signal.title}</h3>
-                                <Badge className={`text-xs ${getTradeActionColor(signal.tradeAction)}`}>
-                                  {signal.tradeAction.toUpperCase()}
-                                </Badge>
-                              </div>
-                              <p className="text-xs text-slate-600 leading-relaxed line-clamp-3">
-                                {signal.content}
-                              </p>
-                              
-                              {/* Quick Action Icons */}
-                              <div className="flex items-center justify-between mt-3 pt-2 border-t border-slate-100">
-                                <Link href={`/signal/${signal.id}`}>
-                                  <div className="flex items-center space-x-4 cursor-pointer hover:text-blue-600 transition-colors">
-                                    {getTradeActionIcon(signal.tradeAction)}
-                                    <span className="text-xs text-slate-500">Tap to view details</span>
-                                  </div>
-                                </Link>
-                                <div className="flex space-x-2">
-                                  <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center">
-                                    <span className="text-xs">💰</span>
-                                  </div>
-                                  <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center">
-                                    <span className="text-xs">📊</span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        )) || []}
-                    </div>
-                  )}
-                </div>
+                )}
 
                 {/* Home Indicator */}
                 <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-slate-900 rounded-full"></div>
