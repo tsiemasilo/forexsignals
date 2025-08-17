@@ -1,23 +1,20 @@
 import { useState } from "react";
-import { useAuth } from "@/contexts/AuthContext";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 
 export function SimpleLoginPage() {
   const [email, setEmail] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showSignup, setShowSignup] = useState(false);
   const { login } = useAuth();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!email) {
+    if (!email.trim()) {
       toast({
         title: "Error",
         description: "Email is required",
@@ -26,60 +23,22 @@ export function SimpleLoginPage() {
       return;
     }
 
-    if (showSignup && (!firstName || !lastName)) {
-      toast({
-        title: "Error", 
-        description: "First name and last name are required for signup",
-        variant: "destructive",
-      });
-      return;
-    }
-
     setLoading(true);
     try {
-      if (showSignup) {
-        // Show toast first for signup
-        toast({
-          title: "Welcome to WatchlistFX!",
-          description: "Account created successfully! You now have a free 7-day trial.",
-        });
-        // Then complete login
-        await login(email, firstName, lastName);
-      } else {
-        // Show toast first for signin
-        toast({
-          title: "Welcome back!", 
-          description: "Signed in successfully.",
-        });
-        // Then complete login
-        await login(email);
-      }
+      await login(email);
+      toast({
+        title: "Welcome!",
+        description: "Signed in successfully.",
+      });
     } catch (error: any) {
-      console.log("Auth error:", error);
-      
-      if (error?.needsRegistration) {
-        // Switch to signup form
-        setShowSignup(true);
-        toast({
-          title: "Sign Up Required",
-          description: "Please enter your name to create an account.",
-        });
-      } else {
-        toast({
-          title: "Error",
-          description: error?.message || "Authentication failed. Please try again.",
-          variant: "destructive",
-        });
-      }
+      toast({
+        title: "Error",
+        description: error?.message || "Login failed. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
-  };
-
-  const toggleMode = () => {
-    setShowSignup(!showSignup);
-    setFirstName("");
-    setLastName("");
   };
 
   return (
@@ -87,13 +46,10 @@ export function SimpleLoginPage() {
       <Card className="w-full max-w-md bg-white/10 backdrop-blur-sm border-white/20">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold text-white">
-            {showSignup ? "Create Account" : "Sign In"}
+            Sign In
           </CardTitle>
           <CardDescription className="text-gray-300">
-            {showSignup 
-              ? "Start your free 7-day trial" 
-              : "Access your forex signals dashboard"
-            }
+            Access your forex signals dashboard
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -109,52 +65,14 @@ export function SimpleLoginPage() {
               />
             </div>
 
-            {showSignup && (
-              <>
-                <div>
-                  <Input
-                    type="text"
-                    placeholder="First name"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
-                    required={showSignup}
-                  />
-                </div>
-                <div>
-                  <Input
-                    type="text"
-                    placeholder="Last name"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
-                    required={showSignup}
-                  />
-                </div>
-              </>
-            )}
-
-            <Button
+            <Button 
               type="submit"
-              disabled={loading}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+              disabled={loading}
             >
-              {loading ? "Processing..." : (showSignup ? "Create Account" : "Sign In")}
+              {loading ? "Signing In..." : "Sign In"}
             </Button>
           </form>
-
-          <div className="mt-4 text-center">
-            <button
-              type="button"
-              onClick={toggleMode}
-              className="text-blue-400 hover:text-blue-300 text-sm"
-            >
-              {showSignup 
-                ? "Already have an account? Sign in" 
-                : "Need an account? Sign up"
-              }
-            </button>
-          </div>
         </CardContent>
       </Card>
     </div>
