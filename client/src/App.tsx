@@ -36,7 +36,14 @@ function AppRoutes() {
       <Route path="/" component={() => {
         if (!user) return <PhoneSignalsPage />;
         console.log('Root route - User:', user, 'IsAdmin:', user.isAdmin);
-        return user.isAdmin ? <AdminDashboard /> : <PhoneSignalsPage />;
+        
+        // Force admin users to admin dashboard
+        if (user.isAdmin === true) {
+          console.log('Redirecting admin user to admin dashboard');
+          return <AdminDashboard />;
+        }
+        
+        return <PhoneSignalsPage />;
       }} />
       <Route path="/dashboard" component={DashboardPage} />
       <Route path="/phone-signals" component={PhoneSignalsPage} />

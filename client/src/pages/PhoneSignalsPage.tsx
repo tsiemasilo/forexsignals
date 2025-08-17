@@ -65,6 +65,21 @@ function PhoneLoginForm() {
     setLoading(true);
     try {
       await login(email);
+      
+      // Check if admin login - redirect to admin dashboard immediately
+      if (email === "admin@forexsignals.com") {
+        console.log("Admin login detected - redirecting to admin dashboard");
+        toast({
+          title: "Admin Login Successful",
+          description: "Redirecting to admin dashboard...",
+        });
+        // Force a page reload to ensure proper routing
+        setTimeout(() => {
+          window.location.href = "/admin";
+        }, 500);
+        return;
+      }
+      
       toast({
         title: "Success",
         description: "Logged in successfully!",
