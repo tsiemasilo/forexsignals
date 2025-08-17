@@ -188,24 +188,26 @@ export function Plans() {
               </div>
             </Link>
             
-            <nav className="hidden md:flex space-x-6">
-              <Link href="/">
-                <div className="flex items-center space-x-1 text-gray-700 hover:text-green-600 transition-colors cursor-pointer">
-                  <Home className="h-4 w-4" />
-                  <span>Home</span>
+            {user && (
+              <nav className="hidden md:flex space-x-6">
+                <Link href="/">
+                  <div className="flex items-center space-x-1 text-gray-700 hover:text-green-600 transition-colors cursor-pointer">
+                    <Home className="h-4 w-4" />
+                    <span>Home</span>
+                  </div>
+                </Link>
+                <Link href="/signals">
+                  <div className="flex items-center space-x-1 text-gray-700 hover:text-green-600 transition-colors cursor-pointer">
+                    <TrendingUp className="h-4 w-4" />
+                    <span>Signals</span>
+                  </div>
+                </Link>
+                <div className="flex items-center space-x-1 text-green-600 font-semibold">
+                  <Star className="h-4 w-4" />
+                  <span>Plans</span>
                 </div>
-              </Link>
-              <Link href="/signals">
-                <div className="flex items-center space-x-1 text-gray-700 hover:text-green-600 transition-colors cursor-pointer">
-                  <TrendingUp className="h-4 w-4" />
-                  <span>Signals</span>
-                </div>
-              </Link>
-              <div className="flex items-center space-x-1 text-green-600 font-semibold">
-                <Star className="h-4 w-4" />
-                <span>Plans</span>
-              </div>
-            </nav>
+              </nav>
+            )}
             
             <div className="flex items-center space-x-2 md:space-x-4">
               {user ? (
@@ -213,7 +215,7 @@ export function Plans() {
               ) : (
                 <Link href="/signals">
                   <div className="bg-green-600 text-white px-3 py-1.5 md:px-4 md:py-2 rounded-md hover:bg-green-700 transition-colors text-sm md:text-base cursor-pointer">
-                    Back to Signals
+                    Start Free Trial
                   </div>
                 </Link>
               )}

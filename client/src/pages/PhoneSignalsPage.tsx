@@ -136,7 +136,7 @@ function PhoneLoginForm() {
           {/* Free Trial Ribbon */}
           <div style={{ 
             position: 'relative',
-            marginBottom: '25px',
+            marginBottom: '20px',
             textAlign: 'center'
           }}>
             <div style={{ 
@@ -169,6 +169,38 @@ function PhoneLoginForm() {
                 zIndex: 1
               }}></div>
             </div>
+          </div>
+
+          {/* See Plans Button */}
+          <div style={{ 
+            textAlign: 'center',
+            marginBottom: '20px'
+          }}>
+            <button
+              onClick={() => window.open('/plans', '_blank')}
+              style={{
+                background: 'transparent',
+                color: '#2563eb',
+                border: '1.5px solid #2563eb',
+                padding: '6px 20px',
+                borderRadius: '15px',
+                fontSize: '12px',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                fontFamily: 'inherit'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.background = '#2563eb';
+                e.currentTarget.style.color = '#ffffff';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.background = 'transparent';
+                e.currentTarget.style.color = '#2563eb';
+              }}
+            >
+              See Plans & Pricing
+            </button>
           </div>
 
           <div className="flex flex-col">
