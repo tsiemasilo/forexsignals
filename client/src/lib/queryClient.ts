@@ -31,8 +31,18 @@ export async function apiRequest(url: string, options: RequestInit = {}) {
   const response = await fetch(url, config);
 
   if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`${response.status}: ${errorText}`);
+    const contentType = response.headers.get('content-type');
+    if (contentType?.includes('application/json')) {
+      const errorData = await response.json();
+      // Throw the parsed error data to preserve structure
+      const error = new Error(errorData.message || `HTTP ${response.status}`);
+      // Attach additional error properties
+      Object.assign(error, errorData);
+      throw error;
+    } else {
+      const errorText = await response.text();
+      throw new Error(`${response.status}: ${errorText}`);
+    }
   }
 
   const contentType = response.headers.get('content-type');
