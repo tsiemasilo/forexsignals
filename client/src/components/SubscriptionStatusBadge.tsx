@@ -62,9 +62,16 @@ export function SubscriptionStatusBadge() {
   };
 
   return (
-    <Badge className={`${getBadgeColorClass()} flex items-center text-xs font-medium`}>
-      {getIcon()}
-      {subscriptionStatus.statusDisplay}
-    </Badge>
+    <div className="flex items-center gap-2">
+      <Badge className={`${getBadgeColorClass()} flex items-center text-xs font-medium`}>
+        {getIcon()}
+        {subscriptionStatus.status.charAt(0).toUpperCase() + subscriptionStatus.status.slice(1)}
+      </Badge>
+      {subscriptionStatus.status !== 'expired' && subscriptionStatus.status !== 'inactive' && subscriptionStatus.daysLeft > 0 && (
+        <span className={`text-xs font-medium ${getDaysLeftColor()}`}>
+          {subscriptionStatus.daysLeft} days left
+        </span>
+      )}
+    </div>
   );
 }
