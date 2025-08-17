@@ -13,9 +13,6 @@ const queryClient = new QueryClient({
 export { queryClient };
 
 export async function apiRequest(url: string, options: RequestInit = {}) {
-  console.log('Making API request to:', url, 'with credentials:', options.credentials || 'include');
-  console.log('Document cookies:', document.cookie);
-  
   const config: RequestInit = {
     headers: {
       'Content-Type': 'application/json',
@@ -32,7 +29,6 @@ export async function apiRequest(url: string, options: RequestInit = {}) {
   }
 
   const response = await fetch(url, config);
-  console.log('Response headers:', Object.fromEntries(response.headers.entries()));
 
   if (!response.ok) {
     const contentType = response.headers.get('content-type');

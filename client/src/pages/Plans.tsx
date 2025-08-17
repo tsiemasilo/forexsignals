@@ -1,4 +1,4 @@
-import { CheckCircle, Star, CreditCard, Smartphone, Check, Signal, Home, TrendingUp, ArrowLeft } from 'lucide-react';
+import { CheckCircle, Star, CreditCard, Smartphone, Check, Signal, Home, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useQuery } from '@tanstack/react-query';
@@ -211,10 +211,9 @@ export function Plans() {
               {user ? (
                 <span className="text-gray-700 text-sm md:text-base">Hi, {user.firstName}</span>
               ) : (
-                <Link href="/">
-                  <div className="bg-gray-600 text-white px-3 py-1.5 md:px-4 md:py-2 rounded-md hover:bg-gray-700 transition-colors text-sm md:text-base cursor-pointer flex items-center space-x-1">
-                    <ArrowLeft size={16} />
-                    <span>Start Free Trial</span>
+                <Link href="/signals">
+                  <div className="bg-green-600 text-white px-3 py-1.5 md:px-4 md:py-2 rounded-md hover:bg-green-700 transition-colors text-sm md:text-base cursor-pointer">
+                    Start Free Trial
                   </div>
                 </Link>
               )}

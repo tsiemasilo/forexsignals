@@ -41,7 +41,6 @@ export function AdminDashboard() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("signals");
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [newSignal, setNewSignal] = useState({
     title: "",
     content: "",
@@ -286,23 +285,8 @@ export function AdminDashboard() {
                 <User className="h-4 w-4 text-gray-500" />
                 <span className="text-sm text-gray-700">{user?.firstName} {user?.lastName}</span>
               </div>
-              <Button 
-                variant="outline" 
-                disabled={isLoggingOut}
-                onClick={async () => {
-                  if (isLoggingOut) return;
-                  console.log("=== ADMIN LOGOUT BUTTON CLICKED ===");
-                  setIsLoggingOut(true);
-                  try {
-                    await logout();
-                  } catch (error) {
-                    console.error("Logout failed:", error);
-                  } finally {
-                    setIsLoggingOut(false);
-                  }
-                }}
-              >
-                {isLoggingOut ? "Signing Out..." : "Sign Out"}
+              <Button variant="outline" onClick={logout}>
+                Sign Out
               </Button>
             </div>
           </div>

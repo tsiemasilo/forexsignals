@@ -8,33 +8,6 @@ WatchlistFX is a modern forex signals subscription platform designed for the Sou
 
 Preferred communication style: Simple, everyday language.
 
-## Recent Changes
-
-**August 17, 2025**
-- Fixed critical frontend bug causing blank pages after login
-- Updated all database column references from camelCase (createdAt) to snake_case (created_at)
-- Fixed field name mismatch from tradeAction to trade_action across all components  
-- Added null safety checks for toLowerCase() calls in trade action functions
-- Updated all Netlify serverless functions to use NETLIFY_DATABASE_URL priority
-- Comprehensive error handling added to prevent undefined data crashes
-- **MAJOR FIX**: Resolved admin authentication issue - session management working correctly
-- Added comprehensive session debugging across both Replit development and Netlify deployment
-- Confirmed admin user (admin@forexsignals.com) authenticates successfully with isAdmin: true
-- Enhanced login endpoints with detailed logging for troubleshooting
-- Created quick admin login route (/quick-admin-login) for testing purposes
-- **AUTHENTICATION COMPLETE**: Admin routing fully functional - admin users bypass plans page and go directly to admin dashboard
-- Fixed admin detection logic in frontend login form and App.tsx routing
-- Session persistence working properly with userId stored in server sessions
-- **COMPLETE AUTHENTICATION SYSTEM REWORK**: Unified signup/login flow with automatic trial creation and session persistence fixes
-- New SimpleLoginPage with streamlined UI - single endpoint handles both registration and authentication 
-- Automatic 7-day free trials created instantly upon new user registration
-- Session configuration updated (httpOnly disabled temporarily, unique session name) - browser cookie persistence now working perfectly
-- Users can signup with email+name or signin with just email - seamless experience with immediate access
-- **LOGOUT OPTIMIZATION**: Replaced window.location.href with router navigation to eliminate blank page loading delays
-- **TOAST DISPLAY FIX**: Success messages now appear before login completion to prevent redirect interference
-- **BACKGROUND PROCESSING**: Trial creation and session cleanup run asynchronously for faster response times
-- **SIMPLIFIED ROUTING**: Removed standalone plans page - logged-out users stay on main phone signals page with integrated pricing cards
-
 ## System Architecture
 
 ### Frontend Architecture

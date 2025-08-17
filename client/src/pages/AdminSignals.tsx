@@ -225,7 +225,7 @@ export default function AdminSignals() {
     setFormData({
       title: signal.title,
       content: signal.content,
-      tradeAction: signal.trade_action || '',
+      tradeAction: signal.tradeAction,
       imageUrl: signal.imageUrl || '',
       imageUrls: signal.imageUrls || []
     });
@@ -363,8 +363,7 @@ export default function AdminSignals() {
     }
   };
 
-  const getTradeActionIcon = (action: string | null | undefined) => {
-    if (!action) return <TrendingUp className="w-4 h-4 text-blue-600" />;
+  const getTradeActionIcon = (action: string) => {
     switch (action.toLowerCase()) {
       case 'buy':
         return <TrendingUp className="w-4 h-4 text-green-600" />;
@@ -379,8 +378,7 @@ export default function AdminSignals() {
     }
   };
 
-  const getTradeActionColor = (action: string | null | undefined) => {
-    if (!action) return 'bg-blue-100 text-blue-800';
+  const getTradeActionColor = (action: string) => {
     switch (action.toLowerCase()) {
       case 'buy':
         return 'bg-green-100 text-green-800';
@@ -732,7 +730,7 @@ export default function AdminSignals() {
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex items-center space-x-3">
-                      {getTradeActionIcon(signal.trade_action)}
+                      {getTradeActionIcon(signal.tradeAction)}
                       <div>
                         <CardTitle className="text-xl">{signal.title}</CardTitle>
                         <CardDescription className="text-sm text-gray-500">
@@ -741,8 +739,8 @@ export default function AdminSignals() {
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Badge className={getTradeActionColor(signal.trade_action)}>
-                        {(signal.trade_action || 'UNKNOWN').toUpperCase()}
+                      <Badge className={getTradeActionColor(signal.tradeAction)}>
+                        {signal.tradeAction.toUpperCase()}
                       </Badge>
                       <Button
                         size="sm"

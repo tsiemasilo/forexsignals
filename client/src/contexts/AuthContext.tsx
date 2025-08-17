@@ -1,6 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { apiRequest } from "@/lib/queryClient";
-import { useLocation } from "wouter";
 
 interface User {
   id: number;
@@ -13,6 +12,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   login: (email: string) => Promise<void>;
+  register: (email: string, firstName: string, lastName: string) => Promise<void>;
   logout: () => Promise<void>;
   loading: boolean;
 }
@@ -22,7 +22,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [, setLocation] = useLocation();
 
   useEffect(() => {
     checkAuth();
@@ -45,37 +44,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         method: "POST",
         body: JSON.stringify({ email }),
       });
-      
       setUser(response.user);
-      
-      // Redirect admin users to admin dashboard
-      if (response.user?.isAdmin === true) {
-        setTimeout(() => {
-          setLocation("/admin");
-        }, 100);
-      }
     } catch (error: any) {
+      // Re-throw the error with all its properties preserved
       throw error;
     }
   };
 
+  const register = async (email: string, firstName: string, lastName: string) => {
+    const response = await apiRequest("/api/register", {
+      method: "POST",
+      body: JSON.stringify({ email, firstName, lastName }),
+    });
+    setUser(response.user);
+  };
+
   const logout = async () => {
-    try {
-      await apiRequest("/api/logout", { method: "POST" });
-      setUser(null);
-      setLocation("/");
-    } catch (error) {
-      console.error("Logout error:", error);
-    }
+    await apiRequest("/api/logout", { method: "POST" });
+    setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{
-      user,
-      login,
-      logout,
-      loading,
-    }}>
+    <AuthContext.Provider value={{ user, login, register, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

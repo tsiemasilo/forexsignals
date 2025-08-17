@@ -47,8 +47,7 @@ export default function Signals() {
     });
   }
 
-  const getTradeActionIcon = (action: string | null | undefined) => {
-    if (!action) return <TrendingUp className="w-5 h-5 text-blue-600" />;
+  const getTradeActionIcon = (action: string) => {
     switch (action.toLowerCase()) {
       case 'buy':
         return <TrendingUp className="w-5 h-5 text-green-600" />;
@@ -63,8 +62,7 @@ export default function Signals() {
     }
   };
 
-  const getTradeActionColor = (action: string | null | undefined) => {
-    if (!action) return 'bg-blue-100 text-blue-800';
+  const getTradeActionColor = (action: string) => {
     switch (action.toLowerCase()) {
       case 'buy':
         return 'bg-green-100 text-green-800';
@@ -260,7 +258,7 @@ export default function Signals() {
                   ) : (
                     <div className="space-y-1">
                       {(signals as any)
-                        ?.sort((a: any, b: any) => new Date(b.created_at || b.createdAt).getTime() - new Date(a.created_at || a.createdAt).getTime())
+                        ?.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
                         ?.map((signal: any) => (
                         <div key={signal.id} className="mx-4 my-2 bg-white border border-slate-200 rounded-xl shadow-sm">
                           {/* Notification Header */}
@@ -272,7 +270,7 @@ export default function Signals() {
                               <div className="flex items-center justify-between">
                                 <span className="text-sm font-medium text-slate-900">NAS100 Pro Signals</span>
                                 <span className="text-xs text-slate-500">
-                                  {new Date(signal.created_at || signal.createdAt).toLocaleTimeString('en-US', { 
+                                  {new Date(signal.createdAt).toLocaleTimeString('en-US', { 
                                     hour: '2-digit', 
                                     minute: '2-digit' 
                                   })}
@@ -286,8 +284,8 @@ export default function Signals() {
                           <div className="px-4 py-3">
                             <div className="flex items-center justify-between mb-2">
                               <h3 className="font-semibold text-slate-900 text-sm">{signal.title}</h3>
-                              <Badge className={`text-xs ${getTradeActionColor(signal.trade_action)}`}>
-                                {(signal.trade_action || 'UNKNOWN').toUpperCase()}
+                              <Badge className={`text-xs ${getTradeActionColor(signal.tradeAction)}`}>
+                                {signal.tradeAction.toUpperCase()}
                               </Badge>
                             </div>
                             <p className="text-xs text-slate-600 leading-relaxed line-clamp-3">
@@ -298,7 +296,7 @@ export default function Signals() {
                             <div className="flex items-center justify-between mt-3 pt-2 border-t border-slate-100">
                               <Link href={`/signal/${signal.id}`}>
                                 <div className="flex items-center space-x-4 cursor-pointer hover:text-blue-600 transition-colors">
-                                  {getTradeActionIcon(signal.trade_action)}
+                                  {getTradeActionIcon(signal.tradeAction)}
                                   <span className="text-xs text-slate-500">Tap to view details</span>
                                 </div>
                               </Link>

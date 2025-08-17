@@ -1,14 +1,6 @@
 import { neon } from '@neondatabase/serverless';
 
-// Use NETLIFY_DATABASE_URL first, then DATABASE_URL, then fallback
-const databaseUrl = process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL || "postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require";
-
-let sql;
-try {
-  sql = neon(databaseUrl);
-} catch (error) {
-  console.error('Database connection error:', error);
-}
+const sql = neon("postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require");
 
 export const handler = async (event, context) => {
   const headers = {
@@ -23,25 +15,14 @@ export const handler = async (event, context) => {
   }
 
   try {
-    if (!sql) {
-      return {
-        statusCode: 500,
-        headers,
-        body: JSON.stringify({ 
-          message: 'Database connection failed',
-          error: 'Unable to connect to database'
-        })
-      };
-    }
-
     const method = event.httpMethod;
     const path = event.path;
 
-    if (method === 'GET' && (path === '/api/signals' || path.includes('/signals'))) {
+    if (method === 'GET' && path === '/api/signals') {
       // Get all signals
       const signals = await sql`
         SELECT * FROM forex_signals 
-        ORDER BY created_at DESC
+        ORDER BY "createdAt" DESC
       `;
 
       return {
@@ -134,15 +115,11 @@ export const handler = async (event, context) => {
     };
 
   } catch (error) {
-    console.error('Signals function error:', error);
+    console.error('Signals error:', error);
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ 
-        message: 'Internal server error',
-        error: error.message,
-        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
-      })
+      body: JSON.stringify({ message: 'Internal server error' })
     };
   }
 };

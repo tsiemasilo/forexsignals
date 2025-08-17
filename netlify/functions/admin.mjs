@@ -1,13 +1,6 @@
 import { neon } from '@neondatabase/serverless';
 
-const databaseUrl = process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL || "postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require";
-
-let sql;
-try {
-  sql = neon(databaseUrl);
-} catch (error) {
-  console.error('Database connection error:', error);
-}
+const sql = neon("postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require");
 
 export const handler = async (event, context) => {
   const headers = {
@@ -77,7 +70,7 @@ export const handler = async (event, context) => {
 
       // Create new subscription
       const result = await sql`
-        INSERT INTO subscriptions ("userId", "planId", status, "startDate", "endDate", created_at)
+        INSERT INTO subscriptions ("userId", "planId", status, "startDate", "endDate", "createdAt")
         VALUES (${userId}, ${planId}, ${status}, NOW(), ${endDate}, NOW())
         RETURNING *
       `;
@@ -101,7 +94,7 @@ export const handler = async (event, context) => {
 
       // Create trial subscription
       const result = await sql`
-        INSERT INTO subscriptions ("userId", "planId", status, "startDate", "endDate", created_at)
+        INSERT INTO subscriptions ("userId", "planId", status, "startDate", "endDate", "createdAt")
         VALUES (${userId}, 1, 'trial', NOW(), ${endDate.toISOString()}, NOW())
         RETURNING *
       `;

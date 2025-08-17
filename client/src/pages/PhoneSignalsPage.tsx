@@ -16,8 +16,8 @@ function PricingCard() {
 
   const handlePlanSelect = (plan: string) => {
     console.log('Selected plan:', plan);
-    // Navigate to login for logged-out users
-    setLocation('/login');
+    // Fast navigation using React Router
+    setLocation('/plans');
   };
 
   return (
@@ -60,22 +60,11 @@ function PhoneLoginForm() {
     console.log("=== PHONE LOGIN FORM SUBMIT ===");
     console.log("Email:", email);
     
-    if (!email.trim()) {
-      toast({
-        title: "Error",
-        description: "Please enter an email address",
-        variant: "destructive",
-      });
-      return;
-    }
+    if (!email) return;
 
     setLoading(true);
     try {
-      console.log("=== PHONE LOGIN CALLING AuthContext.login() ===");
-      await login(email.trim());
-      
-      console.log("=== PHONE LOGIN SUCCESS - AuthContext.login() completed ===");
-      
+      await login(email);
       toast({
         title: "Success",
         description: "Logged in successfully!",
@@ -557,8 +546,7 @@ export function PhoneSignalsPage() {
 
 
 
-  const getTradeActionIcon = (action: string | null | undefined) => {
-    if (!action || typeof action !== 'string') return <TrendingUp className="w-4 h-4 text-white" />;
+  const getTradeActionIcon = (action: string) => {
     switch (action.toLowerCase()) {
       case 'buy':
         return <TrendingUp className="w-4 h-4 text-white" />;
@@ -573,8 +561,7 @@ export function PhoneSignalsPage() {
     }
   };
 
-  const getTradeActionColor = (action: string | null | undefined) => {
-    if (!action || typeof action !== 'string') return 'bg-blue-100 text-blue-800';
+  const getTradeActionColor = (action: string) => {
     switch (action.toLowerCase()) {
       case 'buy':
         return 'bg-green-100 text-green-800';
@@ -735,7 +722,7 @@ export function PhoneSignalsPage() {
                 {/* Phone Content - Conditional Display */}
                 {user ? (
                   /* Authenticated User - Check Subscription Status */
-                  subscriptionStatus && (subscriptionStatus.status === 'expired' || subscriptionStatus.status === 'inactive' || (subscriptionStatus.status !== 'trial' && subscriptionStatus.status !== 'active' && subscriptionStatus.status !== 'admin')) ? (
+                  subscriptionStatus?.status === 'expired' || subscriptionStatus?.status === 'inactive' ? (
                     /* Expired/Inactive Subscription - Show Upgrade Message */
                     <div className="flex-1 flex flex-col items-center text-center px-4 py-4">
                       <div className="mt-8">
@@ -806,7 +793,7 @@ export function PhoneSignalsPage() {
                                   <div className="flex items-center justify-between mb-2">
                                     <h3 className="font-semibold text-slate-900 text-sm">{signal.title}</h3>
                                     <Badge className={`text-xs ${getTradeActionColor(signal.tradeAction)}`}>
-                                      {(signal.tradeAction || 'UNKNOWN').toUpperCase()}
+                                      {signal.tradeAction.toUpperCase()}
                                     </Badge>
                                   </div>
                                   <p className="text-xs text-slate-600 leading-relaxed line-clamp-3">
