@@ -6,6 +6,7 @@ import { LoginPage } from "@/pages/LoginPage";
 import { DashboardPage } from "@/pages/DashboardPage";
 import { PhoneSignalsPage } from "@/pages/PhoneSignalsPage";
 import { AdminDashboard } from "@/pages/AdminDashboard";
+import { Plans } from "@/pages/Plans";
 
 function AppRoutes() {
   const { user, loading } = useAuth();
@@ -28,6 +29,7 @@ function AppRoutes() {
       <Route path="/phone-signals" component={PhoneSignalsPage} />
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/login" component={LoginPage} />
+      <Route path="/plans" component={Plans} />
       <Route>
         <Redirect to="/" />
       </Route>

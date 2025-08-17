@@ -399,6 +399,124 @@ export async function registerRoutes(app: express.Application) {
       res.status(500).json({ message: "Failed to delete signal" });
     }
   });
+
+  // Public plans endpoint
+  app.get("/api/plans", async (req: Request, res: Response) => {
+    try {
+      const plans = await storage.getAllPlans();
+      res.json(plans);
+    } catch (error) {
+      console.error('Plans fetch error:', error);
+      res.status(500).json({ message: "Failed to fetch plans" });
+    }
+  });
+
+  // Yoco payment endpoint
+  app.post("/api/yoco/payment", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const userId = req.session.userId!;
+      const { planId } = req.body;
+      
+      const user = await storage.getUser(userId);
+      const plan = await storage.getPlan(planId);
+      
+      if (!user || !plan) {
+        return res.status(404).json({ message: "User or plan not found" });
+      }
+
+      // For now, return the direct checkout URLs since they're hardcoded in the frontend
+      // In a full implementation, you would create a Yoco payment session here
+      const checkoutUrls = {
+        1: "https://c.yoco.com/checkout/ch_PLmQ2BJ7wp8h3Qu4Z9F1l6Lm", // Basic Plan
+        2: "https://c.yoco.com/checkout/ch_QLOBkND8RDvfb3Vh207tyk0x", // Premium Plan
+        3: "https://pay.yoco.com/r/mEQXAD" // VIP Plan
+      };
+
+      const redirectUrl = checkoutUrls[planId as keyof typeof checkoutUrls];
+      
+      if (!redirectUrl) {
+        return res.status(400).json({ message: "Invalid plan selected" });
+      }
+
+      res.json({ redirectUrl });
+    } catch (error) {
+      console.error('Yoco payment error:', error);
+      res.status(500).json({ message: "Failed to create Yoco payment" });
+    }
+  });
+
+  // Ozow payment endpoint
+  app.post("/api/ozow/payment", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const userId = req.session.userId!;
+      const { planId } = req.body;
+      
+      const user = await storage.getUser(userId);
+      const plan = await storage.getPlan(planId);
+      
+      if (!user || !plan) {
+        return res.status(404).json({ message: "User or plan not found" });
+      }
+
+      // Create Ozow payment request
+      const ozowPayment = {
+        action_url: "https://pay.ozow.com",
+        SiteCode: process.env.OZOW_SITE_CODE || "DEMO",
+        CountryCode: "ZA",
+        CurrencyCode: "ZAR",
+        Amount: parseFloat(plan.price) * 100, // Ozow expects cents
+        TransactionReference: `${user.id}-${plan.id}-${Date.now()}`,
+        BankReference: `Payment for ${plan.name}`,
+        Customer: user.firstName,
+        RequestId: `req-${Date.now()}`,
+        HashCheck: "placeholder-hash", // In production, calculate proper hash
+        IsTest: true,
+        SuccessUrl: `${req.headers.origin}/payment-success`,
+        CancelUrl: `${req.headers.origin}/payment-cancel`,
+        ErrorUrl: `${req.headers.origin}/payment-error`,
+        NotifyUrl: `${req.headers.origin}/api/ozow/notify`
+      };
+
+      res.json(ozowPayment);
+    } catch (error) {
+      console.error('Ozow payment error:', error);
+      res.status(500).json({ message: "Failed to create Ozow payment" });
+    }
+  });
+
+  // Ozow notification webhook
+  app.post("/api/ozow/notify", async (req: Request, res: Response) => {
+    try {
+      console.log('Ozow notification received:', req.body);
+      
+      // In production, verify the notification signature
+      const { TransactionReference, Status } = req.body;
+      
+      if (Status === "Complete") {
+        // Parse transaction reference to get user and plan info
+        const [userId, planId] = TransactionReference.split('-');
+        
+        // Update user subscription
+        const plan = await storage.getPlan(parseInt(planId));
+        if (plan) {
+          const endDate = new Date();
+          endDate.setDate(endDate.getDate() + plan.duration);
+          
+          await storage.updateUserSubscriptionStatus(
+            parseInt(userId), 
+            parseInt(planId), 
+            'active', 
+            endDate
+          );
+        }
+      }
+      
+      res.status(200).send('OK');
+    } catch (error) {
+      console.error('Ozow notification error:', error);
+      res.status(500).json({ message: "Failed to process notification" });
+    }
+  });
 }
 
 export default registerRoutes;
