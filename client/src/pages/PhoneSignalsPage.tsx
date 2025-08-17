@@ -57,6 +57,9 @@ function PhoneLoginForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("=== PHONE LOGIN FORM SUBMIT ===");
+    console.log("Email:", email);
+    
     if (!email) return;
 
     setLoading(true);
@@ -66,12 +69,32 @@ function PhoneLoginForm() {
         title: "Success",
         description: "Logged in successfully!",
       });
-    } catch (error) {
-      toast({
-        title: "Login Failed",
-        description: error instanceof Error ? error.message : "Please try again",
-        variant: "destructive",
-      });
+    } catch (error: any) {
+      console.log("Phone login error caught:", error);
+      console.log("Error needsRegistration:", error?.needsRegistration);
+      console.log("Error userExists:", error?.userExists);
+      
+      // Handle specific error cases
+      if (error?.needsRegistration === true) {
+        console.log("Setting showSignUp to true");
+        setShowSignUp(true);
+        toast({
+          title: "Registration Required",
+          description: "Please complete your registration to create an account.",
+        });
+      } else if (error?.userExists === true) {
+        setShowSignUp(false);
+        toast({
+          title: "Account Exists",
+          description: "This account already exists. Please sign in instead.",
+        });
+      } else {
+        toast({
+          title: "Login Failed",
+          description: error instanceof Error ? error.message : "Please try again",
+          variant: "destructive",
+        });
+      }
     } finally {
       setLoading(false);
     }

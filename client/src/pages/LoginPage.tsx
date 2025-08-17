@@ -16,6 +16,10 @@ export function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("=== LOGIN PAGE FORM SUBMIT ===");
+    console.log("Email:", email);
+    console.log("isRegistering:", isRegistering);
+    
     if (!email) return;
     if (isRegistering && (!firstName || !lastName)) return;
 
