@@ -50,17 +50,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({ email }),
       });
       
-      console.log('Login response:', response);
-      console.log('Login response user:', response.user);
+      console.log('=== LOGIN RESPONSE RECEIVED ===');
+      console.log('Full response:', response);
+      console.log('Response user:', response.user);
+      console.log('User isAdmin:', response.user?.isAdmin);
+      console.log('User email:', response.user?.email);
       
+      // Set user first
       setUser(response.user);
       
-      // Immediate admin redirect
-      if (response.user?.isAdmin) {
-        console.log("Admin user detected in login - redirecting to admin dashboard");
+      // Check admin status and redirect
+      console.log('=== CHECKING ADMIN STATUS ===');
+      if (response.user?.isAdmin === true) {
+        console.log('🔥 ADMIN USER DETECTED - REDIRECTING TO /admin 🔥');
+        console.log('Admin redirect will happen in 200ms');
         setTimeout(() => {
+          console.log('🚀 EXECUTING ADMIN REDIRECT NOW 🚀');
           window.location.href = "/admin";
-        }, 100);
+        }, 200);
+      } else {
+        console.log('❌ Not admin user - isAdmin:', response.user?.isAdmin);
       }
     } catch (error: any) {
       console.log("Frontend login error:", error);

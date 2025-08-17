@@ -64,9 +64,10 @@ function PhoneLoginForm() {
 
     setLoading(true);
     try {
+      console.log("=== PHONE LOGIN CALLING AuthContext.login() ===");
       await login(email);
       
-      console.log("Login successful from phone interface");
+      console.log("=== PHONE LOGIN SUCCESS - AuthContext.login() completed ===");
       
       toast({
         title: "Success",

@@ -23,13 +23,12 @@ function AppRoutes() {
     );
   }
 
-  // Debug logging to help identify admin routing issues
-  console.log('AppRoutes Debug:', { 
-    user, 
-    isAdmin: user?.isAdmin,
-    email: user?.email,
-    loading 
-  });
+  // Enhanced debug logging
+  console.log('=== APP ROUTES RENDER ===');
+  console.log('User object:', user);
+  console.log('User isAdmin:', user?.isAdmin);
+  console.log('User email:', user?.email);
+  console.log('Loading state:', loading);
 
   return (
     <Switch>
