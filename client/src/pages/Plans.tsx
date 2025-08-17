@@ -1,4 +1,5 @@
 import { CheckCircle, Star, CreditCard, Smartphone, Check, Signal } from 'lucide-react';
+import plansIcon from '@assets/image_1755407442662.png';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useQuery } from '@tanstack/react-query';
@@ -183,7 +184,7 @@ export function Plans() {
           <div className="flex justify-between items-center h-16">
             <Link href="/">
               <div className="flex items-center space-x-2 cursor-pointer">
-                <Signal className="h-8 w-8 text-green-600" />
+                <img src={plansIcon} alt="Plans" className="h-8 w-8" />
                 <span className="text-xl font-bold text-gray-900">Watchlist Fx</span>
               </div>
             </Link>
