@@ -580,44 +580,41 @@ export async function registerRoutes(app: express.Application) {
         NotifyUrl: `${origin}/api/ozow/notify`
       };
 
-      // Ozow hash: Try query string format as many gateways expect this
-      const queryParams = new URLSearchParams();
-      Object.entries(ozowData).forEach(([key, value]) => {
-        queryParams.append(key, value);
-      });
+      // Try Ozow-specific hash calculation based on their documentation pattern
+      // Many South African payment gateways use this specific format
+      const hashData = {
+        siteCode: ozowData.SiteCode,
+        countryCode: ozowData.CountryCode,
+        currencyCode: ozowData.CurrencyCode,
+        amount: ozowData.Amount,
+        transactionReference: ozowData.TransactionReference,
+        bankReference: ozowData.BankReference,
+        customer: ozowData.Customer,
+        isTest: ozowData.IsTest,
+        privateKey: process.env.OZOW_SECRET_KEY || ''
+      };
       
-      // Sort parameters alphabetically (common requirement)
-      queryParams.sort();
-      const sortedParamString = queryParams.toString();
+      // Method 1: Simple concatenation without URLs (common for South African gateways)
+      const simpleString = `${hashData.siteCode}${hashData.countryCode}${hashData.currencyCode}${hashData.amount}${hashData.transactionReference}${hashData.bankReference}${hashData.customer}${hashData.isTest}${hashData.privateKey}`;
+      const hash1 = crypto.createHash('sha256').update(simpleString).digest('hex').toLowerCase();
       
-      // Hash approaches to try
-      const hashApproaches = [
-        // Approach 1: Query string + secret
-        sortedParamString + (process.env.OZOW_SECRET_KEY || ''),
-        
-        // Approach 2: Direct concatenation (original)
-        Object.values(ozowData).join('') + (process.env.OZOW_SECRET_KEY || ''),
-        
-        // Approach 3: Just the secret key (some gateways do this)
-        (process.env.OZOW_SECRET_KEY || '') + Object.values(ozowData).join(''),
-        
-        // Approach 4: Key-value pairs
-        Object.entries(ozowData).map(([k,v]) => `${k}=${v}`).join('&') + (process.env.OZOW_SECRET_KEY || '')
-      ];
+      // Method 2: Include request ID (some gateways require this)
+      const withRequestId = `${hashData.siteCode}${hashData.countryCode}${hashData.currencyCode}${hashData.amount}${hashData.transactionReference}${hashData.bankReference}${hashData.customer}${ozowData.RequestId}${hashData.isTest}${hashData.privateKey}`;
+      const hash2 = crypto.createHash('sha256').update(withRequestId).digest('hex').toLowerCase();
       
-      const hashes = hashApproaches.map((str, i) => ({
-        approach: i + 1,
-        length: str.length,
-        hash: crypto.createHash('sha256').update(str).digest('hex').toLowerCase()
-      }));
+      // Method 3: Traditional format with all parameters
+      const fullString = Object.values(ozowData).join('') + hashData.privateKey;
+      const hash3 = crypto.createHash('sha256').update(fullString).digest('hex').toLowerCase();
       
-      // Try approach 1 (query string format) as it's more standardized
-      const hashCheck = hashes[0].hash.toLowerCase();
+      // Use method 1 (simple concatenation) as primary
+      const hashCheck = hash1;
       
-      console.log('🔐 Ozow hash test approaches:', {
-        attempts: hashes.map(h => ({ approach: h.approach, length: h.length, hash: h.hash.substring(0, 10) + '...' })),
-        selectedHash: hashCheck.substring(0, 10) + '...',
-        queryString: sortedParamString
+      console.log('🔐 Ozow hash methods:', {
+        method1: { length: simpleString.length, hash: hash1.substring(0, 10) + '...' },
+        method2: { length: withRequestId.length, hash: hash2.substring(0, 10) + '...' },
+        method3: { length: fullString.length, hash: hash3.substring(0, 10) + '...' },
+        selected: 'method1 (simple)',
+        hasPrivateKey: !!(process.env.OZOW_SECRET_KEY)
       });
 
       const ozowPayment = {
