@@ -378,7 +378,7 @@ export function Plans() {
               
               {/* Card Content */}
               <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center p-6">
-                <div className="w-32 h-20 mb-6 flex items-center justify-center bg-white/15 backdrop-blur-md rounded-xl px-4 border border-white/20">
+                <div className="w-40 h-24 mb-4 flex items-center justify-center bg-white/15 backdrop-blur-md rounded-xl px-4 border border-white/20">
                   <img 
                     src="https://cdn.brandfetch.io/idGqhiL13o/theme/dark/logo.svg?c=1bxid64Mup7aczewSAYMX&t=1667785033148" 
                     alt="Yoco"
@@ -388,7 +388,7 @@ export function Plans() {
                       e.currentTarget.nextElementSibling!.style.display = 'block';
                     }}
                   />
-                  <div className="text-white font-bold text-2xl hidden">YOCO</div>
+                  <div className="text-white font-bold text-3xl hidden">YOCO</div>
                 </div>
                 <div className="text-lg font-semibold mb-1">Yoco Payment</div>
                 <div className="text-sm opacity-90">Credit & Debit Cards</div>
@@ -427,7 +427,7 @@ export function Plans() {
               
               {/* Card Content */}
               <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center p-6">
-                <div className="w-32 h-20 mb-6 flex items-center justify-center bg-white/15 backdrop-blur-md rounded-xl px-4 border border-white/20">
+                <div className="w-40 h-24 mb-4 flex items-center justify-center bg-white/15 backdrop-blur-md rounded-xl px-4 border border-white/20">
                   <img 
                     src="https://cdn.brandfetch.io/idy9gzLXq0/w/358/h/100/theme/dark/logo.png?c=1bxid64Mup7aczewSAYMX&t=1672151446656" 
                     alt="Ozow"
@@ -437,7 +437,7 @@ export function Plans() {
                       e.currentTarget.nextElementSibling!.style.display = 'block';
                     }}
                   />
-                  <div className="text-white font-bold text-2xl hidden">OZOW</div>
+                  <div className="text-white font-bold text-3xl hidden">OZOW</div>
                 </div>
                 <div className="text-lg font-semibold mb-1">Ozow Payment</div>
                 <div className="text-sm opacity-90">Instant EFT</div>
