@@ -52,12 +52,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const register = async (email: string, firstName: string, lastName: string) => {
-    const response = await apiRequest("/api/register", {
-      method: "POST",
-      body: JSON.stringify({ email, firstName, lastName }),
-    });
-    // Don't set user after registration - they need to sign in separately
-    return response;
+    try {
+      const response = await apiRequest("/api/register", {
+        method: "POST",
+        body: JSON.stringify({ email, firstName, lastName }),
+      });
+      // Don't set user after registration - they need to sign in separately
+      return response;
+    } catch (error: any) {
+      // If registration is successful but marked as registrationComplete, don't treat as error
+      if (error?.registrationComplete === true) {
+        return error; // Return the successful registration response
+      }
+      throw error; // Re-throw actual errors
+    }
   };
 
   const logout = async () => {

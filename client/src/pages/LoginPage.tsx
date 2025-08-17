@@ -26,19 +26,23 @@ export function LoginPage() {
     setLoading(true);
     try {
       if (isRegistering) {
-        await register(email, firstName, lastName);
+        const result: any = await register(email, firstName, lastName);
+        console.log("Registration result:", result);
+        
         // Reset form and switch to login mode
         setIsRegistering(false);
         setFirstName("");
         setLastName("");
+        setEmail(""); // Clear email too for fresh login
+        
         toast({
-          title: "Account Created",
-          description: "Your account has been created! Please sign in to continue.",
+          title: "Account Created Successfully!",
+          description: "Your account has been created. Please sign in to start your free trial.",
         });
       } else {
         await login(email);
         toast({
-          title: "Success",
+          title: "Welcome Back!",
           description: "Logged in successfully!",
         });
       }
@@ -59,14 +63,26 @@ export function LoginPage() {
       } else if (error?.userExists === true) {
         setIsRegistering(false);
         toast({
-          title: "Account Exists",
+          title: "Account Already Exists",
           description: "This account already exists. Please sign in instead.",
+        });
+      } else if (error?.registrationComplete === true) {
+        // Handle successful registration
+        setIsRegistering(false);
+        setFirstName("");
+        setLastName("");
+        setEmail("");
+        toast({
+          title: "Account Created Successfully!",
+          description: "Your account has been created. Please sign in to start your free trial.",
         });
       } else {
         console.log("Falling through to generic error handling");
+        console.log("Error type:", typeof error);
+        console.log("Error message:", error?.message);
         toast({
           title: isRegistering ? "Registration Failed" : "Login Failed",
-          description: error instanceof Error ? error.message : "Please try again",
+          description: error?.message || "Please try again",
           variant: "destructive",
         });
       }
