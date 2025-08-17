@@ -621,13 +621,15 @@ export function PhoneSignalsPage() {
             <div className="px-2 pt-2 pb-3 space-y-1">
               {!user?.isAdmin && (
                 <Link href="/plans" onClick={() => setMobileMenuOpen(false)}>
-                  <div className="flex items-center space-x-3 text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium cursor-pointer">
-                    <CreditCard className="h-5 w-5" />
-                    <span>Plans</span>
+                  <div className="relative flex items-center space-x-3 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-500 hover:to-blue-500 text-white px-4 py-3 rounded-lg font-bold text-base cursor-pointer transition-all duration-300 transform hover:scale-105 shadow-lg border-2 border-green-400">
+                    <CreditCard className="h-6 w-6 text-yellow-300" />
+                    <span className="text-lg">💳 UPGRADE PLANS</span>
+                    {/* Shimmer effect */}
+                    <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-500 animate-pulse"></div>
                   </div>
                 </Link>
               )}
-              <div className="border-t border-gray-700 pt-4">
+              <div className="border-t border-gray-700 pt-4 mt-4">
                 <div className="flex items-center px-3 py-2">
                   <span className="text-gray-300 text-sm">
                     Hi, {user.firstName}
