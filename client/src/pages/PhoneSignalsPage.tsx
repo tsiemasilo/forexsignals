@@ -44,7 +44,7 @@ function PhoneLoginForm() {
   }
 
   return (
-    <div className="flex-1 flex items-center justify-center px-4 py-6">
+    <div className="flex-1 flex justify-center px-4" style={{ paddingTop: '80px', paddingBottom: '40px' }}>
       <div className="w-full flex justify-center">
         <form 
           onSubmit={handleSubmit} 
@@ -180,7 +180,7 @@ function PhoneSignUpForm({ onBackToLogin }: { onBackToLogin: () => void }) {
   };
 
   return (
-    <div className="flex-1 flex items-center justify-center px-4 py-6">
+    <div className="flex-1 flex justify-center px-4" style={{ paddingTop: '80px', paddingBottom: '40px' }}>
       <div className="w-full flex justify-center">
         <form 
           onSubmit={handleSubmit} 
