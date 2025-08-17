@@ -39,22 +39,40 @@ function PhoneLoginForm() {
   };
 
   return (
-    <div className="flex-1 flex items-center justify-center p-6">
-      <div className="w-full max-w-xs">
-        <form onSubmit={handleSubmit} className="flex flex-col gap-2.5 bg-white p-7 rounded-2xl shadow-lg font-system">
+    <div className="flex-1 flex items-center justify-center p-4">
+      <div className="w-full max-w-sm">
+        <form 
+          onSubmit={handleSubmit} 
+          className="flex flex-col gap-4 bg-white p-8 w-full rounded-3xl font-system shadow-xl"
+          style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif' }}
+        >
           <div className="flex flex-col">
-            <label className="text-gray-800 font-semibold text-sm mb-1">Email</label>
+            <label className="text-gray-900 font-semibold mb-1" style={{ color: '#151717', fontWeight: 600 }}>
+              Email
+            </label>
           </div>
           
-          <div className="border-2 border-gray-200 rounded-xl h-12 flex items-center px-3 transition-colors focus-within:border-blue-500">
-            <svg xmlns="http://www.w3.org/2000/svg" width={18} viewBox="0 0 32 32" height={18} className="text-gray-500">
+          <div 
+            className="border-2 rounded-xl h-14 flex items-center px-3 transition-all duration-200 ease-in-out focus-within:border-blue-500"
+            style={{ 
+              border: '1.5px solid #ecedec', 
+              borderRadius: '10px',
+              height: '50px'
+            }}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width={20} viewBox="0 0 32 32" height={20} className="text-gray-500">
               <g data-name="Layer 3" id="Layer_3">
                 <path d="m30.853 13.87a15 15 0 0 0 -29.729 4.082 15.1 15.1 0 0 0 12.876 12.918 15.6 15.6 0 0 0 2.016.13 14.85 14.85 0 0 0 7.715-2.145 1 1 0 1 0 -1.031-1.711 13.007 13.007 0 1 1 5.458-6.529 2.149 2.149 0 0 1 -4.158-.759v-10.856a1 1 0 0 0 -2 0v1.726a8 8 0 1 0 .2 10.325 4.135 4.135 0 0 0 7.83.274 15.2 15.2 0 0 0 .823-7.455zm-14.853 8.13a6 6 0 1 1 6-6 6.006 6.006 0 0 1 -6 6z" fill="currentColor"/>
               </g>
             </svg>
             <input
               placeholder="Enter your Email"
-              className="ml-3 rounded-xl border-none w-full h-full bg-transparent focus:outline-none text-sm"
+              className="ml-3 border-none w-full h-full bg-transparent focus:outline-none"
+              style={{ 
+                marginLeft: '10px',
+                borderRadius: '10px',
+                fontFamily: 'inherit'
+              }}
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -65,13 +83,41 @@ function PhoneLoginForm() {
           <button 
             type="submit"
             disabled={loading || !email}
-            className="mt-5 mb-2 bg-gray-800 border-none text-white text-sm font-medium rounded-xl h-12 w-full cursor-pointer transition-opacity disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-900"
+            className="border-none text-white font-medium cursor-pointer transition-colors w-full disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{ 
+              margin: '20px 0 10px 0',
+              backgroundColor: '#151717',
+              fontSize: '15px',
+              fontWeight: 500,
+              borderRadius: '10px',
+              height: '50px',
+              cursor: loading || !email ? 'not-allowed' : 'pointer'
+            }}
           >
             {loading ? "Signing In..." : "Sign In"}
           </button>
           
-          <p className="text-center text-gray-800 text-sm my-1">
-            Don't have an account? <span className="text-blue-500 font-medium cursor-pointer ml-1">Sign Up</span>
+          <p 
+            className="text-center text-black my-1"
+            style={{ 
+              textAlign: 'center',
+              color: 'black',
+              fontSize: '14px',
+              margin: '5px 0'
+            }}
+          >
+            Don't have an account?{' '}
+            <span 
+              className="cursor-pointer"
+              style={{ 
+                color: '#2d79f3',
+                fontWeight: 500,
+                marginLeft: '5px',
+                cursor: 'pointer'
+              }}
+            >
+              Sign Up
+            </span>
           </p>
         </form>
       </div>
