@@ -12,6 +12,8 @@ import { useToast } from '@/hooks/use-toast';
 // Phone Login Component
 function PhoneLoginForm({ onSignupClick }: { onSignupClick: () => void }) {
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const { toast } = useToast();
@@ -39,87 +41,102 @@ function PhoneLoginForm({ onSignupClick }: { onSignupClick: () => void }) {
   };
 
   return (
-    <div className="h-full flex flex-col items-center justify-center p-6">
-      <div className="text-center mb-8">
-        <div className="flex items-center justify-center space-x-2 mb-4">
-          <Signal className="h-8 w-8 text-green-600" />
-          <h1 className="text-2xl font-bold text-gray-900">Watchlist Fx</h1>
+    <div className="h-full flex flex-col items-center justify-center p-4">
+      <div className="text-center mb-6">
+        <div className="flex items-center justify-center space-x-2 mb-2">
+          <Signal className="h-6 w-6 text-green-600" />
+          <h1 className="text-xl font-bold text-gray-900">Watchlist Fx</h1>
         </div>
-        <p className="text-gray-600 text-sm">Professional Trading Signals</p>
+        <p className="text-gray-600 text-xs">Professional Trading Signals</p>
       </div>
 
-      {/* 3D Isometric Login Form */}
-      <div className="flex justify-center items-center mb-6" style={{ perspective: '1000px' }}>
-        <form onSubmit={handleSubmit}>
-          <ul className="relative list-none p-0 m-0" style={{ transform: 'skewY(-14deg)' }}>
-            <li 
-              className="relative list-none w-52 transition-all duration-300 text-white mb-5 hover:-translate-x-5"
-              style={{ zIndex: 2 }}
-            >
-              <div 
-                className="absolute content-[''] w-10 h-10 top-0 -left-10 transition-all duration-300"
-                style={{ 
-                  background: '#989deb',
-                  transformOrigin: 'right',
-                  transform: 'skewY(45deg)'
-                }}
-              />
-              <div 
-                className="absolute content-[''] w-52 h-10 -top-10 left-0 transition-all duration-300"
-                style={{ 
-                  background: '#989deb',
-                  transformOrigin: 'bottom',
-                  transform: 'skewX(45deg)'
-                }}
-              />
-              <input 
-                className="w-full h-10 relative p-2.5 text-black outline-none border-none text-sm font-medium placeholder-black"
-                style={{ 
-                  background: '#989deb',
-                  border: '0.1px solid #575cb5'
-                }}
-                type="email" 
-                placeholder="Email Address" 
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required 
-              />
-            </li>
-            <button 
-              className="relative list-none w-52 h-10 p-2.5 text-white font-medium cursor-pointer border-none transition-all duration-300 hover:-translate-x-5 disabled:opacity-60 disabled:cursor-not-allowed"
-              style={{ 
-                zIndex: 1,
-                background: '#6d74e3',
-                border: '0.1px solid #575cb5'
-              }}
-              type="submit"
-              disabled={loading || !email}
-            >
-              <div 
-                className="absolute content-[''] w-10 h-10 top-0 -left-10 transition-all duration-300 hover:bg-[#575cb5]"
-                style={{ 
-                  background: '#6d74e3',
-                  transformOrigin: 'right',
-                  transform: 'skewY(45deg)'
-                }}
-              />
-              <div 
-                className="absolute content-[''] w-52 h-10 -top-10 left-0 transition-all duration-300 hover:bg-[#575cb5]"
-                style={{ 
-                  background: '#6d74e3',
-                  transformOrigin: 'bottom',
-                  transform: 'skewX(45deg)'
-                }}
-              />
-              <span className="text-black font-semibold">{loading ? "Signing In..." : "Sign In"}</span>
-            </button>
-          </ul>
-        </form>
-      </div>
+      <form onSubmit={handleSubmit} className="w-full max-w-sm bg-white p-6 rounded-2xl shadow-lg space-y-4">
+        <div className="space-y-2">
+          <label className="text-gray-900 font-semibold text-sm">Email</label>
+          <div className="border border-gray-300 rounded-lg h-12 flex items-center px-3 focus-within:border-blue-500 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width={16} viewBox="0 0 32 32" height={16} className="text-gray-400">
+              <g data-name="Layer 3" id="Layer_3">
+                <path d="m30.853 13.87a15 15 0 0 0 -29.729 4.082 15.1 15.1 0 0 0 12.876 12.918 15.6 15.6 0 0 0 2.016.13 14.85 14.85 0 0 0 7.715-2.145 1 1 0 1 0 -1.031-1.711 13.007 13.007 0 1 1 5.458-6.529 2.149 2.149 0 0 1 -4.158-.759v-10.856a1 1 0 0 0 -2 0v1.726a8 8 0 1 0 .2 10.325 4.135 4.135 0 0 0 7.83.274 15.2 15.2 0 0 0 .823-7.455zm-14.853 8.13a6 6 0 1 1 6-6 6.006 6.006 0 0 1 -6 6z" fill="currentColor"/>
+              </g>
+            </svg>
+            <input 
+              placeholder="Enter your Email" 
+              className="ml-3 border-none outline-none w-full h-full text-sm"
+              type="email" 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+        </div>
 
-      <div className="text-center text-sm text-gray-600">
-        <p>New user? <span onClick={onSignupClick} className="text-blue-600 hover:text-blue-800 cursor-pointer font-medium">Create an account</span></p>
-      </div>
+        <div className="space-y-2">
+          <label className="text-gray-900 font-semibold text-sm">Password</label>
+          <div className="border border-gray-300 rounded-lg h-12 flex items-center px-3 focus-within:border-blue-500 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width={16} viewBox="-64 0 512 512" height={16} className="text-gray-400">
+              <path d="m336 512h-288c-26.453125 0-48-21.523438-48-48v-224c0-26.476562 21.546875-48 48-48h288c26.453125 0 48 21.523438 48 48v224c0 26.476562-21.546875 48-48 48zm-288-288c-8.8125 0-16 7.167969-16 16v224c0 8.832031 7.1875 16 16 16h288c8.8125 0 16-7.167969 16-16v-224c0-8.832031-7.1875-16-16-16zm0 0" fill="currentColor"/>
+              <path d="m304 224c-8.832031 0-16-7.167969-16-16v-80c0-52.929688-43.070312-96-96-96s-96 43.070312-96 96v80c0 8.832031-7.167969 16-16 16s-16-7.167969-16-16v-80c0-70.59375 57.40625-128 128-128s128 57.40625 128 128v80c0 8.832031-7.167969 16-16 16zm0 0" fill="currentColor"/>
+            </svg>
+            <input 
+              placeholder="Enter your Password" 
+              className="ml-3 border-none outline-none w-full h-full text-sm"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <input 
+              type="checkbox" 
+              id="remember"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              className="w-4 h-4"
+            />
+            <label htmlFor="remember" className="text-sm text-black">Remember me</label>
+          </div>
+          <span className="text-sm text-blue-500 cursor-pointer font-medium">Forgot password?</span>
+        </div>
+
+        <button 
+          className="w-full bg-gray-900 text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors disabled:opacity-60"
+          type="submit"
+          disabled={loading || !email}
+        >
+          {loading ? "Signing In..." : "Sign In"}
+        </button>
+
+        <p className="text-center text-sm text-black">
+          Don't have an account? 
+          <span onClick={onSignupClick} className="text-blue-500 font-medium cursor-pointer ml-1">Sign Up</span>
+        </p>
+
+        <p className="text-center text-sm text-black border-t pt-4">Or With</p>
+
+        <button 
+          type="button"
+          className="w-full h-12 rounded-lg flex justify-center items-center font-medium gap-3 border border-gray-300 bg-white hover:border-blue-500 transition-colors"
+        >
+          <svg xmlSpace="preserve" style={{enableBackground: 'new 0 0 512 512'}} viewBox="0 0 512 512" y="0px" x="0px" xmlnsXlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" id="Layer_1" width={20} version="1.1">
+            <path d="M113.47,309.408L95.648,375.94l-65.139,1.378C11.042,341.211,0,299.9,0,256
+            c0-42.451,10.324-82.483,28.624-117.732h0.014l57.992,10.632l25.404,57.644c-5.317,15.501-8.215,32.141-8.215,49.456
+            C103.821,274.792,107.225,292.797,113.47,309.408z" style={{fill: '#FBBB00'}} />
+            <path d="M507.527,208.176C510.467,223.662,512,239.655,512,256c0,18.328-1.927,36.206-5.598,53.451
+            c-12.462,58.683-45.025,109.925-90.134,146.187l-0.014-0.014l-73.044-3.727l-10.338-64.535
+            c29.932-17.554,53.324-45.025,65.646-77.911h-136.89V208.176h138.887L507.527,208.176L507.527,208.176z" style={{fill: '#518EF8'}} />
+            <path d="M416.253,455.624l0.014,0.014C372.396,490.901,316.666,512,256,512
+            c-97.491,0-182.252-54.491-225.491-134.681l82.961-67.91c21.619,57.698,77.278,98.771,142.53,98.771
+            c28.047,0,54.323-7.582,76.87-20.818L416.253,455.624z" style={{fill: '#28B446'}} />
+            <path d="M419.404,58.936l-82.933,67.896c-23.335-14.586-50.919-23.012-80.471-23.012
+            c-66.729,0-123.429,42.957-143.965,102.724l-83.397-68.276h-0.014C71.23,56.123,157.06,0,256,0
+            C318.115,0,375.068,22.126,419.404,58.936z" style={{fill: '#F14336'}} />
+          </svg>
+          Google 
+        </button>
+      </form>
     </div>
   );
 }
@@ -128,8 +145,9 @@ function PhoneLoginForm({ onSignupClick }: { onSignupClick: () => void }) {
 function PhoneSignupForm({ onSigninClick }: { onSigninClick: () => void }) {
   const [formData, setFormData] = useState({
     name: '',
-    phone: '',
-    email: ''
+    email: '',
+    password: '',
+    confirmPassword: ''
   });
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -144,7 +162,16 @@ function PhoneSignupForm({ onSigninClick }: { onSigninClick: () => void }) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.email || !formData.phone) return;
+    if (!formData.name || !formData.email || !formData.password) return;
+
+    if (formData.password !== formData.confirmPassword) {
+      toast({
+        title: "Password Mismatch",
+        description: "Passwords do not match",
+        variant: "destructive",
+      });
+      return;
+    }
 
     setLoading(true);
     try {
@@ -153,7 +180,11 @@ function PhoneSignupForm({ onSigninClick }: { onSigninClick: () => void }) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: '123-456-7890' // Default phone for now
+        }),
         credentials: 'include'
       });
 
@@ -166,8 +197,8 @@ function PhoneSignupForm({ onSigninClick }: { onSigninClick: () => void }) {
         description: "Account created successfully! You can now sign in.",
       });
 
-      // Reset form
-      setFormData({ name: '', phone: '', email: '' });
+      // Switch to login form
+      onSigninClick();
     } catch (error) {
       toast({
         title: "Signup Failed",
@@ -180,156 +211,129 @@ function PhoneSignupForm({ onSigninClick }: { onSigninClick: () => void }) {
   };
 
   return (
-    <div className="h-full flex flex-col items-center justify-center p-6">
+    <div className="h-full flex flex-col items-center justify-center p-4">
       <div className="text-center mb-6">
-        <div className="flex items-center justify-center space-x-2 mb-4">
-          <Signal className="h-8 w-8 text-green-600" />
-          <h1 className="text-2xl font-bold text-gray-900">Watchlist Fx</h1>
+        <div className="flex items-center justify-center space-x-2 mb-2">
+          <Signal className="h-6 w-6 text-green-600" />
+          <h1 className="text-xl font-bold text-gray-900">Watchlist Fx</h1>
         </div>
-        <p className="text-gray-600 text-sm">Create Your Account</p>
+        <p className="text-gray-600 text-xs">Create Your Account</p>
       </div>
 
-      {/* 3D Isometric Signup Form */}
-      <div className="flex justify-center items-center mb-6" style={{ perspective: '1000px' }}>
-        <form onSubmit={handleSubmit}>
-          <ul className="relative list-none p-0 m-0" style={{ transform: 'skewY(-14deg)' }}>
-            <li 
-              className="relative list-none w-52 transition-all duration-300 text-white mb-5 hover:-translate-x-5"
-              style={{ zIndex: 4 }}
-            >
-              <div 
-                className="absolute content-[''] w-10 h-10 top-0 -left-10 transition-all duration-300"
-                style={{ 
-                  background: '#d8daf7',
-                  transformOrigin: 'right',
-                  transform: 'skewY(45deg)'
-                }}
-              />
-              <div 
-                className="absolute content-[''] w-52 h-10 -top-10 left-0 transition-all duration-300"
-                style={{ 
-                  background: '#d8daf7',
-                  transformOrigin: 'bottom',
-                  transform: 'skewX(45deg)'
-                }}
-              />
-              <input 
-                className="w-full h-10 relative p-2.5 text-black outline-none border-none text-sm font-medium placeholder-black"
-                style={{ 
-                  background: '#d8daf7',
-                  border: '0.1px solid #575cb5'
-                }}
-                type="text" 
-                placeholder="Full Name" 
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                required 
-              />
-            </li>
-            <li 
-              className="relative list-none w-52 transition-all duration-300 text-white mb-5 hover:-translate-x-5"
-              style={{ zIndex: 3 }}
-            >
-              <div 
-                className="absolute content-[''] w-10 h-10 top-0 -left-10 transition-all duration-300"
-                style={{ 
-                  background: '#c2c5f3',
-                  transformOrigin: 'right',
-                  transform: 'skewY(45deg)'
-                }}
-              />
-              <div 
-                className="absolute content-[''] w-52 h-10 -top-10 left-0 transition-all duration-300"
-                style={{ 
-                  background: '#c2c5f3',
-                  transformOrigin: 'bottom',
-                  transform: 'skewX(45deg)'
-                }}
-              />
-              <input 
-                className="w-full h-10 relative p-2.5 text-black outline-none border-none text-sm font-medium placeholder-black"
-                style={{ 
-                  background: '#c2c5f3',
-                  border: '0.1px solid #575cb5'
-                }}
-                type="tel"
-                placeholder="Phone Number" 
-                name="phone"
-                value={formData.phone}
-                onChange={handleInputChange}
-                required 
-              />
-            </li>
-            <li 
-              className="relative list-none w-52 transition-all duration-300 text-white mb-5 hover:-translate-x-5"
-              style={{ zIndex: 2 }}
-            >
-              <div 
-                className="absolute content-[''] w-10 h-10 top-0 -left-10 transition-all duration-300"
-                style={{ 
-                  background: '#989deb',
-                  transformOrigin: 'right',
-                  transform: 'skewY(45deg)'
-                }}
-              />
-              <div 
-                className="absolute content-[''] w-52 h-10 -top-10 left-0 transition-all duration-300"
-                style={{ 
-                  background: '#989deb',
-                  transformOrigin: 'bottom',
-                  transform: 'skewX(45deg)'
-                }}
-              />
-              <input 
-                className="w-full h-10 relative p-2.5 text-black outline-none border-none text-sm font-medium placeholder-black"
-                style={{ 
-                  background: '#989deb',
-                  border: '0.1px solid #575cb5'
-                }}
-                type="email" 
-                placeholder="Email Address" 
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                required 
-              />
-            </li>
-            <button 
-              className="relative list-none w-52 h-10 p-2.5 text-white font-medium cursor-pointer border-none transition-all duration-300 hover:-translate-x-5 disabled:opacity-60 disabled:cursor-not-allowed"
-              style={{ 
-                zIndex: 1,
-                background: '#6d74e3',
-                border: '0.1px solid #575cb5'
-              }}
-              type="submit"
-              disabled={loading || !formData.name || !formData.email || !formData.phone}
-            >
-              <div 
-                className="absolute content-[''] w-10 h-10 top-0 -left-10 transition-all duration-300 hover:bg-[#575cb5]"
-                style={{ 
-                  background: '#6d74e3',
-                  transformOrigin: 'right',
-                  transform: 'skewY(45deg)'
-                }}
-              />
-              <div 
-                className="absolute content-[''] w-52 h-10 -top-10 left-0 transition-all duration-300 hover:bg-[#575cb5]"
-                style={{ 
-                  background: '#6d74e3',
-                  transformOrigin: 'bottom',
-                  transform: 'skewX(45deg)'
-                }}
-              />
-              <span className="text-black font-semibold">{loading ? 'Creating Account...' : 'Create Account'}</span>
-            </button>
-          </ul>
-        </form>
-      </div>
+      <form onSubmit={handleSubmit} className="w-full max-w-sm bg-white p-6 rounded-2xl shadow-lg space-y-4">
+        <div className="space-y-2">
+          <label className="text-gray-900 font-semibold text-sm">Full Name</label>
+          <div className="border border-gray-300 rounded-lg h-12 flex items-center px-3 focus-within:border-blue-500 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+            <input 
+              placeholder="Enter your full name" 
+              className="ml-3 border-none outline-none w-full h-full text-sm"
+              type="text" 
+              name="name"
+              value={formData.name}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
+        </div>
 
-      <div className="text-center text-sm text-gray-600">
-        <p>Already have an account? <span onClick={onSigninClick} className="text-blue-600 hover:text-blue-800 cursor-pointer font-medium">Sign In</span></p>
-      </div>
+        <div className="space-y-2">
+          <label className="text-gray-900 font-semibold text-sm">Email</label>
+          <div className="border border-gray-300 rounded-lg h-12 flex items-center px-3 focus-within:border-blue-500 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width={16} viewBox="0 0 32 32" height={16} className="text-gray-400">
+              <g data-name="Layer 3" id="Layer_3">
+                <path d="m30.853 13.87a15 15 0 0 0 -29.729 4.082 15.1 15.1 0 0 0 12.876 12.918 15.6 15.6 0 0 0 2.016.13 14.85 14.85 0 0 0 7.715-2.145 1 1 0 1 0 -1.031-1.711 13.007 13.007 0 1 1 5.458-6.529 2.149 2.149 0 0 1 -4.158-.759v-10.856a1 1 0 0 0 -2 0v1.726a8 8 0 1 0 .2 10.325 4.135 4.135 0 0 0 7.83.274 15.2 15.2 0 0 0 .823-7.455zm-14.853 8.13a6 6 0 1 1 6-6 6.006 6.006 0 0 1 -6 6z" fill="currentColor"/>
+              </g>
+            </svg>
+            <input 
+              placeholder="Enter your Email" 
+              className="ml-3 border-none outline-none w-full h-full text-sm"
+              type="email" 
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-gray-900 font-semibold text-sm">Password</label>
+          <div className="border border-gray-300 rounded-lg h-12 flex items-center px-3 focus-within:border-blue-500 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width={16} viewBox="-64 0 512 512" height={16} className="text-gray-400">
+              <path d="m336 512h-288c-26.453125 0-48-21.523438-48-48v-224c0-26.476562 21.546875-48 48-48h288c26.453125 0 48 21.523438 48 48v224c0 26.476562-21.546875 48-48 48zm-288-288c-8.8125 0-16 7.167969-16 16v224c0 8.832031 7.1875 16 16 16h288c8.8125 0 16-7.167969 16-16v-224c0-8.832031-7.1875-16-16-16zm0 0" fill="currentColor"/>
+              <path d="m304 224c-8.832031 0-16-7.167969-16-16v-80c0-52.929688-43.070312-96-96-96s-96 43.070312-96 96v80c0 8.832031-7.167969 16-16 16s-16-7.167969-16-16v-80c0-70.59375 57.40625-128 128-128s128 57.40625 128 128v80c0 8.832031-7.167969 16-16 16zm0 0" fill="currentColor"/>
+            </svg>
+            <input 
+              placeholder="Create a password" 
+              className="ml-3 border-none outline-none w-full h-full text-sm"
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-gray-900 font-semibold text-sm">Confirm Password</label>
+          <div className="border border-gray-300 rounded-lg h-12 flex items-center px-3 focus-within:border-blue-500 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width={16} viewBox="-64 0 512 512" height={16} className="text-gray-400">
+              <path d="m336 512h-288c-26.453125 0-48-21.523438-48-48v-224c0-26.476562 21.546875-48 48-48h288c26.453125 0 48 21.523438 48 48v224c0 26.476562-21.546875 48-48 48zm-288-288c-8.8125 0-16 7.167969-16 16v224c0 8.832031 7.1875 16 16 16h288c8.8125 0 16-7.167969 16-16v-224c0-8.832031-7.1875-16-16-16zm0 0" fill="currentColor"/>
+              <path d="m304 224c-8.832031 0-16-7.167969-16-16v-80c0-52.929688-43.070312-96-96-96s-96 43.070312-96 96v80c0 8.832031-7.167969 16-16 16s-16-7.167969-16-16v-80c0-70.59375 57.40625-128 128-128s128 57.40625 128 128v80c0 8.832031-7.167969 16-16 16zm0 0" fill="currentColor"/>
+            </svg>
+            <input 
+              placeholder="Confirm your password" 
+              className="ml-3 border-none outline-none w-full h-full text-sm"
+              type="password"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
+        </div>
+
+        <button 
+          className="w-full bg-gray-900 text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors disabled:opacity-60 mt-6"
+          type="submit"
+          disabled={loading || !formData.name || !formData.email || !formData.password || !formData.confirmPassword}
+        >
+          {loading ? "Creating Account..." : "Sign Up"}
+        </button>
+
+        <p className="text-center text-sm text-black">
+          Already have an account? 
+          <span onClick={onSigninClick} className="text-blue-500 font-medium cursor-pointer ml-1">Sign In</span>
+        </p>
+
+        <p className="text-center text-sm text-black border-t pt-4">Or With</p>
+
+        <button 
+          type="button"
+          className="w-full h-12 rounded-lg flex justify-center items-center font-medium gap-3 border border-gray-300 bg-white hover:border-blue-500 transition-colors"
+        >
+          <svg xmlSpace="preserve" style={{enableBackground: 'new 0 0 512 512'}} viewBox="0 0 512 512" y="0px" x="0px" xmlnsXlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" id="Layer_1" width={20} version="1.1">
+            <path d="M113.47,309.408L95.648,375.94l-65.139,1.378C11.042,341.211,0,299.9,0,256
+            c0-42.451,10.324-82.483,28.624-117.732h0.014l57.992,10.632l25.404,57.644c-5.317,15.501-8.215,32.141-8.215,49.456
+            C103.821,274.792,107.225,292.797,113.47,309.408z" style={{fill: '#FBBB00'}} />
+            <path d="M507.527,208.176C510.467,223.662,512,239.655,512,256c0,18.328-1.927,36.206-5.598,53.451
+            c-12.462,58.683-45.025,109.925-90.134,146.187l-0.014-0.014l-73.044-3.727l-10.338-64.535
+            c29.932-17.554,53.324-45.025,65.646-77.911h-136.89V208.176h138.887L507.527,208.176L507.527,208.176z" style={{fill: '#518EF8'}} />
+            <path d="M416.253,455.624l0.014,0.014C372.396,490.901,316.666,512,256,512
+            c-97.491,0-182.252-54.491-225.491-134.681l82.961-67.91c21.619,57.698,77.278,98.771,142.53,98.771
+            c28.047,0,54.323-7.582,76.87-20.818L416.253,455.624z" style={{fill: '#28B446'}} />
+            <path d="M419.404,58.936l-82.933,67.896c-23.335-14.586-50.919-23.012-80.471-23.012
+            c-66.729,0-123.429,42.957-143.965,102.724l-83.397-68.276h-0.014C71.23,56.123,157.06,0,256,0
+            C318.115,0,375.068,22.126,419.404,58.936z" style={{fill: '#F14336'}} />
+          </svg>
+          Google 
+        </button>
+      </form>
     </div>
   );
 }
