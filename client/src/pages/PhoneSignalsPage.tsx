@@ -633,8 +633,18 @@ export function PhoneSignalsPage() {
                     </div>
                   </>
                 ) : (
-                  /* Unauthenticated User - Show Login Form */
+                  /* Unauthenticated User - Show Login Form with Navbar */
                   <div className="flex-1 flex flex-col">
+                    {/* Phone Navbar for login */}
+                    <div className="bg-slate-900 px-4 py-3 flex justify-between items-center border-b border-slate-700">
+                      <div className="flex items-center gap-2">
+                        <Signal className="h-5 w-5 text-green-400" />
+                        <span className="text-white text-sm font-semibold">Watchlist Fx</span>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <span className="text-gray-300 text-xs">Sign In</span>
+                      </div>
+                    </div>
                     <PhoneLoginForm />
                   </div>
                 )}
