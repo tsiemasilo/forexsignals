@@ -41,8 +41,8 @@ function PhoneLoginForm({ onSignupClick }: { onSignupClick: () => void }) {
   };
 
   return (
-    <div className="h-full flex flex-col items-center justify-center p-4">
-      <div className="text-center mb-6">
+    <div className="h-full flex flex-col items-center p-4 overflow-y-auto">
+      <div className="text-center mb-4 mt-4">
         <div className="flex items-center justify-center space-x-2 mb-2">
           <Signal className="h-6 w-6 text-green-600" />
           <h1 className="text-xl font-bold text-gray-900">Watchlist Fx</h1>
@@ -50,18 +50,18 @@ function PhoneLoginForm({ onSignupClick }: { onSignupClick: () => void }) {
         <p className="text-gray-600 text-xs">Professional Trading Signals</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="w-full max-w-sm bg-white p-6 rounded-2xl shadow-lg space-y-4">
-        <div className="space-y-2">
-          <label className="text-gray-900 font-semibold text-sm">Email</label>
-          <div className="border border-gray-300 rounded-lg h-12 flex items-center px-3 focus-within:border-blue-500 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" width={16} viewBox="0 0 32 32" height={16} className="text-gray-400">
+      <form onSubmit={handleSubmit} className="w-full max-w-sm bg-white p-3 rounded-2xl shadow-lg space-y-2 mb-4">
+        <div className="space-y-1">
+          <label className="text-gray-900 font-semibold text-xs">Email</label>
+          <div className="border border-gray-300 rounded-lg h-9 flex items-center px-2 focus-within:border-blue-500 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width={14} viewBox="0 0 32 32" height={14} className="text-gray-400">
               <g data-name="Layer 3" id="Layer_3">
                 <path d="m30.853 13.87a15 15 0 0 0 -29.729 4.082 15.1 15.1 0 0 0 12.876 12.918 15.6 15.6 0 0 0 2.016.13 14.85 14.85 0 0 0 7.715-2.145 1 1 0 1 0 -1.031-1.711 13.007 13.007 0 1 1 5.458-6.529 2.149 2.149 0 0 1 -4.158-.759v-10.856a1 1 0 0 0 -2 0v1.726a8 8 0 1 0 .2 10.325 4.135 4.135 0 0 0 7.83.274 15.2 15.2 0 0 0 .823-7.455zm-14.853 8.13a6 6 0 1 1 6-6 6.006 6.006 0 0 1 -6 6z" fill="currentColor"/>
               </g>
             </svg>
             <input 
               placeholder="Enter your Email" 
-              className="ml-3 border-none outline-none w-full h-full text-sm"
+              className="ml-2 border-none outline-none w-full h-full text-xs"
               type="email" 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -70,16 +70,16 @@ function PhoneLoginForm({ onSignupClick }: { onSignupClick: () => void }) {
           </div>
         </div>
 
-        <div className="space-y-2">
-          <label className="text-gray-900 font-semibold text-sm">Password</label>
-          <div className="border border-gray-300 rounded-lg h-12 flex items-center px-3 focus-within:border-blue-500 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" width={16} viewBox="-64 0 512 512" height={16} className="text-gray-400">
+        <div className="space-y-1">
+          <label className="text-gray-900 font-semibold text-xs">Password</label>
+          <div className="border border-gray-300 rounded-lg h-9 flex items-center px-2 focus-within:border-blue-500 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width={14} viewBox="-64 0 512 512" height={14} className="text-gray-400">
               <path d="m336 512h-288c-26.453125 0-48-21.523438-48-48v-224c0-26.476562 21.546875-48 48-48h288c26.453125 0 48 21.523438 48 48v224c0 26.476562-21.546875 48-48 48zm-288-288c-8.8125 0-16 7.167969-16 16v224c0 8.832031 7.1875 16 16 16h288c8.8125 0 16-7.167969 16-16v-224c0-8.832031-7.1875-16-16-16zm0 0" fill="currentColor"/>
               <path d="m304 224c-8.832031 0-16-7.167969-16-16v-80c0-52.929688-43.070312-96-96-96s-96 43.070312-96 96v80c0 8.832031-7.167969 16-16 16s-16-7.167969-16-16v-80c0-70.59375 57.40625-128 128-128s128 57.40625 128 128v80c0 8.832031-7.167969 16-16 16zm0 0" fill="currentColor"/>
             </svg>
             <input 
               placeholder="Enter your Password" 
-              className="ml-3 border-none outline-none w-full h-full text-sm"
+              className="ml-2 border-none outline-none w-full h-full text-xs"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -87,40 +87,40 @@ function PhoneLoginForm({ onSignupClick }: { onSignupClick: () => void }) {
           </div>
         </div>
 
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between text-xs">
+          <div className="flex items-center gap-1">
             <input 
               type="checkbox" 
               id="remember"
               checked={rememberMe}
               onChange={(e) => setRememberMe(e.target.checked)}
-              className="w-4 h-4"
+              className="w-3 h-3"
             />
-            <label htmlFor="remember" className="text-sm text-black">Remember me</label>
+            <label htmlFor="remember" className="text-black">Remember me</label>
           </div>
-          <span className="text-sm text-blue-500 cursor-pointer font-medium">Forgot password?</span>
+          <span className="text-blue-500 cursor-pointer font-medium">Forgot password?</span>
         </div>
 
         <button 
-          className="w-full bg-gray-900 text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors disabled:opacity-60"
+          className="w-full bg-gray-900 text-white py-2 rounded-lg font-medium hover:bg-gray-800 transition-colors disabled:opacity-60 text-sm"
           type="submit"
           disabled={loading || !email}
         >
           {loading ? "Signing In..." : "Sign In"}
         </button>
 
-        <p className="text-center text-sm text-black">
+        <p className="text-center text-xs text-black">
           Don't have an account? 
           <span onClick={onSignupClick} className="text-blue-500 font-medium cursor-pointer ml-1">Sign Up</span>
         </p>
 
-        <p className="text-center text-sm text-black border-t pt-4">Or With</p>
+        <p className="text-center text-xs text-black border-t pt-2">Or With</p>
 
         <button 
           type="button"
-          className="w-full h-12 rounded-lg flex justify-center items-center font-medium gap-3 border border-gray-300 bg-white hover:border-blue-500 transition-colors"
+          className="w-full h-9 rounded-lg flex justify-center items-center font-medium gap-2 border border-gray-300 bg-white hover:border-blue-500 transition-colors text-sm"
         >
-          <svg xmlSpace="preserve" style={{enableBackground: 'new 0 0 512 512'}} viewBox="0 0 512 512" y="0px" x="0px" xmlnsXlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" id="Layer_1" width={20} version="1.1">
+          <svg xmlSpace="preserve" viewBox="0 0 512 512" y="0px" x="0px" xmlnsXlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" id="Layer_1" width={16} version="1.1">
             <path d="M113.47,309.408L95.648,375.94l-65.139,1.378C11.042,341.211,0,299.9,0,256
             c0-42.451,10.324-82.483,28.624-117.732h0.014l57.992,10.632l25.404,57.644c-5.317,15.501-8.215,32.141-8.215,49.456
             C103.821,274.792,107.225,292.797,113.47,309.408z" style={{fill: '#FBBB00'}} />
@@ -211,8 +211,8 @@ function PhoneSignupForm({ onSigninClick }: { onSigninClick: () => void }) {
   };
 
   return (
-    <div className="h-full flex flex-col items-center justify-center p-4">
-      <div className="text-center mb-6">
+    <div className="h-full flex flex-col items-center p-4 overflow-y-auto">
+      <div className="text-center mb-3 mt-2">
         <div className="flex items-center justify-center space-x-2 mb-2">
           <Signal className="h-6 w-6 text-green-600" />
           <h1 className="text-xl font-bold text-gray-900">Watchlist Fx</h1>
@@ -220,17 +220,17 @@ function PhoneSignupForm({ onSigninClick }: { onSigninClick: () => void }) {
         <p className="text-gray-600 text-xs">Create Your Account</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="w-full max-w-sm bg-white p-6 rounded-2xl shadow-lg space-y-4">
-        <div className="space-y-2">
-          <label className="text-gray-900 font-semibold text-sm">Full Name</label>
-          <div className="border border-gray-300 rounded-lg h-12 flex items-center px-3 focus-within:border-blue-500 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
+      <form onSubmit={handleSubmit} className="w-full max-w-sm bg-white p-3 rounded-2xl shadow-lg space-y-2 mb-4">
+        <div className="space-y-1">
+          <label className="text-gray-900 font-semibold text-xs">Full Name</label>
+          <div className="border border-gray-300 rounded-lg h-8 flex items-center px-2 focus-within:border-blue-500 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
               <circle cx="12" cy="7" r="4"/>
             </svg>
             <input 
               placeholder="Enter your full name" 
-              className="ml-3 border-none outline-none w-full h-full text-sm"
+              className="ml-2 border-none outline-none w-full h-full text-xs"
               type="text" 
               name="name"
               value={formData.name}
@@ -240,17 +240,17 @@ function PhoneSignupForm({ onSigninClick }: { onSigninClick: () => void }) {
           </div>
         </div>
 
-        <div className="space-y-2">
-          <label className="text-gray-900 font-semibold text-sm">Email</label>
-          <div className="border border-gray-300 rounded-lg h-12 flex items-center px-3 focus-within:border-blue-500 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" width={16} viewBox="0 0 32 32" height={16} className="text-gray-400">
+        <div className="space-y-1">
+          <label className="text-gray-900 font-semibold text-xs">Email</label>
+          <div className="border border-gray-300 rounded-lg h-8 flex items-center px-2 focus-within:border-blue-500 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width={12} viewBox="0 0 32 32" height={12} className="text-gray-400">
               <g data-name="Layer 3" id="Layer_3">
                 <path d="m30.853 13.87a15 15 0 0 0 -29.729 4.082 15.1 15.1 0 0 0 12.876 12.918 15.6 15.6 0 0 0 2.016.13 14.85 14.85 0 0 0 7.715-2.145 1 1 0 1 0 -1.031-1.711 13.007 13.007 0 1 1 5.458-6.529 2.149 2.149 0 0 1 -4.158-.759v-10.856a1 1 0 0 0 -2 0v1.726a8 8 0 1 0 .2 10.325 4.135 4.135 0 0 0 7.83.274 15.2 15.2 0 0 0 .823-7.455zm-14.853 8.13a6 6 0 1 1 6-6 6.006 6.006 0 0 1 -6 6z" fill="currentColor"/>
               </g>
             </svg>
             <input 
               placeholder="Enter your Email" 
-              className="ml-3 border-none outline-none w-full h-full text-sm"
+              className="ml-2 border-none outline-none w-full h-full text-xs"
               type="email" 
               name="email"
               value={formData.email}
@@ -260,16 +260,16 @@ function PhoneSignupForm({ onSigninClick }: { onSigninClick: () => void }) {
           </div>
         </div>
 
-        <div className="space-y-2">
-          <label className="text-gray-900 font-semibold text-sm">Password</label>
-          <div className="border border-gray-300 rounded-lg h-12 flex items-center px-3 focus-within:border-blue-500 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" width={16} viewBox="-64 0 512 512" height={16} className="text-gray-400">
+        <div className="space-y-1">
+          <label className="text-gray-900 font-semibold text-xs">Password</label>
+          <div className="border border-gray-300 rounded-lg h-8 flex items-center px-2 focus-within:border-blue-500 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width={12} viewBox="-64 0 512 512" height={12} className="text-gray-400">
               <path d="m336 512h-288c-26.453125 0-48-21.523438-48-48v-224c0-26.476562 21.546875-48 48-48h288c26.453125 0 48 21.523438 48 48v224c0 26.476562-21.546875 48-48 48zm-288-288c-8.8125 0-16 7.167969-16 16v224c0 8.832031 7.1875 16 16 16h288c8.8125 0 16-7.167969 16-16v-224c0-8.832031-7.1875-16-16-16zm0 0" fill="currentColor"/>
               <path d="m304 224c-8.832031 0-16-7.167969-16-16v-80c0-52.929688-43.070312-96-96-96s-96 43.070312-96 96v80c0 8.832031-7.167969 16-16 16s-16-7.167969-16-16v-80c0-70.59375 57.40625-128 128-128s128 57.40625 128 128v80c0 8.832031-7.167969 16-16 16zm0 0" fill="currentColor"/>
             </svg>
             <input 
               placeholder="Create a password" 
-              className="ml-3 border-none outline-none w-full h-full text-sm"
+              className="ml-2 border-none outline-none w-full h-full text-xs"
               type="password"
               name="password"
               value={formData.password}
@@ -279,16 +279,16 @@ function PhoneSignupForm({ onSigninClick }: { onSigninClick: () => void }) {
           </div>
         </div>
 
-        <div className="space-y-2">
-          <label className="text-gray-900 font-semibold text-sm">Confirm Password</label>
-          <div className="border border-gray-300 rounded-lg h-12 flex items-center px-3 focus-within:border-blue-500 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" width={16} viewBox="-64 0 512 512" height={16} className="text-gray-400">
+        <div className="space-y-1">
+          <label className="text-gray-900 font-semibold text-xs">Confirm Password</label>
+          <div className="border border-gray-300 rounded-lg h-8 flex items-center px-2 focus-within:border-blue-500 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width={12} viewBox="-64 0 512 512" height={12} className="text-gray-400">
               <path d="m336 512h-288c-26.453125 0-48-21.523438-48-48v-224c0-26.476562 21.546875-48 48-48h288c26.453125 0 48 21.523438 48 48v224c0 26.476562-21.546875 48-48 48zm-288-288c-8.8125 0-16 7.167969-16 16v224c0 8.832031 7.1875 16 16 16h288c8.8125 0 16-7.167969 16-16v-224c0-8.832031-7.1875-16-16-16zm0 0" fill="currentColor"/>
               <path d="m304 224c-8.832031 0-16-7.167969-16-16v-80c0-52.929688-43.070312-96-96-96s-96 43.070312-96 96v80c0 8.832031-7.167969 16-16 16s-16-7.167969-16-16v-80c0-70.59375 57.40625-128 128-128s128 57.40625 128 128v80c0 8.832031-7.167969 16-16 16zm0 0" fill="currentColor"/>
             </svg>
             <input 
               placeholder="Confirm your password" 
-              className="ml-3 border-none outline-none w-full h-full text-sm"
+              className="ml-2 border-none outline-none w-full h-full text-xs"
               type="password"
               name="confirmPassword"
               value={formData.confirmPassword}
@@ -299,25 +299,25 @@ function PhoneSignupForm({ onSigninClick }: { onSigninClick: () => void }) {
         </div>
 
         <button 
-          className="w-full bg-gray-900 text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors disabled:opacity-60 mt-6"
+          className="w-full bg-gray-900 text-white py-2 rounded-lg font-medium hover:bg-gray-800 transition-colors disabled:opacity-60 text-sm mt-3"
           type="submit"
           disabled={loading || !formData.name || !formData.email || !formData.password || !formData.confirmPassword}
         >
           {loading ? "Creating Account..." : "Sign Up"}
         </button>
 
-        <p className="text-center text-sm text-black">
+        <p className="text-center text-xs text-black">
           Already have an account? 
           <span onClick={onSigninClick} className="text-blue-500 font-medium cursor-pointer ml-1">Sign In</span>
         </p>
 
-        <p className="text-center text-sm text-black border-t pt-4">Or With</p>
+        <p className="text-center text-xs text-black border-t pt-2">Or With</p>
 
         <button 
           type="button"
-          className="w-full h-12 rounded-lg flex justify-center items-center font-medium gap-3 border border-gray-300 bg-white hover:border-blue-500 transition-colors"
+          className="w-full h-8 rounded-lg flex justify-center items-center font-medium gap-2 border border-gray-300 bg-white hover:border-blue-500 transition-colors text-sm"
         >
-          <svg xmlSpace="preserve" style={{enableBackground: 'new 0 0 512 512'}} viewBox="0 0 512 512" y="0px" x="0px" xmlnsXlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" id="Layer_1" width={20} version="1.1">
+          <svg xmlSpace="preserve" viewBox="0 0 512 512" y="0px" x="0px" xmlnsXlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" id="Layer_1" width={16} version="1.1">
             <path d="M113.47,309.408L95.648,375.94l-65.139,1.378C11.042,341.211,0,299.9,0,256
             c0-42.451,10.324-82.483,28.624-117.732h0.014l57.992,10.632l25.404,57.644c-5.317,15.501-8.215,32.141-8.215,49.456
             C103.821,274.792,107.225,292.797,113.47,309.408z" style={{fill: '#FBBB00'}} />
