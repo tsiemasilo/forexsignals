@@ -1,6 +1,11 @@
 import { neon } from '@neondatabase/serverless';
 
-const DATABASE_URL = process.env.DATABASE_URL;
+const DATABASE_URL = process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL;
+
+if (!DATABASE_URL) {
+  throw new Error('NETLIFY_DATABASE_URL or DATABASE_URL environment variable is not set');
+}
+
 const sql = neon(DATABASE_URL);
 
 export const handler = async (event, context) => {
