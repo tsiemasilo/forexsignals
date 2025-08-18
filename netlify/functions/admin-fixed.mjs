@@ -163,97 +163,217 @@ export const handler = async (event, context) => {
     // UPDATE SUBSCRIPTION - PUT request with subscription in path
     if (method === 'PUT' && path.includes('subscription') && userId) {
       console.log('🔧 UPDATE SUBSCRIPTION REQUEST for user:', userId);
+      console.log('🔧 RAW EVENT BODY:', event.body);
+      console.log('🔧 FULL REQUEST CONTEXT:', {
+        method,
+        path,
+        userId,
+        headers: event.headers,
+        contentType: event.headers['content-type'],
+        bodyIsBase64: event.isBase64Encoded
+      });
       
       let requestData = {};
       try {
         requestData = JSON.parse(event.body || '{}');
+        console.log('🔧 PARSED REQUEST DATA:', requestData);
       } catch (parseError) {
-        console.error('JSON parse error:', parseError);
+        console.error('❌ JSON PARSE ERROR:', parseError);
+        console.error('❌ RAW BODY CAUSING ERROR:', event.body);
         return {
           statusCode: 400,
           headers,
-          body: JSON.stringify({ message: 'Invalid JSON in request body' })
+          body: JSON.stringify({ 
+            message: 'Invalid JSON in request body',
+            error: parseError.message,
+            rawBody: event.body,
+            contentType: event.headers['content-type']
+          })
         };
       }
 
       const { planId, status, endDate } = requestData;
-      console.log('📋 SUBSCRIPTION UPDATE DATA:', { userId, planId, status, endDate });
+      console.log('📋 EXTRACTED DATA:', { userId, planId, status, endDate, planIdType: typeof planId, statusType: typeof status });
 
-      // Validate user exists first
-      const userExists = await sql`SELECT id FROM users WHERE id = ${userId}`;
-      if (userExists.length === 0) {
-        console.log('❌ User does not exist:', userId);
+      // Enhanced validation
+      if (!status) {
+        console.error('❌ STATUS MISSING from request');
         return {
           statusCode: 400,
           headers,
-          body: JSON.stringify({ message: 'User not found', userId })
+          body: JSON.stringify({ 
+            message: 'Status is required',
+            receivedData: requestData,
+            expectedFields: ['status', 'planId (optional)']
+          })
         };
       }
 
-      // Handle different subscription status changes
-      if (status === 'expired') {
-        // Set subscription to expired
-        const expiredDate = new Date();
-        expiredDate.setDate(expiredDate.getDate() - 1);
+      // Validate status values
+      const validStatuses = ['active', 'inactive', 'expired', 'trial'];
+      if (!validStatuses.includes(status)) {
+        console.error('❌ INVALID STATUS VALUE:', status);
+        return {
+          statusCode: 400,
+          headers,
+          body: JSON.stringify({ 
+            message: 'Invalid status value',
+            received: status,
+            validOptions: validStatuses
+          })
+        };
+      }
+
+      // Validate user exists first with enhanced debugging
+      console.log('🔍 VALIDATING USER EXISTS:', userId);
+      const userExists = await sql`SELECT id, email FROM users WHERE id = ${userId}`;
+      console.log('🔍 USER VALIDATION RESULT:', userExists);
+      
+      if (userExists.length === 0) {
+        console.log('❌ USER NOT FOUND:', userId);
         
-        await sql`DELETE FROM subscriptions WHERE user_id = ${userId}`;
-        
-        const result = await sql`
-          INSERT INTO subscriptions (user_id, plan_id, status, start_date, end_date, created_at)
-          VALUES (${userId}, 1, 'expired', ${expiredDate.toISOString()}, ${expiredDate.toISOString()}, NOW())
-          RETURNING *
-        `;
+        // Show available users for debugging
+        const availableUsers = await sql`SELECT id, email FROM users WHERE is_admin = false LIMIT 10`;
+        console.log('🔍 AVAILABLE USERS:', availableUsers);
         
         return {
-          statusCode: 200,
+          statusCode: 400,
           headers,
-          body: JSON.stringify({ success: true, subscription: result[0] })
+          body: JSON.stringify({ 
+            message: 'User not found', 
+            userId,
+            availableUsers: availableUsers.map(u => ({ id: u.id, email: u.email }))
+          })
         };
-      } else if (status === 'active' && planId) {
-        // Create active subscription
-        const activeEndDate = new Date();
-        
-        // Set duration based on plan
-        if (planId === 1) activeEndDate.setDate(activeEndDate.getDate() + 5);
-        else if (planId === 2) activeEndDate.setDate(activeEndDate.getDate() + 14);
-        else if (planId === 3) activeEndDate.setDate(activeEndDate.getDate() + 30);
-        
-        await sql`DELETE FROM subscriptions WHERE user_id = ${userId}`;
-        
-        const result = await sql`
-          INSERT INTO subscriptions (user_id, plan_id, status, start_date, end_date, created_at)
-          VALUES (${userId}, ${planId}, 'active', NOW(), ${activeEndDate.toISOString()}, NOW())
-          RETURNING *
-        `;
-        
-        return {
-          statusCode: 200,
-          headers,
-          body: JSON.stringify({ success: true, subscription: result[0] })
-        };
-      } else {
-        // Generic status update - validate user exists first
-        const userExistsAgain = await sql`SELECT id FROM users WHERE id = ${userId}`;
-        if (userExistsAgain.length === 0) {
+      }
+
+      console.log('✅ USER VALIDATED:', userExists[0]);
+
+      try {
+        console.log('🛠️ PROCESSING SUBSCRIPTION UPDATE:', { status, planId, userId });
+
+        // Handle different subscription status changes
+        if (status === 'expired') {
+          console.log('⏰ Setting subscription to EXPIRED for user:', userId);
+          
+          const expiredDate = new Date();
+          expiredDate.setDate(expiredDate.getDate() - 1);
+          
+          console.log('🗑️ Deleting existing subscriptions...');
+          await sql`DELETE FROM subscriptions WHERE user_id = ${userId}`;
+          
+          console.log('📝 Creating expired subscription...');
+          const result = await sql`
+            INSERT INTO subscriptions (user_id, plan_id, status, start_date, end_date, created_at)
+            VALUES (${userId}, 1, 'expired', ${expiredDate.toISOString()}, ${expiredDate.toISOString()}, NOW())
+            RETURNING *
+          `;
+          
+          console.log('✅ EXPIRED SUBSCRIPTION CREATED:', result[0]);
+          return {
+            statusCode: 200,
+            headers: { ...headers, 'Cache-Control': 'no-cache' },
+            body: JSON.stringify({ success: true, subscription: result[0] })
+          };
+          
+        } else if (status === 'active') {
+          console.log('🟢 Setting subscription to ACTIVE for user:', userId, 'with plan:', planId);
+          
+          // Validate planId for active subscriptions
+          const finalPlanId = planId || 1;
+          
+          // Verify plan exists
+          const planDetails = await sql`SELECT id, name, duration FROM subscription_plans WHERE id = ${finalPlanId}`;
+          console.log('📋 Plan details:', planDetails);
+          
+          if (planDetails.length === 0) {
+            console.error('❌ INVALID PLAN ID:', finalPlanId);
+            return {
+              statusCode: 400,
+              headers,
+              body: JSON.stringify({ 
+                message: 'Invalid plan ID', 
+                planId: finalPlanId,
+                availablePlans: 'Use 1, 2, or 3'
+              })
+            };
+          }
+          
+          const activeEndDate = new Date();
+          const planDuration = planDetails[0].duration;
+          activeEndDate.setDate(activeEndDate.getDate() + planDuration);
+          
+          console.log('📅 Active subscription dates:', {
+            start: new Date().toISOString(),
+            end: activeEndDate.toISOString(),
+            duration: planDuration
+          });
+          
+          console.log('🗑️ Deleting existing subscriptions...');
+          await sql`DELETE FROM subscriptions WHERE user_id = ${userId}`;
+          
+          console.log('📝 Creating active subscription...');
+          const result = await sql`
+            INSERT INTO subscriptions (user_id, plan_id, status, start_date, end_date, created_at)
+            VALUES (${userId}, ${finalPlanId}, 'active', NOW(), ${activeEndDate.toISOString()}, NOW())
+            RETURNING *
+          `;
+          
+          console.log('✅ ACTIVE SUBSCRIPTION CREATED:', result[0]);
+          return {
+            statusCode: 200,
+            headers: { ...headers, 'Cache-Control': 'no-cache' },
+            body: JSON.stringify({ success: true, subscription: result[0] })
+          };
+          
+        } else if (status === 'inactive') {
+          console.log('🟡 Setting subscription to INACTIVE for user:', userId);
+          
+          console.log('🗑️ Deleting existing subscriptions...');
+          await sql`DELETE FROM subscriptions WHERE user_id = ${userId}`;
+          
+          console.log('📝 Creating inactive subscription...');
+          const result = await sql`
+            INSERT INTO subscriptions (user_id, plan_id, status, start_date, end_date, created_at)
+            VALUES (${userId}, ${planId || 1}, 'inactive', NOW(), NOW(), NOW())
+            RETURNING *
+          `;
+          
+          console.log('✅ INACTIVE SUBSCRIPTION CREATED:', result[0]);
+          return {
+            statusCode: 200,
+            headers: { ...headers, 'Cache-Control': 'no-cache' },
+            body: JSON.stringify({ success: true, subscription: result[0] })
+          };
+          
+        } else {
+          console.error('❌ UNHANDLED STATUS:', status);
           return {
             statusCode: 400,
             headers,
-            body: JSON.stringify({ message: 'User not found', userId })
+            body: JSON.stringify({ 
+              message: 'Unhandled subscription status',
+              status,
+              validStatuses: ['active', 'inactive', 'expired', 'trial']
+            })
           };
         }
-
-        await sql`DELETE FROM subscriptions WHERE user_id = ${userId}`;
-
-        const result = await sql`
-          INSERT INTO subscriptions (user_id, plan_id, status, start_date, end_date, created_at)
-          VALUES (${userId}, ${planId || 1}, ${status || 'trial'}, NOW(), ${endDate || 'NOW() + INTERVAL \'7 days\''}, NOW())
-          RETURNING *
-        `;
-
+        
+      } catch (subscriptionError) {
+        console.error('❌ SUBSCRIPTION UPDATE ERROR:', subscriptionError);
+        console.error('❌ ERROR STACK:', subscriptionError.stack);
+        
         return {
-          statusCode: 200,
+          statusCode: 500,
           headers,
-          body: JSON.stringify({ success: true, subscription: result[0] })
+          body: JSON.stringify({ 
+            message: 'Database error during subscription update',
+            error: subscriptionError.message,
+            userId,
+            status,
+            planId,
+            errorType: subscriptionError.name
+          })
         };
       }
     }
