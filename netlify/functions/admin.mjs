@@ -21,6 +21,13 @@ export const handler = async (event, context) => {
     
     console.log('🔍 ADMIN REQUEST:', { path, method, headers: event.headers });
     console.log('🔍 FULL EVENT:', JSON.stringify(event, null, 2));
+    
+    // Log exact route matching attempts
+    console.log('🔍 ROUTE CHECKS:');
+    console.log('- path.includes("/subscription"):', path.includes('/subscription'));
+    console.log('- path.includes("/create-trial"):', path.includes('/create-trial'));
+    console.log('- method === "PUT":', method === 'PUT');
+    console.log('- method === "POST":', method === 'POST');
 
     // Simple admin check - for now, bypass authentication for testing
     // In production, add proper session validation here
