@@ -110,6 +110,17 @@ export const handler = async (event, context) => {
       // Remove existing subscription
       await sql`DELETE FROM subscriptions WHERE user_id = ${userId}`;
 
+      // Validate user exists first
+      const userExists = await sql`SELECT id FROM users WHERE id = ${userId}`;
+      if (userExists.length === 0) {
+        console.log('❌ User does not exist:', userId);
+        return {
+          statusCode: 400,
+          headers,
+          body: JSON.stringify({ message: 'User not found', userId })
+        };
+      }
+
       // Create trial subscription
       const result = await sql`
         INSERT INTO subscriptions (user_id, plan_id, status, start_date, end_date, created_at)
@@ -143,6 +154,17 @@ export const handler = async (event, context) => {
 
       const { planId, status, endDate } = requestData;
       console.log('📋 SUBSCRIPTION UPDATE DATA:', { userId, planId, status, endDate });
+
+      // Validate user exists first
+      const userExists = await sql`SELECT id FROM users WHERE id = ${userId}`;
+      if (userExists.length === 0) {
+        console.log('❌ User does not exist:', userId);
+        return {
+          statusCode: 400,
+          headers,
+          body: JSON.stringify({ message: 'User not found', userId })
+        };
+      }
 
       // Handle different subscription status changes
       if (status === 'expired') {
@@ -186,7 +208,16 @@ export const handler = async (event, context) => {
           body: JSON.stringify({ success: true, subscription: result[0] })
         };
       } else {
-        // Generic status update
+        // Generic status update - validate user exists first
+        const userExistsAgain = await sql`SELECT id FROM users WHERE id = ${userId}`;
+        if (userExistsAgain.length === 0) {
+          return {
+            statusCode: 400,
+            headers,
+            body: JSON.stringify({ message: 'User not found', userId })
+          };
+        }
+
         await sql`DELETE FROM subscriptions WHERE user_id = ${userId}`;
 
         const result = await sql`
