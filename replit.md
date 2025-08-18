@@ -6,6 +6,13 @@ WatchlistFX is a production-ready forex signals subscription platform designed f
 
 ## Recent Changes (August 2025)
 
+### ✅ Admin User Management Completed (August 18, 2025)
+- **Real-Time User Display**: Fixed admin dashboard to show new user registrations with 3-second auto-refresh
+- **Trial Creation Working**: "Create 7-Day Trial" button successfully creates fresh trials for any user
+- **Subscription Status Management**: Admin can change user subscription status (active, inactive, expired)
+- **Enhanced Caching**: Implemented aggressive cache invalidation for immediate UI updates
+- **Manual Refresh Button**: Added instant refresh capability for admin dashboard
+
 ### ✅ Admin Signal Creation Fixed (August 18, 2025)
 - **500 Error Resolved**: Fixed admin signal creation that was failing with internal server errors
 - **PostgreSQL Array Handling**: Resolved "malformed array literal" errors by using NULL instead of empty JSON arrays
