@@ -99,6 +99,11 @@
   status = 200
 
 [[redirects]]
+  from = "/api/admin/debug-simple"
+  to = "/.netlify/functions/admin-debug-simple"
+  status = 200
+
+[[redirects]]
   from = "/api/simple-signal"
   to = "/.netlify/functions/simple-signal"
   status = 200
