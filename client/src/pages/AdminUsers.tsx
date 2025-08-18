@@ -470,19 +470,25 @@ export default function AdminUsers() {
                                   <Button
                                     size="sm"
                                     variant="outline"
-                                    onClick={() => handleCreateTrial(user.id)}
-                                    disabled={updateSubscriptionMutation.isPending}
-                                    className="w-[130px] text-xs"
+                                    onClick={() => {
+                                      console.log('🔧 CREATING TRIAL:', { userId: user.id, currentStatus: user.subscription?.status });
+                                      handleCreateTrial(user.id);
+                                    }}
+                                    disabled={updateTrialMutation.isPending}
+                                    className="w-[130px] text-xs bg-blue-50 hover:bg-blue-100 border-blue-200"
                                   >
-                                    Create 7-Day Trial
+                                    {updateTrialMutation.isPending ? 'Creating...' : 'Create 7-Day Trial'}
                                   </Button>
                                   
                                   <Button
                                     size="sm"
                                     variant="outline"
-                                    onClick={() => handleStatusChange(user.id, "inactive")}
+                                    onClick={() => {
+                                      console.log('🔧 SETTING INACTIVE:', { userId: user.id, currentStatus: user.subscription?.status });
+                                      handleStatusChange(user.id, "inactive");
+                                    }}
                                     disabled={updateSubscriptionMutation.isPending}
-                                    className="w-[130px] text-xs"
+                                    className="w-[130px] text-xs bg-yellow-50 hover:bg-yellow-100 border-yellow-200"
                                   >
                                     Set Inactive
                                   </Button>
@@ -490,33 +496,35 @@ export default function AdminUsers() {
                                   <Button
                                     size="sm"
                                     variant="outline"
-                                    onClick={() => handleStatusChange(user.id, "expired")}
+                                    onClick={() => {
+                                      console.log('🔧 EXPIRING USER:', { userId: user.id, currentStatus: user.subscription?.status });
+                                      handleStatusChange(user.id, "expired");
+                                    }}
                                     disabled={updateSubscriptionMutation.isPending}
-                                    className="w-[130px] text-xs"
+                                    className="w-[130px] text-xs bg-red-50 hover:bg-red-100 border-red-200"
                                   >
                                     Set Expired
                                   </Button>
                                 </div>
                                 
-                                {/* Active Plan Selection */}
-                                <Select 
-                                  onValueChange={(planId) => {
-                                    console.log('🔧 DROPDOWN SELECTED:', { planId, userId: user.id, planIdParsed: parseInt(planId) });
-                                    handleStatusChange(user.id, "active", parseInt(planId));
-                                  }}
-                                  disabled={updateSubscriptionMutation.isPending}
-                                >
-                                  <SelectTrigger className="w-[150px]">
-                                    <SelectValue placeholder="Set Active Plan" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {plans.map((plan: any) => (
-                                      <SelectItem key={plan.id} value={plan.id.toString()}>
-                                        Active - {plan.name}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
+                                {/* Active Plan Buttons */}
+                                <div className="flex flex-col gap-1">
+                                  {plans.map((plan: any) => (
+                                    <Button
+                                      key={plan.id}
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => {
+                                        console.log('🔧 BUTTON SELECTED:', { planId: plan.id, userId: user.id, planName: plan.name });
+                                        handleStatusChange(user.id, "active", plan.id);
+                                      }}
+                                      disabled={updateSubscriptionMutation.isPending}
+                                      className="w-[130px] text-xs bg-green-50 hover:bg-green-100 border-green-200"
+                                    >
+                                      Set {plan.name}
+                                    </Button>
+                                  ))}
+                                </div>
                               </div>
                             ) : (
                               <span className="text-gray-400 text-sm">No subscription</span>
@@ -540,7 +548,9 @@ export default function AdminUsers() {
           </CardHeader>
           <CardContent>
             <div className="text-sm text-gray-600">
-              🚀 Ultra-aggressive cache invalidation system active. Page will auto-refresh after subscription changes. Build: v2.3-20250818
+              🚀 Admin Status Management: Button-based controls active. All subscription changes trigger immediate updates.
+              <br />
+              ✅ Trial Creation | ✅ Inactive/Expired Status | ✅ Plan Activation | Build: v2.4-ButtonControls
             </div>
           </CardContent>
         </Card>
