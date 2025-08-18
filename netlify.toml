@@ -109,6 +109,16 @@
   status = 200
 
 [[redirects]]
+  from = "/api/cache-buster"
+  to = "/.netlify/functions/cache-buster"
+  status = 200
+
+[[redirects]]
+  from = "/api/instant-refresh"
+  to = "/.netlify/functions/instant-refresh"
+  status = 200
+
+[[redirects]]
   from = "/api/simple-signal"
   to = "/.netlify/functions/simple-signal"
   status = 200

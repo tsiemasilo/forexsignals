@@ -11,7 +11,12 @@ export const handler = async (event, context) => {
     'Access-Control-Allow-Headers': 'Content-Type, Cookie',
     'Access-Control-Allow-Methods': 'GET, POST, PUT, OPTIONS',
     'Access-Control-Allow-Credentials': 'true',
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
+    'Pragma': 'no-cache',
+    'Expires': '0',
+    'X-Cache-Invalidation': 'forced',
+    'X-Real-Time-Update': new Date().toISOString()
   };
 
   if (event.httpMethod === 'OPTIONS') {

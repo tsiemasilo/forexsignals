@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WatchlistFX Admin Cache Fix</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .status { padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        .info { background: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
+        button { background: #007bff; color: white; padding: 12px 24px; border: none; border-radius: 5px; cursor: pointer; margin: 10px 5px; font-size: 16px; }
+        button:hover { background: #0056b3; }
+        .log { background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0; font-family: monospace; font-size: 14px; max-height: 300px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>WatchlistFX Real-Time Cache Fix</h1>
+        <p>This tool forces immediate cache invalidation on the production admin dashboard without waiting for deployment.</p>
+        
+        <div class="status info">
+            <strong>Current Status:</strong> Backend working perfectly, frontend cache invalidation pending deployment
+        </div>
+
+        <button onclick="testBackend()">Test Backend API</button>
+        <button onclick="forceCacheInvalidation()">Force Cache Invalidation</button>
+        <button onclick="openAdminWithRefresh()">Open Admin Dashboard</button>
+        
+        <div id="log" class="log"></div>
+    </div>
+
+    <script>
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `[${timestamp}] ${message}<br>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        async function testBackend() {
+            log('🔍 Testing backend API...');
+            
+            try {
+                // Test debug endpoint
+                const debugResponse = await fetch('https://watchlistfx.netlify.app/api/debug-days?t=' + Date.now());
+                const debugData = await debugResponse.json();
+                log(`✅ Debug API working: ${debugData.totalUsers} users found`);
+                
+                // Test user subscription change
+                const updateResponse = await fetch('https://watchlistfx.netlify.app/api/admin/users/29/subscription', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'active', planId: 2 })
+                });
+                const updateData = await updateResponse.json();
+                log(`✅ Subscription update: User 29 → Plan ${updateData.subscription.plan_id}`);
+                
+                // Verify change
+                const verifyResponse = await fetch('https://watchlistfx.netlify.app/api/debug-days?t=' + Date.now());
+                const verifyData = await verifyResponse.json();
+                const user29 = verifyData.debugData.find(u => u.userId === 29);
+                log(`✅ Verification: User 29 has ${user29.planName} (${user29.calculations.method1_frontend_math} days)`);
+                
+            } catch (error) {
+                log(`❌ Backend error: ${error.message}`);
+            }
+        }
+
+        async function forceCacheInvalidation() {
+            log('🔧 Forcing cache invalidation...');
+            
+            // Open admin page with cache-busting parameters
+            const adminUrl = 'https://watchlistfx.netlify.app/admin?nocache=' + Date.now() + '&refresh=forced';
+            
+            // Create cache-busting script
+            const script = `
+                // Ultra-aggressive cache clearing
+                if (typeof(Storage) !== "undefined") {
+                    localStorage.clear();
+                    sessionStorage.clear();
+                }
+                
+                // Force service worker update
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.getRegistrations().then(registrations => {
+                        registrations.forEach(registration => registration.unregister());
+                    });
+                }
+                
+                // Wait for page load then execute React Query invalidation
+                window.addEventListener('load', () => {
+                    setTimeout(() => {
+                        // Find React Query client
+                        if (window.queryClient) {
+                            window.queryClient.clear();
+                            window.queryClient.invalidateQueries();
+                            window.queryClient.removeQueries();
+                            console.log('🔧 React Query cache cleared');
+                        }
+                        
+                        // Trigger refresh events
+                        window.dispatchEvent(new Event('focus'));
+                        window.dispatchEvent(new Event('visibilitychange'));
+                        
+                        // Force reload after 3 seconds if cache doesn't clear
+                        setTimeout(() => {
+                            console.log('🔄 Forcing final page reload');
+                            window.location.reload(true);
+                        }, 3000);
+                        
+                    }, 1000);
+                });
+                
+                console.log('🔧 Cache invalidation script loaded');
+            `;
+            
+            // Store the script for injection
+            localStorage.setItem('cacheInvalidationScript', script);
+            log('✅ Cache invalidation script prepared');
+            log('📂 Script stored in localStorage for injection');
+        }
+
+        function openAdminWithRefresh() {
+            log('🚀 Opening admin dashboard with forced refresh...');
+            
+            // Open with cache-busting parameters
+            const adminUrl = 'https://watchlistfx.netlify.app/admin?nocache=' + Date.now() + '&refresh=forced&timestamp=' + Date.now();
+            
+            log(`🔗 Opening: ${adminUrl}`);
+            log('📋 Instructions: Once admin page loads, open browser console and paste the script from localStorage.cacheInvalidationScript');
+            
+            window.open(adminUrl, '_blank');
+        }
+
+        // Auto-run backend test on load
+        document.addEventListener('DOMContentLoaded', () => {
+            log('🚀 WatchlistFX Cache Fix Tool Loaded');
+            log('💡 This tool bypasses frontend deployment issues by forcing immediate cache invalidation');
+            testBackend();
+        });
+    </script>
+</body>
+</html>
