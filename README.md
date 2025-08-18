@@ -112,6 +112,11 @@ vite build
 - Webhook handling for payment notifications
 
 The project is production-ready for Netlify deployment!
+
+## Build Status
+- Latest deployment: August 18, 2025
+- Cache invalidation fix implemented
+- Ultra-aggressive refresh mechanism active
 # Install dependencies
 npm install
 
