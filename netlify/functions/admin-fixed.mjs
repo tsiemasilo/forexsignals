@@ -20,6 +20,15 @@ export const handler = async (event, context) => {
     const method = event.httpMethod;
     
     console.log('🔍 ADMIN-FIXED REQUEST:', { path, method, rawUrl: event.rawUrl });
+    console.log('🔍 FULL EVENT DEBUG:', {
+      path: event.path,
+      rawUrl: event.rawUrl,
+      httpMethod: event.httpMethod,
+      queryStringParameters: event.queryStringParameters,
+      headers: event.headers,
+      body: event.body,
+      isBase64Encoded: event.isBase64Encoded
+    });
 
     // GET all users with subscriptions
     if (method === 'GET' && (path.includes('/users') || path === '/api/admin/users')) {

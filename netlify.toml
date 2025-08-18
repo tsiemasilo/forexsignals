@@ -89,6 +89,11 @@
   status = 200
 
 [[redirects]]
+  from = "/api/test-debug"
+  to = "/.netlify/functions/test-debug"
+  status = 200
+
+[[redirects]]
   from = "/api/simple-signal"
   to = "/.netlify/functions/simple-signal"
   status = 200
