@@ -7,6 +7,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
+import { AdminDebugPanel } from '@/components/AdminDebugPanel';
+import { SubscriptionTester } from '@/utils/subscriptionTestSuite';
 
 export default function AdminUsers() {
   const { user } = useAuth();
@@ -166,21 +168,51 @@ export default function AdminUsers() {
       };
     }
 
-    console.log('🔧 DAYS CALCULATION DEBUG:', {
+    // Advanced debugging with multiple calculation methods
+    const startDate = new Date(user.subscription.startDate);
+    const endDate = new Date(user.subscription.endDate);
+    const currentDate = new Date();
+    
+    // Method 1: Use backend endDate (most accurate)
+    const daysLeftMethod1 = Math.max(0, Math.ceil((endDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24)));
+    
+    // Method 2: Calculate from duration
+    const backendDuration = user.subscription.duration || 14;
+    const calculatedEndDate = new Date(startDate.getTime() + backendDuration * 24 * 60 * 60 * 1000);
+    const daysLeftMethod2 = Math.max(0, Math.ceil((calculatedEndDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24)));
+    
+    // Method 3: Use plan lookup
+    const plan = plans.find(p => p.id === user.subscription.planId);
+    const planDuration = plan?.duration || 14;
+    const planCalculatedEndDate = new Date(startDate.getTime() + planDuration * 24 * 60 * 60 * 1000);
+    const daysLeftMethod3 = Math.max(0, Math.ceil((planCalculatedEndDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24)));
+
+    console.log('🔧 ADVANCED DAYS CALCULATION DEBUG:', {
       userId: user.id,
       email: user.email,
       subscription: user.subscription,
       planName: user.subscription.planName,
-      duration: user.subscription.duration,
+      backendDuration: user.subscription.duration,
+      foundPlan: plan,
+      planDuration: plan?.duration,
       status: user.subscription.status,
-      startDate: user.subscription.startDate,
-      endDate: user.subscription.endDate
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString(),
+      currentDate: currentDate.toISOString(),
+      methods: {
+        method1_backendEndDate: daysLeftMethod1,
+        method2_backendDuration: daysLeftMethod2,
+        method3_planLookup: daysLeftMethod3
+      },
+      timeDifferences: {
+        startToNow: Math.ceil((currentDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)),
+        startToBackendEnd: Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)),
+        nowToBackendEnd: Math.ceil((endDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24))
+      }
     });
 
-    // Use the end date directly from backend for most accurate calculation
-    const endDate = new Date(user.subscription.endDate);
-    const currentDate = new Date();
-    const daysLeft = Math.max(0, Math.ceil((endDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24)));
+    // Use the most accurate method (backend endDate)
+    const daysLeft = daysLeftMethod1;
     
     let statusDisplay = '';
     let colorClass = '';
@@ -243,6 +275,16 @@ export default function AdminUsers() {
     console.log('🔧 ADMIN FRONTEND: About to change subscription:', { userId, newStatus, planId });
     console.log('🔧 FRONTEND DEBUG: Available plans:', plans);
     console.log('🔧 FRONTEND DEBUG: Mutation pending:', updateSubscriptionMutation.isPending);
+    
+    // Run comprehensive test before mutation
+    if (planId) {
+      const user = users.find(u => u.id === userId);
+      if (user) {
+        const testResult = SubscriptionTester.testAllCalculationMethods(user, plans);
+        console.log('🧪 PRE-MUTATION TEST:', testResult);
+      }
+    }
+    
     updateSubscriptionMutation.mutate({ userId, status: newStatus, planId });
   };
 
@@ -465,6 +507,9 @@ export default function AdminUsers() {
             )}
           </CardContent>
         </Card>
+
+        {/* Advanced Debug Panel */}
+        <AdminDebugPanel users={users} plans={plans} />
       </div>
     </div>
   );
