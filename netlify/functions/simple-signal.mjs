@@ -22,7 +22,7 @@ export const handler = async (event, context) => {
       // Simple hardcoded signal creation for testing
       const result = await sql`
         INSERT INTO forex_signals (title, content, trade_action, image_urls, created_at, updated_at)
-        VALUES ('Test Signal', 'This is a test signal from simple endpoint', 'buy', '[]', NOW(), NOW())
+        VALUES ('Test Signal', 'This is a test signal from simple endpoint', 'buy', NULL, NOW(), NOW())
         RETURNING *
       `;
       

@@ -102,9 +102,14 @@ export const handler = async (event, context) => {
       let result;
       try {
         console.log('🗄️ EXECUTING DATABASE INSERT...');
+        console.log('Image data being inserted:', finalImages, 'Type:', typeof finalImages);
+        
+        // Handle empty array properly for PostgreSQL
+        const imageUrlsJson = finalImages.length === 0 ? null : JSON.stringify(finalImages);
+        
         result = await sql`
           INSERT INTO forex_signals (title, content, trade_action, image_urls, created_at, updated_at)
-          VALUES (${title}, ${content}, ${tradeAction}, ${JSON.stringify(finalImages)}, NOW(), NOW())
+          VALUES (${title}, ${content}, ${tradeAction}, ${imageUrlsJson}, NOW(), NOW())
           RETURNING *
         `;
         console.log('✅ DATABASE INSERT SUCCESS:', result[0]);
@@ -135,10 +140,12 @@ export const handler = async (event, context) => {
       const { title, content, tradeAction, uploadedImages, imageUrls } = JSON.parse(event.body);
       const finalImages = uploadedImages || imageUrls || [];
 
+      const imageUrlsJson = finalImages.length === 0 ? null : JSON.stringify(finalImages);
+      
       const result = await sql`
         UPDATE forex_signals 
         SET title = ${title}, content = ${content}, trade_action = ${tradeAction}, 
-            image_urls = ${JSON.stringify(finalImages)}, updated_at = NOW()
+            image_urls = ${imageUrlsJson}, updated_at = NOW()
         WHERE id = ${signalId}
         RETURNING *
       `;
