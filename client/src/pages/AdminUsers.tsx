@@ -22,14 +22,11 @@ export default function AdminUsers() {
   const { data: users = [], isLoading, error, refetch } = useQuery<any[]>({
     queryKey: ['/api/admin/users'],
     enabled: !!user?.isAdmin,
-    refetchInterval: 1000, // Ultra-fast refresh - every 1 second
+    refetchInterval: 2000, // Fast refresh - every 2 seconds  
     staleTime: 0, // Always consider data stale to force fresh fetches
-    gcTime: 0, // No cache time - always fetch fresh
     refetchOnWindowFocus: true, // Refetch when window regains focus
     refetchOnMount: true, // Always refetch on component mount
-    refetchIntervalInBackground: true, // Keep refreshing even when tab not focused
-    refetchOnReconnect: true, // Refetch when reconnecting
-    retry: false // Don't retry failed requests to avoid delays
+    refetchIntervalInBackground: true // Keep refreshing even when tab not focused
   });
 
   // Debug logging for users data
@@ -84,39 +81,23 @@ export default function AdminUsers() {
     onSuccess: async (data, { userId, planId }) => {
       console.log('🔧 MUTATION SUCCESS - FORCING COMPLETE REFRESH:', data);
       
-      // ULTRA-AGGRESSIVE CACHE INVALIDATION
-      console.log('🔧 MUTATION SUCCESS - FORCING COMPLETE UI REFRESH');
+      // AGGRESSIVE CACHE INVALIDATION WITH FORCED REFRESH
+      console.log('🔧 SUBSCRIPTION UPDATED - REFRESHING UI');
       
-      // Step 1: Nuclear cache clearing
-      queryClient.clear();
-      queryClient.removeQueries({ queryKey: ['/api/admin/users'] });
+      // Clear all caches immediately
       queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
+      queryClient.removeQueries({ queryKey: ['/api/admin/users'] });
       
-      // Step 2: Force immediate refetch with no cache
+      // Force immediate refetch
       setTimeout(async () => {
-        console.log('🔄 FORCING FRESH DATA FETCH...');
-        await queryClient.fetchQuery({
-          queryKey: ['/api/admin/users'],
-          staleTime: 0,
-          gcTime: 0
-        });
         await refetch();
-      }, 100);
+      }, 200);
       
-      // Step 3: Multiple refresh waves to ensure UI updates
-      setTimeout(async () => {
-        console.log('🔄 SECONDARY REFRESH WAVE...');
-        queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
-        await refetch();
-        window.dispatchEvent(new Event('focus'));
-      }, 500);
-      
+      // Force page reload to ensure UI updates
       setTimeout(() => {
-        console.log('🔄 FINAL REFRESH TO ENSURE DISPLAY UPDATES...');
-        refetch();
-        // Force page refresh as last resort to ensure UI updates
+        console.log('🔄 RELOADING PAGE TO SHOW UPDATED SUBSCRIPTION');
         window.location.reload();
-      }, 2000);
+      }, 1500);
       
       toast({
         title: "Success", 
