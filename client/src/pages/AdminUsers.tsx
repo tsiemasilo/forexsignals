@@ -166,23 +166,21 @@ export default function AdminUsers() {
       };
     }
 
-    // Calculate days based on plan duration, not end date
-    const startDate = new Date(user.subscription.startDate);
+    console.log('🔧 DAYS CALCULATION DEBUG:', {
+      userId: user.id,
+      email: user.email,
+      subscription: user.subscription,
+      planName: user.subscription.planName,
+      duration: user.subscription.duration,
+      status: user.subscription.status,
+      startDate: user.subscription.startDate,
+      endDate: user.subscription.endDate
+    });
+
+    // Use the end date directly from backend for most accurate calculation
+    const endDate = new Date(user.subscription.endDate);
     const currentDate = new Date();
-    
-    let planDuration = 14; // Default to 14 days
-    if (user.subscription.plan) {
-      planDuration = user.subscription.plan.duration;
-    }
-    
-    // For trial, always use 7 days
-    if (user.subscription.status === 'trial') {
-      planDuration = 7;
-    }
-    
-    const calculatedEndDate = new Date(startDate.getTime() + planDuration * 24 * 60 * 60 * 1000);
-    const isExpired = currentDate > calculatedEndDate;
-    const daysLeft = Math.max(0, Math.ceil((calculatedEndDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24)));
+    const daysLeft = Math.max(0, Math.ceil((endDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24)));
     
     let statusDisplay = '';
     let colorClass = '';
@@ -214,16 +212,28 @@ export default function AdminUsers() {
     }
 
     // If the subscription is naturally expired based on date, override status
+    const isExpired = currentDate > endDate;
     if (isExpired && user.subscription.status === 'active') {
       statusDisplay = 'Expired';
       colorClass = 'bg-red-100 text-red-800';
       displayDaysLeft = 0;
     }
 
+    console.log('🔧 FINAL DAYS RESULT:', {
+      userId: user.id,
+      email: user.email,
+      statusDisplay,
+      planName: user.subscription.planName,
+      displayDaysLeft,
+      isExpired,
+      endDate: endDate.toISOString(),
+      currentDate: currentDate.toISOString()
+    });
+
     return {
       status: statusDisplay,
       color: colorClass,
-      plan: user.subscription.plan?.name || 'Unknown',
+      plan: user.subscription.planName || 'Unknown',
       daysLeft: displayDaysLeft,
       rawStatus: user.subscription.status
     };
