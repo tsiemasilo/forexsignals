@@ -94,8 +94,8 @@ export const handler = async (event, context) => {
       try {
         console.log('🗄️ EXECUTING DATABASE INSERT...');
         result = await sql`
-          INSERT INTO forex_signals (title, content, trade_action, image_urls, created_at, updated_at)
-          VALUES (${title}, ${content}, ${tradeAction}, ${JSON.stringify(finalImages)}, NOW(), NOW())
+          INSERT INTO forex_signals (title, content, trade_action, image_urls, created_by, created_at, updated_at)
+          VALUES (${title}, ${content}, ${tradeAction}, ${finalImages.length === 0 ? null : JSON.stringify(finalImages)}, 1, NOW(), NOW())
           RETURNING *
         `;
         console.log('✅ DATABASE INSERT SUCCESS:', result[0]);

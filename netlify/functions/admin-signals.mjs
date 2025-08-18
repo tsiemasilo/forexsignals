@@ -108,8 +108,8 @@ export const handler = async (event, context) => {
         const imageUrlsJson = finalImages.length === 0 ? null : JSON.stringify(finalImages);
         
         result = await sql`
-          INSERT INTO forex_signals (title, content, trade_action, image_urls, created_at, updated_at)
-          VALUES (${title}, ${content}, ${tradeAction}, ${imageUrlsJson}, NOW(), NOW())
+          INSERT INTO forex_signals (title, content, trade_action, image_urls, created_by, created_at, updated_at)
+          VALUES (${title}, ${content}, ${tradeAction}, ${imageUrlsJson}, 1, NOW(), NOW())
           RETURNING *
         `;
         console.log('✅ DATABASE INSERT SUCCESS:', result[0]);

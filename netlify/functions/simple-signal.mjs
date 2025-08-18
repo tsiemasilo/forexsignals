@@ -19,10 +19,10 @@ export const handler = async (event, context) => {
     console.log('🚀 SIMPLE SIGNAL CREATE ATTEMPT');
     
     try {
-      // Simple hardcoded signal creation for testing
+      // Simple hardcoded signal creation for testing (using admin user ID 1)
       const result = await sql`
-        INSERT INTO forex_signals (title, content, trade_action, image_urls, created_at, updated_at)
-        VALUES ('Test Signal', 'This is a test signal from simple endpoint', 'buy', NULL, NOW(), NOW())
+        INSERT INTO forex_signals (title, content, trade_action, image_urls, created_by, created_at, updated_at)
+        VALUES ('Test Signal', 'This is a test signal from simple endpoint', 'buy', NULL, 1, NOW(), NOW())
         RETURNING *
       `;
       
