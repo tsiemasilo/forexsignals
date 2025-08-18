@@ -14,6 +14,14 @@ export const handler = async (event, context) => {
     return { statusCode: 200, headers, body: '' };
   }
 
+  // Debug all incoming requests
+  console.log('🚀 SIGNALS FUNCTION CALLED:', {
+    method: event.httpMethod,
+    path: event.path,
+    bodyLength: event.body?.length || 0,
+    timestamp: new Date().toISOString()
+  });
+
   try {
     const method = event.httpMethod;
     const path = event.path;
@@ -45,17 +53,60 @@ export const handler = async (event, context) => {
         timestamp: new Date().toISOString()
       });
       
-      const requestData = JSON.parse(event.body);
-      console.log('📋 PARSED REQUEST DATA:', requestData);
+      if (!event.body) {
+        console.error('❌ NO REQUEST BODY');
+        return {
+          statusCode: 400,
+          headers,
+          body: JSON.stringify({ message: 'Request body is required' })
+        };
+      }
+      
+      let requestData;
+      try {
+        requestData = JSON.parse(event.body);
+        console.log('📋 PARSED REQUEST DATA:', requestData);
+      } catch (parseError) {
+        console.error('❌ JSON PARSE ERROR:', parseError);
+        return {
+          statusCode: 400,
+          headers,
+          body: JSON.stringify({ message: 'Invalid JSON in request body', error: parseError.message })
+        };
+      }
       
       const { title, content, tradeAction, uploadedImages, imageUrls } = requestData;
+      
+      // Validate required fields
+      if (!title || !content || !tradeAction) {
+        console.error('❌ MISSING REQUIRED FIELDS:', { title: !!title, content: !!content, tradeAction: !!tradeAction });
+        return {
+          statusCode: 400,
+          headers,
+          body: JSON.stringify({ message: 'Missing required fields: title, content, and tradeAction are required' })
+        };
+      }
+      
       const finalImages = uploadedImages || imageUrls || [];
+      console.log('✅ PROCEEDING WITH DATABASE INSERT:', { title, content, tradeAction, imageCount: finalImages.length });
 
-      const result = await sql`
-        INSERT INTO forex_signals (title, content, trade_action, image_urls, created_at, updated_at)
-        VALUES (${title}, ${content}, ${tradeAction}, ${JSON.stringify(finalImages)}, NOW(), NOW())
-        RETURNING *
-      `;
+      let result;
+      try {
+        console.log('🗄️ EXECUTING DATABASE INSERT...');
+        result = await sql`
+          INSERT INTO forex_signals (title, content, trade_action, image_urls, created_at, updated_at)
+          VALUES (${title}, ${content}, ${tradeAction}, ${JSON.stringify(finalImages)}, NOW(), NOW())
+          RETURNING *
+        `;
+        console.log('✅ DATABASE INSERT SUCCESS:', result[0]);
+      } catch (dbError) {
+        console.error('❌ DATABASE INSERT ERROR:', dbError);
+        return {
+          statusCode: 500,
+          headers,
+          body: JSON.stringify({ message: 'Database error', error: dbError.message })
+        };
+      }
 
       return {
         statusCode: 201,
