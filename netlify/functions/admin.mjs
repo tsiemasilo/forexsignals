@@ -19,14 +19,18 @@ export const handler = async (event, context) => {
     const method = event.httpMethod;
 
     if (path === '/api/admin/users' && method === 'GET') {
+      console.log('🔍 ADMIN: Fetching all users with subscriptions...');
+      
       const users = await sql`
-        SELECT u.*, s.*, sp.name as plan_name, sp.duration as plan_duration
+        SELECT u.*, s.*, sp.name as plan_name, sp.duration as plan_duration, sp.price as plan_price
         FROM users u
         LEFT JOIN subscriptions s ON u.id = s.user_id
         LEFT JOIN subscription_plans sp ON s.plan_id = sp.id
         WHERE u.is_admin = false
-        ORDER BY u.id
+        ORDER BY u.id, s.created_at DESC
       `;
+
+      console.log('🔍 ADMIN: Raw query results:', users.length, 'rows');
 
       const groupedUsers = users.reduce((acc, row) => {
         if (!acc[row.id]) {
@@ -36,28 +40,36 @@ export const handler = async (event, context) => {
             firstName: row.first_name,
             lastName: row.last_name,
             isAdmin: row.is_admin,
+            createdAt: row.created_at,
             subscription: null
           };
         }
         
-        if (row.plan_id) {
+        // Only set subscription if this user doesn't already have one (get most recent)
+        if (row.plan_id && !acc[row.id].subscription) {
           acc[row.id].subscription = {
-            id: row.plan_id,
+            id: row.plan_id, // This should be subscription ID, not plan ID
+            subscriptionId: row.id, // Actual subscription record ID  
             status: row.status,
             startDate: row.start_date,
             endDate: row.end_date,
             planName: row.plan_name,
-            duration: row.plan_duration
+            duration: row.plan_duration,
+            price: row.plan_price
           };
+          console.log(`🔍 ADMIN: User ${row.email} subscription:`, acc[row.id].subscription);
         }
         
         return acc;
       }, {});
 
+      const result = Object.values(groupedUsers);
+      console.log('🔍 ADMIN: Final grouped users:', result.length);
+      
       return {
         statusCode: 200,
         headers,
-        body: JSON.stringify(Object.values(groupedUsers))
+        body: JSON.stringify(result)
       };
     }
 
