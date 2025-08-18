@@ -104,6 +104,11 @@
   status = 200
 
 [[redirects]]
+  from = "/api/debug-days"
+  to = "/.netlify/functions/debug-days-calculation"
+  status = 200
+
+[[redirects]]
   from = "/api/simple-signal"
   to = "/.netlify/functions/simple-signal"
   status = 200
