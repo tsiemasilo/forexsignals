@@ -1,6 +1,9 @@
 import { neon } from '@neondatabase/serverless';
 
-const sql = neon("postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require");
+const DATABASE_URL = process.env.DATABASE_URL || "postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require";
+console.log('🔍 DATABASE_URL:', DATABASE_URL.replace(/:[^:@]*@/, ':***@')); // Hide password in logs
+
+const sql = neon(DATABASE_URL);
 
 export const handler = async (event, context) => {
   const headers = {
@@ -111,13 +114,28 @@ export const handler = async (event, context) => {
       await sql`DELETE FROM subscriptions WHERE user_id = ${userId}`;
 
       // Validate user exists first
+      console.log('🔍 Checking if user exists:', userId);
       const userExists = await sql`SELECT id FROM users WHERE id = ${userId}`;
+      console.log('🔍 User query result:', userExists);
+      
       if (userExists.length === 0) {
         console.log('❌ User does not exist:', userId);
+        
+        // Also check what users DO exist for debugging
+        const allUsers = await sql`SELECT id, email FROM users LIMIT 10`;
+        console.log('🔍 All users in database:', allUsers);
+        
         return {
           statusCode: 400,
           headers,
-          body: JSON.stringify({ message: 'User not found', userId })
+          body: JSON.stringify({ 
+            message: 'User not found', 
+            userId, 
+            debug: { 
+              availableUsers: allUsers.map(u => u.id),
+              databaseUrl: DATABASE_URL.replace(/:[^:@]*@/, ':***@')
+            }
+          })
         };
       }
 
