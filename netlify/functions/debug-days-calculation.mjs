@@ -1,9 +1,8 @@
-import { Pool, neonConfig } from '@neondatabase/serverless';
-import ws from 'ws';
+import { neon } from '@neondatabase/serverless';
 
-neonConfig.webSocketConstructor = ws;
+const DATABASE_URL = process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL || "postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require";
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const sql = neon(DATABASE_URL);
 
 export async function handler(event, context) {
   console.log('🔍 Debug Days Calculation Function Called');
@@ -21,10 +20,8 @@ export async function handler(event, context) {
   }
 
   try {
-    const client = await pool.connect();
-    
     // Get all users with subscriptions
-    const query = `
+    const users = await sql`
       SELECT 
         u.id,
         u.email,
@@ -45,11 +42,8 @@ export async function handler(event, context) {
       LEFT JOIN subscriptions s ON u.id = s.user_id AND s.status IN ('active', 'trial')
       LEFT JOIN subscription_plans p ON s.plan_id = p.id
       WHERE s.id IS NOT NULL
-      ORDER BY u.id;
+      ORDER BY u.id
     `;
-
-    const result = await client.query(query);
-    const users = result.rows;
 
     // Calculate days for each user using multiple methods
     const debugData = users.map(user => {
@@ -96,7 +90,7 @@ export async function handler(event, context) {
       };
     });
 
-    client.release();
+    // No need to release with neon sql
 
     return {
       statusCode: 200,
