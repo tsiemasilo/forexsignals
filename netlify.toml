@@ -83,6 +83,11 @@
   to = "/.netlify/functions/admin-signals"
   status = 200
 
+[[redirects]]
+  from = "/api/test-admin"
+  to = "/.netlify/functions/test-admin"
+  status = 200
+
 # User Routes
 [[redirects]]
   from = "/api/user/subscription-status"

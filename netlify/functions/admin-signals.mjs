@@ -22,6 +22,20 @@ export const handler = async (event, context) => {
     timestamp: new Date().toISOString()
   });
 
+  // Test database connection first
+  try {
+    console.log('🗄️ TESTING DATABASE CONNECTION...');
+    const testResult = await sql`SELECT 1 as test`;
+    console.log('✅ DATABASE CONNECTION SUCCESS:', testResult);
+  } catch (dbTestError) {
+    console.error('❌ DATABASE CONNECTION FAILED:', dbTestError);
+    return {
+      statusCode: 500,
+      headers,
+      body: JSON.stringify({ message: 'Database connection failed', error: dbTestError.message })
+    };
+  }
+
   try {
     const method = event.httpMethod;
     const path = event.path;
