@@ -6,12 +6,13 @@ WatchlistFX is a production-ready forex signals subscription platform designed f
 
 ## Recent Changes (August 2025)
 
-### ✅ Admin User Management Completed (August 18, 2025)
-- **Real-Time User Display**: Fixed admin dashboard to show new user registrations with 3-second auto-refresh
-- **Trial Creation Working**: "Create 7-Day Trial" button successfully creates fresh trials for any user
-- **Subscription Status Management**: Admin can change user subscription status (active, inactive, expired)
-- **Enhanced Caching**: Implemented aggressive cache invalidation for immediate UI updates
-- **Manual Refresh Button**: Added instant refresh capability for admin dashboard
+### ✅ Advanced Debugging System Implemented (August 18, 2025)
+- **Real-Time Debug Monitoring**: Live tracking of subscription changes, cache updates, and days calculations
+- **Comprehensive Debugging Suite**: Advanced test suite with multiple calculation methods and validation
+- **Live Update Display**: Real-time status indicators showing cache updates and query invalidations
+- **Subscription Change Detection**: Automatic detection and logging of plan changes with before/after comparison
+- **Days Calculation Monitoring**: Continuous monitoring of days calculation discrepancies with alerts
+- **Enhanced Console Debugging**: Structured logging with grouping for easy analysis
 
 ### ✅ Admin Functions Fully Operational (August 18, 2025)
 - **Admin Trial Creation**: Successfully creates 7-day trials for existing users with detailed validation

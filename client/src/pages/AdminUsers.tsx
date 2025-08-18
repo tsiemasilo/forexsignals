@@ -9,6 +9,8 @@ import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 import { AdminDebugPanel } from '@/components/AdminDebugPanel';
 import { SubscriptionTester } from '@/utils/subscriptionTestSuite';
+import { useAdvancedDebug } from '@/hooks/useAdvancedDebug';
+import { LiveDebugDisplay } from '@/components/LiveDebugDisplay';
 
 export default function AdminUsers() {
   const { user } = useAuth();
@@ -49,6 +51,9 @@ export default function AdminUsers() {
     queryKey: ['/api/plans'],
     enabled: !!user?.isAdmin
   });
+
+  // Advanced debugging hook
+  const { debugState, resetDebugState } = useAdvancedDebug(users, plans);
 
   const updateSubscriptionMutation = useMutation({
     mutationFn: async ({ userId, status, planId }: { userId: number; status: string; planId?: number }) => {
@@ -315,19 +320,31 @@ export default function AdminUsers() {
                 View and manage all registered users and their subscription status.
               </p>
             </div>
-            <Button 
-              onClick={() => {
-                console.log('🔄 FORCE REFRESH CLICKED - Clearing cache and reloading');
-                queryClient.clear();
-                window.location.reload();
-              }} 
-              variant="outline"
-              disabled={isLoading}
-            >
-              {isLoading ? 'Refreshing...' : '🔄 Force Refresh'}
-            </Button>
+            <div className="flex gap-2">
+              <Button 
+                onClick={() => refetch()} 
+                variant="outline"
+                disabled={isLoading}
+                size="sm"
+              >
+                {isLoading ? 'Refreshing...' : 'Refresh'}
+              </Button>
+              <Badge variant="outline" className="px-2 py-1">
+                Live Updates: {new Date().toLocaleTimeString()}
+              </Badge>
+              <Badge variant="secondary" className="px-2 py-1">
+                Cache Updates: {debugState.cacheUpdateCount}
+              </Badge>
+            </div>
           </div>
         </div>
+
+        {/* Live Debug Display */}
+        <LiveDebugDisplay 
+          debugState={debugState} 
+          onReset={resetDebugState}
+          users={users}
+        />
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">

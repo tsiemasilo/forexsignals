@@ -19,6 +19,7 @@ A modern forex signals subscription platform with advanced payment integration a
 - **Shadcn/UI** component library
 - **Wouter** for client-side routing
 - **TanStack Query** for server state management
+- **Advanced Debugging Hooks** for real-time monitoring
 
 ### Backend
 - **Node.js** with Express
@@ -73,6 +74,14 @@ vite build
 - Admin dashboard for signal and user management
 - Responsive mobile-first design
 - PostgreSQL database with Drizzle ORM
+
+### 🚀 Advanced Debugging & Monitoring (August 18, 2025)
+- **Real-time Debug Dashboard**: Live monitoring of subscription changes and cache updates
+- **Advanced Testing Suite**: Comprehensive validation of days calculations across multiple methods
+- **Subscription Change Detection**: Automatic tracking of plan changes with before/after comparison
+- **Days Calculation Monitoring**: Continuous monitoring with discrepancy alerts and validation
+- **Live Update Indicators**: Real-time status badges showing cache updates and query invalidations
+- **Enhanced Console Debugging**: Structured logging with grouped output for analysis
 - Netlify serverless function architecture
 
 ### 🧹 Clean Codebase
