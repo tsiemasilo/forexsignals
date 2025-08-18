@@ -20,6 +20,7 @@ export const handler = async (event, context) => {
     const method = event.httpMethod;
     
     console.log('🔍 ADMIN REQUEST:', { path, method, headers: event.headers });
+    console.log('🔍 FULL EVENT:', JSON.stringify(event, null, 2));
 
     // Simple admin check - for now, bypass authentication for testing
     // In production, add proper session validation here
@@ -81,7 +82,10 @@ export const handler = async (event, context) => {
 
     if (path.includes('/subscription') && method === 'PUT') {
       console.log('🔧 UPDATE SUBSCRIPTION REQUEST:', { path, method, body: event.body });
-      const userId = parseInt(path.split('/')[4]);
+      const pathParts = path.split('/');
+      console.log('🔍 PATH PARTS:', pathParts);
+      const userIdIndex = pathParts.findIndex(part => part === 'users') + 1;
+      const userId = parseInt(pathParts[userIdIndex]);
       
       if (!userId || isNaN(userId)) {
         return {
@@ -168,8 +172,11 @@ export const handler = async (event, context) => {
     }
 
     if (path.includes('/create-trial') && method === 'POST') {
-      console.log('🎯 CREATE TRIAL REQUEST:', { path, method, userId: path.split('/')[4] });
-      const userId = parseInt(path.split('/')[4]);
+      console.log('🎯 CREATE TRIAL REQUEST:', { path, method });
+      const pathParts = path.split('/');
+      console.log('🔍 PATH PARTS:', pathParts);
+      const userIdIndex = pathParts.findIndex(part => part === 'users') + 1;
+      const userId = parseInt(pathParts[userIdIndex]);
       console.log('👤 CREATING TRIAL FOR USER ID:', userId);
       
       if (!userId || isNaN(userId)) {
