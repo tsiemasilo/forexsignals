@@ -6,6 +6,13 @@ WatchlistFX is a production-ready forex signals subscription platform designed f
 
 ## Recent Changes (August 2025)
 
+### 🎯 Deployment Pipeline Issue Confirmed (August 18, 2025 - 5:12 PM)
+- **Root Cause Verified**: Netlify deployment pipeline not triggering despite 15+ GitHub commits
+- **Production Evidence**: Site shows OLD admin interface with buttons instead of modern Select dropdowns
+- **Asset Hash Unchanged**: `index-CdC9C5KV.js` static for 6+ hours, proving no new build deployed
+- **Modern Interface Ready**: AdminUsers.tsx contains Select components (lines 502-519) but not deployed
+- **Manual Resolution Required**: Netlify dashboard deployment trigger needed to activate comprehensive solution
+
 ### ✅ Invalid Date Issue Fixed (August 18, 2025 - 5:08 PM)
 - **Client Signal Display**: Fixed "Invalid Date" error in PhoneSignalsPage.tsx date formatting
 - **Root Cause**: Code using `signal.createdAt` (camelCase) but API returns `signal.created_at` (snake_case)
