@@ -284,43 +284,64 @@ export const handler = async (event, context) => {
         } else if (status === 'active') {
           console.log('🟢 Setting subscription to ACTIVE for user:', userId, 'with plan:', planId);
           
-          // Validate planId for active subscriptions
-          const finalPlanId = planId || 1;
+          // Validate planId is provided for active subscriptions
+          if (!planId) {
+            console.error('❌ PLAN ID REQUIRED for active status');
+            return {
+              statusCode: 400,
+              headers,
+              body: JSON.stringify({ 
+                message: 'Plan ID is required for active subscriptions',
+                receivedData: requestData
+              })
+            };
+          }
           
-          // Verify plan exists
-          const planDetails = await sql`SELECT id, name, duration FROM subscription_plans WHERE id = ${finalPlanId}`;
-          console.log('📋 Plan details:', planDetails);
+          // Verify plan exists and get duration - MATCH DEVELOPMENT LOGIC
+          const planDetails = await sql`SELECT id, name, duration, price FROM subscription_plans WHERE id = ${planId}`;
+          console.log('📋 Plan details lookup:', planDetails);
           
           if (planDetails.length === 0) {
-            console.error('❌ INVALID PLAN ID:', finalPlanId);
+            console.error('❌ INVALID PLAN ID:', planId);
             return {
               statusCode: 400,
               headers,
               body: JSON.stringify({ 
                 message: 'Invalid plan ID', 
-                planId: finalPlanId,
-                availablePlans: 'Use 1, 2, or 3'
+                planId,
+                availablePlans: [
+                  { id: 1, name: 'Basic Plan', duration: 5 },
+                  { id: 2, name: 'Premium Plan', duration: 14 },
+                  { id: 3, name: 'VIP Plan', duration: 30 }
+                ]
               })
             };
           }
           
+          const plan = planDetails[0];
+          const now = new Date();
           const activeEndDate = new Date();
-          const planDuration = planDetails[0].duration;
-          activeEndDate.setDate(activeEndDate.getDate() + planDuration);
+          activeEndDate.setDate(now.getDate() + plan.duration);
           
-          console.log('📅 Active subscription dates:', {
-            start: new Date().toISOString(),
+          console.log('📅 DEVELOPMENT-MATCHED Active subscription creation:', {
+            userId,
+            planId: plan.id,
+            planName: plan.name,
+            duration: plan.duration,
+            start: now.toISOString(),
             end: activeEndDate.toISOString(),
-            duration: planDuration
+            durationDays: Math.round((activeEndDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
           });
           
-          console.log('🗑️ Deleting existing subscriptions...');
+          // Remove existing subscription first - MATCH DEVELOPMENT
+          console.log('🗑️ DATABASE: Removing existing subscription for user:', userId);
           await sql`DELETE FROM subscriptions WHERE user_id = ${userId}`;
           
-          console.log('📝 Creating active subscription...');
+          // Create new active subscription - EXACT DEVELOPMENT LOGIC
+          console.log('📝 DATABASE: Creating active subscription...');
           const result = await sql`
             INSERT INTO subscriptions (user_id, plan_id, status, start_date, end_date, created_at)
-            VALUES (${userId}, ${finalPlanId}, 'active', NOW(), ${activeEndDate.toISOString()}, NOW())
+            VALUES (${userId}, ${plan.id}, 'active', ${now.toISOString()}, ${activeEndDate.toISOString()}, NOW())
             RETURNING *
           `;
           
@@ -334,17 +355,30 @@ export const handler = async (event, context) => {
         } else if (status === 'inactive') {
           console.log('🟡 Setting subscription to INACTIVE for user:', userId);
           
-          console.log('🗑️ Deleting existing subscriptions...');
+          const now = new Date();
+          const inactiveEndDate = new Date();
+          inactiveEndDate.setDate(now.getDate() - 1); // Set to yesterday to ensure inactive
+          
+          console.log('📅 DEVELOPMENT-MATCHED Inactive subscription:', {
+            userId,
+            status: 'inactive',
+            start: now.toISOString(),
+            end: inactiveEndDate.toISOString()
+          });
+          
+          // Remove existing subscription first - MATCH DEVELOPMENT
+          console.log('🗑️ DATABASE: Removing existing subscription for user:', userId);
           await sql`DELETE FROM subscriptions WHERE user_id = ${userId}`;
           
-          console.log('📝 Creating inactive subscription...');
+          // Create inactive subscription - DEVELOPMENT LOGIC
+          console.log('📝 DATABASE: Creating inactive subscription...');
           const result = await sql`
             INSERT INTO subscriptions (user_id, plan_id, status, start_date, end_date, created_at)
-            VALUES (${userId}, ${planId || 1}, 'inactive', NOW(), NOW(), NOW())
+            VALUES (${userId}, 1, 'inactive', ${now.toISOString()}, ${inactiveEndDate.toISOString()}, NOW())
             RETURNING *
           `;
           
-          console.log('✅ INACTIVE SUBSCRIPTION CREATED:', result[0]);
+          console.log('✅ DEVELOPMENT-MATCHED INACTIVE SUBSCRIPTION CREATED:', result[0]);
           return {
             statusCode: 200,
             headers: { ...headers, 'Cache-Control': 'no-cache' },

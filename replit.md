@@ -6,12 +6,19 @@ WatchlistFX is a production-ready forex signals subscription platform designed f
 
 ## Recent Changes (August 2025)
 
+### ✅ Netlify Functions Synced to Development Logic (August 18, 2025 - 5:45 PM)
+- **Backend Synchronization**: Updated admin-fixed.mjs to match exact working development logic
+- **Plan Management**: Active subscriptions now use proper plan lookup and duration calculation from database
+- **Status Handling**: Inactive/expired subscriptions use development-matched date calculations
+- **Error Logging**: Enhanced debugging to match development console output patterns
+- **Ready for Deployment**: All Netlify functions aligned with working Replit development setup
+
 ### ✅ Admin Interface Reworked - Button Controls (August 18, 2025 - 5:35 PM)
 - **User Request**: Replace dropdown selectors with button-based controls for subscription management
 - **Implementation**: Complete removal of Select components, replaced with individual plan activation buttons
 - **Button Structure**: Color-coded controls for Trial (Blue), Inactive (Yellow), Expired (Red), Plan Activation (Green)
 - **Enhanced Functionality**: Improved visual feedback, detailed logging, proper loading states
-- **Backend Compatibility**: All buttons work with existing admin-fixed.mjs API endpoints
+- **Backend Compatibility**: All buttons work with updated admin-fixed.mjs API endpoints
 
 ### 🎯 Deployment Pipeline Issue Confirmed (August 18, 2025 - 5:12 PM)
 - **Root Cause Verified**: Netlify deployment pipeline not triggering despite 15+ GitHub commits
