@@ -109,9 +109,23 @@ export default function AdminUsers() {
       console.log('🔄 AGGRESSIVE CACHE INVALIDATION ACTIVE - UI WILL UPDATE SHORTLY');
     },
     onError: (error: any) => {
+      console.error('🚨 MUTATION ERROR:', error);
+      
+      // Enhanced error message for better debugging
+      let errorMessage = error.message || "Failed to update subscription status";
+      
+      if (error.message && error.message.includes('not found')) {
+        errorMessage = `User not found in database. Refreshing user list...`;
+        
+        // Auto-refresh user data when user not found
+        setTimeout(() => {
+          refetch();
+        }, 1000);
+      }
+      
       toast({
         title: "Error",
-        description: error.message || "Failed to update subscription status",
+        description: errorMessage,
         variant: "destructive",
       });
     },

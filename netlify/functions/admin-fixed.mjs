@@ -238,16 +238,18 @@ export const handler = async (event, context) => {
         console.log('❌ USER NOT FOUND:', userId);
         
         // Show available users for debugging
-        const availableUsers = await sql`SELECT id, email FROM users WHERE is_admin = false LIMIT 10`;
+        const availableUsers = await sql`SELECT id, email FROM users WHERE is_admin = false LIMIT 15`;
         console.log('🔍 AVAILABLE USERS:', availableUsers);
         
         return {
-          statusCode: 400,
+          statusCode: 404,
           headers,
           body: JSON.stringify({ 
-            message: 'User not found', 
+            message: `User with ID ${userId} not found in database`, 
             userId,
-            availableUsers: availableUsers.map(u => ({ id: u.id, email: u.email }))
+            availableUserIds: availableUsers.map(u => u.id),
+            totalAvailableUsers: availableUsers.length,
+            suggestion: 'Please use one of the available user IDs listed above'
           })
         };
       }
