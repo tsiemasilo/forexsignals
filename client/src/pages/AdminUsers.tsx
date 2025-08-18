@@ -18,16 +18,17 @@ export default function AdminUsers() {
   const { data: users = [], isLoading, error, refetch } = useQuery<any[]>({
     queryKey: ['/api/admin/users'],
     enabled: !!user?.isAdmin,
-    refetchInterval: 3000, // Refresh every 3 seconds for faster updates
+    refetchInterval: 2000, // Faster refresh - every 2 seconds
     staleTime: 0, // Always consider data stale to force fresh fetches
     refetchOnWindowFocus: true, // Refetch when window regains focus
-    refetchOnMount: true // Always refetch on component mount
+    refetchOnMount: true, // Always refetch on component mount
+    refetchIntervalInBackground: true // Keep refreshing even when tab not focused
   });
 
   // Debug logging for users data
   console.log('🔍 ADMIN USERS DEBUG:', { 
     users, 
-    userCount: users.length, 
+    userCount: Array.isArray(users) ? users.length : 0, 
     isLoading, 
     error,
     isAdminUser: user?.isAdmin,
@@ -60,61 +61,53 @@ export default function AdminUsers() {
       return response;
     },
     onMutate: async ({ userId, status, planId }) => {
-      // Cancel any outgoing refetches
-      await queryClient.cancelQueries({ queryKey: ['/api/admin/users'] });
+      console.log('🔧 MUTATION STARTING:', { userId, status, planId });
       
-      // Snapshot the previous value
-      const previousUsers = queryClient.getQueryData(['/api/admin/users']);
-      
-      // Optimistically update the cache
-      queryClient.setQueryData(['/api/admin/users'], (old: any[]) => {
-        if (!old) return old;
-        
-        return old.map(user => {
-          if (user.id === userId) {
-            const updatedUser = { ...user };
-            if (updatedUser.subscription) {
-              updatedUser.subscription = {
-                ...updatedUser.subscription,
-                status: status,
-                planId: planId || updatedUser.subscription.planId
-              };
-              
-              // Update plan info for active status
-              if (status === 'active' && planId) {
-                const plan = plans.find(p => p.id === planId);
-                if (plan) {
-                  updatedUser.subscription.plan = plan;
-                }
-              } else if (status !== 'active') {
-                // Clear plan for non-active statuses
-                updatedUser.subscription.plan = null;
-                updatedUser.subscription.planId = null;
-              }
-            }
-            return updatedUser;
-          }
-          return user;
-        });
+      // Show loading state 
+      toast({
+        title: "Processing...",
+        description: `Updating subscription for user ${userId}...`,
       });
       
-      return { previousUsers };
+      return { userId, status, planId };
     },
-    onSuccess: () => {
-      // Force immediate cache invalidation and refetch
-      queryClient.removeQueries({ queryKey: ['/api/admin/users'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/user/subscription-status'] });
+    onSuccess: async (data, { userId, planId }) => {
+      console.log('🔧 MUTATION SUCCESS - FORCING COMPLETE REFRESH:', data);
+      
+      // NUCLEAR CACHE INVALIDATION - Clear everything
+      queryClient.clear();
+      
+      // Force immediate fresh data fetch
+      setTimeout(async () => {
+        console.log('🔄 STEP 1: Fetching fresh data...');
+        await queryClient.fetchQuery({
+          queryKey: ['/api/admin/users'],
+          staleTime: 0
+        });
+        
+        // Force component refresh
+        window.dispatchEvent(new Event('focus'));
+      }, 100);
+      
+      // Secondary refresh wave
+      setTimeout(async () => {
+        console.log('🔄 STEP 2: Secondary refresh...');
+        await refetch();
+        queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
+      }, 1000);
+      
+      // Final refresh to ensure display updates
+      setTimeout(() => {
+        console.log('🔄 STEP 3: Final refresh...');
+        refetch();
+      }, 2000);
+      
       toast({
         title: "Success",
-        description: "User subscription status updated successfully",
+        description: `Subscription updated! Plan: ${planId}. Refreshing display...`,
       });
     },
-    onError: (error: any, variables, context) => {
-      // Revert optimistic update on error
-      if (context?.previousUsers) {
-        queryClient.setQueryData(['/api/admin/users'], context.previousUsers);
-      }
+    onError: (error: any) => {
       toast({
         title: "Error",
         description: error.message || "Failed to update subscription status",
@@ -277,10 +270,10 @@ export default function AdminUsers() {
     console.log('🔧 FRONTEND DEBUG: Mutation pending:', updateSubscriptionMutation.isPending);
     
     // Run comprehensive test before mutation
-    if (planId) {
-      const user = users.find(u => u.id === userId);
-      if (user) {
-        const testResult = SubscriptionTester.testAllCalculationMethods(user, plans);
+    if (planId && Array.isArray(users)) {
+      const targetUser = users.find((u: any) => u.id === userId);
+      if (targetUser) {
+        const testResult = SubscriptionTester.testAllCalculationMethods(targetUser, plans);
         console.log('🧪 PRE-MUTATION TEST:', testResult);
       }
     }
@@ -302,14 +295,14 @@ export default function AdminUsers() {
     );
   }
 
-  const totalUsers = users.length;
-  const activeSubscriptions = users.filter((user: any) => {
+  const totalUsers = Array.isArray(users) ? users.length : 0;
+  const activeSubscriptions = Array.isArray(users) ? users.filter((user: any) => {
     const subscription = getSubscriptionStatus(user);
     return subscription.status === 'Active';
-  }).length;
-  const totalRevenue = users
+  }).length : 0;
+  const totalRevenue = Array.isArray(users) ? users
     .filter((user: any) => user.subscription && user.subscription.plan)
-    .reduce((sum: number, user: any) => sum + parseFloat(user.subscription.plan.price || '0'), 0);
+    .reduce((sum: number, user: any) => sum + parseFloat(user.subscription.plan.price || '0'), 0) : 0;
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -323,11 +316,15 @@ export default function AdminUsers() {
               </p>
             </div>
             <Button 
-              onClick={() => refetch()} 
+              onClick={() => {
+                console.log('🔄 FORCE REFRESH CLICKED - Clearing cache and reloading');
+                queryClient.clear();
+                window.location.reload();
+              }} 
               variant="outline"
               disabled={isLoading}
             >
-              {isLoading ? 'Refreshing...' : 'Refresh Users'}
+              {isLoading ? 'Refreshing...' : '🔄 Force Refresh'}
             </Button>
           </div>
         </div>
@@ -380,7 +377,7 @@ export default function AdminUsers() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {users.length === 0 ? (
+            {!Array.isArray(users) || users.length === 0 ? (
               <div className="text-center py-8">
                 <p className="text-gray-500">No users registered yet</p>
               </div>
@@ -400,7 +397,7 @@ export default function AdminUsers() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {users.map((user: any) => {
+                    {Array.isArray(users) && users.map((user: any) => {
                       const subscriptionInfo = getSubscriptionStatus(user);
                       
                       return (
@@ -509,7 +506,7 @@ export default function AdminUsers() {
         </Card>
 
         {/* Advanced Debug Panel */}
-        <AdminDebugPanel users={users} plans={plans} />
+        {Array.isArray(users) && <AdminDebugPanel users={users} plans={plans} />}
       </div>
     </div>
   );
