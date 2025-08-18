@@ -60,17 +60,17 @@
 # Admin Routes
 [[redirects]]
   from = "/api/admin/users"
-  to = "/.netlify/functions/admin"
+  to = "/.netlify/functions/admin-fixed"
   status = 200
 
 [[redirects]]
   from = "/api/admin/users/*/subscription"
-  to = "/.netlify/functions/admin"
+  to = "/.netlify/functions/admin-fixed"
   status = 200
 
 [[redirects]]
   from = "/api/admin/users/*/create-trial"
-  to = "/.netlify/functions/admin"
+  to = "/.netlify/functions/admin-fixed"
   status = 200
 
 [[redirects]]
