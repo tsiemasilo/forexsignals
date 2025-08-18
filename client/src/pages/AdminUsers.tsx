@@ -13,15 +13,24 @@ export default function AdminUsers() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: users = [], isLoading } = useQuery<any[]>({
+  const { data: users = [], isLoading, error, refetch } = useQuery<any[]>({
     queryKey: ['/api/admin/users'],
     enabled: !!user?.isAdmin,
-    refetchInterval: 5000, // Refresh every 5 seconds
-    staleTime: 0 // Always consider data stale to force fresh fetches
+    refetchInterval: 3000, // Refresh every 3 seconds for faster updates
+    staleTime: 0, // Always consider data stale to force fresh fetches
+    refetchOnWindowFocus: true, // Refetch when window regains focus
+    refetchOnMount: true // Always refetch on component mount
   });
 
   // Debug logging for users data
-  console.log('🔍 ADMIN USERS DEBUG:', { users, userCount: users.length, isLoading });
+  console.log('🔍 ADMIN USERS DEBUG:', { 
+    users, 
+    userCount: users.length, 
+    isLoading, 
+    error,
+    isAdminUser: user?.isAdmin,
+    userId: user?.id
+  });
 
   const { data: plans = [] } = useQuery<any[]>({
     queryKey: ['/api/plans'],
@@ -239,10 +248,21 @@ export default function AdminUsers() {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">User Management</h1>
-          <p className="text-gray-600">
-            View and manage all registered users and their subscription status.
-          </p>
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold mb-2">User Management</h1>
+              <p className="text-gray-600">
+                View and manage all registered users and their subscription status.
+              </p>
+            </div>
+            <Button 
+              onClick={() => refetch()} 
+              variant="outline"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Refreshing...' : 'Refresh Users'}
+            </Button>
+          </div>
         </div>
 
         {/* Stats Cards */}
