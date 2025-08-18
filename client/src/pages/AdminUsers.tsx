@@ -49,10 +49,13 @@ export default function AdminUsers() {
 
   const updateSubscriptionMutation = useMutation({
     mutationFn: async ({ userId, status, planId }: { userId: number; status: string; planId?: number }) => {
-      return await apiRequest(`/api/admin/users/${userId}/subscription`, { 
+      console.log('🔧 MUTATION CALLED:', { userId, status, planId });
+      const response = await apiRequest(`/api/admin/users/${userId}/subscription`, { 
         method: 'PUT',
         body: JSON.stringify({ status, planId })
       });
+      console.log('🔧 MUTATION RESPONSE:', response);
+      return response;
     },
     onMutate: async ({ userId, status, planId }) => {
       // Cancel any outgoing refetches
@@ -228,6 +231,8 @@ export default function AdminUsers() {
 
   const handleStatusChange = (userId: number, newStatus: string, planId?: number) => {
     console.log('🔧 ADMIN FRONTEND: About to change subscription:', { userId, newStatus, planId });
+    console.log('🔧 FRONTEND DEBUG: Available plans:', plans);
+    console.log('🔧 FRONTEND DEBUG: Mutation pending:', updateSubscriptionMutation.isPending);
     updateSubscriptionMutation.mutate({ userId, status: newStatus, planId });
   };
 
@@ -419,6 +424,7 @@ export default function AdminUsers() {
                                 {/* Active Plan Selection */}
                                 <Select 
                                   onValueChange={(planId) => {
+                                    console.log('🔧 DROPDOWN SELECTED:', { planId, userId: user.id, planIdParsed: parseInt(planId) });
                                     handleStatusChange(user.id, "active", parseInt(planId));
                                   }}
                                   disabled={updateSubscriptionMutation.isPending}
