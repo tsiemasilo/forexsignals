@@ -9,28 +9,26 @@ import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 
 export default function AdminUsers() {
-  const { sessionId } = useAuth();
+  const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const { data: users = [], isLoading } = useQuery<any[]>({
     queryKey: ['/api/admin/users'],
-    enabled: !!sessionId,
-    meta: {
-      headers: {
-        Authorization: `Bearer ${sessionId}`
-      }
-    }
+    enabled: !!user?.isAdmin
   });
 
   const { data: plans = [] } = useQuery<any[]>({
     queryKey: ['/api/plans'],
-    enabled: !!sessionId
+    enabled: !!user?.isAdmin
   });
 
   const updateSubscriptionMutation = useMutation({
     mutationFn: async ({ userId, status, planId }: { userId: number; status: string; planId?: number }) => {
-      return await apiRequest('PATCH', `/api/admin/users/${userId}/subscription`, { status, planId });
+      return await apiRequest(`/api/admin/users/${userId}/subscription`, { 
+        method: 'PUT',
+        body: JSON.stringify({ status, planId })
+      });
     },
     onMutate: async ({ userId, status, planId }) => {
       // Cancel any outgoing refetches
@@ -97,7 +95,9 @@ export default function AdminUsers() {
   // Dedicated mutation for creating fresh trials
   const updateTrialMutation = useMutation({
     mutationFn: async ({ userId }: { userId: number }) => {
-      return await apiRequest('POST', `/api/admin/users/${userId}/create-trial`);
+      return await apiRequest(`/api/admin/users/${userId}/create-trial`, { 
+        method: 'POST'
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });

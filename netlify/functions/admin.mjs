@@ -62,8 +62,10 @@ export const handler = async (event, context) => {
     }
 
     if (path.includes('/subscription') && method === 'PUT') {
+      console.log('🔧 UPDATE SUBSCRIPTION REQUEST:', { path, method, body: event.body });
       const userId = parseInt(path.split('/')[4]);
       const { planId, status, endDate } = JSON.parse(event.body);
+      console.log('📋 SUBSCRIPTION UPDATE DATA:', { userId, planId, status, endDate });
 
       // Remove existing subscription
       await sql`DELETE FROM subscriptions WHERE user_id = ${userId}`;
@@ -83,11 +85,14 @@ export const handler = async (event, context) => {
     }
 
     if (path.includes('/create-trial') && method === 'POST') {
+      console.log('🎯 CREATE TRIAL REQUEST:', { path, method, userId: path.split('/')[4] });
       const userId = parseInt(path.split('/')[4]);
+      console.log('👤 CREATING TRIAL FOR USER ID:', userId);
       
       // Create 7-day trial
       const endDate = new Date();
       endDate.setDate(endDate.getDate() + 7);
+      console.log('📅 TRIAL END DATE:', endDate.toISOString());
 
       // Remove existing subscription
       await sql`DELETE FROM subscriptions WHERE user_id = ${userId}`;
