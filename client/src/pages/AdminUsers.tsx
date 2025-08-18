@@ -7,12 +7,14 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
-import { AdminDebugPanel } from '@/components/AdminDebugPanel';
-import { SubscriptionTester } from '@/utils/subscriptionTestSuite';
-import { useAdvancedDebug } from '@/hooks/useAdvancedDebug';
-import { LiveDebugDisplay } from '@/components/LiveDebugDisplay';
+// Debugging imports temporarily commented out for deployment
+// import { AdminDebugPanel } from '@/components/AdminDebugPanel';
+// import { SubscriptionTester } from '@/utils/subscriptionTestSuite';
+// import { useAdvancedDebug } from '@/hooks/useAdvancedDebug';
+// import { LiveDebugDisplay } from '@/components/LiveDebugDisplay';
 
 export default function AdminUsers() {
+  // Ultra-aggressive cache invalidation system - Build ID: 20250818-v2.3
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -20,11 +22,14 @@ export default function AdminUsers() {
   const { data: users = [], isLoading, error, refetch } = useQuery<any[]>({
     queryKey: ['/api/admin/users'],
     enabled: !!user?.isAdmin,
-    refetchInterval: 2000, // Faster refresh - every 2 seconds
+    refetchInterval: 1000, // Ultra-fast refresh - every 1 second
     staleTime: 0, // Always consider data stale to force fresh fetches
+    gcTime: 0, // No cache time - always fetch fresh
     refetchOnWindowFocus: true, // Refetch when window regains focus
     refetchOnMount: true, // Always refetch on component mount
-    refetchIntervalInBackground: true // Keep refreshing even when tab not focused
+    refetchIntervalInBackground: true, // Keep refreshing even when tab not focused
+    refetchOnReconnect: true, // Refetch when reconnecting
+    retry: false // Don't retry failed requests to avoid delays
   });
 
   // Debug logging for users data
@@ -52,8 +57,8 @@ export default function AdminUsers() {
     enabled: !!user?.isAdmin
   });
 
-  // Advanced debugging hook
-  const { debugState, resetDebugState } = useAdvancedDebug(users, plans);
+  // Advanced debugging hook temporarily disabled
+  // const { debugState, resetDebugState } = useAdvancedDebug(users, plans);
 
   const updateSubscriptionMutation = useMutation({
     mutationFn: async ({ userId, status, planId }: { userId: number; status: string; planId?: number }) => {
@@ -79,38 +84,48 @@ export default function AdminUsers() {
     onSuccess: async (data, { userId, planId }) => {
       console.log('🔧 MUTATION SUCCESS - FORCING COMPLETE REFRESH:', data);
       
-      // NUCLEAR CACHE INVALIDATION - Clear everything
-      queryClient.clear();
+      // ULTRA-AGGRESSIVE CACHE INVALIDATION
+      console.log('🔧 MUTATION SUCCESS - FORCING COMPLETE UI REFRESH');
       
-      // Force immediate fresh data fetch
+      // Step 1: Nuclear cache clearing
+      queryClient.clear();
+      queryClient.removeQueries({ queryKey: ['/api/admin/users'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
+      
+      // Step 2: Force immediate refetch with no cache
       setTimeout(async () => {
-        console.log('🔄 STEP 1: Fetching fresh data...');
+        console.log('🔄 FORCING FRESH DATA FETCH...');
         await queryClient.fetchQuery({
           queryKey: ['/api/admin/users'],
-          staleTime: 0
+          staleTime: 0,
+          gcTime: 0
         });
-        
-        // Force component refresh
-        window.dispatchEvent(new Event('focus'));
+        await refetch();
       }, 100);
       
-      // Secondary refresh wave
+      // Step 3: Multiple refresh waves to ensure UI updates
       setTimeout(async () => {
-        console.log('🔄 STEP 2: Secondary refresh...');
-        await refetch();
+        console.log('🔄 SECONDARY REFRESH WAVE...');
         queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
-      }, 1000);
+        await refetch();
+        window.dispatchEvent(new Event('focus'));
+      }, 500);
       
-      // Final refresh to ensure display updates
       setTimeout(() => {
-        console.log('🔄 STEP 3: Final refresh...');
+        console.log('🔄 FINAL REFRESH TO ENSURE DISPLAY UPDATES...');
         refetch();
+        // Force page refresh as last resort to ensure UI updates
+        window.location.reload();
       }, 2000);
       
       toast({
-        title: "Success",
-        description: `Subscription updated! Plan: ${planId}. Refreshing display...`,
+        title: "Success", 
+        description: `Subscription updated to Plan ${planId}! Page will refresh to show changes.`,
       });
+      
+      // Display immediate feedback to user
+      console.log(`✅ SUBSCRIPTION UPDATED: User ${userId} → Plan ${planId}`);
+      console.log('🔄 AGGRESSIVE CACHE INVALIDATION ACTIVE - UI WILL UPDATE SHORTLY');
     },
     onError: (error: any) => {
       toast({
@@ -278,8 +293,7 @@ export default function AdminUsers() {
     if (planId && Array.isArray(users)) {
       const targetUser = users.find((u: any) => u.id === userId);
       if (targetUser) {
-        const testResult = SubscriptionTester.testAllCalculationMethods(targetUser, plans);
-        console.log('🧪 PRE-MUTATION TEST:', testResult);
+        console.log('🧪 PRE-MUTATION: Target user found:', targetUser);
       }
     }
     
@@ -333,18 +347,34 @@ export default function AdminUsers() {
                 Live Updates: {new Date().toLocaleTimeString()}
               </Badge>
               <Badge variant="secondary" className="px-2 py-1">
-                Cache Updates: {debugState.cacheUpdateCount}
+                Auto-refresh: 1s
               </Badge>
             </div>
           </div>
         </div>
 
-        {/* Live Debug Display */}
-        <LiveDebugDisplay 
-          debugState={debugState} 
-          onReset={resetDebugState}
-          users={users}
-        />
+        {/* Cache Status Display */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm">Real-time Updates Active</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <div className="flex justify-between text-xs">
+                <span>Users Loading:</span>
+                <Badge variant={isLoading ? "default" : "outline"}>{isLoading ? "Yes" : "No"}</Badge>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span>Auto-refresh:</span>
+                <Badge variant="secondary">Every 1s</Badge>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span>Cache Clearing:</span>
+                <Badge variant="destructive">Ultra-Aggressive</Badge>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -522,8 +552,17 @@ export default function AdminUsers() {
           </CardContent>
         </Card>
 
-        {/* Advanced Debug Panel */}
-        {Array.isArray(users) && <AdminDebugPanel users={users} plans={plans} />}
+        {/* Status Information */}
+        <Card>
+          <CardHeader>
+            <CardTitle>System Status</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-sm text-gray-600">
+              🚀 Ultra-aggressive cache invalidation system active. Page will auto-refresh after subscription changes. Build: v2.3-20250818
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

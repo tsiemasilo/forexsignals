@@ -1,0 +1,160 @@
+3:57:26 PM: build-image version: e5074bde24e53715f94c72a3902b7868fbfe84e1 (noble)
+3:57:26 PM: buildbot version: e2595138a7c5ab9f292ccfa2932733582fe0dc65
+3:57:26 PM: Fetching cached dependencies
+3:57:26 PM: Starting to download cache of 433.0MB (Last modified: 2025-08-18 13:37:06 +0000 UTC)
+3:57:28 PM: Finished downloading cache in 1.223s
+3:57:28 PM: Starting to extract cache
+3:57:41 PM: Finished extracting cache in 13.18s
+3:57:41 PM: Finished fetching cache in 14.512s
+3:57:41 PM: Starting to prepare the repo for build
+3:57:41 PM: Preparing Git Reference refs/heads/main
+3:57:42 PM: Custom functions path detected. Proceeding with the specified path: 'netlify/functions'
+3:57:42 PM: Custom build command detected. Proceeding with the specified command: 'vite build'
+3:57:43 PM: Starting to install dependencies
+3:57:43 PM: Started restoring cached python cache
+3:57:43 PM: Finished restoring cached python cache
+3:57:43 PM: Started restoring cached ruby cache
+3:57:44 PM: Finished restoring cached ruby cache
+3:57:44 PM: Started restoring cached go cache
+3:57:45 PM: Finished restoring cached go cache
+3:57:45 PM: Started restoring cached Node.js version
+3:57:47 PM: Finished restoring cached Node.js version
+3:57:47 PM: v20.19.4 is already installed.
+3:57:48 PM: Now using node v20.19.4 (npm v10.8.2)
+3:57:48 PM: Enabling Node.js Corepack
+3:57:48 PM: Started restoring cached build plugins
+3:57:48 PM: Finished restoring cached build plugins
+3:57:48 PM: Started restoring cached corepack dependencies
+3:57:48 PM: Finished restoring cached corepack dependencies
+3:57:48 PM: No npm workspaces detected
+3:57:48 PM: Started restoring cached node modules
+3:57:48 PM: Finished restoring cached node modules
+3:57:48 PM: Installing npm packages using npm version 10.8.2
+3:57:48 PM: up to date in 541ms
+3:57:48 PM: npm packages installed
+3:57:49 PM: Successfully installed dependencies
+3:57:49 PM: Starting build script
+3:57:50 PM: Detected 1 framework(s)
+3:57:50 PM: "vite" at version "5.4.19"
+3:57:50 PM: Section completed: initializing
+3:57:51 PM: ​
+3:57:51 PM: Netlify Build                                                 
+3:57:51 PM: ────────────────────────────────────────────────────────────────
+3:57:51 PM: ​
+3:57:51 PM: ❯ Version
+3:57:51 PM:   @netlify/build 35.1.0
+3:57:51 PM: ​
+3:57:51 PM: ❯ Flags
+3:57:51 PM:   accountId: 6786aa5b927658b4b62b93d6
+3:57:51 PM:   baseRelDir: true
+3:57:51 PM:   buildId: 68a33145e8a6a100082ddce7
+3:57:51 PM:   deployId: 68a33145e8a6a100082ddce9
+3:57:51 PM: ​
+3:57:51 PM: ❯ Current directory
+3:57:51 PM:   /opt/build/repo
+3:57:51 PM: ​
+3:57:51 PM: ❯ Config file
+3:57:51 PM:   /opt/build/repo/netlify.toml
+3:57:51 PM: ​
+3:57:51 PM: ❯ Context
+3:57:51 PM:   production
+3:57:51 PM: ​
+3:57:51 PM: ❯ Installing extensions
+3:57:51 PM:    - neon
+3:57:52 PM: ​
+3:57:52 PM: ❯ Loading extensions
+3:57:52 PM:    - neon
+3:57:53 PM: ​
+3:57:53 PM: build.command from netlify.toml                               
+3:57:53 PM: ────────────────────────────────────────────────────────────────
+3:57:53 PM: ​
+3:57:53 PM: $ vite build
+3:57:53 PM: vite v5.4.19 building for production...
+3:57:53 PM: transforming...
+3:57:54 PM: Browserslist: browsers data (caniuse-lite) is 10 months old. Please run:
+3:57:54 PM:   npx update-browserslist-db@latest
+3:57:54 PM:   Why you should do it regularly: https://github.com/browserslist/update-db#readme
+3:57:56 PM: ✓ 1703 modules transformed.
+3:57:56 PM: rendering chunks...
+3:57:56 PM: computing gzip size...
+3:57:56 PM: ../dist/public/index.html                   0.63 kB │ gzip:  0.38 kB
+3:57:56 PM: ../dist/public/assets/index-CmshQY2M.css   77.57 kB │ gzip: 13.28 kB
+3:57:56 PM: ../dist/public/assets/index-CdC9C5KV.js   321.87 kB │ gzip: 96.55 kB
+3:57:56 PM: ✓ built in 2.94s
+3:57:56 PM: ​
+3:57:56 PM: (build.command completed in 3.1s)
+3:57:56 PM: ​
+3:57:56 PM: Functions bundling                                            
+3:57:56 PM: ────────────────────────────────────────────────────────────────
+3:57:56 PM: ​
+3:57:56 PM: Packaging Functions from netlify/functions directory:
+3:57:56 PM:  - admin-debug-simple.mjs
+3:57:56 PM:  - admin-debug.mjs
+3:57:56 PM:  - admin-fixed.mjs
+3:57:56 PM:  - admin-signals.mjs
+3:57:56 PM:  - admin.mjs
+3:57:56 PM:  - auth.mjs
+3:57:56 PM:  - debug-days-calculation.mjs
+3:57:56 PM:  - payments.mjs
+3:57:56 PM:  - plans.mjs
+3:57:56 PM:  - signals.mjs
+3:57:56 PM:  - simple-signal.mjs
+3:57:56 PM:  - test-admin.mjs
+3:57:56 PM:  - test-debug.mjs
+3:57:56 PM:  - user.mjs
+3:57:56 PM:  - webhooks.mjs
+3:57:56 PM: ​
+3:57:57 PM: Skipping form detection
+3:57:57 PM: Post processing - header rules
+3:57:57 PM: Post processing - redirect rules
+3:57:57 PM: Post processing done
+3:57:57 PM: Section completed: postprocessing
+3:57:57 PM: Starting post processing
+3:57:57 PM: ​
+3:57:57 PM: (Functions bundling completed in 584ms)
+3:57:57 PM: ​
+3:57:57 PM: Deploy site                                                   
+3:57:57 PM: ────────────────────────────────────────────────────────────────
+3:57:57 PM: ​
+3:57:57 PM: Starting to deploy site from 'dist/public'
+3:57:57 PM: Calculating files to upload
+3:57:57 PM: 0 new file(s) to upload
+3:57:57 PM: 0 new function(s) to upload
+3:57:57 PM: Section completed: deploying
+3:57:57 PM: Site deploy was successfully initiated
+3:57:57 PM: ​
+3:57:57 PM: (Deploy site completed in 211ms)
+3:57:58 PM: Site is live ✨
+3:57:58 PM: ​
+3:57:58 PM: Netlify Build Complete                                        
+3:57:58 PM: ────────────────────────────────────────────────────────────────
+3:57:58 PM: ​
+3:57:58 PM: (Netlify Build completed in 6.7s)
+3:57:58 PM: Caching artifacts
+3:57:58 PM: Started saving node modules
+3:57:58 PM: Finished saving node modules
+3:57:58 PM: Started saving build plugins
+3:57:58 PM: Finished saving build plugins
+3:57:58 PM: Started saving bun cache
+3:57:58 PM: Finished saving bun cache
+3:57:58 PM: Started saving go cache
+3:57:58 PM: Finished saving go cache
+3:57:58 PM: Started saving python cache
+3:57:58 PM: Finished saving python cache
+3:57:58 PM: Started saving ruby cache
+3:57:58 PM: Finished saving ruby cache
+3:57:58 PM: Started saving corepack cache
+3:57:58 PM: Finished saving corepack cache
+3:57:58 PM: Started saving emacs cask dependencies
+3:57:58 PM: Finished saving emacs cask dependencies
+3:57:58 PM: Started saving maven dependencies
+3:57:58 PM: Finished saving maven dependencies
+3:57:58 PM: Started saving boot dependencies
+3:57:58 PM: Finished saving boot dependencies
+3:57:58 PM: Started saving rust rustup cache
+3:57:58 PM: Finished saving rust rustup cache
+3:57:58 PM: Build script success
+3:57:58 PM: Section completed: building
+3:58:07 PM: Uploading Cache of size 433.0MB
+3:58:08 PM: Section completed: cleanup
+3:58:09 PM: Finished processing build request in 42.237s
