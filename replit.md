@@ -6,6 +6,13 @@ WatchlistFX is a production-ready forex signals subscription platform designed f
 
 ## Recent Changes (August 2025)
 
+### ✅ Invalid Date Issue Fixed (August 18, 2025 - 5:08 PM)
+- **Client Signal Display**: Fixed "Invalid Date" error in PhoneSignalsPage.tsx date formatting
+- **Root Cause**: Code using `signal.createdAt` (camelCase) but API returns `signal.created_at` (snake_case)
+- **Solution Applied**: Added fallback support for both date formats with safe null checking
+- **User Experience**: Signals now display proper timestamps instead of "Invalid Date"
+- **Local Testing**: Fix applied and working in development environment
+
 ### 🎯 Comprehensive Cache Solution Deployed (August 18, 2025 - 5:06 PM)
 - **Root Cause Confirmed**: Netlify deployment pipeline not rebuilding despite 15+ GitHub commits
 - **Backend Performance**: 100% accurate calculations, all API endpoints working flawlessly via extensive live testing

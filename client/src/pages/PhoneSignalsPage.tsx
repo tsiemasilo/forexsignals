@@ -768,7 +768,7 @@ export function PhoneSignalsPage() {
                         ) : (
                         <div className="space-y-1">
                           {signals
-                            ?.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                            ?.sort((a: any, b: any) => new Date(b.created_at || b.createdAt).getTime() - new Date(a.created_at || a.createdAt).getTime())
                             ?.map((signal: any) => (
                               <div key={signal.id} className="mx-4 my-2 bg-white border border-slate-200 rounded-xl shadow-sm">
                                 {/* Notification Header */}
@@ -780,10 +780,11 @@ export function PhoneSignalsPage() {
                                     <div className="flex items-center justify-between">
                                       <span className="text-sm font-medium text-slate-900">NAS100 Pro Signals</span>
                                       <span className="text-xs text-slate-500">
-                                        {new Date(signal.createdAt).toLocaleTimeString('en-US', {
-                                          hour: '2-digit',
-                                          minute: '2-digit'
-                                        })}
+                                        {signal.created_at || signal.createdAt ? 
+                                          new Date(signal.created_at || signal.createdAt).toLocaleTimeString('en-US', {
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                          }) : 'Now'}
                                       </span>
                                     </div>
                                     <span className="text-xs text-slate-500">now</span>

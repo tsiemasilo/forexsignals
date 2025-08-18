@@ -28,4 +28,7 @@ Focus on core cache invalidation without advanced debugging components:
 - `refetch()` calls
 - `setTimeout(() => window.location.reload(), 1000)`
 
-This minimalist approach will resolve the issue while avoiding build complications.
+This minimalist approach will resolve the issue while avoiding build complications.✅ Fixed Invalid Date issue in PhoneSignalsPage.tsx
+- Problem: Using signal.createdAt instead of signal.created_at from API
+- Solution: Added fallback for both snake_case and camelCase formats
+- Safe handling: Shows 'Now' if neither date field exists
