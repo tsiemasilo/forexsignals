@@ -75,7 +75,12 @@
 
 [[redirects]]
   from = "/api/admin/signals"
-  to = "/.netlify/functions/signals"
+  to = "/.netlify/functions/admin-signals"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin/signals/*"
+  to = "/.netlify/functions/admin-signals"
   status = 200
 
 # User Routes

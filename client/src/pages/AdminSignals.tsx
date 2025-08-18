@@ -23,7 +23,7 @@ export default function AdminSignals() {
   // Advanced debugging for live site
   console.log('AdminSignals Debug (Live Site):', { 
     user, 
-    sessionId, 
+    userId: user?.id,
     authLoading,
     isAdmin: user?.isAdmin,
     userEmail: user?.email,
