@@ -32,6 +32,16 @@ export default function AdminUsers() {
     userId: user?.id
   });
 
+  // Enhanced debugging query
+  const { data: debugInfo } = useQuery<any>({
+    queryKey: ['/api/admin/debug'],
+    enabled: !!user?.isAdmin,
+    refetchInterval: 10000, // Every 10 seconds
+    staleTime: 0
+  });
+
+  console.log('🔍 ENHANCED DEBUG INFO:', debugInfo);
+
   const { data: plans = [] } = useQuery<any[]>({
     queryKey: ['/api/plans'],
     enabled: !!user?.isAdmin

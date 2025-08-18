@@ -37,45 +37,51 @@ export const handler = async (event, context) => {
     if (method === 'GET' && (path.includes('/users') || path === '/api/admin/users')) {
       console.log('🔍 ADMIN: Fetching all users with subscriptions...');
       
-      const users = await sql`
-        SELECT u.*, s.*, sp.name as plan_name, sp.duration as plan_duration, sp.price as plan_price
+      // First get all non-admin users
+      const allUsers = await sql`
+        SELECT id, email, first_name, last_name, is_admin, created_at
+        FROM users 
+        WHERE is_admin = false
+        ORDER BY created_at DESC
+      `;
+      
+      console.log('📊 ALL NON-ADMIN USERS:', allUsers);
+      
+      // Then get their latest subscriptions
+      const usersWithSubscriptions = await sql`
+        SELECT DISTINCT ON (u.id) 
+               u.id, u.email, u.first_name, u.last_name, u.is_admin, u.created_at,
+               s.id as subscription_id, s.plan_id, s.status, s.start_date, s.end_date, s.created_at as sub_created,
+               sp.name as plan_name, sp.duration as plan_duration, sp.price as plan_price
         FROM users u
         LEFT JOIN subscriptions s ON u.id = s.user_id
         LEFT JOIN subscription_plans sp ON s.plan_id = sp.id
         WHERE u.is_admin = false
-        ORDER BY u.id, s.created_at DESC
+        ORDER BY u.id, s.created_at DESC NULLS LAST
       `;
 
-      const groupedUsers = users.reduce((acc, row) => {
-        if (!acc[row.id]) {
-          acc[row.id] = {
-            id: row.id,
-            email: row.email,
-            firstName: row.first_name,
-            lastName: row.last_name,
-            isAdmin: row.is_admin,
-            createdAt: row.created_at,
-            subscription: null
-          };
-        }
-        
-        if (row.plan_id && !acc[row.id].subscription) {
-          acc[row.id].subscription = {
-            id: row.plan_id,
-            subscriptionId: row.id,
-            status: row.status,
-            startDate: row.start_date,
-            endDate: row.end_date,
-            planName: row.plan_name,
-            duration: row.plan_duration,
-            price: row.plan_price
-          };
-        }
-        
-        return acc;
-      }, {});
+      console.log('📊 USERS WITH SUBSCRIPTIONS:', usersWithSubscriptions);
 
-      const result = Object.values(groupedUsers);
+      const result = usersWithSubscriptions.map(row => ({
+        id: row.id,
+        email: row.email,
+        firstName: row.first_name,
+        lastName: row.last_name,
+        isAdmin: row.is_admin,
+        createdAt: row.created_at,
+        subscription: row.subscription_id ? {
+          id: row.subscription_id,
+          planId: row.plan_id,
+          status: row.status,
+          startDate: row.start_date,
+          endDate: row.end_date,
+          planName: row.plan_name,
+          duration: row.plan_duration,
+          price: row.plan_price
+        } : null
+      }));
+      
+      console.log('📊 FINAL RESULT:', result);
       
       return {
         statusCode: 200,
