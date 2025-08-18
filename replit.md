@@ -6,6 +6,12 @@ WatchlistFX is a production-ready forex signals subscription platform designed f
 
 ## Recent Changes (August 2025)
 
+### ✅ Database Status Compatibility Fixed (August 18, 2025 - 6:00 PM)
+- **Root Cause Identified**: Production database only has 'active' and 'free trial' statuses
+- **Status Mapping**: Frontend status values mapped to database values (trial→free trial, inactive/expired→active with past dates)
+- **Date-Based Logic**: Uses end_date to determine effective subscription status
+- **Full Compatibility**: All admin buttons now work with production database schema
+
 ### ✅ Production Error Handling Enhanced (August 18, 2025 - 5:50 PM)
 - **User Validation**: Fixed 404 errors for non-existent users with proper error messages
 - **Auto-Refresh**: Admin interface automatically refreshes when user data becomes stale

@@ -214,17 +214,31 @@ export const handler = async (event, context) => {
         };
       }
 
-      // Validate status values
-      const validStatuses = ['active', 'inactive', 'expired', 'trial'];
-      if (!validStatuses.includes(status)) {
-        console.error('❌ INVALID STATUS VALUE:', status);
+      // Map frontend status to database status values
+      // Database only has: 'active', 'free trial'
+      // Frontend sends: 'active', 'inactive', 'expired', 'trial'
+      let dbStatus = status;
+      if (status === 'trial') {
+        dbStatus = 'free trial';
+      } else if (status === 'inactive' || status === 'expired') {
+        // For inactive/expired, we'll set as 'active' but with past dates
+        dbStatus = 'active';
+      }
+
+      console.log('🔄 STATUS MAPPING:', { frontendStatus: status, dbStatus: dbStatus });
+
+      // Validate mapped status values
+      const validDbStatuses = ['active', 'free trial'];
+      if (!validDbStatuses.includes(dbStatus)) {
+        console.error('❌ INVALID DATABASE STATUS VALUE:', dbStatus);
         return {
           statusCode: 400,
           headers,
           body: JSON.stringify({ 
-            message: 'Invalid status value',
+            message: 'Invalid database status value',
             received: status,
-            validOptions: validStatuses
+            mapped: dbStatus,
+            validDbOptions: validDbStatuses
           })
         };
       }
@@ -260,8 +274,8 @@ export const handler = async (event, context) => {
         console.log('🛠️ PROCESSING SUBSCRIPTION UPDATE:', { status, planId, userId });
 
         // Handle different subscription status changes
-        if (status === 'expired') {
-          console.log('⏰ Setting subscription to EXPIRED for user:', userId);
+        if (status === 'expired' || status === 'inactive') {
+          console.log(`⏰ Setting subscription to ${status.toUpperCase()} for user:`, userId);
           
           const expiredDate = new Date();
           expiredDate.setDate(expiredDate.getDate() - 1);
@@ -269,18 +283,18 @@ export const handler = async (event, context) => {
           console.log('🗑️ Deleting existing subscriptions...');
           await sql`DELETE FROM subscriptions WHERE user_id = ${userId}`;
           
-          console.log('📝 Creating expired subscription...');
+          console.log(`📝 Creating ${status} subscription (using 'active' status with past date)...`);
           const result = await sql`
             INSERT INTO subscriptions (user_id, plan_id, status, start_date, end_date, created_at)
-            VALUES (${userId}, 1, 'expired', ${expiredDate.toISOString()}, ${expiredDate.toISOString()}, NOW())
+            VALUES (${userId}, 1, 'active', ${expiredDate.toISOString()}, ${expiredDate.toISOString()}, NOW())
             RETURNING *
           `;
           
-          console.log('✅ EXPIRED SUBSCRIPTION CREATED:', result[0]);
+          console.log(`✅ ${status.toUpperCase()} SUBSCRIPTION CREATED:`, result[0]);
           return {
             statusCode: 200,
             headers: { ...headers, 'Cache-Control': 'no-cache' },
-            body: JSON.stringify({ success: true, subscription: result[0] })
+            body: JSON.stringify({ success: true, subscription: result[0], effectiveStatus: status })
           };
           
         } else if (status === 'active') {
@@ -354,37 +368,38 @@ export const handler = async (event, context) => {
             body: JSON.stringify({ success: true, subscription: result[0] })
           };
           
-        } else if (status === 'inactive') {
-          console.log('🟡 Setting subscription to INACTIVE for user:', userId);
+        } else if (status === 'trial') {
+          console.log('🔵 Setting subscription to TRIAL for user:', userId);
           
           const now = new Date();
-          const inactiveEndDate = new Date();
-          inactiveEndDate.setDate(now.getDate() - 1); // Set to yesterday to ensure inactive
+          const trialEndDate = new Date();
+          trialEndDate.setDate(now.getDate() + 7); // 7-day trial
           
-          console.log('📅 DEVELOPMENT-MATCHED Inactive subscription:', {
+          console.log('📅 DEVELOPMENT-MATCHED Trial subscription:', {
             userId,
-            status: 'inactive',
+            status: 'trial (mapped to free trial)',
             start: now.toISOString(),
-            end: inactiveEndDate.toISOString()
+            end: trialEndDate.toISOString(),
+            duration: '7 days'
           });
           
-          // Remove existing subscription first - MATCH DEVELOPMENT
+          // Remove existing subscription first
           console.log('🗑️ DATABASE: Removing existing subscription for user:', userId);
           await sql`DELETE FROM subscriptions WHERE user_id = ${userId}`;
           
-          // Create inactive subscription - DEVELOPMENT LOGIC
-          console.log('📝 DATABASE: Creating inactive subscription...');
+          // Create trial subscription using 'free trial' status
+          console.log('📝 DATABASE: Creating trial subscription...');
           const result = await sql`
             INSERT INTO subscriptions (user_id, plan_id, status, start_date, end_date, created_at)
-            VALUES (${userId}, 1, 'inactive', ${now.toISOString()}, ${inactiveEndDate.toISOString()}, NOW())
+            VALUES (${userId}, 1, 'free trial', ${now.toISOString()}, ${trialEndDate.toISOString()}, NOW())
             RETURNING *
           `;
           
-          console.log('✅ DEVELOPMENT-MATCHED INACTIVE SUBSCRIPTION CREATED:', result[0]);
+          console.log('✅ TRIAL SUBSCRIPTION CREATED:', result[0]);
           return {
             statusCode: 200,
             headers: { ...headers, 'Cache-Control': 'no-cache' },
-            body: JSON.stringify({ success: true, subscription: result[0] })
+            body: JSON.stringify({ success: true, subscription: result[0], effectiveStatus: 'trial' })
           };
           
         } else {
