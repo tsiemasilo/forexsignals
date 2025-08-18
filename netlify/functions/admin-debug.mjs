@@ -1,11 +1,7 @@
+// Advanced debugging endpoint for admin issues
 import { neon } from '@neondatabase/serverless';
 
-const DATABASE_URL = process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL;
-
-if (!DATABASE_URL) {
-  throw new Error('NETLIFY_DATABASE_URL or DATABASE_URL environment variable is not set');
-}
-
+const DATABASE_URL = process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL || "postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require";
 const sql = neon(DATABASE_URL);
 
 export const handler = async (event, context) => {
@@ -13,105 +9,90 @@ export const handler = async (event, context) => {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type, Cookie',
     'Access-Control-Allow-Methods': 'GET, POST, PUT, OPTIONS',
-    'Access-Control-Allow-Credentials': 'true',
     'Content-Type': 'application/json'
   };
 
   if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 200, headers, body: '' };
+    return { statusCode: 200, headers };
   }
 
   try {
-    console.log('🔍 ADMIN DEBUG: Starting comprehensive database analysis...');
-    
-    // Get all users from database
-    const allUsers = await sql`
-      SELECT id, email, first_name, last_name, is_admin, created_at
-      FROM users 
-      ORDER BY created_at DESC
-      LIMIT 20
-    `;
-    
-    console.log('📊 ALL USERS IN DATABASE:', allUsers);
-    
-    // Get all subscriptions
-    const allSubscriptions = await sql`
-      SELECT s.*, sp.name as plan_name, sp.duration, sp.price
-      FROM subscriptions s
-      LEFT JOIN subscription_plans sp ON s.plan_id = sp.id
-      ORDER BY s.created_at DESC
-      LIMIT 10
-    `;
-    
-    console.log('📊 ALL SUBSCRIPTIONS:', allSubscriptions);
-    
-    // Get the query that admin-fixed.mjs uses
-    const adminQueryResult = await sql`
-      SELECT u.*, s.*, sp.name as plan_name, sp.duration as plan_duration, sp.price as plan_price
-      FROM users u
-      LEFT JOIN subscriptions s ON u.id = s.user_id
-      LEFT JOIN subscription_plans sp ON s.plan_id = sp.id
-      WHERE u.is_admin = false
-      ORDER BY u.id, s.created_at DESC
-    `;
-    
-    console.log('📊 ADMIN QUERY RESULT:', adminQueryResult);
-    
-    // Check for user 'ae' specifically
-    const userAe = await sql`
-      SELECT * FROM users WHERE email ILIKE '%ae%' OR first_name ILIKE '%ae%' OR last_name ILIKE '%ae%'
-    `;
-    
-    console.log('🔍 USER AE SEARCH:', userAe);
-    
-    // Recent registrations
-    const recentUsers = await sql`
-      SELECT * FROM users 
-      WHERE created_at > NOW() - INTERVAL '1 hour'
-      ORDER BY created_at DESC
-    `;
-    
-    console.log('🕐 RECENT USERS (last hour):', recentUsers);
-    
+    const requestId = Math.random().toString(36).substr(2, 9);
+    console.log(`🔍 [${requestId}] DEBUG ENDPOINT CALLED:`, {
+      method: event.httpMethod,
+      path: event.path,
+      timestamp: new Date().toISOString()
+    });
+
+    // Get system status and recent activity
     const debugInfo = {
-      databaseUrl: DATABASE_URL.replace(/:[^:@]*@/, ':***@'),
-      totalUsers: allUsers.length,
-      totalSubscriptions: allSubscriptions.length,
-      adminQueryCount: adminQueryResult.length,
-      userAeFound: userAe.length > 0,
-      recentUsers: recentUsers.length,
-      allUsers: allUsers.map(u => ({
-        id: u.id,
-        email: u.email,
-        name: `${u.first_name || ''} ${u.last_name || ''}`.trim(),
-        isAdmin: u.is_admin,
-        createdAt: u.created_at
-      })),
-      adminQueryUsers: adminQueryResult.map(u => ({
-        id: u.id,
-        email: u.email,
-        name: `${u.first_name || ''} ${u.last_name || ''}`.trim(),
-        hasSubscription: !!u.plan_id
-      })),
-      userAeDetails: userAe,
-      recentUserDetails: recentUsers
+      timestamp: new Date().toISOString(),
+      requestId,
+      database: {
+        connected: true,
+        url: DATABASE_URL.replace(/:[^:@]*@/, ':***@')
+      },
+      tables: {},
+      recentActivity: {}
     };
-    
+
+    // Check table status
+    try {
+      const userCount = await sql`SELECT COUNT(*) as count FROM users`;
+      const subscriptionCount = await sql`SELECT COUNT(*) as count FROM subscriptions`;
+      const planCount = await sql`SELECT COUNT(*) as count FROM subscription_plans`;
+
+      debugInfo.tables = {
+        users: userCount[0].count,
+        subscriptions: subscriptionCount[0].count,
+        subscription_plans: planCount[0].count
+      };
+
+      // Get recent subscriptions
+      const recentSubs = await sql`
+        SELECT s.*, u.email, sp.name as plan_name
+        FROM subscriptions s
+        JOIN users u ON s.user_id = u.id
+        JOIN subscription_plans sp ON s.plan_id = sp.id
+        WHERE s.created_at > NOW() - INTERVAL '1 hour'
+        ORDER BY s.created_at DESC
+        LIMIT 5
+      `;
+
+      debugInfo.recentActivity = {
+        subscriptionsLastHour: recentSubs.length,
+        details: recentSubs
+      };
+
+      // Get status distribution
+      const statusDistribution = await sql`
+        SELECT status, COUNT(*) as count
+        FROM subscriptions
+        GROUP BY status
+        ORDER BY count DESC
+      `;
+
+      debugInfo.statusDistribution = statusDistribution;
+
+    } catch (dbError) {
+      debugInfo.database.error = dbError.message;
+      debugInfo.database.connected = false;
+    }
+
     return {
       statusCode: 200,
       headers,
       body: JSON.stringify(debugInfo, null, 2)
     };
-    
+
   } catch (error) {
-    console.error('❌ ADMIN DEBUG ERROR:', error);
+    console.error('Debug endpoint error:', error);
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ 
+      body: JSON.stringify({
         error: error.message,
-        stack: error.stack,
-        databaseUrl: DATABASE_URL.replace(/:[^:@]*@/, ':***@')
+        timestamp: new Date().toISOString()
       })
     };
   }

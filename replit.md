@@ -6,6 +6,13 @@ WatchlistFX is a production-ready forex signals subscription platform designed f
 
 ## Recent Changes (August 2025)
 
+### ✅ Advanced Debugging and Testing Implemented (August 18, 2025 - 6:30 PM)
+- **Enhanced Admin Function**: Added request ID tracking, malformed URL detection, and comprehensive error logging
+- **Debug Endpoint Created**: `/api/admin/debug` for system status monitoring and troubleshooting
+- **Error Analysis**: Identified malformed URL pattern `/api/admin/users/29/subscription:1` with colon character
+- **Production Diagnostics**: Enhanced logging will pinpoint exact cause of 400 errors in production
+- **Frontend Issue Detection**: URL construction analysis suggests frontend API call parameter issue
+
 ### ✅ Plan-Specific Status System Complete - Production Tested (August 18, 2025 - 6:20 PM)
 - **Database Migration Complete**: All existing subscriptions updated to plan-specific statuses
 - **Production Verified**: VIP Plan, Premium Plan, Basic Plan, and expired status working perfectly

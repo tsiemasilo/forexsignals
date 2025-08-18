@@ -26,17 +26,55 @@ export const handler = async (event, context) => {
   try {
     const path = event.path || event.rawUrl || '';
     const method = event.httpMethod;
+    const requestId = Math.random().toString(36).substr(2, 9);
     
-    console.log('🔍 ADMIN-FIXED REQUEST:', { path, method, rawUrl: event.rawUrl });
-    console.log('🔍 FULL EVENT DEBUG:', {
+    console.log(`🔧 [${requestId}] ADMIN-FIXED REQUEST:`, { path, method, rawUrl: event.rawUrl, timestamp: new Date().toISOString() });
+    console.log(`🔍 [${requestId}] FULL EVENT DEBUG:`, {
       path: event.path,
       rawUrl: event.rawUrl,
       httpMethod: event.httpMethod,
       queryStringParameters: event.queryStringParameters,
-      headers: event.headers,
+      pathParameters: event.pathParameters,
+      headers: {
+        contentType: event.headers['content-type'],
+        origin: event.headers.origin,
+        referer: event.headers.referer,
+        userAgent: event.headers['user-agent']?.substring(0, 50)
+      },
       body: event.body,
+      bodyLength: event.body ? event.body.length : 0,
       isBase64Encoded: event.isBase64Encoded
     });
+
+    // ENHANCED URL PARSING AND DEBUGGING
+    const urlSegments = path.split('/').filter(Boolean);
+    console.log(`🔍 [${requestId}] URL SEGMENTS:`, urlSegments);
+    
+    // Extract user ID from different possible patterns
+    let extractedUserId = null;
+    const userIdPattern = /\/users\/(\d+)/;
+    const userIdMatch = path.match(userIdPattern);
+    if (userIdMatch) {
+      extractedUserId = parseInt(userIdMatch[1]);
+      console.log(`🔍 [${requestId}] EXTRACTED USER ID:`, extractedUserId);
+    }
+
+    // Check for subscription endpoint patterns
+    const isSubscriptionEndpoint = path.includes('/subscription');
+    console.log(`🔍 [${requestId}] SUBSCRIPTION ENDPOINT CHECK:`, { 
+      isSubscriptionEndpoint, 
+      pathIncludes: path.includes('/subscription'),
+      fullPath: path 
+    });
+
+    // Detect malformed URLs
+    if (path.includes(':')) {
+      console.warn(`⚠️ [${requestId}] MALFORMED URL DETECTED:`, { 
+        path, 
+        possibleIssue: 'URL contains colon - possible port or malformed parameter',
+        suggestion: 'Check frontend API call construction'
+      });
+    }
 
     // GET all users with subscriptions
     if (method === 'GET' && (path.includes('/users') || path === '/api/admin/users')) {
@@ -96,16 +134,18 @@ export const handler = async (event, context) => {
     }
 
     // Extract user ID from path - handle multiple patterns
-    let userId = null;
+    let userId = extractedUserId;
     const pathSegments = path.split('/');
-    console.log('🔍 PATH SEGMENTS:', pathSegments);
+    console.log(`🔍 [${requestId}] PATH SEGMENTS:`, pathSegments);
     
-    for (let i = 0; i < pathSegments.length; i++) {
-      if (pathSegments[i] === 'users' && pathSegments[i + 1]) {
-        const potentialUserId = parseInt(pathSegments[i + 1]);
-        if (!isNaN(potentialUserId)) {
-          userId = potentialUserId;
-          break;
+    if (!userId) {
+      for (let i = 0; i < pathSegments.length; i++) {
+        if (pathSegments[i] === 'users' && pathSegments[i + 1]) {
+          const potentialUserId = parseInt(pathSegments[i + 1]);
+          if (!isNaN(potentialUserId)) {
+            userId = potentialUserId;
+            break;
+          }
         }
       }
     }
@@ -166,9 +206,40 @@ export const handler = async (event, context) => {
     }
 
     // UPDATE SUBSCRIPTION - PUT request with subscription in path
-    if (method === 'PUT' && path.includes('subscription') && userId) {
-      console.log('🔧 UPDATE SUBSCRIPTION REQUEST for user:', userId);
-      console.log('🔧 RAW EVENT BODY:', event.body);
+    if (method === 'PUT' && path.includes('subscription')) {
+      console.log(`🔧 [${requestId}] UPDATE SUBSCRIPTION REQUEST DETECTED`);
+      console.log(`🔧 [${requestId}] USER ID FROM PATH:`, userId);
+      console.log(`🔧 [${requestId}] PATH CHECK:`, { 
+        fullPath: path, 
+        includesSubscription: path.includes('subscription'),
+        userIdExtracted: !!userId 
+      });
+      
+      // Enhanced user ID extraction for subscription endpoints
+      if (!userId) {
+        console.warn(`⚠️ [${requestId}] USER ID NOT FOUND - ATTEMPTING ALTERNATIVE EXTRACTION`);
+        const altUserIdMatch = path.match(/\/users\/(\d+)/);
+        if (altUserIdMatch) {
+          userId = parseInt(altUserIdMatch[1]);
+          console.log(`✅ [${requestId}] ALTERNATIVE USER ID EXTRACTED:`, userId);
+        } else {
+          console.error(`❌ [${requestId}] UNABLE TO EXTRACT USER ID FROM PATH:`, path);
+          return {
+            statusCode: 400,
+            headers,
+            body: JSON.stringify({ 
+              message: 'Invalid path format - unable to extract user ID',
+              path,
+              pathSegments,
+              requestId,
+              expectedFormat: '/api/admin/users/{userId}/subscription'
+            })
+          };
+        }
+      }
+      
+      console.log(`🔧 [${requestId}] PROCESSING SUBSCRIPTION UPDATE FOR USER:`, userId);
+      console.log(`🔧 [${requestId}] RAW EVENT BODY:`, event.body);
       console.log('🔧 FULL REQUEST CONTEXT:', {
         method,
         path,
@@ -447,23 +518,84 @@ export const handler = async (event, context) => {
       }
     }
 
-    console.log('❌ No route matched:', { path, method, userId });
+    // COMPREHENSIVE ERROR LOGGING FOR UNHANDLED REQUESTS
+    console.log(`❌ [${requestId}] UNHANDLED REQUEST:`, { 
+      method, 
+      path, 
+      timestamp: new Date().toISOString(),
+      urlSegments,
+      userId: extractedUserId,
+      allPathPatterns: {
+        hasUsers: path.includes('/users'),
+        hasSubscription: path.includes('/subscription'),
+        hasCreateTrial: path.includes('create-trial'),
+        containsColon: path.includes(':'),
+        endsWithNumber: /\d+$/.test(path),
+        pathLength: path.length
+      }
+    });
+    
+    // Provide helpful error message for common issues
+    let suggestion = 'Check API endpoint format';
+    if (path.includes(':')) {
+      suggestion = 'URL contains colon - possible malformed parameter. Check frontend API call construction.';
+    } else if (!path.includes('/users/')) {
+      suggestion = 'Missing user ID in path. Expected format: /api/admin/users/{userId}/...';
+    } else if (path.includes('/subscription') && !userId) {
+      suggestion = 'User ID extraction failed. Check URL format.';
+    }
+    
     return {
       statusCode: 404,
-      headers,
-      body: JSON.stringify({ message: 'Route not found', debug: { path, method, userId } })
+      headers: {
+        ...headers,
+        'X-Request-ID': requestId,
+        'X-Debug-Info': 'Unhandled request - check logs for details'
+      },
+      body: JSON.stringify({ 
+        message: 'Endpoint not found', 
+        path, 
+        method,
+        requestId,
+        suggestion,
+        supportedEndpoints: [
+          'GET /api/admin/users',
+          'POST /api/admin/users/{userId}/create-trial',
+          'PUT /api/admin/users/{userId}/subscription'
+        ],
+        debug: {
+          extractedUserId,
+          finalUserId: userId,
+          pathSegments,
+          containsColon: path.includes(':')
+        }
+      })
     };
 
   } catch (error) {
-    console.error('Admin error:', error);
-    console.error('Error stack:', error.stack);
+    console.error(`🚨 [${requestId || 'unknown'}] ADMIN FUNCTION ERROR:`, {
+      error: error.message,
+      stack: error.stack,
+      path: event.path,
+      method: event.httpMethod,
+      body: event.body,
+      timestamp: new Date().toISOString()
+    });
+    
     return {
       statusCode: 500,
-      headers,
+      headers: {
+        ...headers,
+        'X-Request-ID': requestId || 'unknown',
+        'X-Error-Type': 'server-error'
+      },
       body: JSON.stringify({ 
         message: 'Internal server error', 
         error: error.message,
-        stack: error.stack 
+        requestId: requestId || 'unknown',
+        timestamp: new Date().toISOString(),
+        path: event.path,
+        method: event.httpMethod
       })
     };
   }
