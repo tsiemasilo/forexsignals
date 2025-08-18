@@ -227,6 +227,28 @@ export default function AdminUsers() {
     let displayDaysLeft = daysLeft;
     
     switch (user.subscription.status) {
+      case 'basic plan':
+        statusDisplay = daysLeft > 0 ? 'Basic Plan' : 'Expired';
+        colorClass = daysLeft > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+        break;
+      case 'premium plan':
+        statusDisplay = daysLeft > 0 ? 'Premium Plan' : 'Expired';
+        colorClass = daysLeft > 0 ? 'bg-purple-100 text-purple-800' : 'bg-red-100 text-red-800';
+        break;
+      case 'vip plan':
+        statusDisplay = daysLeft > 0 ? 'VIP Plan' : 'Expired';
+        colorClass = daysLeft > 0 ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-red-800';
+        break;
+      case 'free trial':
+        statusDisplay = 'Free Trial';
+        colorClass = 'bg-blue-100 text-blue-800';
+        break;
+      case 'expired':
+        statusDisplay = 'Expired';
+        colorClass = 'bg-red-100 text-red-800';
+        displayDaysLeft = 0;
+        break;
+      // Legacy compatibility
       case 'trial':
         statusDisplay = 'Free Trial';
         colorClass = 'bg-blue-100 text-blue-800';
@@ -238,12 +260,7 @@ export default function AdminUsers() {
       case 'inactive':
         statusDisplay = 'Inactive';
         colorClass = 'bg-yellow-100 text-yellow-800';
-        displayDaysLeft = 0; // Inactive subscriptions show 0 days
-        break;
-      case 'expired':
-        statusDisplay = 'Expired';
-        colorClass = 'bg-red-100 text-red-800';
-        displayDaysLeft = 0; // Expired subscriptions show 0 days
+        displayDaysLeft = 0;
         break;
       default:
         statusDisplay = 'Unknown';

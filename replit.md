@@ -6,11 +6,12 @@ WatchlistFX is a production-ready forex signals subscription platform designed f
 
 ## Recent Changes (August 2025)
 
-### ✅ Database Status Compatibility Fixed (August 18, 2025 - 6:00 PM)
-- **Root Cause Identified**: Production database only has 'active' and 'free trial' statuses
-- **Status Mapping**: Frontend status values mapped to database values (trial→free trial, inactive/expired→active with past dates)
-- **Date-Based Logic**: Uses end_date to determine effective subscription status
-- **Full Compatibility**: All admin buttons now work with production database schema
+### ✅ Plan-Specific Status System Implemented (August 18, 2025 - 6:10 PM)
+- **New Status Values**: Database now supports 'basic plan', 'premium plan', 'vip plan', 'expired', 'free trial'
+- **Admin Interface**: Updated to recognize and display plan-specific statuses with color coding
+- **Netlify Functions**: Complete status mapping for all plan activation buttons
+- **Migration Script**: Created database migration commands to update existing records
+- **Enhanced Display**: Premium Plan (Purple), VIP Plan (Amber), Basic Plan (Green), Free Trial (Blue), Expired (Red)
 
 ### ✅ Production Error Handling Enhanced (August 18, 2025 - 5:50 PM)
 - **User Validation**: Fixed 404 errors for non-existent users with proper error messages

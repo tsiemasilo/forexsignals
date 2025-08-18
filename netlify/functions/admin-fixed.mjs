@@ -214,21 +214,34 @@ export const handler = async (event, context) => {
         };
       }
 
-      // Map frontend status to database status values
-      // Database only has: 'active', 'free trial'
-      // Frontend sends: 'active', 'inactive', 'expired', 'trial'
+      // Map frontend status to plan-specific database status values
+      // Supported statuses: 'basic plan', 'premium plan', 'vip plan', 'expired', 'free trial'
       let dbStatus = status;
-      if (status === 'trial') {
+      
+      // Map plan activation statuses
+      if (planId && status === 'active') {
+        if (planId === 1) {
+          dbStatus = 'basic plan';
+        } else if (planId === 2) {
+          dbStatus = 'premium plan';
+        } else if (planId === 3) {
+          dbStatus = 'vip plan';
+        }
+      } else if (status === 'trial') {
         dbStatus = 'free trial';
       } else if (status === 'inactive' || status === 'expired') {
-        // For inactive/expired, we'll set as 'active' but with past dates
-        dbStatus = 'active';
+        dbStatus = 'expired';
       }
 
-      console.log('🔄 STATUS MAPPING:', { frontendStatus: status, dbStatus: dbStatus });
+      console.log('🔄 PLAN-SPECIFIC STATUS MAPPING:', { 
+        frontendStatus: status, 
+        planId, 
+        dbStatus: dbStatus,
+        planName: planId === 1 ? 'Basic' : planId === 2 ? 'Premium' : planId === 3 ? 'VIP' : 'Unknown'
+      });
 
       // Validate mapped status values
-      const validDbStatuses = ['active', 'free trial'];
+      const validDbStatuses = ['basic plan', 'premium plan', 'vip plan', 'expired', 'free trial'];
       if (!validDbStatuses.includes(dbStatus)) {
         console.error('❌ INVALID DATABASE STATUS VALUE:', dbStatus);
         return {
@@ -283,10 +296,10 @@ export const handler = async (event, context) => {
           console.log('🗑️ Deleting existing subscriptions...');
           await sql`DELETE FROM subscriptions WHERE user_id = ${userId}`;
           
-          console.log(`📝 Creating ${status} subscription (using 'active' status with past date)...`);
+          console.log(`📝 Creating ${status} subscription with 'expired' status...`);
           const result = await sql`
             INSERT INTO subscriptions (user_id, plan_id, status, start_date, end_date, created_at)
-            VALUES (${userId}, 1, 'active', ${expiredDate.toISOString()}, ${expiredDate.toISOString()}, NOW())
+            VALUES (${userId}, 1, 'expired', ${expiredDate.toISOString()}, ${expiredDate.toISOString()}, NOW())
             RETURNING *
           `;
           
@@ -353,11 +366,11 @@ export const handler = async (event, context) => {
           console.log('🗑️ DATABASE: Removing existing subscription for user:', userId);
           await sql`DELETE FROM subscriptions WHERE user_id = ${userId}`;
           
-          // Create new active subscription - EXACT DEVELOPMENT LOGIC
-          console.log('📝 DATABASE: Creating active subscription...');
+          // Create new active subscription with plan-specific status
+          console.log('📝 DATABASE: Creating plan-specific subscription...');
           const result = await sql`
             INSERT INTO subscriptions (user_id, plan_id, status, start_date, end_date, created_at)
-            VALUES (${userId}, ${plan.id}, 'active', ${now.toISOString()}, ${activeEndDate.toISOString()}, NOW())
+            VALUES (${userId}, ${plan.id}, ${dbStatus}, ${now.toISOString()}, ${activeEndDate.toISOString()}, NOW())
             RETURNING *
           `;
           
