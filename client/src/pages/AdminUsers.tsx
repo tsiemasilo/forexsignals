@@ -15,8 +15,13 @@ export default function AdminUsers() {
 
   const { data: users = [], isLoading } = useQuery<any[]>({
     queryKey: ['/api/admin/users'],
-    enabled: !!user?.isAdmin
+    enabled: !!user?.isAdmin,
+    refetchInterval: 5000, // Refresh every 5 seconds
+    staleTime: 0 // Always consider data stale to force fresh fetches
   });
+
+  // Debug logging for users data
+  console.log('🔍 ADMIN USERS DEBUG:', { users, userCount: users.length, isLoading });
 
   const { data: plans = [] } = useQuery<any[]>({
     queryKey: ['/api/plans'],
@@ -72,6 +77,8 @@ export default function AdminUsers() {
       return { previousUsers };
     },
     onSuccess: () => {
+      // Force immediate cache invalidation and refetch
+      queryClient.removeQueries({ queryKey: ['/api/admin/users'] });
       queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
       queryClient.invalidateQueries({ queryKey: ['/api/user/subscription-status'] });
       toast({
@@ -100,6 +107,8 @@ export default function AdminUsers() {
       });
     },
     onSuccess: () => {
+      // Force immediate cache invalidation and refetch
+      queryClient.removeQueries({ queryKey: ['/api/admin/users'] });
       queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
       queryClient.invalidateQueries({ queryKey: ['/api/user/subscription-status'] });
       toast({
