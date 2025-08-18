@@ -5,8 +5,9 @@ const sql = neon("postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh
 export const handler = async (event, context) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': 'Content-Type, Cookie',
     'Access-Control-Allow-Methods': 'GET, POST, PUT, OPTIONS',
+    'Access-Control-Allow-Credentials': 'true',
     'Content-Type': 'application/json'
   };
 
@@ -17,6 +18,11 @@ export const handler = async (event, context) => {
   try {
     const path = event.path;
     const method = event.httpMethod;
+    
+    console.log('🔍 ADMIN REQUEST:', { path, method, headers: event.headers });
+
+    // Simple admin check - for now, bypass authentication for testing
+    // In production, add proper session validation here
 
     if (path === '/api/admin/users' && method === 'GET') {
       console.log('🔍 ADMIN: Fetching all users with subscriptions...');
@@ -76,24 +82,89 @@ export const handler = async (event, context) => {
     if (path.includes('/subscription') && method === 'PUT') {
       console.log('🔧 UPDATE SUBSCRIPTION REQUEST:', { path, method, body: event.body });
       const userId = parseInt(path.split('/')[4]);
-      const { planId, status, endDate } = JSON.parse(event.body);
+      
+      if (!userId || isNaN(userId)) {
+        return {
+          statusCode: 400,
+          headers,
+          body: JSON.stringify({ message: 'Invalid user ID' })
+        };
+      }
+
+      let requestData;
+      try {
+        requestData = JSON.parse(event.body || '{}');
+      } catch (parseError) {
+        console.error('JSON parse error:', parseError);
+        return {
+          statusCode: 400,
+          headers,
+          body: JSON.stringify({ message: 'Invalid JSON in request body' })
+        };
+      }
+
+      const { planId, status, endDate } = requestData;
       console.log('📋 SUBSCRIPTION UPDATE DATA:', { userId, planId, status, endDate });
 
-      // Remove existing subscription
-      await sql`DELETE FROM subscriptions WHERE user_id = ${userId}`;
+      // Handle different subscription status changes
+      if (status === 'expired') {
+        // Set subscription to expired (yesterday's date)
+        const expiredDate = new Date();
+        expiredDate.setDate(expiredDate.getDate() - 1);
+        
+        await sql`DELETE FROM subscriptions WHERE user_id = ${userId}`;
+        
+        const result = await sql`
+          INSERT INTO subscriptions (user_id, plan_id, status, start_date, end_date, created_at)
+          VALUES (${userId}, 1, 'expired', ${expiredDate.toISOString()}, ${expiredDate.toISOString()}, NOW())
+          RETURNING *
+        `;
+        
+        console.log('❌ Set subscription to expired:', result[0]);
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify(result[0])
+        };
+      } else if (status === 'active' && planId) {
+        // Create active subscription
+        const activeEndDate = new Date();
+        
+        // Set duration based on plan
+        if (planId === 1) activeEndDate.setDate(activeEndDate.getDate() + 5);     // Basic - 5 days
+        else if (planId === 2) activeEndDate.setDate(activeEndDate.getDate() + 14); // Premium - 14 days  
+        else if (planId === 3) activeEndDate.setDate(activeEndDate.getDate() + 30); // VIP - 30 days
+        
+        await sql`DELETE FROM subscriptions WHERE user_id = ${userId}`;
+        
+        const result = await sql`
+          INSERT INTO subscriptions (user_id, plan_id, status, start_date, end_date, created_at)
+          VALUES (${userId}, ${planId}, 'active', NOW(), ${activeEndDate.toISOString()}, NOW())
+          RETURNING *
+        `;
+        
+        console.log('✅ Created active subscription:', result[0]);
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify(result[0])
+        };
+      } else {
+        // Legacy handling for direct parameters
+        await sql`DELETE FROM subscriptions WHERE user_id = ${userId}`;
 
-      // Create new subscription
-      const result = await sql`
-        INSERT INTO subscriptions (user_id, plan_id, status, start_date, end_date, created_at)
-        VALUES (${userId}, ${planId}, ${status}, NOW(), ${endDate}, NOW())
-        RETURNING *
-      `;
+        const result = await sql`
+          INSERT INTO subscriptions (user_id, plan_id, status, start_date, end_date, created_at)
+          VALUES (${userId}, ${planId || 1}, ${status}, NOW(), ${endDate || 'NOW()'}, NOW())
+          RETURNING *
+        `;
 
-      return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify(result[0])
-      };
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify(result[0])
+        };
+      }
     }
 
     if (path.includes('/create-trial') && method === 'POST') {
@@ -101,21 +172,32 @@ export const handler = async (event, context) => {
       const userId = parseInt(path.split('/')[4]);
       console.log('👤 CREATING TRIAL FOR USER ID:', userId);
       
+      if (!userId || isNaN(userId)) {
+        return {
+          statusCode: 400,
+          headers,
+          body: JSON.stringify({ message: 'Invalid user ID' })
+        };
+      }
+      
       // Create 7-day trial
       const endDate = new Date();
       endDate.setDate(endDate.getDate() + 7);
       console.log('📅 TRIAL END DATE:', endDate.toISOString());
 
       // Remove existing subscription
+      console.log('🗑️ Removing existing subscription for user:', userId);
       await sql`DELETE FROM subscriptions WHERE user_id = ${userId}`;
 
       // Create trial subscription
+      console.log('✅ Creating new trial subscription...');
       const result = await sql`
         INSERT INTO subscriptions (user_id, plan_id, status, start_date, end_date, created_at)
         VALUES (${userId}, 1, 'trial', NOW(), ${endDate.toISOString()}, NOW())
         RETURNING *
       `;
 
+      console.log('🎉 Trial created successfully:', result[0]);
       return {
         statusCode: 200,
         headers,
