@@ -96,6 +96,13 @@ Preferred communication style: Simple, everyday language.
 - **API Testing**: Confirmed both new account creation and duplicate email rejection work correctly
 - **Production Ready**: Complete email validation flow prevents duplicate registrations
 
+### 🔴 Registration Required Toast Fix (August 19, 2025 - 11:00 AM)
+- **Root Cause Identified**: PhoneSignalsPage.tsx missing destructive variant for registration toast
+- **Dual Location Fix**: Updated both LoginPage.tsx and PhoneSignalsPage.tsx with red error styling
+- **Consistent Error Handling**: All registration-required toasts now display in red color
+- **User Experience**: Clear visual indication when registration is needed before login
+- **Production Ready**: Fixed for both Replit development and Netlify deployment environments
+
 ### 🔧 Signal Creation Issue Resolved (August 19, 2025 - 9:23 AM)
 - **Root Cause Identified**: PostgreSQL `image_urls` ARRAY column causing "malformed array literal" errors
 - **Database Schema Analysis**: Used introspection to discover problematic ARRAY data type
