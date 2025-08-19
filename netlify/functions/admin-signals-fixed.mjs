@@ -20,7 +20,7 @@ export const handler = async (event, context) => {
     const method = event.httpMethod;
     const path = event.path;
 
-    console.log('🔧 ADMIN SIGNALS REQUEST:', { path, method, body: event.body });
+    console.log('🔧 ADMIN SIGNALS FIXED REQUEST:', { path, method, body: event.body });
 
     // GET all signals for admin
     if (method === 'GET') {
@@ -188,7 +188,7 @@ export const handler = async (event, context) => {
     };
 
   } catch (error) {
-    console.error('Admin signals error:', error);
+    console.error('❌ Admin signals error:', error);
     return {
       statusCode: 500,
       headers,
