@@ -97,6 +97,20 @@ export const handler = async (event, context) => {
       // Determine if subscription is active
       const isActive = daysLeft > 0 && (subscription.status === 'active' || subscription.status === 'free trial' || subscription.status === 'basic plan' || subscription.status === 'premium plan' || subscription.status === 'vip plan');
 
+      // Create proper status display
+      let statusDisplay = subscription.status;
+      if (subscription.status === 'basic plan') {
+        statusDisplay = `Basic Plan (${daysLeft} days left)`;
+      } else if (subscription.status === 'premium plan') {
+        statusDisplay = `Premium Plan (${daysLeft} days left)`;
+      } else if (subscription.status === 'vip plan') {
+        statusDisplay = `VIP Plan (${daysLeft} days left)`;
+      } else if (subscription.status === 'free trial') {
+        statusDisplay = `Trial (${daysLeft} days left)`;
+      } else if (!isActive) {
+        statusDisplay = 'Expired';
+      }
+
       return {
         statusCode: 200,
         headers,
@@ -120,7 +134,10 @@ export const handler = async (event, context) => {
             price: parseFloat(subscription.price),
             duration: subscription.duration
           },
-          status: isActive ? 'active' : 'expired'
+          status: subscription.status, // Use actual database status
+          statusDisplay: statusDisplay, // Formatted display text
+          daysLeft: daysLeft,
+          color: isActive ? 'green' : 'red'
         })
       };
     }

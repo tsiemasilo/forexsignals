@@ -14,7 +14,7 @@ interface SubscriptionStatus {
 }
 
 export function useSubscriptionStatus() {
-  const { sessionId, user } = useAuth();
+  const { user } = useAuth();
 
   return useQuery<SubscriptionStatus>({
     queryKey: ['/api/user/subscription-status'],
@@ -25,9 +25,7 @@ export function useSubscriptionStatus() {
     refetchOnWindowFocus: true,
     queryFn: () => 
       fetch(`/api/user/subscription-status?t=${Date.now()}`, {
-        headers: {
-          'Authorization': `Bearer ${sessionId || 'guest_session'}`
-        }
+        credentials: 'include'
       }).then(res => {
         if (!res.ok) {
           throw new Error(`${res.status}: ${res.statusText}`);

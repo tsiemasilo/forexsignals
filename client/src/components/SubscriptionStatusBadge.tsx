@@ -27,8 +27,12 @@ export function SubscriptionStatusBadge() {
 
   const getIcon = () => {
     switch (subscriptionStatus.status) {
+      case 'free trial':
       case 'trial':
         return <Clock className="w-3 h-3 mr-1" />;
+      case 'basic plan':
+      case 'premium plan':
+      case 'vip plan':
       case 'active':
         return <Crown className="w-3 h-3 mr-1" />;
       case 'expired':
@@ -48,8 +52,15 @@ export function SubscriptionStatusBadge() {
   // Force explicit color classes for better CSS compilation
   const getBadgeColorClass = () => {
     switch (subscriptionStatus.status) {
+      case 'free trial':
       case 'trial':
-        return 'bg-yellow-500 text-white';
+        return 'bg-blue-500 text-white';
+      case 'basic plan':
+        return 'bg-green-500 text-white';
+      case 'premium plan':
+        return 'bg-purple-500 text-white';
+      case 'vip plan':
+        return 'bg-amber-500 text-white';
       case 'active':
         return 'bg-green-500 text-white';
       case 'expired':
@@ -65,7 +76,7 @@ export function SubscriptionStatusBadge() {
     <div className="flex items-center gap-2">
       <Badge className={`${getBadgeColorClass()} flex items-center text-xs font-medium`}>
         {getIcon()}
-        {subscriptionStatus.status.charAt(0).toUpperCase() + subscriptionStatus.status.slice(1)}
+        {subscriptionStatus.statusDisplay || subscriptionStatus.status.charAt(0).toUpperCase() + subscriptionStatus.status.slice(1)}
       </Badge>
       {subscriptionStatus.status !== 'expired' && subscriptionStatus.status !== 'inactive' && subscriptionStatus.daysLeft > 0 && (
         <span className={`text-xs font-medium ${getDaysLeftColor()}`}>
