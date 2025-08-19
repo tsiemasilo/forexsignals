@@ -271,7 +271,7 @@ export function AdminDashboard() {
       return daysLeft > 0 ? `Trial (${daysLeft} days left)` : "Trial Expired";
     } else if (subscription.status === 'active') {
       // Legacy support
-      const planName = subscription.planName || 'Active';
+      const planName = subscription.plan?.name || 'Active';
       return daysLeft > 0 ? `${planName} (${daysLeft} days left)` : "Expired";
     } else {
       // Capitalize first letter of any other status
