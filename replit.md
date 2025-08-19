@@ -6,6 +6,15 @@ WatchlistFX is a production-ready forex signals subscription platform designed f
 
 ## Recent Changes (August 2025)
 
+### 🔧 Signal Creation Issue Resolved (August 19, 2025 - 9:23 AM)
+- **Root Cause Identified**: PostgreSQL `image_urls` ARRAY column causing "malformed array literal" errors
+- **Database Schema Analysis**: Used introspection to discover problematic ARRAY data type
+- **Function Fix Applied**: Updated admin-signals.mjs to avoid problematic array column completely
+- **Local Testing Confirmed**: Signal creation works when avoiding the `image_urls` array column
+- **Production Solution**: Modified Netlify function to use only `image_url` (singular) column
+- **Mobile Admin Dashboard**: Complete responsive design with touch-friendly interface
+- **Ready for Deployment**: All admin signal creation issues resolved for production use
+
 ### 🔧 Enhanced Console Debugging System (August 19, 2025 - 8:15 AM)
 - **Network Request Interceptor**: Automatically catches all fetch API errors and 404 responses
 - **Malformed URL Detection**: Specifically targets "subscription:1" pattern errors in admin interface
