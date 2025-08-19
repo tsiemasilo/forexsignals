@@ -292,21 +292,21 @@ export function AdminDashboard() {
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+          <div className="flex justify-between items-center h-14 sm:h-16">
             <div className="flex items-center">
-              <h1 className="text-xl font-semibold text-gray-900">Admin Dashboard</h1>
+              <h1 className="text-lg sm:text-xl font-semibold text-gray-900">Admin Dashboard</h1>
             </div>
-            <div className="flex items-center space-x-4">
-              <Badge className="bg-purple-100 text-purple-800">
+            <div className="flex items-center space-x-1 sm:space-x-4">
+              <Badge className="bg-purple-100 text-purple-800 hidden sm:inline-flex">
                 <Settings className="h-3 w-3 mr-1" />
                 Admin
               </Badge>
-              <div className="flex items-center space-x-2">
+              <div className="hidden sm:flex items-center space-x-2">
                 <User className="h-4 w-4 text-gray-500" />
                 <span className="text-sm text-gray-700">{user?.firstName} {user?.lastName}</span>
               </div>
-              <Button variant="outline" onClick={logout}>
+              <Button variant="outline" size="sm" onClick={logout} className="text-xs sm:text-sm">
                 Sign Out
               </Button>
             </div>
@@ -314,10 +314,10 @@ export function AdminDashboard() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0 space-y-8">
+      <main className="max-w-7xl mx-auto py-2 sm:py-6 px-2 sm:px-6 lg:px-8">
+        <div className="space-y-4 sm:space-y-8">
           {/* Stats Overview */}
-          <div className="grid gap-6 md:grid-cols-3">
+          <div className="grid gap-3 sm:gap-6 grid-cols-1 sm:grid-cols-3">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Total Users</CardTitle>
@@ -368,17 +368,20 @@ export function AdminDashboard() {
           {/* Tabs for Signals and User Management */}
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="signals" className="flex items-center">
-                <Signal className="h-4 w-4 mr-2" />
-                Signals Management
+              <TabsTrigger value="signals" className="flex items-center text-xs sm:text-sm">
+                <Signal className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Signals Management</span>
+                <span className="sm:hidden">Signals</span>
               </TabsTrigger>
-              <TabsTrigger value="users" className="flex items-center">
-                <Users className="h-4 w-4 mr-2" />
-                User Management
+              <TabsTrigger value="users" className="flex items-center text-xs sm:text-sm">
+                <Users className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">User Management</span>
+                <span className="sm:hidden">Users</span>
               </TabsTrigger>
-              <TabsTrigger value="debugging" className="flex items-center">
-                <Shield className="h-4 w-4 mr-2" />
-                System Health
+              <TabsTrigger value="debugging" className="flex items-center text-xs sm:text-sm">
+                <Shield className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">System Health</span>
+                <span className="sm:hidden">Health</span>
               </TabsTrigger>
             </TabsList>
 
@@ -395,8 +398,8 @@ export function AdminDashboard() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <form onSubmit={handleCreateSignal} className="space-y-4">
-                    <div className="grid gap-4 md:grid-cols-2">
+                  <form onSubmit={handleCreateSignal} className="space-y-3 sm:space-y-4">
+                    <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2">
                       <div className="space-y-2">
                         <label className="text-sm font-medium">Signal Title</label>
                         <Input
@@ -404,6 +407,7 @@ export function AdminDashboard() {
                           value={newSignal.title}
                           onChange={(e) => setNewSignal({ ...newSignal, title: e.target.value })}
                           required
+                          className="text-sm"
                         />
                       </div>
                       <div className="space-y-2">
@@ -423,7 +427,7 @@ export function AdminDashboard() {
                     <div className="space-y-2">
                       <label className="text-sm font-medium">Signal Content</label>
                       <textarea
-                        className="flex min-h-[80px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
+                        className="flex min-h-[60px] sm:min-h-[80px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
                         placeholder="Strong bullish momentum on EUR/USD. Entry at 1.0850, Stop Loss at 1.0820, Take Profit at 1.0920..."
                         value={newSignal.content}
                         onChange={(e) => setNewSignal({ ...newSignal, content: e.target.value })}
@@ -437,13 +441,15 @@ export function AdminDashboard() {
                         placeholder="https://example.com/chart-image.png"
                         value={newSignal.imageUrl}
                         onChange={(e) => setNewSignal({ ...newSignal, imageUrl: e.target.value })}
+                        className="text-sm"
                       />
                     </div>
                     
                     <Button 
                       type="submit" 
-                      className="w-full md:w-auto" 
+                      className="w-full sm:w-auto" 
                       disabled={createSignalMutation.isPending}
+                      size="sm"
                     >
                       {createSignalMutation.isPending ? "Creating..." : "Create Signal"}
                     </Button>
@@ -452,17 +458,17 @@ export function AdminDashboard() {
               </Card>
 
               {/* Existing Signals */}
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-3 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                 {signals?.map((signal: ForexSignal) => (
                   <Card key={signal.id}>
-                    <CardHeader>
-                      <CardTitle className="text-lg">{signal.title}</CardTitle>
-                      <div className="flex items-center space-x-2">
-                        <Badge className={
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-base sm:text-lg line-clamp-2">{signal.title}</CardTitle>
+                      <div className="flex items-center justify-between space-x-2">
+                        <Badge className={`text-xs ${
                           signal.tradeAction === "Buy" ? "bg-green-100 text-green-800" :
                           signal.tradeAction === "Sell" ? "bg-red-100 text-red-800" :
                           "bg-yellow-100 text-yellow-800"
-                        }>
+                        }`}>
                           {signal.tradeAction}
                         </Badge>
                         <span className="text-xs text-gray-500">
@@ -470,25 +476,26 @@ export function AdminDashboard() {
                         </span>
                       </div>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="pt-0">
                       {signal.imageUrl && (
                         <img
                           src={signal.imageUrl}
                           alt={signal.title}
-                          className="w-full h-32 object-cover rounded-md mb-3"
+                          className="w-full h-24 sm:h-32 object-cover rounded-md mb-3"
                         />
                       )}
-                      <p className="text-sm text-gray-700 mb-3">{signal.content}</p>
+                      <p className="text-xs sm:text-sm text-gray-700 mb-3 line-clamp-3">{signal.content}</p>
                       <div className="flex justify-end">
                         <Button
                           variant="destructive"
                           size="sm"
                           onClick={() => handleDeleteSignal(signal.id)}
                           disabled={deleteSignalMutation.isPending}
-                          className="flex items-center space-x-1"
+                          className="flex items-center space-x-1 text-xs"
                         >
                           <Trash2 className="h-3 w-3" />
-                          <span>{deleteSignalMutation.isPending ? "Deleting..." : "Delete"}</span>
+                          <span className="hidden sm:inline">{deleteSignalMutation.isPending ? "Deleting..." : "Delete"}</span>
+                          <span className="sm:hidden">{deleteSignalMutation.isPending ? "..." : "Del"}</span>
                         </Button>
                       </div>
                     </CardContent>
@@ -507,17 +514,17 @@ export function AdminDashboard() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
+                  <div className="space-y-3 sm:space-y-4">
                     {users?.map((user: AdminUser) => (
-                      <div key={user.id} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div key={user.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 border rounded-lg space-y-3 sm:space-y-0">
                         <div className="flex-1">
-                          <div className="flex items-center space-x-4">
-                            <div>
-                              <p className="font-medium">{user.firstName} {user.lastName}</p>
-                              <p className="text-sm text-gray-500">{user.email}</p>
+                          <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
+                            <div className="min-w-0 flex-1">
+                              <p className="font-medium text-sm sm:text-base truncate">{user.firstName} {user.lastName}</p>
+                              <p className="text-xs sm:text-sm text-gray-500 truncate">{user.email}</p>
                             </div>
-                            <div className="flex items-center space-x-2">
-                              <Badge className={getStatusColor(user.subscription)}>
+                            <div className="flex items-center space-x-2 flex-wrap">
+                              <Badge className={`${getStatusColor(user.subscription)} text-xs`}>
                                 {getStatusDisplay(user.subscription)}
                               </Badge>
                               {user.subscription && (
@@ -528,16 +535,17 @@ export function AdminDashboard() {
                             </div>
                           </div>
                         </div>
-                        <div className="flex items-center space-x-2">
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2 w-full sm:w-auto">
                           <Button
                             size="sm"
                             onClick={() => handleCreateTrial(user.id)}
                             disabled={createTrialMutation.isPending}
+                            className="w-full sm:w-auto text-xs"
                           >
-                            Create 7-Day Trial
+                            Create Trial
                           </Button>
                           <select
-                            className="h-8 rounded border border-input px-2 text-xs"
+                            className="h-8 rounded border border-input px-2 text-xs w-full sm:w-auto"
                             onChange={(e) => {
                               if (e.target.value) {
                                 const [status, planName] = e.target.value.split('|');
@@ -553,26 +561,30 @@ export function AdminDashboard() {
                             <option value="active|VIP Plan">VIP Plan</option>
                             <option value="expired">Mark as Expired</option>
                           </select>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handlePromoteUser(user.id, `${user.firstName} ${user.lastName}`)}
-                            disabled={promoteUserMutation.isPending}
-                            className="flex items-center space-x-1"
-                          >
-                            <UserCheck className="h-3 w-3" />
-                            <span>Admin</span>
-                          </Button>
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={() => handleDeleteUser(user.id, `${user.firstName} ${user.lastName}`)}
-                            disabled={deleteUserMutation.isPending}
-                            className="flex items-center space-x-1"
-                          >
-                            <Trash2 className="h-3 w-3" />
-                            <span>Delete</span>
-                          </Button>
+                          <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handlePromoteUser(user.id, `${user.firstName} ${user.lastName}`)}
+                              disabled={promoteUserMutation.isPending}
+                              className="flex items-center space-x-1 flex-1 sm:flex-none text-xs"
+                            >
+                              <UserCheck className="h-3 w-3" />
+                              <span className="hidden sm:inline">Admin</span>
+                              <span className="sm:hidden">Admin</span>
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => handleDeleteUser(user.id, `${user.firstName} ${user.lastName}`)}
+                              disabled={deleteUserMutation.isPending}
+                              className="flex items-center space-x-1 flex-1 sm:flex-none text-xs"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                              <span className="hidden sm:inline">Delete</span>
+                              <span className="sm:hidden">Del</span>
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     ))}
