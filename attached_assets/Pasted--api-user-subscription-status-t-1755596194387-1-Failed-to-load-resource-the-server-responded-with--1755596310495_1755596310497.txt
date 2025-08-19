@@ -1,0 +1,65 @@
+/api/user/subscription-status?t=1755596194387:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1755596196136:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1755596201754:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1755596203348:1  Failed to load resource: the server responded with a status of 401 ()
+/api/register:1  Failed to load resource: the server responded with a status of 409 ()
+/api/user/subscription-status?t=1755596208947:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1755596210573:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1755596216227:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1755596217819:1  Failed to load resource: the server responded with a status of 401 ()
+/api/register:1  Failed to load resource: the server responded with a status of 409 ()
+/api/user/subscription-status?t=1755596223495:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1755596225117:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1755596230758:1  Failed to load resource: the server responded with a status of 401 ()
+/api/register:1  Failed to load resource: the server responded with a status of 409 ()
+/api/register:1  Failed to load resource: the server responded with a status of 409 ()
+/api/user/subscription-status?t=1755596232462:1  Failed to load resource: the server responded with a status of 401 ()
+/api/register:1  Failed to load resource: the server responded with a status of 409 ()
+/api/register:1  Failed to load resource: the server responded with a status of 409 ()
+/api/user/subscription-status?t=1755596238056:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1755596239772:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1755596245355:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1755596246967:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1755596252563:1  Failed to load resource: the server responded with a status of 401 ()
+index-BRWwnLEr.js:48  GET https://watchlistfx.netlify.app/api/user/subscription-status?t=1755596254181 401 (Unauthorized)
+queryFn @ index-BRWwnLEr.js:48
+i @ index-BRWwnLEr.js:40
+y @ index-BRWwnLEr.js:40
+(anonymous) @ index-BRWwnLEr.js:40
+index-BRWwnLEr.js:48  POST https://watchlistfx.netlify.app/api/register 409 (Conflict)
+tt @ index-BRWwnLEr.js:48
+a @ index-BRWwnLEr.js:48
+f @ index-BRWwnLEr.js:278
+e0 @ index-BRWwnLEr.js:37
+n0 @ index-BRWwnLEr.js:37
+r0 @ index-BRWwnLEr.js:37
+ud @ index-BRWwnLEr.js:37
+qh @ index-BRWwnLEr.js:37
+(anonymous) @ index-BRWwnLEr.js:37
+tu @ index-BRWwnLEr.js:40
+yh @ index-BRWwnLEr.js:37
+Rl @ index-BRWwnLEr.js:37
+Rc @ index-BRWwnLEr.js:37
+y0 @ index-BRWwnLEr.js:37
+index-BRWwnLEr.js:48  GET https://watchlistfx.netlify.app/api/user/subscription-status?t=1755596259836 401 (Unauthorized)
+queryFn @ index-BRWwnLEr.js:48
+i @ index-BRWwnLEr.js:40
+y @ index-BRWwnLEr.js:40
+start @ index-BRWwnLEr.js:40
+fetch @ index-BRWwnLEr.js:40
+Cs @ index-BRWwnLEr.js:40
+(anonymous) @ index-BRWwnLEr.js:40
+setInterval
+Za @ index-BRWwnLEr.js:40
+Ja @ index-BRWwnLEr.js:40
+onQueryUpdate @ index-BRWwnLEr.js:40
+(anonymous) @ index-BRWwnLEr.js:40
+(anonymous) @ index-BRWwnLEr.js:40
+batch @ index-BRWwnLEr.js:40
+Ut @ index-BRWwnLEr.js:40
+a @ index-BRWwnLEr.js:40
+d @ index-BRWwnLEr.js:40
+(anonymous) @ index-BRWwnLEr.js:40
+Promise.catch
+y @ index-BRWwnLEr.js:40
+(anonymous) @ index-BRWwnLEr.js:40

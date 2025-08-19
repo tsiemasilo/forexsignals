@@ -3,6 +3,7 @@ import { Route, Switch, Redirect } from "wouter";
 import { queryClient } from "@/lib/queryClient";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { LoginPage } from "@/pages/LoginPage";
+import { Toaster } from "@/components/ui/toaster";
 
 import { PhoneSignalsPage } from "@/pages/PhoneSignalsPage";
 import { AdminDashboard } from "@/pages/AdminDashboard";
@@ -48,6 +49,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <AppRoutes />
+        <Toaster />
       </AuthProvider>
     </QueryClientProvider>
   );
