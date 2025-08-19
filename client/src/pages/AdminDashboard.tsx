@@ -518,13 +518,7 @@ export function AdminDashboard() {
                             </div>
                             <div className="flex items-center space-x-2">
                               <Badge className={getStatusColor(user.subscription)}>
-                                {user.subscription ? (
-                                  user.subscription.plan?.name || (
-                                    user.subscription.status === 'active' ? 'Active' :
-                                    user.subscription.status === 'trial' ? 'Trial' :
-                                    'Expired'
-                                  )
-                                ) : 'No Subscription'}
+                                {getStatusDisplay(user.subscription)}
                               </Badge>
                               {user.subscription && (
                                 <Badge variant="outline" className="text-xs">
