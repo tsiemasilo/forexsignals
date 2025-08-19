@@ -117,21 +117,31 @@ export const handler = async (event, context) => {
     if (method === 'PUT' && path.includes('subscription') && userId) {
       console.log('🔧 UPDATE SUBSCRIPTION REQUEST for user:', userId);
       
-      const { status, planId } = JSON.parse(event.body || '{}');
-      console.log('🔧 Request data:', { status, planId });
+      const { status, planName, planId } = JSON.parse(event.body || '{}');
+      console.log('🔧 Request data:', { status, planName, planId });
+
+      // Map plan name to plan ID if planName is provided
+      let finalPlanId = planId;
+      if (planName && !planId) {
+        const plans = await sql`SELECT id FROM subscription_plans WHERE name = ${planName}`;
+        if (plans.length > 0) {
+          finalPlanId = plans[0].id;
+          console.log('🔧 Mapped planName to planId:', { planName, planId: finalPlanId });
+        }
+      }
 
       // Map frontend status to database status
       let dbStatus = status;
-      if (status === 'active' && planId) {
+      if (status === 'active' && finalPlanId) {
         // Get plan details to determine specific status
-        const plans = await sql`SELECT id, name FROM subscription_plans WHERE id = ${planId}`;
+        const plans = await sql`SELECT id, name FROM subscription_plans WHERE id = ${finalPlanId}`;
         if (plans.length > 0) {
-          const planName = plans[0].name.toLowerCase();
-          if (planName.includes('basic')) {
+          const planNameLower = plans[0].name.toLowerCase();
+          if (planNameLower.includes('basic')) {
             dbStatus = 'basic plan';
-          } else if (planName.includes('premium')) {
+          } else if (planNameLower.includes('premium')) {
             dbStatus = 'premium plan';
-          } else if (planName.includes('vip')) {
+          } else if (planNameLower.includes('vip')) {
             dbStatus = 'vip plan';
           }
         }
@@ -155,9 +165,9 @@ export const handler = async (event, context) => {
           headers,
           body: JSON.stringify({ success: true, subscription: result[0] })
         };
-      } else if (status === 'active' && planId) {
+      } else if (status === 'active' && finalPlanId) {
         // Get plan duration
-        const plans = await sql`SELECT duration FROM subscription_plans WHERE id = ${planId}`;
+        const plans = await sql`SELECT duration FROM subscription_plans WHERE id = ${finalPlanId}`;
         const duration = plans[0]?.duration || 5;
         
         const now = new Date();
@@ -166,7 +176,7 @@ export const handler = async (event, context) => {
         
         const result = await sql`
           INSERT INTO subscriptions (user_id, plan_id, status, start_date, end_date, created_at)
-          VALUES (${userId}, ${planId}, ${dbStatus}, ${now.toISOString()}, ${endDate.toISOString()}, NOW())
+          VALUES (${userId}, ${finalPlanId}, ${dbStatus}, ${now.toISOString()}, ${endDate.toISOString()}, NOW())
           RETURNING *
         `;
         
