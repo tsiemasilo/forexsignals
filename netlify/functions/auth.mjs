@@ -1,136 +1,164 @@
 import { neon } from '@neondatabase/serverless';
 
-const sql = neon("postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require");
+const DATABASE_URL = process.env.NETLIFY_DATABASE_URL || "postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?channel_binding=require&sslmode=require";
+const sql = neon(DATABASE_URL);
 
 export const handler = async (event, context) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Cookie, Set-Cookie',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Credentials': 'true',
     'Content-Type': 'application/json'
   };
 
   if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 200, headers, body: '' };
+    return { statusCode: 200, headers };
   }
 
   try {
-    const path = event.path.split('/api/')[1];
-    
-    if (path === 'login' && event.httpMethod === 'POST') {
-      const { email } = JSON.parse(event.body);
+    const path = event.path;
+    const method = event.httpMethod;
+
+    // LOGIN
+    if (path === '/api/login' && method === 'POST') {
+      const { email } = JSON.parse(event.body || '{}');
       
       if (!email) {
         return {
           statusCode: 400,
           headers,
-          body: JSON.stringify({ message: 'Email is required' })
+          body: JSON.stringify({ message: "Email is required" })
         };
       }
 
       // Check if user exists
-      const user = await sql`SELECT * FROM users WHERE email = ${email} LIMIT 1`;
+      const users = await sql`SELECT * FROM users WHERE email = ${email}`;
       
-      if (user.length === 0) {
+      if (users.length === 0) {
         return {
           statusCode: 404,
           headers,
           body: JSON.stringify({ 
-            message: 'Account not found. Please register first to create your account.',
+            message: "Account not found. Please register first to create your account.",
             needsRegistration: true 
           })
         };
       }
 
-      // Check if this is the user's first login (no subscription exists)
-      const existingSubscription = await sql`
-        SELECT * FROM subscriptions WHERE user_id = ${user[0].id} LIMIT 1
+      const user = users[0];
+
+      // Check if user has subscription
+      const subscriptions = await sql`
+        SELECT s.*, sp.name as plan_name, sp.duration, sp.price 
+        FROM subscriptions s
+        JOIN subscription_plans sp ON s.plan_id = sp.id
+        WHERE s.user_id = ${user.id}
+        ORDER BY s.created_at DESC
+        LIMIT 1
       `;
-      
-      if (existingSubscription.length === 0) {
-        // First login - create 7-day free trial
+
+      let needsTrial = false;
+      if (subscriptions.length === 0) {
+        // Create 7-day trial for first-time login
         const endDate = new Date();
         endDate.setDate(endDate.getDate() + 7);
         
         await sql`
           INSERT INTO subscriptions (user_id, plan_id, status, start_date, end_date, created_at)
-          VALUES (${user[0].id}, 1, 'trial', NOW(), ${endDate.toISOString()}, NOW())
+          VALUES (${user.id}, 1, 'free trial', NOW(), ${endDate.toISOString()}, NOW())
         `;
         
-        console.log(`✅ Created 7-day trial for first login: ${email}`);
+        needsTrial = true;
       }
 
       return {
         statusCode: 200,
-        headers,
+        headers: {
+          ...headers,
+          'Set-Cookie': `sessionId=${user.id}; Path=/; HttpOnly; SameSite=Lax; Max-Age=86400`
+        },
         body: JSON.stringify({ 
-          message: 'Login successful',
+          message: "Login successful", 
           user: {
-            id: user[0].id,
-            email: user[0].email,
-            firstName: user[0].first_name,
-            lastName: user[0].last_name,
-            isAdmin: user[0].is_admin
-          }
+            id: user.id,
+            email: user.email,
+            firstName: user.first_name,
+            lastName: user.last_name,
+            isAdmin: user.is_admin
+          },
+          trialCreated: needsTrial
         })
       };
     }
 
-    if (path === 'register' && event.httpMethod === 'POST') {
-      const { email, firstName, lastName } = JSON.parse(event.body);
+    // REGISTER
+    if (path === '/api/register' && method === 'POST') {
+      const { email, firstName, lastName } = JSON.parse(event.body || '{}');
       
       if (!email || !firstName || !lastName) {
         return {
           statusCode: 400,
           headers,
-          body: JSON.stringify({ message: 'Email, first name, and last name are required' })
+          body: JSON.stringify({ message: "All fields are required" })
         };
       }
 
       // Check if user already exists
-      const existingUser = await sql`SELECT * FROM users WHERE email = ${email} LIMIT 1`;
+      const existingUsers = await sql`SELECT id FROM users WHERE email = ${email}`;
       
-      if (existingUser.length > 0) {
+      if (existingUsers.length > 0) {
         return {
           statusCode: 409,
           headers,
-          body: JSON.stringify({ 
-            message: 'Account already exists. Please sign in instead.',
-            userExists: true 
-          })
+          body: JSON.stringify({ message: "User already exists with this email" })
         };
       }
 
-      // Create new user WITHOUT logging them in or creating a trial
-      await sql`
-        INSERT INTO users (email, first_name, last_name, is_admin)
-        VALUES (${email}, ${firstName}, ${lastName}, false)
+      // Create new user
+      const newUsers = await sql`
+        INSERT INTO users (email, first_name, last_name, is_admin, created_at, updated_at)
+        VALUES (${email}, ${firstName}, ${lastName}, false, NOW(), NOW())
+        RETURNING *
       `;
-      
-      console.log(`✅ New user registered: ${email} - Account created, please sign in`);
-      
+
+      const user = newUsers[0];
+
       return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify({
-          message: 'Account created successfully! Please sign in to access your account.',
-          registrationComplete: true
+        statusCode: 201,
+        headers: {
+          ...headers,
+          'Set-Cookie': `sessionId=${user.id}; Path=/; HttpOnly; SameSite=Lax; Max-Age=86400`
+        },
+        body: JSON.stringify({ 
+          message: "Registration successful", 
+          user: {
+            id: user.id,
+            email: user.email,
+            firstName: user.first_name,
+            lastName: user.last_name,
+            isAdmin: user.is_admin
+          }
         })
       };
     }
 
-    if (path === 'logout' && event.httpMethod === 'POST') {
+    // LOGOUT
+    if (path === '/api/logout' && method === 'POST') {
       return {
         statusCode: 200,
-        headers,
-        body: JSON.stringify({ message: 'Logout successful' })
+        headers: {
+          ...headers,
+          'Set-Cookie': 'sessionId=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0'
+        },
+        body: JSON.stringify({ message: "Logout successful" })
       };
     }
 
     return {
       statusCode: 404,
       headers,
-      body: JSON.stringify({ message: 'Route not found' })
+      body: JSON.stringify({ message: "Not found" })
     };
 
   } catch (error) {
@@ -138,7 +166,7 @@ export const handler = async (event, context) => {
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ message: 'Internal server error' })
+      body: JSON.stringify({ message: "Internal server error", error: error.message })
     };
   }
 };

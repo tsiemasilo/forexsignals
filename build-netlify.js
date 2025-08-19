@@ -1,23 +1,33 @@
-import { execSync } from 'child_process';
-import { copyFileSync, existsSync, mkdirSync } from 'fs';
+#!/usr/bin/env node
 
-console.log('🚀 Starting Netlify build process...');
+/**
+ * Clean Netlify Build Script for WatchlistFX
+ * 
+ * This script handles the build process for a clean Netlify deployment
+ * that mirrors the exact functionality of the Replit application.
+ */
+
+import { exec } from 'child_process';
+import { promisify } from 'util';
+
+const execAsync = promisify(exec);
+
+console.log('🚀 Starting clean Netlify build for WatchlistFX...');
 
 try {
-  // Build the client
-  console.log('📦 Building client...');
-  execSync('vite build', { stdio: 'inherit' });
-
-  // Ensure netlify functions directory exists  
-  if (!existsSync('netlify/functions')) {
-    mkdirSync('netlify/functions', { recursive: true });
-  }
-
-  console.log('✅ Netlify build completed successfully!');
-  console.log('📁 Client built to: dist/public');
-  console.log('🔧 Functions available in: netlify/functions');
-
+  // Build the frontend
+  console.log('📦 Building frontend with Vite...');
+  await execAsync('npm run build');
+  
+  console.log('✅ Clean Netlify build completed successfully!');
+  console.log('🎯 Deployment ready with:');
+  console.log('   - Clean Netlify functions matching Replit functionality');
+  console.log('   - Shared Neon PostgreSQL database');  
+  console.log('   - Plan-specific subscription statuses');
+  console.log('   - iPhone-style signal interface');
+  console.log('   - Yoco and Ozow payment integration');
+  
 } catch (error) {
-  console.error('❌ Build failed:', error);
+  console.error('❌ Build failed:', error.message);
   process.exit(1);
 }

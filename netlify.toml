@@ -60,17 +60,17 @@
 # Admin Routes
 [[redirects]]
   from = "/api/admin/users"
-  to = "/.netlify/functions/admin-fixed"
+  to = "/.netlify/functions/admin"
   status = 200
 
 [[redirects]]
   from = "/api/admin/users/*/subscription"
-  to = "/.netlify/functions/admin-fixed"
+  to = "/.netlify/functions/admin"
   status = 200
 
 [[redirects]]
   from = "/api/admin/users/*/create-trial"
-  to = "/.netlify/functions/admin-fixed"
+  to = "/.netlify/functions/admin"
   status = 200
 
 [[redirects]]
@@ -83,52 +83,13 @@
   to = "/.netlify/functions/admin-signals"
   status = 200
 
-[[redirects]]
-  from = "/api/test-admin"
-  to = "/.netlify/functions/test-admin"
-  status = 200
-
-[[redirects]]
-  from = "/api/test-debug"
-  to = "/.netlify/functions/test-debug"
-  status = 200
-
-[[redirects]]
-  from = "/api/admin/debug"
-  to = "/.netlify/functions/admin-debug"
-  status = 200
-
-[[redirects]]
-  from = "/api/admin/debug-simple"
-  to = "/.netlify/functions/admin-debug-simple"
-  status = 200
-
-[[redirects]]
-  from = "/api/debug-days"
-  to = "/.netlify/functions/debug-days-calculation"
-  status = 200
-
-[[redirects]]
-  from = "/api/cache-buster"
-  to = "/.netlify/functions/cache-buster"
-  status = 200
-
-[[redirects]]
-  from = "/api/instant-refresh"
-  to = "/.netlify/functions/instant-refresh"
-  status = 200
-
-[[redirects]]
-  from = "/api/simple-signal"
-  to = "/.netlify/functions/simple-signal"
-  status = 200
-
 # User Routes
 [[redirects]]
   from = "/api/user/subscription-status"
   to = "/.netlify/functions/user"
   status = 200
 
+# Catch-all route
 [[redirects]]
   from = "/*"
   to = "/index.html"
@@ -136,7 +97,3 @@
 
 [functions]
   node_bundler = "esbuild"
-
-[dev]
-  command = "npm run dev"
-  port = 5000

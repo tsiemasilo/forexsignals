@@ -1,139 +1,109 @@
 import { neon } from '@neondatabase/serverless';
-import crypto from 'crypto';
 
-const sql = neon("postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require");
+const DATABASE_URL = process.env.NETLIFY_DATABASE_URL || "postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?channel_binding=require&sslmode=require";
+const sql = neon(DATABASE_URL);
 
 export const handler = async (event, context) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Cookie',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Credentials': 'true',
     'Content-Type': 'application/json'
   };
 
   if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 200, headers, body: '' };
-  }
-
-  if (event.httpMethod !== 'POST') {
-    return {
-      statusCode: 405,
-      headers,
-      body: JSON.stringify({ message: 'Method not allowed' })
-    };
+    return { statusCode: 200, headers };
   }
 
   try {
     const path = event.path;
-    const { planId, userId } = JSON.parse(event.body);
+    const method = event.httpMethod;
 
-    if (!userId) {
-      return {
-        statusCode: 401,
-        headers,
-        body: JSON.stringify({ message: 'Authentication required - userId missing' })
-      };
-    }
+    console.log('💳 PAYMENT REQUEST:', { path, method });
 
-    // Get user details
-    const user = await sql`SELECT * FROM users WHERE id = ${userId} LIMIT 1`;
-    if (user.length === 0) {
-      return {
-        statusCode: 404,
-        headers,
-        body: JSON.stringify({ message: 'User not found' })
-      };
-    }
-
-    // Get plan details
-    const plan = await sql`SELECT * FROM subscription_plans WHERE id = ${planId}`;
-    if (plan.length === 0) {
-      return {
-        statusCode: 404,
-        headers,
-        body: JSON.stringify({ message: 'Plan not found' })
-      };
-    }
-
-    const origin = event.headers.origin || event.headers.referer?.replace(/\/$/, '') || 'https://watchlistfx.netlify.app';
-
-    if (path === '/api/yoco/payment') {
-      // Yoco payment URLs (predefined checkout links)
-      const checkoutUrls = {
-        1: "https://c.yoco.com/checkout/ch_PLmQ2BJ7wp8h3Qu4Z9F1l6Lm", // Basic Plan
-        2: "https://c.yoco.com/checkout/ch_QLOBkND8RDvfb3Vh207tyk0x", // Premium Plan
-        3: "https://pay.yoco.com/r/mEQXAD" // VIP Plan
-      };
-
-      const redirectUrl = checkoutUrls[planId];
-      if (!redirectUrl) {
+    // YOCO Payment
+    if (path === '/api/yoco/payment' && method === 'POST') {
+      const { planId, userEmail, amount } = JSON.parse(event.body || '{}');
+      
+      // Get plan details
+      const plans = await sql`SELECT * FROM subscription_plans WHERE id = ${planId}`;
+      
+      if (plans.length === 0) {
         return {
           statusCode: 400,
           headers,
-          body: JSON.stringify({ message: 'Invalid plan selected' })
+          body: JSON.stringify({ message: "Invalid plan" })
         };
       }
+
+      const plan = plans[0];
+      
+      // Create Yoco checkout URL
+      const checkoutUrl = `https://yoco.com/checkout?amount=${amount * 100}&currency=ZAR&description=${encodeURIComponent(plan.name)}&metadata[plan_id]=${planId}&metadata[user_email]=${encodeURIComponent(userEmail)}`;
 
       return {
         statusCode: 200,
         headers,
-        body: JSON.stringify({ redirectUrl })
+        body: JSON.stringify({ 
+          checkoutUrl,
+          message: "Redirect to Yoco payment page"
+        })
       };
     }
 
-    if (path === '/api/ozow/payment') {
-      const privateKey = process.env.OZOW_SECRET_KEY;
-      if (!privateKey) {
+    // OZOW Payment 
+    if (path === '/api/ozow/payment' && method === 'POST') {
+      const { planId, userEmail, amount, firstName, lastName } = JSON.parse(event.body || '{}');
+      
+      // Get plan details
+      const plans = await sql`SELECT * FROM subscription_plans WHERE id = ${planId}`;
+      
+      if (plans.length === 0) {
         return {
-          statusCode: 500,
+          statusCode: 400,
           headers,
-          body: JSON.stringify({ message: 'Ozow not configured' })
+          body: JSON.stringify({ message: "Invalid plan" })
         };
       }
 
-      // Ozow payment parameters - using correct site code "NOS-NOS-005"
-      const ozowParams = {
-        SiteCode: "NOS-NOS-005",
-        CountryCode: "ZA", 
-        CurrencyCode: "ZAR",
-        Amount: parseFloat(plan[0].price).toFixed(2),
-        TransactionReference: `WFX-${userId}-${planId}-${Date.now()}`,
-        BankReference: "WatchlistFx Payment",
-        Customer: user[0].email,
-        IsTest: "false",
-        SuccessUrl: `${origin}/payment-success`,
-        CancelUrl: `${origin}/payment-cancel`,
-        ErrorUrl: `${origin}/payment-error`, 
-        NotifyUrl: `${origin}/api/ozow/notify`
+      const plan = plans[0];
+      
+      // Create Ozow payment data
+      const siteCode = "NOS-NOS-005"; // Your specified site code
+      const transactionReference = `WFX-${Date.now()}-${planId}`;
+      
+      const paymentData = {
+        siteCode,
+        countryCode: "ZA",
+        currencyCode: "ZAR",
+        amount: amount,
+        transactionReference,
+        bankReference: plan.name,
+        successUrl: `${event.headers.origin || 'https://watchlistfx.netlify.app'}/payment-success`,
+        cancelUrl: `${event.headers.origin || 'https://watchlistfx.netlify.app'}/payment-cancel`,
+        errorUrl: `${event.headers.origin || 'https://watchlistfx.netlify.app'}/payment-error`,
+        notifyUrl: `${event.headers.origin || 'https://watchlistfx.netlify.app'}/api/ozow/notify`,
+        customer: userEmail,
+        optional1: planId.toString(),
+        optional2: userEmail,
+        optional3: `${firstName} ${lastName}`,
+        optional4: "",
+        optional5: ""
       };
 
-      // Ruby implementation hash order (compact_blank removes empty optionals)
-      const hashParams = [
-        ozowParams.SiteCode,
-        ozowParams.CountryCode,
-        ozowParams.CurrencyCode,
-        ozowParams.Amount,
-        ozowParams.TransactionReference,
-        ozowParams.BankReference,
-        ozowParams.Customer,
-        ozowParams.CancelUrl,
-        ozowParams.ErrorUrl,
-        ozowParams.SuccessUrl,
-        ozowParams.NotifyUrl,
-        ozowParams.IsTest,
-        privateKey
-      ];
-      
-      const hashString = hashParams.join('').toLowerCase();
-      const hashCheck = crypto.createHash('sha512').update(hashString).digest('hex');
+      // Create Ozow checkout URL
+      const baseUrl = "https://pay.ozow.com/";
+      const queryParams = new URLSearchParams(paymentData).toString();
+      const checkoutUrl = `${baseUrl}?${queryParams}`;
 
       return {
         statusCode: 200,
         headers,
-        body: JSON.stringify({
-          action_url: "https://pay.ozow.com",
-          ...ozowParams,
-          HashCheck: hashCheck
+        body: JSON.stringify({ 
+          checkoutUrl,
+          transactionReference,
+          message: "Redirect to Ozow payment page"
         })
       };
     }
@@ -141,7 +111,7 @@ export const handler = async (event, context) => {
     return {
       statusCode: 404,
       headers,
-      body: JSON.stringify({ message: 'Payment method not found' })
+      body: JSON.stringify({ message: "Payment method not found" })
     };
 
   } catch (error) {
@@ -149,7 +119,7 @@ export const handler = async (event, context) => {
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ message: 'Payment processing failed' })
+      body: JSON.stringify({ message: "Internal server error", error: error.message })
     };
   }
 };

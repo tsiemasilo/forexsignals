@@ -1,151 +1,115 @@
-// Dedicated admin signals endpoint
 import { neon } from '@neondatabase/serverless';
 
-const sql = neon("postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require");
+const DATABASE_URL = process.env.NETLIFY_DATABASE_URL || "postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?channel_binding=require&sslmode=require";
+const sql = neon(DATABASE_URL);
 
 export const handler = async (event, context) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': 'Content-Type, Cookie',
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Credentials': 'true',
     'Content-Type': 'application/json'
   };
 
   if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 200, headers, body: '' };
-  }
-
-  console.log('🔧 ADMIN SIGNALS FUNCTION CALLED:', {
-    method: event.httpMethod,
-    path: event.path,
-    bodyLength: event.body?.length || 0,
-    timestamp: new Date().toISOString()
-  });
-
-  // Test database connection first
-  try {
-    console.log('🗄️ TESTING DATABASE CONNECTION...');
-    const testResult = await sql`SELECT 1 as test`;
-    console.log('✅ DATABASE CONNECTION SUCCESS:', testResult);
-  } catch (dbTestError) {
-    console.error('❌ DATABASE CONNECTION FAILED:', dbTestError);
-    return {
-      statusCode: 500,
-      headers,
-      body: JSON.stringify({ message: 'Database connection failed', error: dbTestError.message })
-    };
+    return { statusCode: 200, headers };
   }
 
   try {
     const method = event.httpMethod;
     const path = event.path;
 
+    console.log('🔧 ADMIN SIGNALS REQUEST:', { path, method });
+
+    // GET all signals for admin
     if (method === 'GET') {
-      console.log('📋 GET ADMIN SIGNALS');
       const signals = await sql`
-        SELECT * FROM forex_signals 
+        SELECT id, title, content, trade_action, image_url, image_urls, created_by, is_active, created_at, updated_at
+        FROM forex_signals 
         ORDER BY created_at DESC
       `;
+
+      const formattedSignals = signals.map(signal => ({
+        id: signal.id,
+        title: signal.title,
+        content: signal.content,
+        tradeAction: signal.trade_action,
+        imageUrl: signal.image_url,
+        imageUrls: signal.image_urls || [],
+        createdBy: signal.created_by,
+        isActive: signal.is_active,
+        createdAt: signal.created_at,
+        updatedAt: signal.updated_at
+      }));
 
       return {
         statusCode: 200,
         headers,
-        body: JSON.stringify(signals.map(signal => ({
-          ...signal,
-          uploadedImages: signal.image_urls ? JSON.parse(signal.image_urls) : [],
-          tradeAction: signal.trade_action
-        })))
+        body: JSON.stringify(formattedSignals)
       };
     }
 
+    // CREATE new signal
     if (method === 'POST') {
-      console.log('✨ POST ADMIN SIGNAL CREATE');
-      console.log('📨 Request body:', event.body);
+      const { title, content, tradeAction, imageUrls } = JSON.parse(event.body || '{}');
       
-      if (!event.body) {
-        console.error('❌ NO REQUEST BODY');
-        return {
-          statusCode: 400,
-          headers,
-          body: JSON.stringify({ message: 'Request body is required' })
-        };
-      }
-      
-      let requestData;
-      try {
-        requestData = JSON.parse(event.body);
-        console.log('📋 PARSED REQUEST DATA:', requestData);
-      } catch (parseError) {
-        console.error('❌ JSON PARSE ERROR:', parseError);
-        return {
-          statusCode: 400,
-          headers,
-          body: JSON.stringify({ message: 'Invalid JSON in request body', error: parseError.message })
-        };
-      }
-      
-      const { title, content, tradeAction, uploadedImages, imageUrls } = requestData;
-      
-      // Validate required fields
       if (!title || !content || !tradeAction) {
-        console.error('❌ MISSING REQUIRED FIELDS:', { title: !!title, content: !!content, tradeAction: !!tradeAction });
         return {
           statusCode: 400,
           headers,
-          body: JSON.stringify({ message: 'Missing required fields: title, content, and tradeAction are required' })
-        };
-      }
-      
-      const finalImages = uploadedImages || imageUrls || [];
-      console.log('✅ PROCEEDING WITH DATABASE INSERT:', { title, content, tradeAction, imageCount: finalImages.length });
-
-      let result;
-      try {
-        console.log('🗄️ EXECUTING DATABASE INSERT...');
-        console.log('Image data being inserted:', finalImages, 'Type:', typeof finalImages);
-        
-        // Handle empty array properly for PostgreSQL
-        const imageUrlsJson = finalImages.length === 0 ? null : JSON.stringify(finalImages);
-        
-        result = await sql`
-          INSERT INTO forex_signals (title, content, trade_action, image_urls, created_by, created_at, updated_at)
-          VALUES (${title}, ${content}, ${tradeAction}, ${imageUrlsJson}, 1, NOW(), NOW())
-          RETURNING *
-        `;
-        console.log('✅ DATABASE INSERT SUCCESS:', result[0]);
-      } catch (dbError) {
-        console.error('❌ DATABASE INSERT ERROR:', dbError);
-        return {
-          statusCode: 500,
-          headers,
-          body: JSON.stringify({ message: 'Database error', error: dbError.message })
+          body: JSON.stringify({ message: "Title, content, and trade action are required" })
         };
       }
 
+      const result = await sql`
+        INSERT INTO forex_signals (title, content, trade_action, image_url, image_urls, created_by, is_active, created_at, updated_at)
+        VALUES (${title}, ${content}, ${tradeAction}, ${null}, ${JSON.stringify(imageUrls || [])}, 1, true, NOW(), NOW())
+        RETURNING *
+      `;
+
+      const signal = result[0];
       return {
         statusCode: 201,
         headers,
         body: JSON.stringify({
-          ...result[0],
-          uploadedImages: result[0].image_urls ? JSON.parse(result[0].image_urls) : [],
-          tradeAction: result[0].trade_action
+          id: signal.id,
+          title: signal.title,
+          content: signal.content,
+          tradeAction: signal.trade_action,
+          imageUrl: signal.image_url,
+          imageUrls: signal.image_urls || [],
+          createdBy: signal.created_by,
+          isActive: signal.is_active,
+          createdAt: signal.created_at,
+          updatedAt: signal.updated_at
         })
       };
     }
 
+    // UPDATE signal
     if (method === 'PUT') {
-      console.log('📝 PUT ADMIN SIGNAL UPDATE');
-      const pathParts = path.split('/');
-      const signalId = parseInt(pathParts[pathParts.length - 1]);
-      const { title, content, tradeAction, uploadedImages, imageUrls } = JSON.parse(event.body);
-      const finalImages = uploadedImages || imageUrls || [];
+      const signalIdMatch = path.match(/\/signals\/(\d+)/);
+      if (!signalIdMatch) {
+        return {
+          statusCode: 400,
+          headers,
+          body: JSON.stringify({ message: "Signal ID is required" })
+        };
+      }
 
-      const imageUrlsJson = finalImages.length === 0 ? null : JSON.stringify(finalImages);
-      
+      const signalId = parseInt(signalIdMatch[1]);
+      const { title, content, tradeAction, imageUrls, isActive } = JSON.parse(event.body || '{}');
+
       const result = await sql`
         UPDATE forex_signals 
-        SET title = ${title}, content = ${content}, trade_action = ${tradeAction}, 
-            image_urls = ${imageUrlsJson}, updated_at = NOW()
+        SET 
+          title = COALESCE(${title}, title),
+          content = COALESCE(${content}, content),
+          trade_action = COALESCE(${tradeAction}, trade_action),
+          image_urls = COALESCE(${JSON.stringify(imageUrls || [])}, image_urls),
+          is_active = COALESCE(${isActive}, is_active),
+          updated_at = NOW()
         WHERE id = ${signalId}
         RETURNING *
       `;
@@ -154,59 +118,71 @@ export const handler = async (event, context) => {
         return {
           statusCode: 404,
           headers,
-          body: JSON.stringify({ message: 'Signal not found' })
+          body: JSON.stringify({ message: "Signal not found" })
         };
       }
 
+      const signal = result[0];
       return {
         statusCode: 200,
         headers,
         body: JSON.stringify({
-          ...result[0],
-          uploadedImages: result[0].image_urls ? JSON.parse(result[0].image_urls) : [],
-          tradeAction: result[0].trade_action
+          id: signal.id,
+          title: signal.title,
+          content: signal.content,
+          tradeAction: signal.trade_action,
+          imageUrl: signal.image_url,
+          imageUrls: signal.image_urls || [],
+          createdBy: signal.created_by,
+          isActive: signal.is_active,
+          createdAt: signal.created_at,
+          updatedAt: signal.updated_at
         })
       };
     }
 
+    // DELETE signal
     if (method === 'DELETE') {
-      console.log('🗑️ DELETE ADMIN SIGNAL');
-      const pathParts = path.split('/');
-      const signalId = parseInt(pathParts[pathParts.length - 1]);
+      const signalIdMatch = path.match(/\/signals\/(\d+)/);
+      if (!signalIdMatch) {
+        return {
+          statusCode: 400,
+          headers,
+          body: JSON.stringify({ message: "Signal ID is required" })
+        };
+      }
 
-      const result = await sql`
-        DELETE FROM forex_signals 
-        WHERE id = ${signalId}
-        RETURNING *
-      `;
-
+      const signalId = parseInt(signalIdMatch[1]);
+      
+      const result = await sql`DELETE FROM forex_signals WHERE id = ${signalId} RETURNING id`;
+      
       if (result.length === 0) {
         return {
           statusCode: 404,
           headers,
-          body: JSON.stringify({ message: 'Signal not found' })
+          body: JSON.stringify({ message: "Signal not found" })
         };
       }
 
       return {
         statusCode: 200,
         headers,
-        body: JSON.stringify({ message: 'Signal deleted successfully' })
+        body: JSON.stringify({ message: "Signal deleted successfully" })
       };
     }
 
     return {
-      statusCode: 405,
+      statusCode: 404,
       headers,
-      body: JSON.stringify({ message: 'Method not allowed' })
+      body: JSON.stringify({ message: "Not found" })
     };
 
   } catch (error) {
-    console.error('💥 ADMIN SIGNALS FUNCTION ERROR:', error);
+    console.error('Admin signals error:', error);
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ message: 'Internal server error', error: error.message })
+      body: JSON.stringify({ message: "Internal server error", error: error.message })
     };
   }
 };
