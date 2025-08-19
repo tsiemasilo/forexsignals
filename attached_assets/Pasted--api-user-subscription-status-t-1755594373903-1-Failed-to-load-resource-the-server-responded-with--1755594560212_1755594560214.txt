@@ -1,0 +1,43 @@
+/api/user/subscription-status?t=1755594373903:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1755594375912:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1755594407174:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1755594408759:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1755594431262:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1755594432910:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1755594438493:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1755594440124:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1755594445725:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1755594447324:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1755594452890:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1755594454523:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1755594460108:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1755594461719:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1755594467307:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1755594468924:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1755594474507:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1755594476125:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1755594484054:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1755594485640:1  Failed to load resource: the server responded with a status of 401 ()
+index-07bXzZY5.js:48  DELETE https://watchlistfx.netlify.app/api/admin/users/28 405 (Method Not Allowed)
+tt @ index-07bXzZY5.js:48
+mutationFn @ index-07bXzZY5.js:283
+fn @ index-07bXzZY5.js:40
+y @ index-07bXzZY5.js:40
+start @ index-07bXzZY5.js:40
+execute @ index-07bXzZY5.js:40
+await in execute
+mutate @ index-07bXzZY5.js:40
+(anonymous) @ index-07bXzZY5.js:40
+N @ index-07bXzZY5.js:283
+onClick @ index-07bXzZY5.js:283
+e0 @ index-07bXzZY5.js:37
+n0 @ index-07bXzZY5.js:37
+r0 @ index-07bXzZY5.js:37
+ud @ index-07bXzZY5.js:37
+qh @ index-07bXzZY5.js:37
+(anonymous) @ index-07bXzZY5.js:37
+tu @ index-07bXzZY5.js:40
+yh @ index-07bXzZY5.js:37
+Rl @ index-07bXzZY5.js:37
+Rc @ index-07bXzZY5.js:37
+y0 @ index-07bXzZY5.js:37

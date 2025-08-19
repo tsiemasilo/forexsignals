@@ -205,6 +205,47 @@ export const handler = async (event, context) => {
       }
     }
 
+    // DELETE USER - DELETE request
+    if (method === 'DELETE' && userId && path.includes('/users/')) {
+      console.log('🗑️ DELETE USER REQUEST for user:', userId);
+      
+      // Check if user exists and is not admin
+      const existingUser = await sql`SELECT * FROM users WHERE id = ${userId} AND is_admin = false`;
+      
+      if (existingUser.length === 0) {
+        return {
+          statusCode: 404,
+          headers,
+          body: JSON.stringify({ message: "User not found or cannot delete admin user" })
+        };
+      }
+
+      // Delete user's subscriptions first (foreign key constraint)
+      await sql`DELETE FROM subscriptions WHERE user_id = ${userId}`;
+      
+      // Delete the user
+      const result = await sql`DELETE FROM users WHERE id = ${userId} AND is_admin = false RETURNING *`;
+      
+      if (result.length === 0) {
+        return {
+          statusCode: 404,
+          headers,
+          body: JSON.stringify({ message: "User not found or cannot delete admin user" })
+        };
+      }
+
+      console.log('🗑️ User deleted successfully:', result[0]);
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({ 
+          success: true, 
+          message: "User deleted successfully",
+          deletedUser: result[0]
+        })
+      };
+    }
+
     return {
       statusCode: 404,
       headers,
