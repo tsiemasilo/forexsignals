@@ -266,7 +266,9 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
 
       const now = new Date();
       const endDate = new Date(subscription.endDate);
-      const isActive = (subscription.status === 'active' || subscription.status === 'trial') && endDate > now;
+      // Accept any valid subscription status that's not explicitly expired/cancelled
+      const validStatuses = ['active', 'trial', 'basic plan', 'premium plan', 'vip plan'];
+      const isActive = validStatuses.includes(subscription.status) && endDate > now;
       
       if (!isActive) {
         console.log(`❌ Inactive subscription for user: ${userId}, status: ${subscription.status}, endDate: ${endDate}`);
