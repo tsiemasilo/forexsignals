@@ -61,10 +61,12 @@ export function LoginPage() {
           description: "Please complete your registration to create an account.",
         });
       } else if (error?.userExists === true) {
+        console.log("🍞 Showing userExists toast");
         setIsRegistering(false);
         toast({
           title: "Account Already Exists",
           description: "This account already exists. Please sign in instead.",
+          variant: "destructive"
         });
       } else {
         console.log("Falling through to generic error handling");

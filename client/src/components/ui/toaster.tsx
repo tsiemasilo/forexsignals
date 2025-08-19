@@ -10,6 +10,8 @@ import {
 
 export function Toaster() {
   const { toasts } = useToast()
+  
+  console.log("🍞 Toaster rendering with toasts:", toasts);
 
   return (
     <ToastProvider>
@@ -26,7 +28,7 @@ export function Toaster() {
           </Toast>
         )
       })}
-      <ToastViewport className="fixed top-4 right-4 z-[100] max-w-sm w-full" />
+      <ToastViewport className="fixed top-4 right-4 z-[100] max-w-sm w-full pointer-events-none" />
     </ToastProvider>
   )
 }

@@ -17,7 +17,9 @@ export function useToast() {
     const id = `toast-${++toastCount}`;
     const newToast: Toast = { id, title, description, variant };
     
+    console.log("🍞 Creating toast:", newToast);
     toasts.push(newToast);
+    console.log("🍞 Total toasts:", toasts.length);
     forceUpdate({});
 
     // Auto-remove after 5 seconds
