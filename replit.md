@@ -6,6 +6,15 @@ WatchlistFX is a production-ready forex signals subscription platform designed f
 
 ## Recent Changes (August 2025)
 
+### 🔧 Enhanced Console Debugging System (August 19, 2025 - 8:15 AM)
+- **Network Request Interceptor**: Automatically catches all fetch API errors and 404 responses
+- **Malformed URL Detection**: Specifically targets "subscription:1" pattern errors in admin interface
+- **Error Testing Panel**: New debugging tab with buttons to trigger test errors for system validation
+- **Auto-Fix Capabilities**: Detects common URL construction problems with automatic repair suggestions
+- **Real-Time Error Categorization**: All console logs categorized by type (API, Auth, Network, General)
+- **Enhanced Severity Levels**: Critical, High, Medium, Low priority classification for targeted debugging
+- **TypeScript Compliance**: Fixed URL type handling in fetch interceptor for production stability
+
 ### 🚀 Complete Netlify Rebuild - Clean Slate Deployment (August 19, 2025 - 7:45 AM)
 - **Clean Netlify Functions**: Complete rebuild from scratch with 8 optimized functions
 - **Database Integration**: All functions use shared Neon PostgreSQL database via NETLIFY_DATABASE_URL
