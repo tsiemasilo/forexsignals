@@ -59,6 +59,7 @@ export function LoginPage() {
         toast({
           title: "Registration Required",
           description: "Please complete your registration to create an account.",
+          variant: "destructive"
         });
       } else if (error?.userExists === true) {
         console.log("🍞 Showing userExists toast");
