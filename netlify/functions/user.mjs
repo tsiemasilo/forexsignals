@@ -97,16 +97,16 @@ export const handler = async (event, context) => {
       // Determine if subscription is active
       const isActive = daysLeft > 0 && (subscription.status === 'active' || subscription.status === 'free trial' || subscription.status === 'basic plan' || subscription.status === 'premium plan' || subscription.status === 'vip plan');
 
-      // Create proper status display
+      // Create clean status display without days
       let statusDisplay = subscription.status;
       if (subscription.status === 'basic plan') {
-        statusDisplay = `Basic Plan (${daysLeft} days left)`;
+        statusDisplay = 'Basic Plan';
       } else if (subscription.status === 'premium plan') {
-        statusDisplay = `Premium Plan (${daysLeft} days left)`;
+        statusDisplay = 'Premium Plan';
       } else if (subscription.status === 'vip plan') {
-        statusDisplay = `VIP Plan (${daysLeft} days left)`;
+        statusDisplay = 'VIP Plan';
       } else if (subscription.status === 'free trial') {
-        statusDisplay = `Trial (${daysLeft} days left)`;
+        statusDisplay = 'Trial';
       } else if (!isActive) {
         statusDisplay = 'Expired';
       }

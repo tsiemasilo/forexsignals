@@ -72,11 +72,31 @@ export function SubscriptionStatusBadge() {
     }
   };
 
+  // Get clean plan name without days
+  const getCleanPlanName = () => {
+    switch (subscriptionStatus.status) {
+      case 'basic plan':
+        return 'Basic Plan';
+      case 'premium plan':
+        return 'Premium Plan';
+      case 'vip plan':
+        return 'VIP Plan';
+      case 'free trial':
+        return 'Trial';
+      case 'expired':
+        return 'Expired';
+      case 'inactive':
+        return 'Inactive';
+      default:
+        return subscriptionStatus.status.charAt(0).toUpperCase() + subscriptionStatus.status.slice(1);
+    }
+  };
+
   return (
     <div className="flex items-center gap-2">
       <Badge className={`${getBadgeColorClass()} flex items-center text-xs font-medium`}>
         {getIcon()}
-        {subscriptionStatus.statusDisplay || subscriptionStatus.status.charAt(0).toUpperCase() + subscriptionStatus.status.slice(1)}
+        {getCleanPlanName()}
       </Badge>
       {subscriptionStatus.status !== 'expired' && subscriptionStatus.status !== 'inactive' && subscriptionStatus.daysLeft > 0 && (
         <span className={`text-xs font-medium ${getDaysLeftColor()}`}>
