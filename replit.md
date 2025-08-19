@@ -63,3 +63,28 @@ Preferred communication style: Simple, everyday language.
 - **Radix UI**: Headless component library.
 - **Tailwind CSS**: Utility-first CSS framework.
 - **Lucide Icons**: Icon library.
+
+## Recent Changes (August 2025)
+
+### 📱 Toast Notifications Fixed for Production (August 19, 2025 - 9:45 AM)
+- **Added Toaster Component**: Imported and included in App.tsx for global toast display
+- **Fixed TypeScript Errors**: Removed undefined action property from toast mapping
+- **Positioned Outside Mobile**: Toast viewport positioned at top-right with fixed positioning and high z-index
+- **Production Deployment**: Updated both Replit and Netlify with toast notification fixes
+- **User Experience**: Toast now appears outside mobile interface with proper visibility
+
+### ✅ Duplicate Email Validation Confirmed Working (August 19, 2025 - 9:35 AM)
+- **Backend Validation**: Server properly checks for existing emails and returns 409 status
+- **Frontend Handling**: LoginPage detects userExists flag and shows "Account Already Exists" message
+- **User Experience**: Form automatically switches back to login mode when duplicate detected
+- **API Testing**: Confirmed both new account creation and duplicate email rejection work correctly
+- **Production Ready**: Complete email validation flow prevents duplicate registrations
+
+### 🔧 Signal Creation Issue Resolved (August 19, 2025 - 9:23 AM)
+- **Root Cause Identified**: PostgreSQL `image_urls` ARRAY column causing "malformed array literal" errors
+- **Database Schema Analysis**: Used introspection to discover problematic ARRAY data type
+- **Function Fix Applied**: Updated admin-signals.mjs to avoid problematic array column completely
+- **Local Testing Confirmed**: Signal creation works when avoiding the `image_urls` array column
+- **Production Solution**: Modified Netlify function to use only `image_url` (singular) column
+- **Mobile Admin Dashboard**: Complete responsive design with touch-friendly interface
+- **Ready for Deployment**: All admin signal creation issues resolved for production use
