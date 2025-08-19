@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Users, Plus, TrendingUp, Settings, User, Calendar, Signal, Trash2, UserCheck } from "lucide-react";
+import SystemHealthDashboard from "@/components/SystemHealthDashboard";
+import { Users, Plus, TrendingUp, Settings, User, Calendar, Signal, Trash2, UserCheck, Shield } from "lucide-react";
 
 interface AdminUser {
   id: number;
@@ -346,7 +347,7 @@ export function AdminDashboard() {
 
           {/* Tabs for Signals and User Management */}
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="signals" className="flex items-center">
                 <Signal className="h-4 w-4 mr-2" />
                 Signals Management
@@ -354,6 +355,10 @@ export function AdminDashboard() {
               <TabsTrigger value="users" className="flex items-center">
                 <Users className="h-4 w-4 mr-2" />
                 User Management
+              </TabsTrigger>
+              <TabsTrigger value="debugging" className="flex items-center">
+                <Shield className="h-4 w-4 mr-2" />
+                System Health
               </TabsTrigger>
             </TabsList>
 
@@ -560,6 +565,10 @@ export function AdminDashboard() {
                   </div>
                 </CardContent>
               </Card>
+            </TabsContent>
+
+            <TabsContent value="debugging" className="space-y-6">
+              <SystemHealthDashboard />
             </TabsContent>
           </Tabs>
         </div>

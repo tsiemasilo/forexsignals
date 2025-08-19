@@ -89,6 +89,12 @@
   to = "/.netlify/functions/user"
   status = 200
 
+# Debug Routes
+[[redirects]]
+  from = "/api/debug/*"
+  to = "/.netlify/functions/debug"
+  status = 200
+
 # Catch-all route
 [[redirects]]
   from = "/*"
