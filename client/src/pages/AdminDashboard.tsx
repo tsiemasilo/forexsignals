@@ -230,12 +230,19 @@ export function AdminDashboard() {
     const endDate = new Date(subscription.endDate);
     const isExpired = endDate <= now;
     
-    if (isExpired) {
+    if (isExpired || subscription.status === 'expired') {
       return "bg-red-100 text-red-800";
-    } else if (subscription.status === 'trial') {
+    } else if (subscription.status === 'free trial') {
       return "bg-blue-100 text-blue-800";
-    } else if (subscription.status === 'active') {
+    } else if (subscription.status === 'basic plan') {
       return "bg-green-100 text-green-800";
+    } else if (subscription.status === 'premium plan') {
+      return "bg-purple-100 text-purple-800";
+    } else if (subscription.status === 'vip plan') {
+      return "bg-amber-100 text-amber-800";
+    } else if (subscription.status === 'trial' || subscription.status === 'active') {
+      // Legacy status support
+      return subscription.status === 'trial' ? "bg-blue-100 text-blue-800" : "bg-green-100 text-green-800";
     } else {
       return "bg-red-100 text-red-800";
     }
@@ -247,16 +254,29 @@ export function AdminDashboard() {
     const now = new Date();
     const endDate = new Date(subscription.endDate);
     const daysLeft = Math.max(0, Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+    const isExpired = endDate <= now;
     
-    if (subscription.status === 'trial') {
+    if (subscription.status === 'expired' || isExpired) {
+      return "Expired";
+    } else if (subscription.status === 'free trial') {
+      return daysLeft > 0 ? `Trial (${daysLeft} days left)` : "Trial Expired";
+    } else if (subscription.status === 'basic plan') {
+      return daysLeft > 0 ? `Basic Plan (${daysLeft} days left)` : "Expired";
+    } else if (subscription.status === 'premium plan') {
+      return daysLeft > 0 ? `Premium Plan (${daysLeft} days left)` : "Expired";
+    } else if (subscription.status === 'vip plan') {
+      return daysLeft > 0 ? `VIP Plan (${daysLeft} days left)` : "Expired";
+    } else if (subscription.status === 'trial') {
+      // Legacy support
       return daysLeft > 0 ? `Trial (${daysLeft} days left)` : "Trial Expired";
     } else if (subscription.status === 'active') {
-      const planName = subscription.plan?.name || 'Active';
+      // Legacy support
+      const planName = subscription.planName || 'Active';
       return daysLeft > 0 ? `${planName} (${daysLeft} days left)` : "Expired";
-    } else if (subscription.status === 'expired') {
-      return "Expired";
     } else {
-      return subscription.status.charAt(0).toUpperCase() + subscription.status.slice(1);
+      // Capitalize first letter of any other status
+      const displayStatus = subscription.status.replace(/\b\w/g, l => l.toUpperCase());
+      return daysLeft > 0 ? `${displayStatus} (${daysLeft} days left)` : "Expired";
     }
   };
 
