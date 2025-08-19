@@ -55,6 +55,15 @@ export const useConsoleDebugger = () => {
           auto_fixable: true
         };
       }
+      // Detect malformed URLs with colon patterns
+      if (msg.includes('subscription:') || msg.includes(':1') || msg.includes(':2')) {
+        return {
+          category: 'api',
+          severity: 'critical',
+          suggested_fix: 'Malformed API URL detected. Fix URL construction in admin interface.',
+          auto_fixable: true
+        };
+      }
       if (msg.includes('404')) {
         return {
           category: 'api',
@@ -144,6 +153,13 @@ export const useConsoleDebugger = () => {
           return true;
 
         case 'api':
+          if (log.message.includes('subscription:') || log.message.includes(':1')) {
+            // Fix malformed URL issue by refreshing the page
+            console.log('Auto-fixing malformed URL issue...');
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            window.location.reload();
+            return true;
+          }
           if (log.message.includes('500')) {
             // Retry API request after delay
             await new Promise(resolve => setTimeout(resolve, 2000));
@@ -251,6 +267,68 @@ export const useConsoleDebugger = () => {
     console.info = interceptConsole('info');
     console.debug = interceptConsole('debug');
 
+    // Intercept fetch requests to catch network errors
+    const originalFetch = window.fetch;
+    window.fetch = async (...args) => {
+      const url = args[0] instanceof Request ? args[0].url : args[0];
+      const urlString = typeof url === 'string' ? url : url.toString();
+      const startTime = Date.now();
+      
+      try {
+        const response = await originalFetch(...args);
+        const responseTime = Date.now() - startTime;
+        
+        // Log failed requests
+        if (!response.ok) {
+          const logEntry: ConsoleLog = {
+            id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+            timestamp: new Date(),
+            level: 'error',
+            message: `Failed to load resource: ${urlString} (${response.status})`,
+            category: 'api',
+            severity: response.status === 404 ? 'high' : 'medium',
+            suggested_fix: response.status === 404 ? 
+              'Check URL construction and API route configuration.' : 
+              `HTTP ${response.status} error. Check server logs.`,
+            auto_fixable: response.status === 404 && urlString.includes('subscription:')
+          };
+          
+          setLogs(prev => [logEntry, ...prev].slice(0, 100));
+          setStats(prev => ({
+            ...prev,
+            total_errors: prev.total_errors + 1,
+            api_errors: prev.api_errors + 1,
+            last_error_time: new Date()
+          }));
+        }
+        
+        return response;
+      } catch (error) {
+        const responseTime = Date.now() - startTime;
+        
+        const logEntry: ConsoleLog = {
+          id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+          timestamp: new Date(),
+          level: 'error',
+          message: `Network error for ${urlString}: ${error}`,
+          category: 'network',
+          severity: 'high',
+          suggested_fix: 'Network connectivity issue or server unavailable.',
+          auto_fixable: true
+        };
+        
+        setLogs(prev => [logEntry, ...prev].slice(0, 100));
+        setStats(prev => ({
+          ...prev,
+          total_errors: prev.total_errors + 1,
+          api_errors: prev.api_errors + 1,
+          last_error_time: new Date()
+        }));
+        
+        throw error;
+      }
+    };
+
     // Listen for unhandled errors
     const handleError = (event: ErrorEvent) => {
       const logEntry: ConsoleLog = {
@@ -308,6 +386,9 @@ export const useConsoleDebugger = () => {
       console.error = originalConsole.error;
       console.info = originalConsole.info;
       console.debug = originalConsole.debug;
+      if (window.fetch !== originalFetch) {
+        window.fetch = originalFetch;
+      }
       
       window.removeEventListener('error', handleError);
       window.removeEventListener('unhandledrejection', handleUnhandledRejection);

@@ -22,6 +22,7 @@ import {
   Shield
 } from 'lucide-react';
 import ConsoleDebugPanel from './ConsoleDebugPanel';
+import DebugTestPanel from './DebugTestPanel';
 
 const SystemHealthDashboard: React.FC = () => {
   const {
@@ -234,10 +235,11 @@ const SystemHealthDashboard: React.FC = () => {
 
       {/* Detailed Monitoring */}
       <Tabs defaultValue="endpoints" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="endpoints">API Endpoints</TabsTrigger>
           <TabsTrigger value="console">Console Logs</TabsTrigger>
           <TabsTrigger value="performance">Performance</TabsTrigger>
+          <TabsTrigger value="testing">Error Testing</TabsTrigger>
         </TabsList>
 
         <TabsContent value="endpoints" className="space-y-4">
@@ -360,6 +362,10 @@ const SystemHealthDashboard: React.FC = () => {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="testing">
+          <DebugTestPanel />
         </TabsContent>
       </Tabs>
     </div>
