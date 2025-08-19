@@ -266,19 +266,7 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
 
       const now = new Date();
       const endDate = new Date(subscription.endDate);
-      
-      // Valid active subscription statuses
-      const validActiveStatuses = ['active', 'trial', 'basic plan', 'premium plan', 'vip plan', 'free trial'];
-      const statusCheck = validActiveStatuses.includes(subscription.status);
-      const dateCheck = endDate > now;
-      const isActive = statusCheck && dateCheck;
-      
-      console.log(`🔍 DETAILED ACCESS CHECK - User: ${userId}`);
-      console.log(`📅 Current date: ${now.toISOString()}`);
-      console.log(`📅 End date: ${endDate.toISOString()}`);
-      console.log(`✅ Status check (${subscription.status}): ${statusCheck}`);
-      console.log(`✅ Date check (${endDate} > ${now}): ${dateCheck}`);
-      console.log(`✅ Final access: ${isActive}`);
+      const isActive = (subscription.status === 'active' || subscription.status === 'trial') && endDate > now;
       
       if (!isActive) {
         console.log(`❌ Inactive subscription for user: ${userId}, status: ${subscription.status}, endDate: ${endDate}`);
