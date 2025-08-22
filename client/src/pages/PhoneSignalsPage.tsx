@@ -932,9 +932,28 @@ export function PhoneSignalsPage() {
 
                 {/* Signal Details Modal - Native Mobile App Style */}
                 {showSignalModal && selectedSignal && (
-                  <div className="absolute inset-0 bg-slate-900 z-50 overflow-hidden flex flex-col">
-                    {/* Status Bar Safe Area */}
-                    <div className="h-20 bg-slate-900"></div> {/* Space for status bar and notch */}
+                  <div className="absolute inset-0 bg-white z-50 overflow-hidden flex flex-col">
+                    {/* Phone Notch - Same as main interface */}
+                    <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-24 h-6 bg-black rounded-b-2xl z-10"></div>
+                    
+                    {/* Status Bar - Match main interface exactly */}
+                    <div className="flex justify-between items-center px-6 pt-8 pb-2 bg-slate-50 flex-shrink-0">
+                      <span className="text-sm font-medium text-slate-900">
+                        {currentTime.toLocaleTimeString('en-US', { 
+                          timeZone: 'Africa/Johannesburg',
+                          hour: '2-digit', 
+                          minute: '2-digit',
+                          hour12: false 
+                        })}
+                      </span>
+                      <div className="flex items-center space-x-1">
+                        <div className="w-4 h-2 bg-slate-900 rounded-sm"></div>
+                        <div className="w-1 h-2 bg-slate-900 rounded-sm"></div>
+                        <div className="w-6 h-3 border border-slate-900 rounded-sm">
+                          <div className="w-4 h-1.5 bg-green-500 rounded-sm m-0.5"></div>
+                        </div>
+                      </div>
+                    </div>
                     
                     {/* Mobile App Header */}
                     <div className="flex items-center justify-between px-4 py-3 bg-slate-900 text-white flex-shrink-0">
