@@ -377,21 +377,21 @@ function PhoneSignUpForm({ onBackToLogin }: { onBackToLogin: () => void }) {
   };
 
   return (
-    <div className="flex-1 flex justify-center px-4" style={{ paddingTop: '20px', paddingBottom: '40px' }}>
+    <div className="flex-1 flex justify-center px-4" style={{ paddingTop: '15px', paddingBottom: '30px' }}>
       <div className="w-full flex justify-center">
         <form 
           onSubmit={handleSubmit} 
           className="flex flex-col bg-white rounded-2xl shadow-lg"
           style={{ 
-            gap: '10px',
-            padding: '30px',
-            width: '280px',
+            gap: '8px',
+            padding: '20px',
+            width: '260px',
             borderRadius: '20px',
             fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
           }}
         >
           {/* Logo */}
-          <div className="flex justify-center mb-4">
+          <div className="flex justify-center mb-2">
             <div className="flex items-center gap-2">
               <Signal className="h-8 w-8 text-green-600" />
               <div>
@@ -515,22 +515,60 @@ function PhoneSignUpForm({ onBackToLogin }: { onBackToLogin: () => void }) {
             />
           </div>
 
+          <div className="flex flex-col">
+            <label style={{ color: '#151717', fontWeight: 600 }}>Password</label>
+          </div>
+          
+          <div 
+            className="inputForm"
+            style={{ 
+              border: '1.5px solid #ecedec',
+              borderRadius: '10px',
+              height: '45px',
+              display: 'flex',
+              alignItems: 'center',
+              paddingLeft: '10px',
+              transition: '0.2s ease-in-out'
+            }}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width={20} viewBox="0 0 24 24" height={20} fill="currentColor">
+              <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z"/>
+            </svg>
+            <input
+              placeholder="Enter your Password"
+              className="input"
+              style={{ 
+                marginLeft: '10px',
+                borderRadius: '10px',
+                border: 'none',
+                width: '100%',
+                height: '100%',
+                outline: 'none',
+                fontFamily: 'inherit'
+              }}
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+
           <button 
             type="submit"
-            disabled={loading || !firstName || !lastName || !email}
+            disabled={loading || !firstName || !lastName || !email || !password}
             className="button-submit"
             style={{ 
-              margin: '20px 0 10px 0',
+              margin: '15px 0 8px 0',
               backgroundColor: '#151717',
               border: 'none',
               color: 'white',
-              fontSize: '15px',
+              fontSize: '14px',
               fontWeight: 500,
               borderRadius: '10px',
-              height: '50px',
+              height: '45px',
               width: '100%',
               cursor: 'pointer',
-              opacity: loading || !firstName || !lastName || !email ? 0.5 : 1
+              opacity: loading || !firstName || !lastName || !email || !password ? 0.5 : 1
             }}
           >
             {loading ? "Creating Account..." : "Sign Up"}

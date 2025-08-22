@@ -88,10 +88,10 @@ export function LoginPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-8">
+      <div className="w-full max-w-sm space-y-6">
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">ForexSignals Pro</h1>
-          <p className="text-gray-600">Professional Trading Signals Platform</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-1">ForexSignals Pro</h1>
+          <p className="text-sm text-gray-600">Professional Trading Signals Platform</p>
         </div>
 
         <Card>
@@ -105,9 +105,9 @@ export function LoginPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <label htmlFor="email" className="text-sm font-medium text-gray-700">
+            <form onSubmit={handleSubmit} className="space-y-3">
+              <div className="space-y-1">
+                <label htmlFor="email" className="text-xs font-medium text-gray-700">
                   Email Address
                 </label>
                 <Input
@@ -121,8 +121,8 @@ export function LoginPage() {
                 />
               </div>
 
-              <div className="space-y-2">
-                <label htmlFor="password" className="text-sm font-medium text-gray-700">
+              <div className="space-y-1">
+                <label htmlFor="password" className="text-xs font-medium text-gray-700">
                   Password
                 </label>
                 <Input
@@ -138,8 +138,8 @@ export function LoginPage() {
 
               {isRegistering && (
                 <>
-                  <div className="space-y-2">
-                    <label htmlFor="firstName" className="text-sm font-medium text-gray-700">
+                  <div className="space-y-1">
+                    <label htmlFor="firstName" className="text-xs font-medium text-gray-700">
                       First Name
                     </label>
                     <Input
@@ -153,8 +153,8 @@ export function LoginPage() {
                     />
                   </div>
                   
-                  <div className="space-y-2">
-                    <label htmlFor="lastName" className="text-sm font-medium text-gray-700">
+                  <div className="space-y-1">
+                    <label htmlFor="lastName" className="text-xs font-medium text-gray-700">
                       Last Name
                     </label>
                     <Input
