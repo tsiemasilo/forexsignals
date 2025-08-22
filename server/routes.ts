@@ -313,7 +313,44 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
 
   app.get("/api/signals/:id", requireAuth, async (req: Request, res: Response) => {
     try {
+      const userId = req.session.userId!;
       const signalId = parseInt(req.params.id);
+      
+      console.log(`🔍 INDIVIDUAL SIGNAL ACCESS DEBUG - User: ${userId}, Signal: ${signalId}`);
+      
+      // Check if user is admin - admins bypass subscription checks
+      const user = await storage.getUser(userId);
+      if (user?.isAdmin) {
+        console.log(`✅ Admin access granted for signal: ${signalId}`);
+        const signal = await storage.getSignal(signalId);
+        if (!signal) {
+          return res.status(404).json({ message: "Signal not found" });
+        }
+        return res.json(signal);
+      }
+      
+      // Check subscription status for regular users
+      const subscription = await storage.getUserSubscription(userId);
+      console.log(`📋 Subscription check for signal ${signalId}:`, subscription);
+      
+      if (!subscription) {
+        console.log(`❌ No subscription found for user: ${userId}`);
+        return res.status(403).json({ message: "Active subscription required to view signal details" });
+      }
+
+      const now = new Date();
+      const endDate = new Date(subscription.endDate);
+      // Accept any valid subscription status that's not explicitly expired/cancelled
+      const validStatuses = ['active', 'trial', 'basic plan', 'premium plan', 'vip plan'];
+      const isActive = validStatuses.includes(subscription.status) && endDate > now;
+      
+      if (!isActive) {
+        console.log(`❌ Inactive subscription for user: ${userId}, status: ${subscription.status}, endDate: ${endDate}`);
+        return res.status(403).json({ message: "Active subscription required to view signal details" });
+      }
+
+      console.log(`✅ Access granted for signal: ${signalId}`);
+      
       const signal = await storage.getSignal(signalId);
       
       if (!signal) {
