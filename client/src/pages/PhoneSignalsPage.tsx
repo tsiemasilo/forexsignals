@@ -932,9 +932,12 @@ export function PhoneSignalsPage() {
 
                 {/* Signal Details Modal - Native Mobile App Style */}
                 {showSignalModal && selectedSignal && (
-                  <div className="absolute inset-0 bg-slate-900 z-50 overflow-hidden">
+                  <div className="absolute inset-0 bg-slate-900 z-50 overflow-hidden flex flex-col">
+                    {/* Status Bar Safe Area */}
+                    <div className="h-12 bg-slate-900"></div> {/* Space for status bar */}
+                    
                     {/* Mobile App Header */}
-                    <div className="flex items-center justify-between px-4 py-3 bg-slate-900 text-white">
+                    <div className="flex items-center justify-between px-4 py-3 bg-slate-900 text-white flex-shrink-0">
                       <button
                         onClick={closeSignalModal}
                         className="flex items-center space-x-2 text-blue-400 hover:text-blue-300 transition-colors"
@@ -949,7 +952,7 @@ export function PhoneSignalsPage() {
                     </div>
 
                     {/* Signal Content - Native Mobile Layout */}
-                    <div className="bg-white h-full overflow-y-auto">
+                    <div className="bg-white flex-1 overflow-y-auto">
                       {/* Signal Hero Section */}
                       <div className="bg-gradient-to-br from-blue-500 to-blue-600 px-6 py-6 text-white">
                         <div className="flex items-center space-x-4 mb-4">
