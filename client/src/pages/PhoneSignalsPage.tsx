@@ -105,7 +105,7 @@ function PhoneLoginForm() {
   }
 
   return (
-    <div className="flex-1 flex justify-center px-4" style={{ paddingTop: '15px', paddingBottom: '20px' }}>
+    <div className="flex-1 flex justify-center px-4" style={{ paddingTop: '15px', paddingBottom: '40px' }}>
       <div className="w-full flex justify-center">
         <form 
           onSubmit={handleSubmit} 
@@ -328,6 +328,9 @@ function PhoneLoginForm() {
               Sign Up
             </span>
           </p>
+          
+          {/* Extra spacing at bottom */}
+          <div style={{ height: '20px' }}></div>
         </form>
       </div>
     </div>
