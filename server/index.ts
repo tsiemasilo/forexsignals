@@ -15,14 +15,21 @@ async function startServer() {
     await storage.addPasswordColumn();
     console.log('✅ Password column migration completed');
     
-    // Fix existing accounts with null passwords
-    const hashedPassword = await bcrypt.hash("defaultpass123", 10);
+    // Fix existing accounts with standardized password (except admin)
+    const hashedPassword = await bcrypt.hash("password123", 10);
     
-    try {
-      await storage.updateUserPassword("tsiemasilo@gmail.com", hashedPassword);
-      console.log('✅ Updated password for tsiemasilo@gmail.com');
-    } catch (err) {
-      console.log('⚠️ Could not update tsiemasilo@gmail.com password (user may not exist)');
+    const userEmails = [
+      "tsiemasilo@gmail.com",
+      "almeerahlosper@gmail.com"
+    ];
+    
+    for (const email of userEmails) {
+      try {
+        await storage.updateUserPassword(email, hashedPassword);
+        console.log(`✅ Updated password for ${email}`);
+      } catch (err) {
+        console.log(`⚠️ Could not update ${email} password (user may not exist)`);
+      }
     }
     
   } catch (error) {
