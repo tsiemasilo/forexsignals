@@ -934,7 +934,7 @@ export function PhoneSignalsPage() {
                 {showSignalModal && selectedSignal && (
                   <div className="absolute inset-0 bg-slate-900 z-50 overflow-hidden flex flex-col">
                     {/* Status Bar Safe Area */}
-                    <div className="h-12 bg-slate-900"></div> {/* Space for status bar */}
+                    <div className="h-20 bg-slate-900"></div> {/* Space for status bar and notch */}
                     
                     {/* Mobile App Header */}
                     <div className="flex items-center justify-between px-4 py-3 bg-slate-900 text-white flex-shrink-0">
