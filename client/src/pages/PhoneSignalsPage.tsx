@@ -778,9 +778,10 @@ export function PhoneSignalsPage() {
             </div>
           </div>
         )}
+          </div>
+        </div>
       </nav>
 
-      
       {/* Phone Container */}
 
       {/* Phone Interface Container */}
