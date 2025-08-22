@@ -930,109 +930,124 @@ export function PhoneSignalsPage() {
                   </div>
                 )}
 
-                {/* Signal Details Modal - Inside Phone */}
+                {/* Signal Details Modal - Native Mobile App Style */}
                 {showSignalModal && selectedSignal && (
-                  <div className="absolute inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-2xl w-full max-w-sm max-h-[550px] overflow-hidden shadow-2xl mx-4">
-                      {/* Modal Header */}
-                      <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-4 py-3">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-2">
+                  <div className="absolute inset-0 bg-slate-900 z-50 overflow-hidden">
+                    {/* Mobile App Header */}
+                    <div className="flex items-center justify-between px-4 py-3 bg-slate-900 text-white">
+                      <button
+                        onClick={closeSignalModal}
+                        className="flex items-center space-x-2 text-blue-400 hover:text-blue-300 transition-colors"
+                      >
+                        <TrendingDown className="w-4 h-4 rotate-90" />
+                        <span className="text-sm font-medium">Back</span>
+                      </button>
+                      <div className="text-center">
+                        <h1 className="text-white font-semibold text-base">Signal Details</h1>
+                      </div>
+                      <div className="w-16"></div> {/* Spacer for centering */}
+                    </div>
+
+                    {/* Signal Content - Native Mobile Layout */}
+                    <div className="bg-white h-full overflow-y-auto">
+                      {/* Signal Hero Section */}
+                      <div className="bg-gradient-to-br from-blue-500 to-blue-600 px-6 py-6 text-white">
+                        <div className="flex items-center space-x-4 mb-4">
+                          <div className="w-12 h-12 bg-white bg-opacity-20 rounded-xl flex items-center justify-center">
                             {getTradeActionIcon(selectedSignal.tradeAction)}
-                            <div>
-                              <h2 className="text-white font-semibold text-sm">{selectedSignal.title}</h2>
-                              <p className="text-blue-100 text-xs">Professional Trading Signal</p>
-                            </div>
                           </div>
-                          <button
-                            onClick={closeSignalModal}
-                            className="text-white hover:text-blue-200 transition-colors p-1 rounded-full hover:bg-blue-600"
-                          >
-                            <X className="w-5 h-5" />
-                          </button>
+                          <div className="flex-1">
+                            <h2 className="font-bold text-lg leading-tight">{selectedSignal.title}</h2>
+                            <p className="text-blue-100 text-sm mt-1">Professional Trading Signal</p>
+                          </div>
+                        </div>
+                        
+                        {/* Signal Status Badge */}
+                        <div className="flex items-center justify-between">
+                          <div className="bg-white bg-opacity-20 px-3 py-1.5 rounded-full">
+                            <span className="text-white font-semibold text-sm">
+                              {selectedSignal.tradeAction.toUpperCase()} SIGNAL
+                            </span>
+                          </div>
+                          <span className="text-blue-100 text-sm">
+                            {selectedSignal.created_at || selectedSignal.createdAt ? 
+                              new Date(selectedSignal.created_at || selectedSignal.createdAt).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              }) : 'Now'}
+                          </span>
                         </div>
                       </div>
 
-                      {/* Modal Content */}
-                      <div className="max-h-[420px] overflow-y-auto">
-                        {/* Signal Badge */}
-                        <div className="px-4 py-3 border-b border-slate-200">
-                          <div className="flex items-center justify-between">
-                            <Badge className={`text-xs font-semibold ${getTradeActionColor(selectedSignal.tradeAction)}`}>
-                              {selectedSignal.tradeAction.toUpperCase()} SIGNAL
-                            </Badge>
-                            <span className="text-xs text-slate-500">
-                              {selectedSignal.created_at || selectedSignal.createdAt ? 
-                                new Date(selectedSignal.created_at || selectedSignal.createdAt).toLocaleDateString('en-US', {
-                                  month: 'short',
-                                  day: 'numeric',
-                                  hour: '2-digit',
-                                  minute: '2-digit'
-                                }) : 'Now'}
-                            </span>
+                      {/* Signal Analysis Content */}
+                      <div className="px-6 py-6">
+                        <div className="mb-6">
+                          <h3 className="text-slate-900 font-bold text-lg mb-4">Signal Analysis</h3>
+                          <div className="bg-slate-50 rounded-2xl p-4">
+                            <div className="text-slate-700 leading-relaxed space-y-3">
+                              {selectedSignal.content.split('\n').map((paragraph: string, index: number) => (
+                                <p key={index} className="text-sm">
+                                  {paragraph}
+                                </p>
+                              ))}
+                            </div>
                           </div>
                         </div>
 
-                        {/* Signal Content */}
-                        <div className="px-4 py-3">
-                          <h3 className="text-slate-900 font-semibold mb-2 text-sm">Signal Analysis</h3>
-                          <div className="prose prose-sm text-slate-700 leading-relaxed">
-                            {selectedSignal.content.split('\n').map((paragraph: string, index: number) => (
-                              <p key={index} className="mb-2 text-xs leading-relaxed">
-                                {paragraph}
-                              </p>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* Signal Image */}
+                        {/* Chart Analysis Image */}
                         {selectedSignal.imageUrl && (
-                          <div className="px-4 pb-3">
-                            <h3 className="text-slate-900 font-semibold mb-2 text-sm">Chart Analysis</h3>
-                            <div className="rounded-lg overflow-hidden border border-slate-200 bg-slate-50">
-                              <img 
-                                src={selectedSignal.imageUrl} 
-                                alt="Signal Chart Analysis"
-                                className="w-full h-auto max-h-48 object-contain"
-                                onError={(e) => {
-                                  e.currentTarget.style.display = 'none';
-                                }}
-                              />
+                          <div className="mb-6">
+                            <h3 className="text-slate-900 font-bold text-lg mb-4">Chart Analysis</h3>
+                            <div className="bg-slate-50 rounded-2xl p-4">
+                              <div className="rounded-xl overflow-hidden bg-white shadow-sm">
+                                <img 
+                                  src={selectedSignal.imageUrl} 
+                                  alt="Signal Chart Analysis"
+                                  className="w-full h-auto object-contain"
+                                  onError={(e) => {
+                                    e.currentTarget.style.display = 'none';
+                                  }}
+                                />
+                              </div>
                             </div>
                           </div>
                         )}
 
-                        {/* Signal Metadata */}
-                        <div className="px-4 py-3 bg-slate-50 border-t border-slate-200">
-                          <div className="grid grid-cols-2 gap-3 text-xs">
-                            <div>
-                              <span className="text-slate-500 block">Signal ID</span>
-                              <span className="text-slate-900 font-medium">#{selectedSignal.id}</span>
+                        {/* Signal Information Cards */}
+                        <div className="mb-6">
+                          <h3 className="text-slate-900 font-bold text-lg mb-4">Signal Information</h3>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="bg-slate-50 rounded-2xl p-4">
+                              <div className="text-center">
+                                <div className="text-2xl font-bold text-slate-900">#{selectedSignal.id}</div>
+                                <div className="text-slate-500 text-sm mt-1">Signal ID</div>
+                              </div>
                             </div>
-                            <div>
-                              <span className="text-slate-500 block">Action Type</span>
-                              <span className="text-slate-900 font-medium capitalize">{selectedSignal.tradeAction}</span>
+                            <div className="bg-slate-50 rounded-2xl p-4">
+                              <div className="text-center">
+                                <div className="text-2xl font-bold text-slate-900 capitalize">{selectedSignal.tradeAction}</div>
+                                <div className="text-slate-500 text-sm mt-1">Action Type</div>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
 
-                      {/* Modal Footer */}
-                      <div className="px-4 py-3 bg-white border-t border-slate-200">
-                        <div className="flex space-x-2">
-                          <Button 
+                        {/* Action Buttons - Native Mobile Style */}
+                        <div className="space-y-3 pb-8">
+                          <button 
                             onClick={closeSignalModal}
-                            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs py-2"
+                            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 rounded-2xl transition-colors shadow-lg"
                           >
-                            Close Details
-                          </Button>
-                          <Button 
+                            Close Signal Details
+                          </button>
+                          <button 
                             onClick={() => setLocation('/plans')}
-                            variant="outline"
-                            className="flex-1 border-blue-600 text-blue-600 hover:bg-blue-50 text-xs py-2"
+                            className="w-full bg-slate-100 hover:bg-slate-200 text-slate-900 font-semibold py-4 rounded-2xl transition-colors"
                           >
-                            Upgrade Plan
-                          </Button>
+                            📈 Upgrade to Premium
+                          </button>
                         </div>
                       </div>
                     </div>
