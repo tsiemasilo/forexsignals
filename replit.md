@@ -23,9 +23,9 @@ Preferred communication style: Simple, everyday language.
 - **Database Schema**: Includes tables for Users, Subscription Plans, Subscriptions, and Forex Signals with defined relationships.
 
 ### Authentication System
-- **Mechanism**: Session-based authentication with secure cookie handling.
+- **Mechanism**: Session-based authentication with secure cookie handling and bcrypt password hashing.
 - **Access Control**: Role-based access for Admin and customer users.
-- **User Experience**: Email-only authentication for simplified login; auto-registration on first login.
+- **User Experience**: Email and password authentication for secure login; separate registration and login flow.
 
 ### Subscription Management
 - **Plan Tiers**: Supports Basic (5 days), Premium (14 days), and VIP (30 days) plans.
@@ -95,6 +95,14 @@ Preferred communication style: Simple, everyday language.
 - **User Experience**: Form automatically switches back to login mode when duplicate detected
 - **API Testing**: Confirmed both new account creation and duplicate email rejection work correctly
 - **Production Ready**: Complete email validation flow prevents duplicate registrations
+
+### 🔐 Password Authentication Implementation (August 22, 2025 - 10:30 AM)
+- **Database Schema Update**: Added password column to users table with bcrypt hashing
+- **Backend Authentication**: Updated login/register endpoints to require password validation
+- **Frontend Forms**: Added password fields to both LoginPage and PhoneSignalsPage forms
+- **Security Enhancement**: Implemented proper password verification with salt rounds
+- **Migration System**: Automated password column addition on server startup
+- **User Experience**: Clear separation between registration and login flows
 
 ### 🔴 Registration Required Toast Fix (August 19, 2025 - 11:00 AM)
 - **Root Cause Identified**: PhoneSignalsPage.tsx missing destructive variant for registration toast

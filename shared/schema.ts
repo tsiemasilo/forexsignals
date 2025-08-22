@@ -7,6 +7,7 @@ import { z } from "zod";
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   email: varchar("email", { length: 255 }).notNull().unique(),
+  password: varchar("password", { length: 255 }).notNull(),
   firstName: varchar("first_name", { length: 100 }).notNull(),
   lastName: varchar("last_name", { length: 100 }).notNull(),
   isAdmin: boolean("is_admin").default(false).notNull(),
@@ -83,6 +84,7 @@ export type InsertForexSignal = typeof forexSignals.$inferInsert;
 // Zod schemas for validation
 export const insertUserSchema = createInsertSchema(users, {
   email: z.string().email(),
+  password: z.string().min(6, "Password must be at least 6 characters"),
   firstName: z.string().min(1),
   lastName: z.string().min(1),
 });

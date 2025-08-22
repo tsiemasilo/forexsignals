@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 
 export function LoginPage() {
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [loading, setLoading] = useState(false);
@@ -20,13 +21,13 @@ export function LoginPage() {
     console.log("Email:", email);
     console.log("isRegistering:", isRegistering);
     
-    if (!email) return;
+    if (!email || !password) return;
     if (isRegistering && (!firstName || !lastName)) return;
 
     setLoading(true);
     try {
       if (isRegistering) {
-        const result: any = await register(email, firstName, lastName);
+        const result: any = await register(email, password, firstName, lastName);
         console.log("Registration result:", result);
         
         // Reset form and switch to login mode
@@ -34,13 +35,14 @@ export function LoginPage() {
         setFirstName("");
         setLastName("");
         setEmail(""); // Clear email too for fresh login
+        setPassword(""); // Clear password too
         
         toast({
           title: "Account Created Successfully!",
           description: "Your account has been created. Please sign in to start your free trial.",
         });
       } else {
-        await login(email);
+        await login(email, password);
         toast({
           title: "Welcome Back!",
           description: "Logged in successfully!",
@@ -119,6 +121,21 @@ export function LoginPage() {
                 />
               </div>
 
+              <div className="space-y-2">
+                <label htmlFor="password" className="text-sm font-medium text-gray-700">
+                  Password
+                </label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="w-full"
+                />
+              </div>
+
               {isRegistering && (
                 <>
                   <div className="space-y-2">
@@ -156,7 +173,7 @@ export function LoginPage() {
               <Button 
                 type="submit" 
                 className="w-full bg-blue-600 hover:bg-blue-700" 
-                disabled={loading || !email || (isRegistering && (!firstName || !lastName))}
+                disabled={loading || !email || !password || (isRegistering && (!firstName || !lastName))}
               >
                 {loading 
                   ? (isRegistering ? "Creating Account..." : "Signing In...") 

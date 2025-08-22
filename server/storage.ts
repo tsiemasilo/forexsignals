@@ -1,7 +1,7 @@
 import { users, subscriptions, subscriptionPlans, forexSignals } from "@shared/schema";
 import type { User, InsertUser, Subscription, InsertSubscription, SubscriptionPlan, InsertSubscriptionPlan, ForexSignal, InsertForexSignal } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, desc } from "drizzle-orm";
+import { eq, and, desc, sql } from "drizzle-orm";
 
 export interface IStorage {
   // Users
@@ -32,6 +32,9 @@ export interface IStorage {
   createSignal(insertSignal: InsertForexSignal): Promise<ForexSignal>;
   updateSignal(id: number, updateData: Partial<ForexSignal>): Promise<ForexSignal | undefined>;
   deleteSignal(id: number): Promise<boolean>;
+
+  // Migration methods
+  addPasswordColumn(): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -299,6 +302,20 @@ export class DatabaseStorage implements IStorage {
     const deletedRows = await db.delete(forexSignals)
       .where(eq(forexSignals.id, id));
     return true; // Assume success for now
+  }
+
+  // Migration methods
+  async addPasswordColumn(): Promise<void> {
+    try {
+      await db.execute(sql`ALTER TABLE users ADD COLUMN password VARCHAR(255)`);
+      console.log('✅ Password column added successfully');
+    } catch (error: any) {
+      if (error.message?.includes('already exists') || error.code === '42701') {
+        console.log('Password column already exists');
+        return;
+      }
+      throw error;
+    }
   }
 }
 

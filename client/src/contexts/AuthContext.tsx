@@ -11,8 +11,8 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
-  login: (email: string) => Promise<void>;
-  register: (email: string, firstName: string, lastName: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string, firstName: string, lastName: string) => Promise<void>;
   logout: () => Promise<void>;
   loading: boolean;
 }
@@ -38,11 +38,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const login = async (email: string) => {
+  const login = async (email: string, password: string) => {
     try {
       const response = await apiRequest("/api/login", {
         method: "POST",
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, password }),
       });
       setUser(response.user);
     } catch (error: any) {
@@ -51,11 +51,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const register = async (email: string, firstName: string, lastName: string) => {
+  const register = async (email: string, password: string, firstName: string, lastName: string) => {
     try {
       const response = await apiRequest("/api/register", {
         method: "POST",
-        body: JSON.stringify({ email, firstName, lastName }),
+        body: JSON.stringify({ email, password, firstName, lastName }),
       });
       // Don't set user after registration - they need to sign in separately
       return response;

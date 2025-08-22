@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import { createServer, type Server } from "http";
 import session from "express-session";
 import crypto from "crypto";
+import bcrypt from "bcryptjs";
 import { storage } from "./storage";
 import { seedDatabase } from "./seed";
 import { insertUserSchema, insertForexSignalSchema, insertSubscriptionSchema } from "@shared/schema";
@@ -26,6 +27,18 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
   }));
   // Seed database on startup
   await seedDatabase();
+
+  // Temporary migration route to add password column
+  app.post("/api/admin/migrate-password-column", async (req: Request, res: Response) => {
+    try {
+      // Use raw SQL to add password column
+      await storage.addPasswordColumn();
+      res.json({ message: "Password column added successfully. Please restart the server." });
+    } catch (error: any) {
+      console.error('Migration error:', error);
+      res.status(500).json({ message: error.message || "Migration failed" });
+    }
+  });
 
   // Auth middleware
   const requireAuth = (req: Request, res: Response, next: any) => {
@@ -52,10 +65,10 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
   app.post("/api/login", async (req: Request, res: Response) => {
     try {
       console.log('Login request body:', req.body);
-      const { email } = req.body || {};
+      const { email, password } = req.body || {};
       
-      if (!email) {
-        return res.status(400).json({ message: "Email is required" });
+      if (!email || !password) {
+        return res.status(400).json({ message: "Email and password are required" });
       }
 
       // Check if user exists
@@ -66,6 +79,14 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
         return res.status(404).json({ 
           message: "Account not found. Please register first to create your account.",
           needsRegistration: true 
+        });
+      }
+
+      // Verify password
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+      if (!isPasswordValid) {
+        return res.status(401).json({ 
+          message: "Invalid email or password" 
         });
       }
 
@@ -105,10 +126,10 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
   app.post("/api/register", async (req: Request, res: Response) => {
     try {
       console.log('Register request body:', req.body);
-      const { email, firstName, lastName } = req.body || {};
+      const { email, password, firstName, lastName } = req.body || {};
       
-      if (!email || !firstName || !lastName) {
-        return res.status(400).json({ message: "Email, first name, and last name are required" });
+      if (!email || !password || !firstName || !lastName) {
+        return res.status(400).json({ message: "Email, password, first name, and last name are required" });
       }
 
       // Check if user already exists
@@ -121,9 +142,14 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
         });
       }
 
+      // Hash password
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+
       // Create new user WITHOUT logging them in or creating a trial
       const user = await storage.createUser({
         email,
+        password: hashedPassword,
         firstName,
         lastName,
         isAdmin: false

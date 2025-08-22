@@ -50,6 +50,7 @@ function PricingCard() {
 // Phone Login Component
 function PhoneLoginForm() {
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showSignUp, setShowSignUp] = useState(false);
   const { login } = useAuth();
@@ -61,11 +62,11 @@ function PhoneLoginForm() {
     console.log("=== PHONE LOGIN FORM SUBMIT ===");
     console.log("Email:", email);
     
-    if (!email) return;
+    if (!email || !password) return;
 
     setLoading(true);
     try {
-      await login(email);
+      await login(email, password);
       // Don't show toast - user will be redirected to signals page automatically
     } catch (error: any) {
       console.log("Phone login error caught:", error);
@@ -245,9 +246,46 @@ function PhoneLoginForm() {
             />
           </div>
 
+          <div className="flex flex-col">
+            <label style={{ color: '#151717', fontWeight: 600 }}>Password</label>
+          </div>
+          
+          <div 
+            className="flex items-center transition-all duration-200"
+            style={{ 
+              border: '1.5px solid #ecedec',
+              borderRadius: '10px',
+              height: '50px',
+              paddingLeft: '10px'
+            }}
+            onFocus={(e) => e.currentTarget.style.border = '1.5px solid #2d79f3'}
+            onBlur={(e) => e.currentTarget.style.border = '1.5px solid #ecedec'}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width={20} viewBox="0 0 24 24" height={20} fill="currentColor">
+              <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z"/>
+            </svg>
+            <input
+              placeholder="Enter your Password"
+              className="input"
+              style={{ 
+                marginLeft: '10px',
+                borderRadius: '10px',
+                border: 'none',
+                width: '100%',
+                height: '100%',
+                outline: 'none',
+                fontFamily: 'inherit'
+              }}
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+
           <button 
             type="submit"
-            disabled={loading || !email}
+            disabled={loading || !email || !password}
             className="button-submit"
             style={{ 
               margin: '20px 0 10px 0',
@@ -301,18 +339,19 @@ function PhoneSignUpForm({ onBackToLogin }: { onBackToLogin: () => void }) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!firstName || !lastName || !email) return;
+    if (!firstName || !lastName || !email || !password) return;
 
     setLoading(true);
     try {
       // Create account (no auto-login, no trial until first sign-in)
-      await register(email, firstName, lastName);
+      await register(email, password, firstName, lastName);
       onBackToLogin();
       toast({
         title: "Account Created Successfully!",

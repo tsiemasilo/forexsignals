@@ -7,6 +7,15 @@ const app = express();
 const server = createServer(app);
 
 async function startServer() {
+  // Try to add password column if it doesn't exist
+  try {
+    const { storage } = await import("./storage");
+    await storage.addPasswordColumn();
+    console.log('✅ Password column migration completed');
+  } catch (error) {
+    console.log('⚠️ Password column migration skipped:', error instanceof Error ? error.message : 'Unknown error');
+  }
+
   // Register API routes
   await registerRoutes(app);
 

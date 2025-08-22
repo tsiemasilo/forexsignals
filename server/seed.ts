@@ -1,18 +1,36 @@
 import { db } from "./db";
 import { users, subscriptionPlans, forexSignals } from "@shared/schema";
 import { eq } from "drizzle-orm";
+import bcrypt from "bcryptjs";
 
 export async function seedDatabase() {
   console.log('Seeding database...');
 
   try {
-    // Check if admin user already exists
-    const existingAdmin = await db.select().from(users).where(eq(users.email, "admin@forexsignals.com")).limit(1);
+    // First check if the table structure is compatible by attempting to query without password
+    let tableHasPasswordColumn = true;
+    try {
+      await db.select({ id: users.id, email: users.email, password: users.password }).from(users).limit(1);
+    } catch (error: any) {
+      if (error.message?.includes('password') || error.code === '42703') {
+        console.log('Password column not found in database - skipping user seeding until schema is updated');
+        tableHasPasswordColumn = false;
+      }
+    }
+
+    if (!tableHasPasswordColumn) {
+      console.log('Database schema needs updating - user seeding skipped');
+      // Continue with plans and signals seeding which don't require password
+    } else {
+      // Check if admin user already exists
+      const existingAdmin = await db.select().from(users).where(eq(users.email, "admin@forexsignals.com")).limit(1);
     
     if (existingAdmin.length === 0) {
-      // Create admin user
+      // Create admin user with hashed password
+      const hashedPassword = await bcrypt.hash("admin123", 10);
       const [admin] = await db.insert(users).values({
         email: "admin@forexsignals.com",
+        password: hashedPassword,
         firstName: "Admin",
         lastName: "User",
         isAdmin: true,
@@ -27,8 +45,11 @@ export async function seedDatabase() {
     const existingAlmeerah = await db.select().from(users).where(eq(users.email, 'almeerahlosper@gmail.com')).limit(1);
     
     if (existingAlmeerah.length === 0) {
+      // Create Almeerah user with hashed password
+      const hashedPassword = await bcrypt.hash("password123", 10);
       const [almeerah] = await db.insert(users).values({
         email: "almeerahlosper@gmail.com",
+        password: hashedPassword,
         firstName: "Almeerah",
         lastName: "Losper",
         isAdmin: false,
@@ -42,6 +63,7 @@ export async function seedDatabase() {
         .where(eq(users.email, 'almeerahlosper@gmail.com'));
       console.log('Almeerah set as regular customer user');
     }
+    } // End of tableHasPasswordColumn check
 
     // Create default subscription plans
     const existingPlans = await db.select().from(subscriptionPlans);
