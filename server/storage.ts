@@ -35,6 +35,7 @@ export interface IStorage {
 
   // Migration methods
   addPasswordColumn(): Promise<void>;
+  updateUserPassword(email: string, hashedPassword: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -314,6 +315,18 @@ export class DatabaseStorage implements IStorage {
         console.log('Password column already exists');
         return;
       }
+      throw error;
+    }
+  }
+
+  async updateUserPassword(email: string, hashedPassword: string): Promise<void> {
+    try {
+      await db.update(users)
+        .set({ password: hashedPassword })
+        .where(eq(users.email, email));
+      console.log(`✅ Password updated for user: ${email}`);
+    } catch (error) {
+      console.error(`Failed to update password for ${email}:`, error);
       throw error;
     }
   }

@@ -10,8 +10,21 @@ async function startServer() {
   // Try to add password column if it doesn't exist
   try {
     const { storage } = await import("./storage");
+    const bcrypt = await import("bcryptjs");
+    
     await storage.addPasswordColumn();
     console.log('✅ Password column migration completed');
+    
+    // Fix existing accounts with null passwords
+    const hashedPassword = await bcrypt.hash("defaultpass123", 10);
+    
+    try {
+      await storage.updateUserPassword("tsiemasilo@gmail.com", hashedPassword);
+      console.log('✅ Updated password for tsiemasilo@gmail.com');
+    } catch (err) {
+      console.log('⚠️ Could not update tsiemasilo@gmail.com password (user may not exist)');
+    }
+    
   } catch (error) {
     console.log('⚠️ Password column migration skipped:', error instanceof Error ? error.message : 'Unknown error');
   }
