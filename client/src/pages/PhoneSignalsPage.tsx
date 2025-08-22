@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRealtimeSignals } from '@/hooks/useRealtimeSignals';
 import { useSubscriptionStatus } from '@/hooks/useSubscriptionStatus';
-import { TrendingUp, TrendingDown, Minus, Clock, Bell, Signal, Home, CreditCard, Settings, Users, LogOut, AlertTriangle, Menu, X } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, Clock, Bell, Signal, Home, CreditCard, Settings, Users, LogOut, AlertTriangle, Menu, X, BarChart3 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -970,107 +970,102 @@ export function PhoneSignalsPage() {
                       <div className="w-16"></div> {/* Spacer for centering */}
                     </div>
 
-                    {/* Signal Content - Native Mobile Layout */}
+                    {/* Signal Content - Focused Signal Design */}
                     <div className="bg-white flex-1 overflow-y-auto">
-                      {/* Signal Hero Section */}
-                      <div className="bg-gradient-to-br from-blue-500 to-blue-600 px-6 py-6 text-white">
-                        <div className="flex items-center space-x-4 mb-4">
-                          <div className="w-12 h-12 bg-white bg-opacity-20 rounded-xl flex items-center justify-center">
-                            {getTradeActionIcon(selectedSignal.tradeAction)}
+                      {/* Signal Header with Action Badge */}
+                      <div className="px-4 py-4 border-b border-slate-200">
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center space-x-3">
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                              selectedSignal.tradeAction.toLowerCase() === 'buy' ? 'bg-green-100' :
+                              selectedSignal.tradeAction.toLowerCase() === 'sell' ? 'bg-red-100' :
+                              selectedSignal.tradeAction.toLowerCase() === 'hold' ? 'bg-yellow-100' :
+                              'bg-gray-100'
+                            }`}>
+                              {getTradeActionIcon(selectedSignal.tradeAction)}
+                            </div>
+                            <div>
+                              <h1 className="text-lg font-bold text-slate-900">{selectedSignal.title}</h1>
+                              <p className="text-sm text-slate-500">
+                                {selectedSignal.created_at || selectedSignal.createdAt ? 
+                                  new Date(selectedSignal.created_at || selectedSignal.createdAt).toLocaleDateString('en-US', {
+                                    month: 'short',
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  }) : 'Now'}
+                              </p>
+                            </div>
                           </div>
-                          <div className="flex-1">
-                            <h2 className="font-bold text-lg leading-tight">{selectedSignal.title}</h2>
-                            <p className="text-blue-100 text-sm mt-1">Professional Trading Signal</p>
-                          </div>
-                        </div>
-                        
-                        {/* Signal Status Badge */}
-                        <div className="flex items-center justify-between">
-                          <div className="bg-white bg-opacity-20 px-3 py-1.5 rounded-full">
-                            <span className="text-white font-semibold text-sm">
-                              {selectedSignal.tradeAction.toUpperCase()} SIGNAL
-                            </span>
-                          </div>
-                          <span className="text-blue-100 text-sm">
-                            {selectedSignal.created_at || selectedSignal.createdAt ? 
-                              new Date(selectedSignal.created_at || selectedSignal.createdAt).toLocaleDateString('en-US', {
-                                month: 'short',
-                                day: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                              }) : 'Now'}
-                          </span>
+                          <Badge className={`font-bold ${getTradeActionColor(selectedSignal.tradeAction)}`}>
+                            {selectedSignal.tradeAction.toUpperCase()}
+                          </Badge>
                         </div>
                       </div>
 
-                      {/* Signal Analysis Content */}
-                      <div className="px-6 py-6">
-                        <div className="mb-6">
-                          <h3 className="text-slate-900 font-bold text-lg mb-4">Signal Analysis</h3>
-                          <div className="bg-slate-50 rounded-2xl p-4">
-                            <div className="text-slate-700 leading-relaxed space-y-3">
-                              {selectedSignal.content.split('\n').map((paragraph: string, index: number) => (
-                                <p key={index} className="text-sm">
-                                  {paragraph}
-                                </p>
-                              ))}
-                            </div>
+                      {/* Signal Content - Main Focus */}
+                      <div className="px-4 py-4">
+                        <div className="bg-slate-50 rounded-xl p-4 mb-4">
+                          <h2 className="text-base font-semibold text-slate-900 mb-3 flex items-center">
+                            <TrendingUp className="w-4 h-4 mr-2 text-blue-600" />
+                            Signal Analysis
+                          </h2>
+                          <div className="text-slate-700 leading-relaxed space-y-2">
+                            {selectedSignal.content.split('\n').map((paragraph: string, index: number) => (
+                              <p key={index} className="text-sm">
+                                {paragraph}
+                              </p>
+                            ))}
                           </div>
                         </div>
 
-                        {/* Chart Analysis Image */}
+                        {/* Chart Analysis Image - Prominent Display */}
                         {selectedSignal.imageUrl && (
-                          <div className="mb-6">
-                            <h3 className="text-slate-900 font-bold text-lg mb-4">Chart Analysis</h3>
-                            <div className="bg-slate-50 rounded-2xl p-4">
-                              <div className="rounded-xl overflow-hidden bg-white shadow-sm">
-                                <img 
-                                  src={selectedSignal.imageUrl} 
-                                  alt="Signal Chart Analysis"
-                                  className="w-full h-auto object-contain"
-                                  onError={(e) => {
-                                    e.currentTarget.style.display = 'none';
-                                  }}
-                                />
-                              </div>
+                          <div className="mb-4">
+                            <h2 className="text-base font-semibold text-slate-900 mb-3 flex items-center">
+                              <BarChart3 className="w-4 h-4 mr-2 text-green-600" />
+                              Chart Analysis
+                            </h2>
+                            <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+                              <img 
+                                src={selectedSignal.imageUrl} 
+                                alt="Signal Chart Analysis"
+                                className="w-full h-auto object-contain max-h-64"
+                                onError={(e) => {
+                                  e.currentTarget.style.display = 'none';
+                                }}
+                              />
                             </div>
                           </div>
                         )}
 
-                        {/* Signal Information Cards */}
-                        <div className="mb-6">
-                          <h3 className="text-slate-900 font-bold text-lg mb-4">Signal Information</h3>
-                          <div className="grid grid-cols-2 gap-4">
-                            <div className="bg-slate-50 rounded-2xl p-4">
-                              <div className="text-center">
-                                <div className="text-2xl font-bold text-slate-900">#{selectedSignal.id}</div>
-                                <div className="text-slate-500 text-sm mt-1">Signal ID</div>
-                              </div>
-                            </div>
-                            <div className="bg-slate-50 rounded-2xl p-4">
-                              <div className="text-center">
-                                <div className="text-2xl font-bold text-slate-900 capitalize">{selectedSignal.tradeAction}</div>
-                                <div className="text-slate-500 text-sm mt-1">Action Type</div>
-                              </div>
-                            </div>
+                        {/* Quick Signal Info */}
+                        <div className="grid grid-cols-2 gap-3 mb-6">
+                          <div className="bg-blue-50 rounded-xl p-3 text-center">
+                            <div className="text-lg font-bold text-blue-900">#{selectedSignal.id}</div>
+                            <div className="text-xs text-blue-600">Signal ID</div>
+                          </div>
+                          <div className="bg-green-50 rounded-xl p-3 text-center">
+                            <div className="text-lg font-bold text-green-900 capitalize">{selectedSignal.tradeAction}</div>
+                            <div className="text-xs text-green-600">Action</div>
                           </div>
                         </div>
+                      </div>
 
-                        {/* Action Buttons - Native Mobile Style */}
-                        <div className="space-y-3 pb-8">
-                          <button 
-                            onClick={closeSignalModal}
-                            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 rounded-2xl transition-colors shadow-lg"
-                          >
-                            Close Signal Details
-                          </button>
-                          <button 
-                            onClick={() => setLocation('/plans')}
-                            className="w-full bg-slate-100 hover:bg-slate-200 text-slate-900 font-semibold py-4 rounded-2xl transition-colors"
-                          >
-                            📈 Upgrade to Premium
-                          </button>
-                        </div>
+                      {/* Bottom Actions */}
+                      <div className="px-4 pb-6 space-y-3">
+                        <button 
+                          onClick={closeSignalModal}
+                          className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 rounded-xl transition-colors"
+                        >
+                          Close Signal
+                        </button>
+                        <button 
+                          onClick={() => setLocation('/plans')}
+                          className="w-full bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white font-semibold py-3 rounded-xl transition-colors"
+                        >
+                          Upgrade Plan
+                        </button>
                       </div>
                     </div>
                   </div>
