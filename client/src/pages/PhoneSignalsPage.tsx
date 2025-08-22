@@ -105,21 +105,21 @@ function PhoneLoginForm() {
   }
 
   return (
-    <div className="flex-1 flex justify-center px-4" style={{ paddingTop: '40px', paddingBottom: '40px' }}>
+    <div className="flex-1 flex justify-center px-4" style={{ paddingTop: '15px', paddingBottom: '20px' }}>
       <div className="w-full flex justify-center">
         <form 
           onSubmit={handleSubmit} 
           className="flex flex-col bg-white rounded-2xl shadow-lg"
           style={{ 
-            gap: '10px',
-            padding: '30px',
-            width: '280px',
+            gap: '6px',
+            padding: '20px',
+            width: '260px',
             borderRadius: '20px',
             fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
           }}
         >
           {/* Logo */}
-          <div className="flex justify-center mb-6" style={{ marginTop: '-10px' }}>
+          <div className="flex justify-center mb-2" style={{ marginTop: '-5px' }}>
             <div className="flex items-center gap-2">
               <Signal className="h-8 w-8 text-green-600" />
               <div>
@@ -136,16 +136,16 @@ function PhoneLoginForm() {
           {/* Free Trial Ribbon */}
           <div style={{ 
             position: 'relative',
-            marginBottom: '20px',
+            marginBottom: '10px',
             textAlign: 'center'
           }}>
             <div style={{ 
               display: 'inline-block',
               background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
               color: '#ffffff',
-              padding: '8px 25px',
+              padding: '6px 20px',
               borderRadius: '20px 20px 20px 20px',
-              fontSize: '13px',
+              fontSize: '11px',
               fontWeight: 700,
               letterSpacing: '0.8px',
               textTransform: 'uppercase',
@@ -174,7 +174,7 @@ function PhoneLoginForm() {
           {/* See Plans Button */}
           <div style={{ 
             textAlign: 'center',
-            marginBottom: '20px'
+            marginBottom: '10px'
           }}>
             <button
               type="button"
@@ -288,17 +288,17 @@ function PhoneLoginForm() {
             disabled={loading || !email || !password}
             className="button-submit"
             style={{ 
-              margin: '20px 0 10px 0',
+              margin: '10px 0 8px 0',
               backgroundColor: '#151717',
               border: 'none',
               color: 'white',
-              fontSize: '15px',
+              fontSize: '14px',
               fontWeight: 500,
               borderRadius: '10px',
-              height: '50px',
+              height: '40px',
               width: '100%',
               cursor: 'pointer',
-              opacity: loading || !email ? 0.5 : 1
+              opacity: loading || !email || !password ? 0.5 : 1
             }}
           >
             {loading ? "Signing In..." : "Sign In"}
