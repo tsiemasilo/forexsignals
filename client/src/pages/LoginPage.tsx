@@ -181,7 +181,16 @@ export function LoginPage() {
                 }
               </Button>
 
-              {isRegistering && (
+              {!isRegistering ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => setIsRegistering(true)}
+                >
+                  Don't have an account? Create Account
+                </Button>
+              ) : (
                 <Button
                   type="button"
                   variant="outline"
@@ -190,17 +199,13 @@ export function LoginPage() {
                     setIsRegistering(false);
                     setFirstName("");
                     setLastName("");
+                    setPassword(""); // Clear password too
                   }}
                 >
                   Already have an account? Sign In
                 </Button>
               )}
             </form>
-            
-            <div className="mt-6 text-center text-sm text-gray-600">
-              <p>New to ForexSignals Pro?</p>
-              <p className="mt-1">Simply enter your email to create an account automatically.</p>
-            </div>
           </CardContent>
         </Card>
 
