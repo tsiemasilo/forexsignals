@@ -45,12 +45,6 @@ export function AppHeader() {
                 </a>
               </Link>
               
-              <Link href="/trade-stats">
-                <a className="flex items-center space-x-1 text-gray-700 hover:text-green-600 transition-colors">
-                  <BarChart3 className="h-4 w-4" />
-                  <span>Stats</span>
-                </a>
-              </Link>
               
               {!user.isAdmin && (
                 <Link href="/plans">
@@ -143,12 +137,6 @@ export function AppHeader() {
                 </a>
               </Link>
               
-              <Link href="/trade-stats" onClick={() => setIsMobileMenuOpen(false)}>
-                <a className="flex items-center space-x-2 text-gray-700 hover:text-green-600 transition-colors py-2">
-                  <BarChart3 className="h-4 w-4" />
-                  <span>Stats</span>
-                </a>
-              </Link>
               
               {!user.isAdmin && (
                 <Link href="/plans" onClick={() => setIsMobileMenuOpen(false)}>

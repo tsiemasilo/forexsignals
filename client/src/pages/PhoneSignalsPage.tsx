@@ -2,13 +2,113 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRealtimeSignals } from '@/hooks/useRealtimeSignals';
 import { useSubscriptionStatus } from '@/hooks/useSubscriptionStatus';
-import { TrendingUp, TrendingDown, Minus, Clock, Bell, Signal, Home, CreditCard, Settings, Users, LogOut, AlertTriangle, Menu, X, BarChart3, Expand, Minimize } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, Clock, Bell, Signal, Home, CreditCard, Settings, Users, LogOut, AlertTriangle, Menu, X, BarChart3, Expand, Minimize, Target } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Link, useLocation } from 'wouter';
 import { SubscriptionStatusBadge } from '@/components/SubscriptionStatusBadge';
 import { useToast } from '@/hooks/use-toast';
+import { useQuery } from '@tanstack/react-query';
+
+// Trade Stats Component for Phone Interface
+interface TradeStatsData {
+  totalTrades: number;
+  wins: number;
+  losses: number;
+  pending: number;
+  winRate: number;
+  accuracy: number;
+}
+
+function PhoneStatsContent() {
+  const { user } = useAuth();
+
+  const { data: stats, isLoading } = useQuery<TradeStatsData>({
+    queryKey: ['/api/trade-stats'],
+    enabled: !!user,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <div className="text-center">
+          <div className="animate-spin w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full mx-auto mb-2" />
+          <p className="text-slate-500 text-sm">Loading stats...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!stats) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <div className="text-center">
+          <Target className="h-12 w-12 text-slate-400 mx-auto mb-2" />
+          <p className="text-slate-500 text-sm">No trade data available</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-4 space-y-4">
+      {/* Stats Grid */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="bg-blue-50 rounded-xl p-3 text-center">
+          <div className="text-xl font-bold text-blue-900">{stats.totalTrades}</div>
+          <div className="text-xs text-blue-600">Total Trades</div>
+        </div>
+        <div className="bg-green-50 rounded-xl p-3 text-center">
+          <div className="text-xl font-bold text-green-900">{stats.wins}</div>
+          <div className="text-xs text-green-600">Wins</div>
+        </div>
+        <div className="bg-red-50 rounded-xl p-3 text-center">
+          <div className="text-xl font-bold text-red-900">{stats.losses}</div>
+          <div className="text-xs text-red-600">Losses</div>
+        </div>
+        <div className="bg-orange-50 rounded-xl p-3 text-center">
+          <div className="text-xl font-bold text-orange-900">{stats.pending}</div>
+          <div className="text-xs text-orange-600">Pending</div>
+        </div>
+      </div>
+
+      {/* Win Rate Progress */}
+      <div className="bg-slate-50 rounded-xl p-4">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-sm font-medium text-slate-700">Win Rate</span>
+          <span className="text-xl font-bold text-green-600">{stats.winRate.toFixed(1)}%</span>
+        </div>
+        <div className="w-full bg-slate-200 rounded-full h-2">
+          <div 
+            className="bg-green-500 h-2 rounded-full transition-all duration-300"
+            style={{ width: `${stats.winRate}%` }}
+          />
+        </div>
+        <p className="text-xs text-slate-500 mt-2">
+          {stats.wins} wins out of {stats.wins + stats.losses} completed trades
+        </p>
+      </div>
+
+      {/* Accuracy Progress */}
+      <div className="bg-slate-50 rounded-xl p-4">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-sm font-medium text-slate-700">Accuracy</span>
+          <span className="text-xl font-bold text-blue-600">{stats.accuracy.toFixed(1)}%</span>
+        </div>
+        <div className="w-full bg-slate-200 rounded-full h-2">
+          <div 
+            className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+            style={{ width: `${stats.accuracy}%` }}
+          />
+        </div>
+        <p className="text-xs text-slate-500 mt-2">
+          Overall prediction accuracy based on completed signals
+        </p>
+      </div>
+    </div>
+  );
+}
 
 // Pricing Card Component
 function PricingCard() {
@@ -616,6 +716,7 @@ export function PhoneSignalsPage() {
   const [selectedSignal, setSelectedSignal] = useState<any>(null);
   const [showSignalModal, setShowSignalModal] = useState(false);
   const [showFullscreenImage, setShowFullscreenImage] = useState(false);
+  const [activeTab, setActiveTab] = useState<'signals' | 'stats'>('signals');
   const [, setLocation] = useLocation();
 
   // Update time every minute
@@ -837,89 +938,124 @@ export function PhoneSignalsPage() {
                       </p>
                     </div>
                   ) : (
-                    /* Active Subscription - Show Signals */
+                    /* Active Subscription - Show Signals/Stats */
                     <>
-                      {/* Notifications Header */}
+                      {/* Header */}
                       <div className="px-6 py-4 border-b border-slate-200">
                         <div className="flex items-center justify-between">
                           <h2 className="text-lg font-semibold text-slate-900 flex items-center">
                             <Bell className="w-5 h-5 mr-2 text-blue-600" />
-                            Trading Signals
+                            Trading Dashboard
                           </h2>
                           <SubscriptionStatusBadge />
                         </div>
                       </div>
 
-                      {/* Signals Notifications */}
-                      <div className="flex-1 overflow-y-auto max-h-[480px]">
-                        {signals?.length === 0 ? (
-                          <div className="flex flex-col items-center justify-center h-96 text-center px-6">
-                            <Bell className="w-16 h-16 text-slate-300 mb-4" />
-                            <h3 className="text-lg font-medium text-slate-600 mb-2">No New Signals</h3>
-                            <p className="text-sm text-slate-500">
-                              New trading signals will appear here
-                            </p>
-                          </div>
-                        ) : (
-                        <div className="space-y-1">
-                          {signals
-                            ?.sort((a: any, b: any) => new Date(b.created_at || b.createdAt).getTime() - new Date(a.created_at || a.createdAt).getTime())
-                            ?.map((signal: any) => (
-                              <div key={signal.id} className="mx-4 my-2 bg-white border border-slate-200 rounded-xl shadow-sm">
-                                {/* Notification Header */}
-                                <div className="flex items-center px-4 py-3 border-b border-slate-100">
-                                  <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center mr-3">
-                                    <TrendingUp className="w-4 h-4 text-white" />
-                                  </div>
-                                  <div className="flex-1">
-                                    <div className="flex items-center justify-between">
-                                      <span className="text-sm font-medium text-slate-900">NAS100 Pro Signals</span>
-                                      <span className="text-xs text-slate-500">
-                                        {signal.created_at || signal.createdAt ? 
-                                          new Date(signal.created_at || signal.createdAt).toLocaleTimeString('en-US', {
-                                            hour: '2-digit',
-                                            minute: '2-digit'
-                                          }) : 'Now'}
-                                      </span>
-                                    </div>
-                                    <span className="text-xs text-slate-500">now</span>
-                                  </div>
-                                </div>
-
-                                {/* Notification Content */}
-                                <div className="px-4 py-3">
-                                  <div className="flex items-center justify-between mb-2">
-                                    <h3 className="font-semibold text-slate-900 text-sm">{signal.title}</h3>
-                                    <Badge className={`text-xs ${getTradeActionColor(signal.tradeAction)}`}>
-                                      {signal.tradeAction.toUpperCase()}
-                                    </Badge>
-                                  </div>
-                                  <p className="text-xs text-slate-600 leading-relaxed line-clamp-3">
-                                    {signal.content}
-                                  </p>
-                                  
-                                  {/* Quick Action Icons */}
-                                  <div className="flex items-center justify-between mt-3 pt-2 border-t border-slate-100">
-                                    <div 
-                                      className="flex items-center space-x-4 cursor-pointer hover:text-blue-600 transition-colors"
-                                      onClick={() => handleViewSignalDetails(signal)}
-                                    >
-                                      {getTradeActionIcon(signal.tradeAction)}
-                                      <span className="text-xs text-slate-500">Tap to view details</span>
-                                    </div>
-                                    <div className="flex space-x-2">
-                                      <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center">
-                                        <span className="text-xs">💰</span>
-                                      </div>
-                                      <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center">
-                                        <span className="text-xs">📊</span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            )) || []}
+                      {/* Tab Navigation */}
+                      <div className="px-4 py-3 bg-slate-50 border-b border-slate-200">
+                        <div className="flex space-x-1 bg-white rounded-lg p-1 shadow-sm">
+                          <button
+                            onClick={() => setActiveTab('signals')}
+                            className={`flex-1 flex items-center justify-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-all ${
+                              activeTab === 'signals'
+                                ? 'bg-blue-100 text-blue-900 shadow-sm'
+                                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                            }`}
+                          >
+                            <Signal className="w-4 h-4" />
+                            <span>Signals</span>
+                          </button>
+                          <button
+                            onClick={() => setActiveTab('stats')}
+                            className={`flex-1 flex items-center justify-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-all ${
+                              activeTab === 'stats'
+                                ? 'bg-blue-100 text-blue-900 shadow-sm'
+                                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                            }`}
+                          >
+                            <BarChart3 className="w-4 h-4" />
+                            <span>Stats</span>
+                          </button>
                         </div>
+                      </div>
+
+                      {/* Content Area */}
+                      <div className="flex-1 overflow-y-auto max-h-[480px]">
+                        {activeTab === 'signals' ? (
+                          /* Signals Content */
+                          signals?.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center h-96 text-center px-6">
+                              <Bell className="w-16 h-16 text-slate-300 mb-4" />
+                              <h3 className="text-lg font-medium text-slate-600 mb-2">No New Signals</h3>
+                              <p className="text-sm text-slate-500">
+                                New trading signals will appear here
+                              </p>
+                            </div>
+                          ) : (
+                            <div className="space-y-1">
+                              {signals
+                                ?.sort((a: any, b: any) => new Date(b.created_at || b.createdAt).getTime() - new Date(a.created_at || a.createdAt).getTime())
+                                ?.map((signal: any) => (
+                                  <div key={signal.id} className="mx-4 my-2 bg-white border border-slate-200 rounded-xl shadow-sm">
+                                    {/* Notification Header */}
+                                    <div className="flex items-center px-4 py-3 border-b border-slate-100">
+                                      <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center mr-3">
+                                        <TrendingUp className="w-4 h-4 text-white" />
+                                      </div>
+                                      <div className="flex-1">
+                                        <div className="flex items-center justify-between">
+                                          <span className="text-sm font-medium text-slate-900">NAS100 Pro Signals</span>
+                                          <span className="text-xs text-slate-500">
+                                            {signal.created_at || signal.createdAt ? 
+                                              new Date(signal.created_at || signal.createdAt).toLocaleTimeString('en-US', {
+                                                hour: '2-digit',
+                                                minute: '2-digit'
+                                              }) : 'Now'}
+                                          </span>
+                                        </div>
+                                        <span className="text-xs text-slate-500">now</span>
+                                      </div>
+                                    </div>
+
+                                    {/* Notification Content */}
+                                    <div className="px-4 py-3">
+                                      <div className="flex items-center justify-between mb-2">
+                                        <h3 className="font-semibold text-slate-900 text-sm">{signal.title}</h3>
+                                        <Badge className={`text-xs ${getTradeActionColor(signal.tradeAction)}`}>
+                                          {signal.tradeAction.toUpperCase()}
+                                        </Badge>
+                                      </div>
+                                      <p className="text-xs text-slate-600 leading-relaxed line-clamp-3">
+                                        {signal.content}
+                                      </p>
+                                      
+                                      {/* Quick Action Icons */}
+                                      <div className="flex items-center justify-between mt-3 pt-2 border-t border-slate-100">
+                                        <div 
+                                          className="flex items-center space-x-4 cursor-pointer hover:text-blue-600 transition-colors"
+                                          onClick={() => handleViewSignalDetails(signal)}
+                                        >
+                                          {getTradeActionIcon(signal.tradeAction)}
+                                          <span className="text-xs text-slate-500">Tap to view details</span>
+                                        </div>
+                                        <div className="flex space-x-2">
+                                          <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center">
+                                            <span className="text-xs">💰</span>
+                                          </div>
+                                          <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center">
+                                            <span className="text-xs">📊</span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                )) || []
+                              }
+                            </div>
+                          )
+                        ) : (
+                          /* Stats Content */
+                          <PhoneStatsContent />
                         )}
                       </div>
                     </>

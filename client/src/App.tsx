@@ -11,7 +11,6 @@ import { Plans } from "@/pages/Plans";
 import { PaymentSuccess } from "@/pages/PaymentSuccess";
 import { PaymentCancel } from "@/pages/PaymentCancel";
 import { PaymentError } from "@/pages/PaymentError";
-import TradeStats from "@/pages/TradeStats";
 
 
 function AppRoutes() {
@@ -34,7 +33,6 @@ function AppRoutes() {
 
       <Route path="/phone-signals" component={PhoneSignalsPage} />
       <Route path="/signals" component={PhoneSignalsPage} />
-      <Route path="/trade-stats" component={TradeStats} />
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/login" component={LoginPage} />
       <Route path="/plans" component={Plans} />
