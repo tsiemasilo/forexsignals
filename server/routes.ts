@@ -82,16 +82,8 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
         });
       }
 
-      // Debug password field
-      console.log('Debug - user object:', JSON.stringify(user, null, 2));
-      console.log('Debug - user.password type:', typeof user.password);
-      console.log('Debug - user.password value:', user.password);
-      console.log('Debug - input password type:', typeof password);
-      console.log('Debug - input password value:', password);
-
-      // Verify password - ensure user.password is a string
-      const storedPassword = typeof user.password === 'string' ? user.password : String(user.password);
-      const isPasswordValid = await bcrypt.compare(password, storedPassword);
+      // Verify password
+      const isPasswordValid = await bcrypt.compare(password, user.password);
       if (!isPasswordValid) {
         return res.status(401).json({ 
           message: "Invalid email or password" 

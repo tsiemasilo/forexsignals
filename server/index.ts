@@ -20,7 +20,8 @@ async function startServer() {
     
     const userEmails = [
       "tsiemasilo@gmail.com",
-      "almeerahlosper@gmail.com"
+      "almeerahlosper@gmail.com",
+      "tsiemasiload@gmail.com"
     ];
     
     for (const email of userEmails) {
