@@ -10,6 +10,7 @@ import { Link, useLocation } from 'wouter';
 import { SubscriptionStatusBadge } from '@/components/SubscriptionStatusBadge';
 import { useToast } from '@/hooks/use-toast';
 import { useQuery } from '@tanstack/react-query';
+import { apiRequest } from "@/lib/queryClient";
 
 // Trade Stats Component for Phone Interface
 interface TradeStatsData {
@@ -26,6 +27,7 @@ function PhoneStatsContent() {
 
   const { data: stats, isLoading, error } = useQuery<TradeStatsData>({
     queryKey: ['/api/trade-stats'],
+    queryFn: () => apiRequest('/api/trade-stats'),
     enabled: !!user,
   });
 
