@@ -890,6 +890,20 @@ export default function AdminSignals() {
                   </SelectContent>
                 </Select>
               </div>
+
+              <div>
+                <Label htmlFor="edit-tradeOutcome">Trade Outcome</Label>
+                <Select value={formData.tradeOutcome || 'pending'} onValueChange={(value) => setFormData({ ...formData, tradeOutcome: value })}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="pending">⏳ Pending</SelectItem>
+                    <SelectItem value="win">✅ Win</SelectItem>
+                    <SelectItem value="loss">❌ Loss</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               
               <div>
                 <Label htmlFor="edit-content">Analysis & Details</Label>
