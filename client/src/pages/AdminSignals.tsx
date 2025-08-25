@@ -52,13 +52,13 @@ export default function AdminSignals() {
 
   // Real-time updates for admin dashboard
   const { isOnline, lastUpdateTime, refreshAll } = useRealtimeUpdates({
-    queryKeys: [['/api/signals']],
+    queryKeys: [['/api/admin/signals']],
     interval: 4000, // 4 second refresh for admin
     backgroundRefresh: true
   });
 
   const { data: signals = [], isLoading } = useQuery<any[]>({
-    queryKey: ['/api/signals'],
+    queryKey: ['/api/admin/signals'],
     enabled: !!user,
     refetchInterval: 4000, // Auto-refresh every 4 seconds
     refetchIntervalInBackground: true, // Continue refreshing in background
@@ -89,7 +89,7 @@ export default function AdminSignals() {
     },
     onSuccess: (data) => {
       console.log('Signal creation successful:', data);
-      queryClient.invalidateQueries({ queryKey: ['/api/signals'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/signals'] });
       toast({
         title: "Signal created",
         description: `New trading signal "${data.title}" has been published.`,
@@ -120,7 +120,7 @@ export default function AdminSignals() {
       return await apiRequest('PUT', `/api/admin/signals/${id}`, signalData);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/signals'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/signals'] });
       toast({
         title: "Signal updated",
         description: "Trading signal has been updated.",
@@ -142,7 +142,7 @@ export default function AdminSignals() {
       return await apiRequest('DELETE', `/api/admin/signals/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/signals'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/signals'] });
       toast({
         title: "Signal deleted",
         description: "Trading signal has been removed.",
