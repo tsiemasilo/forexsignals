@@ -15,21 +15,34 @@ async function startServer() {
     await storage.addPasswordColumn();
     console.log('✅ Password column migration completed');
     
-    // Fix existing accounts with standardized password (except admin)
-    const hashedPassword = await bcrypt.hash("password123", 10);
+    // Fix existing accounts with their actual passwords
+    const regularPassword = await bcrypt.hash("password123", 10);
+    const adminPassword = await bcrypt.hash("admin123", 10);
     
-    const userEmails = [
+    const regularUsers = [
       "tsiemasilo@gmail.com",
-      "almeerahlosper@gmail.com",
+      "almeerahlosper@gmail.com"
+    ];
+    
+    const adminUsers = [
       "tsiemasiload@gmail.com"
     ];
     
-    for (const email of userEmails) {
+    for (const email of regularUsers) {
       try {
-        await storage.updateUserPassword(email, hashedPassword);
+        await storage.updateUserPassword(email, regularPassword);
         console.log(`✅ Updated password for ${email}`);
       } catch (err) {
         console.log(`⚠️ Could not update ${email} password (user may not exist)`);
+      }
+    }
+    
+    for (const email of adminUsers) {
+      try {
+        await storage.updateUserPassword(email, adminPassword);
+        console.log(`✅ Updated admin password for ${email}`);
+      } catch (err) {
+        console.log(`⚠️ Could not update ${email} admin password (user may not exist)`);
       }
     }
     
