@@ -24,10 +24,12 @@ interface TradeStatsData {
 function PhoneStatsContent() {
   const { user } = useAuth();
 
-  const { data: stats, isLoading } = useQuery<TradeStatsData>({
+  const { data: stats, isLoading, error } = useQuery<TradeStatsData>({
     queryKey: ['/api/trade-stats'],
     enabled: !!user,
   });
+
+  console.log('📊 Stats Debug:', { stats, isLoading, error, user: user?.email });
 
   if (isLoading) {
     return (

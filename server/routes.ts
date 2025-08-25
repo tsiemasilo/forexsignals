@@ -595,13 +595,19 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
   app.get("/api/trade-stats", requireAuth, async (req: Request, res: Response) => {
     try {
       const userId = req.session.userId!;
+      console.log(`🔍 TRADE STATS DEBUG - User: ${userId}`);
       
       // Check if user is admin - admins can see all stats
       const user = await storage.getUser(userId);
+      console.log(`📋 User found: ${user ? 'Yes' : 'No'}, IsAdmin: ${user?.isAdmin}`);
+      
       if (!user?.isAdmin) {
         // Regular users need active subscription
         const subscription = await storage.getUserSubscription(userId);
+        console.log(`📋 Subscription found:`, subscription);
+        
         if (!subscription) {
+          console.log('❌ No subscription found');
           return res.status(403).json({ message: "Active subscription required" });
         }
         
@@ -610,12 +616,17 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
         const validStatuses = ['active', 'trial', 'basic plan', 'premium plan', 'vip plan'];
         const isActive = validStatuses.includes(subscription.status) && endDate > now;
         
+        console.log(`📋 Subscription status: ${subscription.status}, Active: ${isActive}`);
+        
         if (!isActive) {
+          console.log('❌ Subscription not active');
           return res.status(403).json({ message: "Active subscription required" });
         }
       }
       
+      console.log('✅ Access granted for trade stats');
       const stats = await storage.getTradeStats();
+      console.log(`📊 Trade stats:`, stats);
       res.json(stats);
     } catch (error) {
       console.error('Trade stats error:', error);
