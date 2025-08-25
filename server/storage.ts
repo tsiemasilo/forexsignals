@@ -291,11 +291,20 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateSignal(id: number, updateData: Partial<ForexSignal>): Promise<ForexSignal | undefined> {
-    const [updatedSignal] = await db.update(forexSignals)
-      .set({ ...updateData, updatedAt: new Date() })
-      .where(eq(forexSignals.id, id))
-      .returning();
-    return updatedSignal || undefined;
+    try {
+      console.log('🔄 DATABASE STORAGE: Updating signal', { id, updateData });
+      
+      const [updatedSignal] = await db.update(forexSignals)
+        .set({ ...updateData, updatedAt: new Date() })
+        .where(eq(forexSignals.id, id))
+        .returning();
+      
+      console.log('✅ DATABASE STORAGE: Signal updated successfully:', updatedSignal);
+      return updatedSignal || undefined;
+    } catch (error) {
+      console.error('❌ DATABASE STORAGE: Error updating signal:', error);
+      throw error;
+    }
   }
 
   async deleteSignal(id: number): Promise<boolean> {
