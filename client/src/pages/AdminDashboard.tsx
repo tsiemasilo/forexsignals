@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import SystemHealthDashboard from "@/components/SystemHealthDashboard";
+import AdminSignals from "./AdminSignals";
 import { Users, Plus, TrendingUp, Settings, User, Calendar, Signal, Trash2, UserCheck, Shield } from "lucide-react";
 
 interface AdminUser {
@@ -386,122 +387,7 @@ export function AdminDashboard() {
             </TabsList>
 
             <TabsContent value="signals" className="space-y-6">
-              {/* Create New Signal */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <Plus className="h-5 w-5" />
-                    <span>Create New Signal</span>
-                  </CardTitle>
-                  <CardDescription>
-                    Add a new forex trading signal for subscribers
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={handleCreateSignal} className="space-y-3 sm:space-y-4">
-                    <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2">
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">Signal Title</label>
-                        <Input
-                          placeholder="EUR/USD Buy Signal"
-                          value={newSignal.title}
-                          onChange={(e) => setNewSignal({ ...newSignal, title: e.target.value })}
-                          required
-                          className="text-sm"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">Trade Action</label>
-                        <select
-                          className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm"
-                          value={newSignal.tradeAction}
-                          onChange={(e) => setNewSignal({ ...newSignal, tradeAction: e.target.value as "Buy" | "Sell" | "Hold" })}
-                        >
-                          <option value="Buy">Buy</option>
-                          <option value="Sell">Sell</option>
-                          <option value="Hold">Hold</option>
-                        </select>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Signal Content</label>
-                      <textarea
-                        className="flex min-h-[60px] sm:min-h-[80px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
-                        placeholder="Strong bullish momentum on EUR/USD. Entry at 1.0850, Stop Loss at 1.0820, Take Profit at 1.0920..."
-                        value={newSignal.content}
-                        onChange={(e) => setNewSignal({ ...newSignal, content: e.target.value })}
-                        required
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Image URL (Optional)</label>
-                      <Input
-                        placeholder="https://example.com/chart-image.png"
-                        value={newSignal.imageUrl}
-                        onChange={(e) => setNewSignal({ ...newSignal, imageUrl: e.target.value })}
-                        className="text-sm"
-                      />
-                    </div>
-                    
-                    <Button 
-                      type="submit" 
-                      className="w-full sm:w-auto" 
-                      disabled={createSignalMutation.isPending}
-                      size="sm"
-                    >
-                      {createSignalMutation.isPending ? "Creating..." : "Create Signal"}
-                    </Button>
-                  </form>
-                </CardContent>
-              </Card>
-
-              {/* Existing Signals */}
-              <div className="grid gap-3 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-                {signals?.map((signal: ForexSignal) => (
-                  <Card key={signal.id}>
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-base sm:text-lg line-clamp-2">{signal.title}</CardTitle>
-                      <div className="flex items-center justify-between space-x-2">
-                        <Badge className={`text-xs ${
-                          signal.tradeAction === "Buy" ? "bg-green-100 text-green-800" :
-                          signal.tradeAction === "Sell" ? "bg-red-100 text-red-800" :
-                          "bg-yellow-100 text-yellow-800"
-                        }`}>
-                          {signal.tradeAction}
-                        </Badge>
-                        <span className="text-xs text-gray-500">
-                          {new Date(signal.createdAt).toLocaleDateString()}
-                        </span>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="pt-0">
-                      {signal.imageUrl && (
-                        <img
-                          src={signal.imageUrl}
-                          alt={signal.title}
-                          className="w-full h-24 sm:h-32 object-cover rounded-md mb-3"
-                        />
-                      )}
-                      <p className="text-xs sm:text-sm text-gray-700 mb-3 line-clamp-3">{signal.content}</p>
-                      <div className="flex justify-end">
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => handleDeleteSignal(signal.id)}
-                          disabled={deleteSignalMutation.isPending}
-                          className="flex items-center space-x-1 text-xs"
-                        >
-                          <Trash2 className="h-3 w-3" />
-                          <span className="hidden sm:inline">{deleteSignalMutation.isPending ? "Deleting..." : "Delete"}</span>
-                          <span className="sm:hidden">{deleteSignalMutation.isPending ? "..." : "Del"}</span>
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+              <AdminSignals />
             </TabsContent>
 
             <TabsContent value="users" className="space-y-6">

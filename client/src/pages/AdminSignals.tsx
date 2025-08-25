@@ -16,7 +16,7 @@ import { apiRequest } from '@/lib/queryClient';
 import { useRealtimeUpdates } from '@/hooks/useRealtimeUpdates';
 
 export default function AdminSignals() {
-  const { user, isLoading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -76,8 +76,7 @@ export default function AdminSignals() {
         user: { id: user?.id, email: user?.email, isAdmin: user?.isAdmin }
       });
       
-      const response = await apiRequest('POST', '/api/admin/signals', signalData);
-      const result = await response.json();
+      const result = await apiRequest('POST', '/api/admin/signals', signalData);
       
       console.log('✅ SIGNAL CREATION - RESPONSE:', {
         status: response.status,
@@ -118,8 +117,7 @@ export default function AdminSignals() {
 
   const updateSignalMutation = useMutation({
     mutationFn: async ({ id, ...signalData }: any) => {
-      const response = await apiRequest('PUT', `/api/admin/signals/${id}`, signalData);
-      return response.json();
+      return await apiRequest('PUT', `/api/admin/signals/${id}`, signalData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/signals'] });
@@ -141,8 +139,7 @@ export default function AdminSignals() {
 
   const deleteSignalMutation = useMutation({
     mutationFn: async (id: number) => {
-      const response = await apiRequest('DELETE', `/api/admin/signals/${id}`);
-      return response.json();
+      return await apiRequest('DELETE', `/api/admin/signals/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/signals'] });
@@ -461,7 +458,7 @@ export default function AdminSignals() {
             <div className="mt-4 p-4 bg-blue-50 rounded-lg">
               <p className="text-sm text-blue-600">
                 <strong>Admin Login:</strong> admin@forexsignals.com<br/>
-                <strong>Debug Info:</strong> Session ID: {sessionId}
+                <strong>Debug Info:</strong> User logged in
               </p>
             </div>
           </div>
