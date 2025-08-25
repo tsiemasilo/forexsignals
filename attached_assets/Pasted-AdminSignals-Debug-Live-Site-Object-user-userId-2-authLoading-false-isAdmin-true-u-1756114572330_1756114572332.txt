@@ -1,0 +1,103 @@
+AdminSignals Debug (Live Site): 
+Object {user: {…}, userId: 2, authLoading: false, isAdmin: true, userEmail: "tsiemasiload@gmail.com", …}
+FORM SUBMISSION DEBUG: 
+Object {formData: {…}, editingSignal: {…}, user: {…}, userId: 2, isAdmin: true, …}
+🔍 FORM VALIDATION CHECK: 
+Object {title: true, content: true, tradeAction: true, imageUrlsArray: true, formDataComplete: {…}}
+✅ FORM VALIDATION PASSED - Proceeding with submission
+Updating existing signal: 149
+🔄 FRONTEND UPDATE - Sending data: 
+Object {id: 149, signalData: {…}, url: "/api/admin/signals/149", timestamp: "2025-08-25T09:36:00.382Z"}
+AdminSignals Debug (Live Site): 
+Object {user: {…}, userId: 2, authLoading: false, isAdmin: true, userEmail: "tsiemasiload@gmail.com", …}
+✅ FRONTEND UPDATE - Response: 
+Response {type: "basic", url: "https://241d1705-5a13-446c-b7e7-53b31f4076e4-00-2izg3azza0oel.spock.replit.dev/PUT", redirected: false, status: 200, ok: true, …}
+✅ FRONTEND UPDATE - Success callback: 
+Response {type: "basic", url: "https://241d1705-5a13-446c-b7e7-53b31f4076e4-00-2izg3azza0oel.spock.replit.dev/PUT", redirected: false, status: 200, ok: true, …}
+🍞 Creating toast: 
+Object {id: "toast-1", title: "Signal updated", description: "Trading signal has been updated.", variant: "default"}
+🍞 Global toasts: 1
+🍞 Toast subscriber updating: 
+Array [{…}]
+🍞 Toast subscriber updating: 
+Array [{…}]
+🍞 Toast subscriber updating: 
+Array [{…}]
+AdminSignals Debug (Live Site): 
+Object {user: {…}, userId: 2, authLoading: false, isAdmin: true, userEmail: "tsiemasiload@gmail.com", …}
+🍞 Toaster rendering with toasts: 
+Array [{…}]
+AdminSignals Debug (Live Site): 
+Object {user: {…}, userId: 2, authLoading: false, isAdmin: true, userEmail: "tsiemasiload@gmail.com", …}
+🍞 Toast subscriber updating: 
+Array []
+🍞 Toast subscriber updating: 
+Array []
+🍞 Toast subscriber updating: 
+Array []
+AdminSignals Debug (Live Site): 
+Object {user: {…}, userId: 2, authLoading: false, isAdmin: true, userEmail: "tsiemasiload@gmail.com", …}
+🍞 Toaster rendering with toasts: 
+Array []
+AdminSignals Debug (Live Site): 
+Object {user: {…}, userId: 2, authLoading: false, isAdmin: true, userEmail: "tsiemasiload@gmail.com", …}
+Admin Dashboard
+Admin
+Tsie Masilo
+Sign Out
+Total Users
+11
+Registered customers
+
+Active Signals
+3
+Published signals
+
+Active Subscriptions
+10
+Active customers
+
+
+Signals Management
+
+User Management
+
+System Health
+Admin Signal Dashboard
+Create and manage live trading signals
+
+Live Updates: 4s
+Last sync: 11:36:07 AM
+
+Refresh All
+Signal Management
+Create, edit, and manage trading signals for your subscribers.
+
+Create Signal
+1
+Published: 8/25/2025
+
+BUY
+
+
+1
+
+Chart Images:
+
+Chart analysis
+New York Session
+Published: 8/22/2025
+
+SELL
+
+
+Entry: 23.200 TP: 23.000
+
+New York Session:
+Published: 8/21/2025
+
+BUY
+
+
+Entry: 23.130 TP: 23.400
+

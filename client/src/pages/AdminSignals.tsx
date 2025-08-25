@@ -76,11 +76,12 @@ export default function AdminSignals() {
         user: { id: user?.id, email: user?.email, isAdmin: user?.isAdmin }
       });
       
-      const result = await apiRequest('POST', '/api/admin/signals', signalData);
+      const result = await apiRequest('/api/admin/signals', {
+        method: 'POST',
+        body: signalData
+      });
       
       console.log('✅ SIGNAL CREATION - RESPONSE:', {
-        status: response.status,
-        statusText: response.statusText,
         result,
         timestamp: new Date().toISOString()
       });
@@ -124,7 +125,10 @@ export default function AdminSignals() {
         timestamp: new Date().toISOString()
       });
       
-      const result = await apiRequest('PUT', `/api/admin/signals/${id}`, signalData);
+      const result = await apiRequest(`/api/admin/signals/${id}`, {
+        method: 'PUT',
+        body: signalData
+      });
       
       console.log('✅ FRONTEND UPDATE - Response:', result);
       return result;
@@ -151,7 +155,9 @@ export default function AdminSignals() {
 
   const deleteSignalMutation = useMutation({
     mutationFn: async (id: number) => {
-      return await apiRequest('DELETE', `/api/admin/signals/${id}`);
+      return await apiRequest(`/api/admin/signals/${id}`, {
+        method: 'DELETE'
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/signals'] });
