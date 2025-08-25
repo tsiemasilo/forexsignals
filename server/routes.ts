@@ -497,8 +497,8 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
         title: updateData.title,
         content: updateData.content,
         tradeAction: updateData.tradeAction,
-        ...(updateData.imageUrl && { imageUrl: updateData.imageUrl }),
-        ...(updateData.imageUrls && Array.isArray(updateData.imageUrls) && { imageUrls: updateData.imageUrls })
+        ...(updateData.imageUrl && { imageUrl: updateData.imageUrl })
+        // Skip imageUrls for now due to PostgreSQL array issues
       };
       
       console.log('🧹 CLEANED UPDATE DATA:', cleanUpdateData);
