@@ -1176,7 +1176,7 @@ export function PhoneSignalsPage() {
                         </div>
 
                         {/* Chart Analysis Image - Prominent Display */}
-                        {selectedSignal.imageUrl && (
+                        {(selectedSignal.imageUrl || (selectedSignal.imageUrls && selectedSignal.imageUrls[0])) && (
                           <div className="mb-4">
                             <h2 className="text-base font-semibold text-slate-900 mb-3 flex items-center">
                               <BarChart3 className="w-4 h-4 mr-2 text-green-600" />
@@ -1184,7 +1184,7 @@ export function PhoneSignalsPage() {
                             </h2>
                             <div className="relative bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
                               <img 
-                                src={selectedSignal.imageUrl} 
+                                src={selectedSignal.imageUrl || selectedSignal.imageUrls?.[0]} 
                                 alt="Signal Chart Analysis"
                                 className="w-full h-auto object-contain max-h-64"
                                 onError={(e) => {
@@ -1236,7 +1236,7 @@ export function PhoneSignalsPage() {
                 )}
 
                 {/* Fullscreen Image Modal */}
-                {showFullscreenImage && selectedSignal?.imageUrl && (
+                {showFullscreenImage && (selectedSignal?.imageUrl || (selectedSignal?.imageUrls && selectedSignal.imageUrls[0])) && (
                   <div className="fixed inset-0 z-50 bg-black bg-opacity-95 flex items-center justify-center">
                     <div className="relative w-full h-full flex items-center justify-center p-4">
                       {/* Close Button */}
@@ -1259,7 +1259,7 @@ export function PhoneSignalsPage() {
 
                       {/* Fullscreen Image */}
                       <img 
-                        src={selectedSignal.imageUrl} 
+                        src={selectedSignal.imageUrl || selectedSignal.imageUrls?.[0]} 
                         alt="Signal Chart Analysis - Fullscreen"
                         className="max-w-full max-h-full object-contain"
                         onError={(e) => {
