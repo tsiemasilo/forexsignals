@@ -31,7 +31,10 @@ function PhoneStatsContent() {
     enabled: !!user,
   });
 
-  console.log('📊 Stats Debug:', { stats, isLoading, error, user: user?.email });
+  // Clean up debugging
+  if (error) {
+    console.log('📊 Stats Error:', error);
+  }
 
   if (isLoading) {
     return (

@@ -626,7 +626,7 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
       
       console.log('✅ Access granted for trade stats');
       const stats = await storage.getTradeStats();
-      console.log(`📊 Trade stats:`, stats);
+      console.log(`📊 Trade stats result:`, stats);
       res.json(stats);
     } catch (error) {
       console.error('Trade stats error:', error);

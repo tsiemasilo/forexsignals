@@ -353,12 +353,12 @@ export class DatabaseStorage implements IStorage {
       const accuracy = totalTrades > 0 ? (wins / totalTrades) * 100 : 0;
 
       return {
-        totalTrades,
-        wins,
-        losses,
-        pending,
-        winRate,
-        accuracy
+        totalTrades: Number(totalTrades),
+        wins: Number(wins),
+        losses: Number(losses), 
+        pending: Number(pending),
+        winRate: Math.round(winRate * 100) / 100,
+        accuracy: Math.round(accuracy * 100) / 100
       };
     } catch (error) {
       console.error('Error getting trade stats:', error);
