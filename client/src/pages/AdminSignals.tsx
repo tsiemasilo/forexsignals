@@ -118,23 +118,12 @@ export default function AdminSignals() {
 
   const updateSignalMutation = useMutation({
     mutationFn: async ({ id, ...signalData }: any) => {
-      console.log('🔄 FRONTEND UPDATE - Sending data:', {
-        id,
-        signalData,
-        url: `/api/admin/signals/${id}`,
-        timestamp: new Date().toISOString()
-      });
-      
-      const result = await apiRequest(`/api/admin/signals/${id}`, {
+      return await apiRequest(`/api/admin/signals/${id}`, {
         method: 'PUT',
         body: signalData
       });
-      
-      console.log('✅ FRONTEND UPDATE - Response:', result);
-      return result;
     },
-    onSuccess: (data) => {
-      console.log('✅ FRONTEND UPDATE - Success callback:', data);
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/signals'] });
       toast({
         title: "Signal updated",
@@ -143,8 +132,7 @@ export default function AdminSignals() {
       setEditingSignal(null);
       resetForm();
     },
-    onError: (error) => {
-      console.error('❌ FRONTEND UPDATE - Error callback:', error);
+    onError: () => {
       toast({
         title: "Error",
         description: "Failed to update signal. Please try again.",
@@ -241,17 +229,14 @@ export default function AdminSignals() {
   };
 
   const handleEdit = (signal: any) => {
-    console.log('📝 EDIT BUTTON CLICKED - Signal data:', signal);
     setEditingSignal(signal);
-    const editFormData = {
+    setFormData({
       title: signal.title,
       content: signal.content,
       tradeAction: signal.tradeAction,
       imageUrl: signal.imageUrl || '',
       imageUrls: signal.imageUrls || []
-    };
-    console.log('📝 EDIT FORM DATA SET:', editFormData);
-    setFormData(editFormData);
+    });
   };
 
   const addImageUrl = () => {

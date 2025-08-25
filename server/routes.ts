@@ -485,13 +485,6 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
       const signalId = parseInt(req.params.id);
       const updateData = req.body;
       
-      console.log('🔄 ADMIN SIGNAL UPDATE DEBUG:', {
-        signalId,
-        updateData,
-        userId: req.session.userId,
-        timestamp: new Date().toISOString()
-      });
-      
       // Clean update data - only include valid fields
       const cleanUpdateData = {
         title: updateData.title,
@@ -501,16 +494,11 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
         // Skip imageUrls for now due to PostgreSQL array issues
       };
       
-      console.log('🧹 CLEANED UPDATE DATA:', cleanUpdateData);
-      
       const signal = await storage.updateSignal(signalId, cleanUpdateData);
       
       if (!signal) {
-        console.error('❌ Signal not found for update, ID:', signalId);
         return res.status(404).json({ message: "Signal not found" });
       }
-      
-      console.log('✅ SIGNAL UPDATE SUCCESSFUL:', signal);
       res.json(signal);
     } catch (error) {
       console.error('❌ Admin signal update error:', error);
