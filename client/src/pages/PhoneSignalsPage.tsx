@@ -59,7 +59,7 @@ function PhoneStatsContent() {
   }
 
   return (
-    <div className="p-4 space-y-4">
+    <div className="p-4 space-y-4 overflow-y-auto max-h-full pb-6">
       {/* Stats Grid */}
       <div className="grid grid-cols-2 gap-3">
         <div className="bg-blue-50 rounded-xl p-3 text-center">
