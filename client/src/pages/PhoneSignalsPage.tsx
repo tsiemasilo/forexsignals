@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRealtimeSignals } from '@/hooks/useRealtimeSignals';
 import { useSubscriptionStatus } from '@/hooks/useSubscriptionStatus';
-import { TrendingUp, TrendingDown, Minus, Clock, Bell, Signal, Home, CreditCard, Settings, Users, LogOut, AlertTriangle, Menu, X, BarChart3 } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, Clock, Bell, Signal, Home, CreditCard, Settings, Users, LogOut, AlertTriangle, Menu, X, BarChart3, Expand, Minimize } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -615,6 +615,7 @@ export function PhoneSignalsPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedSignal, setSelectedSignal] = useState<any>(null);
   const [showSignalModal, setShowSignalModal] = useState(false);
+  const [showFullscreenImage, setShowFullscreenImage] = useState(false);
   const [, setLocation] = useLocation();
 
   // Update time every minute
@@ -1026,7 +1027,7 @@ export function PhoneSignalsPage() {
                               <BarChart3 className="w-4 h-4 mr-2 text-green-600" />
                               Chart Analysis
                             </h2>
-                            <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+                            <div className="relative bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
                               <img 
                                 src={selectedSignal.imageUrl} 
                                 alt="Signal Chart Analysis"
@@ -1035,6 +1036,14 @@ export function PhoneSignalsPage() {
                                   e.currentTarget.style.display = 'none';
                                 }}
                               />
+                              {/* Fullscreen Icon */}
+                              <button 
+                                onClick={() => setShowFullscreenImage(true)}
+                                className="absolute top-3 right-3 bg-slate-900/80 hover:bg-slate-900 text-white p-2 rounded-full transition-colors shadow-lg"
+                                aria-label="View fullscreen"
+                              >
+                                <Expand className="w-4 h-4" />
+                              </button>
                             </div>
                           </div>
                         )}
@@ -1066,6 +1075,46 @@ export function PhoneSignalsPage() {
                         >
                           Upgrade Plan
                         </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Fullscreen Image Modal */}
+                {showFullscreenImage && selectedSignal?.imageUrl && (
+                  <div className="fixed inset-0 z-50 bg-black bg-opacity-95 flex items-center justify-center">
+                    <div className="relative w-full h-full flex items-center justify-center p-4">
+                      {/* Close Button */}
+                      <button 
+                        onClick={() => setShowFullscreenImage(false)}
+                        className="absolute top-6 right-6 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition-colors z-10"
+                        aria-label="Close fullscreen"
+                      >
+                        <X className="w-6 h-6" />
+                      </button>
+
+                      {/* Minimize/Exit Fullscreen Button */}
+                      <button 
+                        onClick={() => setShowFullscreenImage(false)}
+                        className="absolute top-6 left-6 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition-colors z-10"
+                        aria-label="Exit fullscreen"
+                      >
+                        <Minimize className="w-6 h-6" />
+                      </button>
+
+                      {/* Fullscreen Image */}
+                      <img 
+                        src={selectedSignal.imageUrl} 
+                        alt="Signal Chart Analysis - Fullscreen"
+                        className="max-w-full max-h-full object-contain"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                      
+                      {/* Image Title */}
+                      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-lg">
+                        <p className="text-sm font-medium">{selectedSignal.title} - Chart Analysis</p>
                       </div>
                     </div>
                   </div>
