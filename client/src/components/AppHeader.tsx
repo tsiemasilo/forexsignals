@@ -1,11 +1,13 @@
+import { useState } from 'react';
 import { Link } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { SubscriptionStatusBadge } from './SubscriptionStatusBadge';
 import { useAuth } from '@/contexts/AuthContext';
-import { LogOut, Home, Signal, CreditCard, Settings, Users, BarChart3 } from 'lucide-react';
+import { LogOut, Home, Signal, CreditCard, Settings, Users, BarChart3, Menu, X } from 'lucide-react';
 
 export function AppHeader() {
   const { user, logout } = useAuth();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   if (!user) {
     return null;
@@ -80,11 +82,29 @@ export function AppHeader() {
 
           {/* User Info and Status */}
           <div className="flex items-center space-x-4">
-            {/* Subscription Status Badge */}
-            <SubscriptionStatusBadge />
+            {/* Mobile menu button */}
+            <div className="md:hidden">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="p-2"
+              >
+                {isMobileMenuOpen ? (
+                  <X className="h-5 w-5" />
+                ) : (
+                  <Menu className="h-5 w-5" />
+                )}
+              </Button>
+            </div>
+
+            {/* Desktop: Subscription Status Badge */}
+            <div className="hidden md:flex">
+              <SubscriptionStatusBadge />
+            </div>
             
-            {/* User Info */}
-            <div className="flex items-center space-x-3">
+            {/* Desktop: User Info */}
+            <div className="hidden md:flex items-center space-x-3">
               <div className="text-right">
                 <p className="text-sm font-medium text-gray-900">
                   {user.firstName} {user.lastName}
@@ -104,6 +124,78 @@ export function AppHeader() {
             </div>
           </div>
         </div>
+        
+        {/* Mobile Navigation Menu */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden border-t bg-white">
+            <div className="px-4 py-4 space-y-4">
+              <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>
+                <a className="flex items-center space-x-2 text-gray-700 hover:text-green-600 transition-colors py-2">
+                  <Home className="h-4 w-4" />
+                  <span>Home</span>
+                </a>
+              </Link>
+              
+              <Link href="/signals" onClick={() => setIsMobileMenuOpen(false)}>
+                <a className="flex items-center space-x-2 text-gray-700 hover:text-green-600 transition-colors py-2">
+                  <Signal className="h-4 w-4" />
+                  <span>Signals</span>
+                </a>
+              </Link>
+              
+              <Link href="/trade-stats" onClick={() => setIsMobileMenuOpen(false)}>
+                <a className="flex items-center space-x-2 text-gray-700 hover:text-green-600 transition-colors py-2">
+                  <BarChart3 className="h-4 w-4" />
+                  <span>Stats</span>
+                </a>
+              </Link>
+              
+              {!user.isAdmin && (
+                <Link href="/plans" onClick={() => setIsMobileMenuOpen(false)}>
+                  <a className="flex items-center space-x-2 text-gray-700 hover:text-green-600 transition-colors py-2">
+                    <CreditCard className="h-4 w-4" />
+                    <span>Plans</span>
+                  </a>
+                </Link>
+              )}
+              
+              {user.isAdmin && (
+                <>
+                  <Link href="/admin" onClick={() => setIsMobileMenuOpen(false)}>
+                    <a className="flex items-center space-x-2 text-gray-700 hover:text-green-600 transition-colors py-2">
+                      <Settings className="h-4 w-4" />
+                      <span>Admin</span>
+                    </a>
+                  </Link>
+                  <Link href="/admin/users" onClick={() => setIsMobileMenuOpen(false)}>
+                    <a className="flex items-center space-x-2 text-gray-700 hover:text-green-600 transition-colors py-2">
+                      <Users className="h-4 w-4" />
+                      <span>Manage Users</span>
+                    </a>
+                  </Link>
+                </>
+              )}
+              
+              {/* Mobile: User Info Section */}
+              <div className="border-t pt-4 space-y-3">
+                <SubscriptionStatusBadge />
+                <div className="text-sm text-gray-600">
+                  <p className="font-medium">{user.firstName} {user.lastName}</p>
+                  <p className="text-xs text-gray-500">{user.email}</p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleLogout}
+                  className="flex items-center space-x-2 w-full justify-center"
+                >
+                  <LogOut className="h-4 w-4" />
+                  <span>Logout</span>
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </header>
   );
