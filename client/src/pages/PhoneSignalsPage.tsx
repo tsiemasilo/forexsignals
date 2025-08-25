@@ -774,6 +774,18 @@ export function PhoneSignalsPage() {
     }
   };
 
+  const getTradeOutcomeBackground = (outcome: string) => {
+    switch (outcome?.toLowerCase()) {
+      case 'win':
+        return 'bg-green-50 border-green-200';
+      case 'loss':
+        return 'bg-red-50 border-red-200';
+      case 'pending':
+      default:
+        return 'bg-white border-slate-200';
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
@@ -996,7 +1008,7 @@ export function PhoneSignalsPage() {
                               {signals
                                 ?.sort((a: any, b: any) => new Date(b.created_at || b.createdAt).getTime() - new Date(a.created_at || a.createdAt).getTime())
                                 ?.map((signal: any) => (
-                                  <div key={signal.id} className="mx-4 my-2 bg-white border border-slate-200 rounded-xl shadow-sm">
+                                  <div key={signal.id} className={`mx-4 my-2 rounded-xl shadow-sm border ${getTradeOutcomeBackground(signal.tradeOutcome || signal.trade_outcome)}`}>
                                     {/* Notification Header */}
                                     <div className="flex items-center px-4 py-3 border-b border-slate-100">
                                       <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center mr-3">

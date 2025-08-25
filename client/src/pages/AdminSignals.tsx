@@ -405,6 +405,30 @@ export default function AdminSignals() {
     }
   };
 
+  const getTradeOutcomeColor = (outcome: string) => {
+    switch (outcome?.toLowerCase()) {
+      case 'win':
+        return 'bg-emerald-100 text-emerald-800 border-emerald-200';
+      case 'loss':
+        return 'bg-red-100 text-red-800 border-red-200';
+      case 'pending':
+      default:
+        return 'bg-orange-100 text-orange-800 border-orange-200';
+    }
+  };
+
+  const getTradeOutcomeText = (outcome: string) => {
+    switch (outcome?.toLowerCase()) {
+      case 'win':
+        return '✅ WIN';
+      case 'loss':
+        return '❌ LOSS';
+      case 'pending':
+      default:
+        return '⏳ PENDING';
+    }
+  };
+
   const getTradeOutcomeIcon = (outcome: string) => {
     switch (outcome?.toLowerCase()) {
       case 'win':
@@ -417,17 +441,6 @@ export default function AdminSignals() {
     }
   };
 
-  const getTradeOutcomeColor = (outcome: string) => {
-    switch (outcome?.toLowerCase()) {
-      case 'win':
-        return 'bg-green-100 text-green-800';
-      case 'loss':
-        return 'bg-red-100 text-red-800';
-      case 'pending':
-      default:
-        return 'bg-orange-100 text-orange-800';
-    }
-  };
 
   // Show admin access check first
   if (authLoading) {
@@ -791,6 +804,9 @@ export default function AdminSignals() {
                     <div className="flex items-center space-x-2">
                       <Badge className={getTradeActionColor(signal.tradeAction)}>
                         {signal.tradeAction.toUpperCase()}
+                      </Badge>
+                      <Badge className={getTradeOutcomeColor(signal.tradeOutcome)}>
+                        {getTradeOutcomeText(signal.tradeOutcome)}
                       </Badge>
                       <Button
                         size="sm"
