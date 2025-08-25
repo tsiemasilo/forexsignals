@@ -8,7 +8,7 @@ export function SubscriptionStatusBadge() {
   const { data: subscriptionStatus, isLoading, error } = useSubscriptionStatus();
 
   // Debug logging
-  console.log('Badge Debug:', { user, subscriptionStatus, isLoading, error });
+  // Debug logging removed for cleaner console
 
   // Don't show badge for admin users, but show for regular users even if user data is incomplete
   if (isLoading) {

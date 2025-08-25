@@ -999,7 +999,7 @@ export function PhoneSignalsPage() {
                       </div>
 
                       {/* Content Area */}
-                      <div className="flex-1 overflow-y-auto max-h-[480px]">
+                      <div className="flex-1 overflow-y-auto">
                         {activeTab === 'signals' ? (
                           /* Signals Content */
                           signals?.length === 0 ? (
