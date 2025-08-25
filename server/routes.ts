@@ -25,6 +25,13 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
       sameSite: 'lax'
     }
   }));
+  // Database migrations
+  try {
+    await storage.addTradeOutcomeColumn();
+  } catch (error) {
+    console.log('Trade outcome column migration error (might already exist):', error);
+  }
+
   // Seed database on startup
   await seedDatabase();
 
@@ -36,6 +43,17 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
       res.json({ message: "Password column added successfully. Please restart the server." });
     } catch (error: any) {
       console.error('Migration error:', error);
+      res.status(500).json({ message: error.message || "Migration failed" });
+    }
+  });
+
+  // Migration route to add trade outcome column
+  app.post("/api/admin/migrate-trade-outcome-column", async (req: Request, res: Response) => {
+    try {
+      await storage.addTradeOutcomeColumn();
+      res.json({ message: "Trade outcome column added successfully." });
+    } catch (error: any) {
+      console.error('Trade outcome migration error:', error);
       res.status(500).json({ message: error.message || "Migration failed" });
     }
   });
@@ -490,6 +508,7 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
         title: updateData.title,
         content: updateData.content,
         tradeAction: updateData.tradeAction,
+        ...(updateData.tradeOutcome && { tradeOutcome: updateData.tradeOutcome }),
         ...(updateData.imageUrl && { imageUrl: updateData.imageUrl })
         // Skip imageUrls for now due to PostgreSQL array issues
       };
@@ -569,6 +588,38 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
     } catch (error) {
       console.error('Admin user promotion error:', error);
       res.status(500).json({ message: "Failed to promote user to admin" });
+    }
+  });
+
+  // Trade statistics endpoint
+  app.get("/api/trade-stats", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const userId = req.session.userId!;
+      
+      // Check if user is admin - admins can see all stats
+      const user = await storage.getUser(userId);
+      if (!user?.isAdmin) {
+        // Regular users need active subscription
+        const subscription = await storage.getUserSubscription(userId);
+        if (!subscription) {
+          return res.status(403).json({ message: "Active subscription required" });
+        }
+        
+        const now = new Date();
+        const endDate = new Date(subscription.endDate);
+        const validStatuses = ['active', 'trial', 'basic plan', 'premium plan', 'vip plan'];
+        const isActive = validStatuses.includes(subscription.status) && endDate > now;
+        
+        if (!isActive) {
+          return res.status(403).json({ message: "Active subscription required" });
+        }
+      }
+      
+      const stats = await storage.getTradeStats();
+      res.json(stats);
+    } catch (error) {
+      console.error('Trade stats error:', error);
+      res.status(500).json({ message: "Failed to fetch trade statistics" });
     }
   });
 

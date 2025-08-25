@@ -2,7 +2,7 @@ import { Link } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { SubscriptionStatusBadge } from './SubscriptionStatusBadge';
 import { useAuth } from '@/contexts/AuthContext';
-import { LogOut, Home, Signal, CreditCard, Settings, Users } from 'lucide-react';
+import { LogOut, Home, Signal, CreditCard, Settings, Users, BarChart3 } from 'lucide-react';
 
 export function AppHeader() {
   const { user, logout } = useAuth();
@@ -40,6 +40,13 @@ export function AppHeader() {
                 <a className="flex items-center space-x-1 text-gray-700 hover:text-green-600 transition-colors">
                   <Signal className="h-4 w-4" />
                   <span>Signals</span>
+                </a>
+              </Link>
+              
+              <Link href="/trade-stats">
+                <a className="flex items-center space-x-1 text-gray-700 hover:text-green-600 transition-colors">
+                  <BarChart3 className="h-4 w-4" />
+                  <span>Stats</span>
                 </a>
               </Link>
               

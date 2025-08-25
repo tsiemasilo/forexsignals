@@ -33,8 +33,12 @@ export interface IStorage {
   updateSignal(id: number, updateData: Partial<ForexSignal>): Promise<ForexSignal | undefined>;
   deleteSignal(id: number): Promise<boolean>;
 
+  // Trade Statistics
+  getTradeStats(): Promise<any>;
+
   // Migration methods
   addPasswordColumn(): Promise<void>;
+  addTradeOutcomeColumn(): Promise<void>;
   updateUserPassword(email: string, hashedPassword: string): Promise<void>;
 }
 
@@ -311,6 +315,64 @@ export class DatabaseStorage implements IStorage {
     return true; // Assume success for now
   }
 
+  // Trade Statistics
+  async getTradeStats(): Promise<any> {
+    try {
+      // Get total signals count
+      const totalResult = await db.select({ count: sql<number>`count(*)` }).from(forexSignals);
+      const totalTrades = totalResult[0]?.count || 0;
+
+      // Get win/loss/pending counts using tradeOutcome field
+      let wins = 0;
+      let losses = 0;
+      let pending = totalTrades; // Default all to pending if column doesn't exist
+
+      try {
+        const winResult = await db.select({ count: sql<number>`count(*)` })
+          .from(forexSignals)
+          .where(eq(forexSignals.tradeOutcome, 'win'));
+        wins = winResult[0]?.count || 0;
+
+        const lossResult = await db.select({ count: sql<number>`count(*)` })
+          .from(forexSignals)
+          .where(eq(forexSignals.tradeOutcome, 'loss'));
+        losses = lossResult[0]?.count || 0;
+
+        const pendingResult = await db.select({ count: sql<number>`count(*)` })
+          .from(forexSignals)
+          .where(eq(forexSignals.tradeOutcome, 'pending'));
+        pending = pendingResult[0]?.count || 0;
+      } catch (error) {
+        // If trade_outcome column doesn't exist, treat all as pending
+        console.log('Trade outcome column not yet available, treating all trades as pending');
+      }
+
+      // Calculate percentages
+      const completedTrades = wins + losses;
+      const winRate = completedTrades > 0 ? (wins / completedTrades) * 100 : 0;
+      const accuracy = totalTrades > 0 ? (wins / totalTrades) * 100 : 0;
+
+      return {
+        totalTrades,
+        wins,
+        losses,
+        pending,
+        winRate,
+        accuracy
+      };
+    } catch (error) {
+      console.error('Error getting trade stats:', error);
+      return {
+        totalTrades: 0,
+        wins: 0,
+        losses: 0,
+        pending: 0,
+        winRate: 0,
+        accuracy: 0
+      };
+    }
+  }
+
   // Migration methods
   async addPasswordColumn(): Promise<void> {
     try {
@@ -319,6 +381,19 @@ export class DatabaseStorage implements IStorage {
     } catch (error: any) {
       if (error.message?.includes('already exists') || error.code === '42701') {
         console.log('Password column already exists');
+        return;
+      }
+      throw error;
+    }
+  }
+
+  async addTradeOutcomeColumn(): Promise<void> {
+    try {
+      await db.execute(sql`ALTER TABLE forex_signals ADD COLUMN trade_outcome VARCHAR(10) DEFAULT 'pending' NOT NULL`);
+      console.log('✅ Trade outcome column added successfully');
+    } catch (error: any) {
+      if (error.message?.includes('already exists') || error.code === '42701') {
+        console.log('Trade outcome column already exists');
         return;
       }
       throw error;

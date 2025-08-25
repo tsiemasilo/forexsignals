@@ -37,12 +37,14 @@ export default function AdminSignals() {
     title: string;
     content: string;
     tradeAction: string;
+    tradeOutcome: string;
     imageUrl: string;
     imageUrls: string[];
   }>({
     title: '',
     content: '',
     tradeAction: '',
+    tradeOutcome: 'pending',
     imageUrl: '',
     imageUrls: []
   });
@@ -168,6 +170,7 @@ export default function AdminSignals() {
       title: '',
       content: '',
       tradeAction: '',
+      tradeOutcome: 'pending',
       imageUrl: '',
       imageUrls: []
     });
@@ -234,6 +237,7 @@ export default function AdminSignals() {
       title: signal.title,
       content: signal.content,
       tradeAction: signal.tradeAction,
+      tradeOutcome: signal.tradeOutcome || 'pending',
       imageUrl: signal.imageUrl || '',
       imageUrls: signal.imageUrls || []
     });
@@ -401,6 +405,30 @@ export default function AdminSignals() {
     }
   };
 
+  const getTradeOutcomeIcon = (outcome: string) => {
+    switch (outcome?.toLowerCase()) {
+      case 'win':
+        return '✅';
+      case 'loss':
+        return '❌';
+      case 'pending':
+      default:
+        return '⏳';
+    }
+  };
+
+  const getTradeOutcomeColor = (outcome: string) => {
+    switch (outcome?.toLowerCase()) {
+      case 'win':
+        return 'bg-green-100 text-green-800';
+      case 'loss':
+        return 'bg-red-100 text-red-800';
+      case 'pending':
+      default:
+        return 'bg-orange-100 text-orange-800';
+    }
+  };
+
   // Show admin access check first
   if (authLoading) {
     return (
@@ -561,6 +589,20 @@ export default function AdminSignals() {
                       <SelectItem value="Sell">Sell</SelectItem>
                       <SelectItem value="Hold">Hold</SelectItem>
                       <SelectItem value="Wait">Wait</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
+                  <Label htmlFor="tradeOutcome">Trade Outcome</Label>
+                  <Select value={formData.tradeOutcome} onValueChange={(value) => setFormData({ ...formData, tradeOutcome: value })}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select trade outcome" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pending">⏳ Pending</SelectItem>
+                      <SelectItem value="win">✅ Win</SelectItem>
+                      <SelectItem value="loss">❌ Loss</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

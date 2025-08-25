@@ -42,6 +42,7 @@ export const forexSignals = pgTable("forex_signals", {
   title: varchar("title", { length: 200 }).notNull(),
   content: text("content").notNull(),
   tradeAction: varchar("trade_action", { length: 10 }).notNull(), // Buy, Sell, Hold
+  tradeOutcome: varchar("trade_outcome", { length: 10 }).default("pending").notNull(), // win, loss, pending
   imageUrl: varchar("image_url", { length: 500 }),
   imageUrls: json("image_urls"), // Array of image URLs
   createdBy: integer("created_by").notNull().references(() => users.id),
@@ -105,6 +106,7 @@ export const insertForexSignalSchema = createInsertSchema(forexSignals, {
   title: z.string().min(1),
   content: z.string().min(1),
   tradeAction: z.enum(["Buy", "Sell", "Hold"]),
+  tradeOutcome: z.enum(["win", "loss", "pending"]).default("pending"),
   createdBy: z.number().min(1),
 });
 
