@@ -509,8 +509,8 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
         content: updateData.content,
         tradeAction: updateData.tradeAction,
         ...(updateData.tradeOutcome && { tradeOutcome: updateData.tradeOutcome }),
-        ...(updateData.imageUrl && { imageUrl: updateData.imageUrl })
-        // Skip imageUrls for now due to PostgreSQL array issues
+        ...(updateData.imageUrl && { imageUrl: updateData.imageUrl }),
+        ...(updateData.imageUrls && { imageUrls: updateData.imageUrls })
       };
       
       const signal = await storage.updateSignal(signalId, cleanUpdateData);
