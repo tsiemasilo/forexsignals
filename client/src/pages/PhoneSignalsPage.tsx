@@ -69,7 +69,7 @@ function PhoneStatsContent() {
   };
 
   return (
-    <div className="p-4 space-y-4 overflow-y-auto max-h-full pb-6">
+    <div className="p-4 space-y-4 overflow-y-auto pb-6" style={{ maxHeight: 'calc(100vh - 280px)' }}>
       {/* Stats Grid */}
       <div className="grid grid-cols-2 gap-3">
         <div className="bg-blue-50 rounded-xl p-3 text-center">
@@ -1009,7 +1009,7 @@ export function PhoneSignalsPage() {
                       </div>
 
                       {/* Content Area */}
-                      <div className="flex-1 overflow-y-auto">
+                      <div className="flex-1 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 280px)' }}>
                         {activeTab === 'signals' ? (
                           /* Signals Content */
                           signals?.length === 0 ? (
@@ -1021,7 +1021,7 @@ export function PhoneSignalsPage() {
                               </p>
                             </div>
                           ) : (
-                            <div className="space-y-1">
+                            <div className="space-y-1 pb-4">
                               {signals
                                 ?.sort((a: any, b: any) => new Date(b.created_at || b.createdAt).getTime() - new Date(a.created_at || a.createdAt).getTime())
                                 ?.map((signal: any) => (

@@ -359,7 +359,7 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
       const now = new Date();
       const endDate = new Date(subscription.endDate);
       // Accept any valid subscription status that's not explicitly expired/cancelled
-      const validStatuses = ['active', 'trial', 'basic plan', 'premium plan', 'vip plan'];
+      const validStatuses = ['active', 'trial', 'free trial', 'basic plan', 'premium plan', 'vip plan'];
       const isActive = validStatuses.includes(subscription.status) && endDate > now;
       
       if (!isActive) {
@@ -616,7 +616,7 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
         
         const now = new Date();
         const endDate = new Date(subscription.endDate);
-        const validStatuses = ['active', 'trial', 'basic plan', 'premium plan', 'vip plan'];
+        const validStatuses = ['active', 'trial', 'free trial', 'basic plan', 'premium plan', 'vip plan'];
         const isActive = validStatuses.includes(subscription.status) && endDate > now;
         
         console.log(`📋 Subscription status: ${subscription.status}, Active: ${isActive}`);
