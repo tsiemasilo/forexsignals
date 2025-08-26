@@ -259,9 +259,9 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
       let statusDisplay = status.charAt(0).toUpperCase() + status.slice(1);
       let color = "bg-gray-100 text-gray-800";
       
-      if (subscription.status === 'active' || (subscription.status === 'trial' && daysLeft > 0)) {
+      if (subscription.status === 'active' || ((subscription.status === 'trial' || subscription.status === 'free trial') && daysLeft > 0)) {
         color = "bg-green-100 text-green-800";
-        statusDisplay = subscription.status === 'trial' ? `Trial (${daysLeft} days left)` : "Active";
+        statusDisplay = (subscription.status === 'trial' || subscription.status === 'free trial') ? `Trial (${daysLeft} days left)` : "Active";
       } else if (daysLeft <= 0) {
         status = "expired";
         statusDisplay = "Expired";
@@ -311,7 +311,7 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
       const now = new Date();
       const endDate = new Date(subscription.endDate);
       // Accept any valid subscription status that's not explicitly expired/cancelled
-      const validStatuses = ['active', 'trial', 'basic plan', 'premium plan', 'vip plan'];
+      const validStatuses = ['active', 'trial', 'free trial', 'basic plan', 'premium plan', 'vip plan'];
       const isActive = validStatuses.includes(subscription.status) && endDate > now;
       
       if (!isActive) {
