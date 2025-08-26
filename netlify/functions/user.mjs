@@ -95,20 +95,24 @@ export const handler = async (event, context) => {
       const daysLeft = Math.max(0, Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
       
       // Determine if subscription is active
-      const isActive = daysLeft > 0 && (subscription.status === 'active' || subscription.status === 'free trial' || subscription.status === 'basic plan' || subscription.status === 'premium plan' || subscription.status === 'vip plan');
+      const validStatuses = ['active', 'trial', 'free trial', 'basic plan', 'premium plan', 'vip plan'];
+      const isActive = daysLeft > 0 && validStatuses.includes(subscription.status);
 
-      // Create clean status display without days
+      // Create clean status display and override status if expired
       let statusDisplay = subscription.status;
-      if (subscription.status === 'basic plan') {
+      let actualStatus = subscription.status;
+      
+      if (!isActive || daysLeft <= 0) {
+        statusDisplay = 'Expired';
+        actualStatus = 'expired';
+      } else if (subscription.status === 'basic plan') {
         statusDisplay = 'Basic Plan';
       } else if (subscription.status === 'premium plan') {
         statusDisplay = 'Premium Plan';
       } else if (subscription.status === 'vip plan') {
         statusDisplay = 'VIP Plan';
-      } else if (subscription.status === 'free trial') {
+      } else if (subscription.status === 'free trial' || subscription.status === 'trial') {
         statusDisplay = 'Trial';
-      } else if (!isActive) {
-        statusDisplay = 'Expired';
       }
 
       return {
@@ -134,7 +138,7 @@ export const handler = async (event, context) => {
             price: parseFloat(subscription.price),
             duration: subscription.duration
           },
-          status: subscription.status, // Use actual database status
+          status: actualStatus, // Use calculated status (expired if no days left)
           statusDisplay: statusDisplay, // Formatted display text
           daysLeft: daysLeft,
           color: isActive ? 'green' : 'red'

@@ -66,6 +66,14 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (August 2025)
 
+### 🔒 Subscription Validation Fix (August 26, 2025 - 7:30 AM)
+- **Root Cause Fixed**: Production Netlify signals function was missing subscription validation, allowing expired users to see signals
+- **Added Authentication**: Signals API now checks user session and subscription status before returning data
+- **Subscription Expiry Logic**: Users with 0 days left now get proper "expired" status from subscription API
+- **403 Response Handling**: Expired subscriptions receive proper error message "Your subscription has expired"
+- **Frontend Consistency**: Production now matches Replit behavior - expired users see upgrade message instead of signals
+- **Admin Override**: Admin users can always access signals regardless of subscription status
+
 ### 📊 Production Database & Stats Fix (August 26, 2025 - 7:20 AM)
 - **Database Synchronization**: Updated all Netlify functions to use `NETLIFY_DATABASE_URL` with correct Neon database connection
 - **Stats Tab Issue Resolved**: Fixed "Cannot read properties of undefined (reading 'toFixed')" error with proper null checks

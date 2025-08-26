@@ -39,6 +39,69 @@ export const handler = async (event, context) => {
     
     // GET all signals
     if (method === 'GET') {
+      const user = await getUserFromSession(event);
+      
+      if (!user) {
+        return {
+          statusCode: 401,
+          headers,
+          body: JSON.stringify({ message: "Authentication required" })
+        };
+      }
+
+      console.log('🔍 SIGNALS ACCESS DEBUG - User:', user.id);
+
+      // Check if user is admin (admins can always see signals)
+      if (!user.is_admin) {
+        // Get user's latest subscription
+        const subscriptions = await sql`
+          SELECT * FROM subscriptions 
+          WHERE user_id = ${user.id}
+          ORDER BY created_at DESC
+          LIMIT 1
+        `;
+
+        console.log('📋 Subscription:', subscriptions[0]);
+
+        if (subscriptions.length === 0) {
+          console.log('❌ No subscription found');
+          return {
+            statusCode: 403,
+            headers,
+            body: JSON.stringify({ 
+              message: "Active subscription required",
+              status: "no_subscription" 
+            })
+          };
+        }
+
+        const subscription = subscriptions[0];
+        const now = new Date();
+        const endDate = new Date(subscription.end_date);
+        const daysLeft = Math.max(0, Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+
+        // Check if subscription is active and not expired
+        const validStatuses = ['active', 'trial', 'free trial', 'basic plan', 'premium plan', 'vip plan'];
+        const isActive = validStatuses.includes(subscription.status) && daysLeft > 0;
+
+        console.log(`📋 Subscription status: ${subscription.status}, Days left: ${daysLeft}, Active: ${isActive}`);
+
+        if (!isActive) {
+          console.log('❌ Subscription expired or inactive');
+          return {
+            statusCode: 403,
+            headers,
+            body: JSON.stringify({ 
+              message: "Your subscription has expired. Please upgrade your plan to continue receiving premium trading signals.",
+              status: "expired",
+              daysLeft: daysLeft
+            })
+          };
+        }
+      }
+
+      console.log('✅ Access granted for user:', user.id);
+
       // Get all active signals
       const signals = await sql`
         SELECT id, title, content, trade_action, image_url, image_urls, trade_outcome, created_by, is_active, created_at, updated_at
