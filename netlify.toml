@@ -89,6 +89,12 @@
   to = "/.netlify/functions/user"
   status = 200
 
+# Trade Stats Route
+[[redirects]]
+  from = "/api/trade-stats"
+  to = "/.netlify/functions/trade-stats"
+  status = 200
+
 # Debug Routes
 [[redirects]]
   from = "/api/debug/*"

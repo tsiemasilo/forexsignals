@@ -1,6 +1,6 @@
 import { neon } from '@neondatabase/serverless';
 
-const DATABASE_URL = process.env.DATABASE_URL || "postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require";
+const DATABASE_URL = process.env.NETLIFY_DATABASE_URL || "postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require";
 const sql = neon(DATABASE_URL);
 
 // Helper function to get user from session cookie
@@ -41,7 +41,7 @@ export const handler = async (event, context) => {
     if (method === 'GET') {
       // Get all active signals
       const signals = await sql`
-        SELECT id, title, content, trade_action, image_url, image_urls, created_by, is_active, created_at, updated_at
+        SELECT id, title, content, trade_action, image_url, image_urls, trade_outcome, created_by, is_active, created_at, updated_at
         FROM forex_signals 
         WHERE is_active = true
         ORDER BY created_at DESC
@@ -54,6 +54,8 @@ export const handler = async (event, context) => {
         content: signal.content,
         trade_action: signal.trade_action,
         tradeAction: signal.trade_action, // alias for compatibility
+        trade_outcome: signal.trade_outcome || 'pending',
+        tradeOutcome: signal.trade_outcome || 'pending', // alias for compatibility
         image_url: signal.image_url,
         imageUrl: signal.image_url, // alias for compatibility
         image_urls: signal.image_urls,
