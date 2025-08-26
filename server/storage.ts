@@ -280,13 +280,33 @@ export class DatabaseStorage implements IStorage {
 
   // Forex Signals
   async getAllSignals(): Promise<ForexSignal[]> {
-    return await db.select().from(forexSignals)
+    const signals = await db.select().from(forexSignals)
       .orderBy(desc(forexSignals.createdAt));
+    
+    // Parse imageUrls JSON strings back to arrays
+    return signals.map(signal => ({
+      ...signal,
+      imageUrls: signal.imageUrls ? (
+        typeof signal.imageUrls === 'string' ? 
+          JSON.parse(signal.imageUrls) : 
+          signal.imageUrls
+      ) : null
+    }));
   }
 
   async getSignal(id: number): Promise<ForexSignal | undefined> {
     const [signal] = await db.select().from(forexSignals).where(eq(forexSignals.id, id));
-    return signal || undefined;
+    if (!signal) return undefined;
+    
+    // Parse imageUrls JSON string back to array
+    return {
+      ...signal,
+      imageUrls: signal.imageUrls ? (
+        typeof signal.imageUrls === 'string' ? 
+          JSON.parse(signal.imageUrls) : 
+          signal.imageUrls
+      ) : null
+    };
   }
 
   async createSignal(insertSignal: InsertForexSignal): Promise<ForexSignal> {

@@ -510,7 +510,10 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
         tradeAction: updateData.tradeAction,
         ...(updateData.tradeOutcome && { tradeOutcome: updateData.tradeOutcome }),
         ...(updateData.imageUrl && { imageUrl: updateData.imageUrl }),
-        ...(updateData.imageUrls && { imageUrls: updateData.imageUrls })
+        // Handle imageUrls as JSON array
+        ...(updateData.imageUrls && Array.isArray(updateData.imageUrls) && updateData.imageUrls.length > 0 && { 
+          imageUrls: JSON.stringify(updateData.imageUrls) 
+        })
       };
       
       const signal = await storage.updateSignal(signalId, cleanUpdateData);
