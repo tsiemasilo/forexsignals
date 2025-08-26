@@ -510,9 +510,9 @@ export async function registerRoutes(app: express.Application): Promise<Server> 
         tradeAction: updateData.tradeAction,
         ...(updateData.tradeOutcome && { tradeOutcome: updateData.tradeOutcome }),
         ...(updateData.imageUrl && { imageUrl: updateData.imageUrl }),
-        // Handle imageUrls as JSON array
+        // Handle imageUrls as JSON (already compatible with json column type)
         ...(updateData.imageUrls && Array.isArray(updateData.imageUrls) && updateData.imageUrls.length > 0 && { 
-          imageUrls: JSON.stringify(updateData.imageUrls) 
+          imageUrls: updateData.imageUrls 
         })
       };
       

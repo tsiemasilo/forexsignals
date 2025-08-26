@@ -283,30 +283,16 @@ export class DatabaseStorage implements IStorage {
     const signals = await db.select().from(forexSignals)
       .orderBy(desc(forexSignals.createdAt));
     
-    // Parse imageUrls JSON strings back to arrays
-    return signals.map(signal => ({
-      ...signal,
-      imageUrls: signal.imageUrls ? (
-        typeof signal.imageUrls === 'string' ? 
-          JSON.parse(signal.imageUrls) : 
-          signal.imageUrls
-      ) : null
-    }));
+    // imageUrls should already be parsed by Drizzle as it's a json column type
+    return signals;
   }
 
   async getSignal(id: number): Promise<ForexSignal | undefined> {
     const [signal] = await db.select().from(forexSignals).where(eq(forexSignals.id, id));
     if (!signal) return undefined;
     
-    // Parse imageUrls JSON string back to array
-    return {
-      ...signal,
-      imageUrls: signal.imageUrls ? (
-        typeof signal.imageUrls === 'string' ? 
-          JSON.parse(signal.imageUrls) : 
-          signal.imageUrls
-      ) : null
-    };
+    // imageUrls should already be parsed by Drizzle as it's a json column type
+    return signal;
   }
 
   async createSignal(insertSignal: InsertForexSignal): Promise<ForexSignal> {
