@@ -58,24 +58,34 @@ function PhoneStatsContent() {
     );
   }
 
+  // Safely handle undefined values with fallbacks
+  const safeStats = {
+    totalTrades: stats.totalTrades || 0,
+    wins: stats.wins || 0,
+    losses: stats.losses || 0,
+    pending: stats.pending || 0,
+    winRate: (stats.winRate ?? 0),
+    accuracy: (stats.accuracy ?? 0)
+  };
+
   return (
     <div className="p-4 space-y-4 overflow-y-auto max-h-full pb-6">
       {/* Stats Grid */}
       <div className="grid grid-cols-2 gap-3">
         <div className="bg-blue-50 rounded-xl p-3 text-center">
-          <div className="text-xl font-bold text-blue-900">{stats.totalTrades}</div>
+          <div className="text-xl font-bold text-blue-900">{safeStats.totalTrades}</div>
           <div className="text-xs text-blue-600">Total Trades</div>
         </div>
         <div className="bg-green-50 rounded-xl p-3 text-center">
-          <div className="text-xl font-bold text-green-900">{stats.wins}</div>
+          <div className="text-xl font-bold text-green-900">{safeStats.wins}</div>
           <div className="text-xs text-green-600">Wins</div>
         </div>
         <div className="bg-red-50 rounded-xl p-3 text-center">
-          <div className="text-xl font-bold text-red-900">{stats.losses}</div>
+          <div className="text-xl font-bold text-red-900">{safeStats.losses}</div>
           <div className="text-xs text-red-600">Losses</div>
         </div>
         <div className="bg-orange-50 rounded-xl p-3 text-center">
-          <div className="text-xl font-bold text-orange-900">{stats.pending}</div>
+          <div className="text-xl font-bold text-orange-900">{safeStats.pending}</div>
           <div className="text-xs text-orange-600">Pending</div>
         </div>
       </div>
@@ -84,16 +94,16 @@ function PhoneStatsContent() {
       <div className="bg-slate-50 rounded-xl p-4">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-medium text-slate-700">Win Rate</span>
-          <span className="text-xl font-bold text-green-600">{stats.winRate.toFixed(1)}%</span>
+          <span className="text-xl font-bold text-green-600">{safeStats.winRate.toFixed(1)}%</span>
         </div>
         <div className="w-full bg-slate-200 rounded-full h-2">
           <div 
             className="bg-green-500 h-2 rounded-full transition-all duration-300"
-            style={{ width: `${stats.winRate}%` }}
+            style={{ width: `${safeStats.winRate}%` }}
           />
         </div>
         <p className="text-xs text-slate-500 mt-2">
-          {stats.wins} wins out of {stats.wins + stats.losses} completed trades
+          {safeStats.wins} wins out of {safeStats.wins + safeStats.losses} completed trades
         </p>
       </div>
 
@@ -101,12 +111,12 @@ function PhoneStatsContent() {
       <div className="bg-slate-50 rounded-xl p-4">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-medium text-slate-700">Accuracy</span>
-          <span className="text-xl font-bold text-blue-600">{stats.accuracy.toFixed(1)}%</span>
+          <span className="text-xl font-bold text-blue-600">{safeStats.accuracy.toFixed(1)}%</span>
         </div>
         <div className="w-full bg-slate-200 rounded-full h-2">
           <div 
             className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-            style={{ width: `${stats.accuracy}%` }}
+            style={{ width: `${safeStats.accuracy}%` }}
           />
         </div>
         <p className="text-xs text-slate-500 mt-2">
