@@ -1,4 +1,5 @@
 import { neon } from '@neondatabase/serverless';
+import bcrypt from 'bcryptjs';
 
 const DATABASE_URL = process.env.NETLIFY_DATABASE_URL || "postgresql://neondb_owner:npg_6oThiEj3WdxB@ep-sweet-surf-aepuh0z9-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require";
 const sql = neon(DATABASE_URL);
@@ -22,13 +23,13 @@ export const handler = async (event, context) => {
 
     // LOGIN
     if (path === '/api/login' && method === 'POST') {
-      const { email } = JSON.parse(event.body || '{}');
+      const { email, password } = JSON.parse(event.body || '{}');
       
-      if (!email) {
+      if (!email || !password) {
         return {
           statusCode: 400,
           headers,
-          body: JSON.stringify({ message: "Email is required" })
+          body: JSON.stringify({ message: "Email and password are required" })
         };
       }
 
@@ -47,6 +48,16 @@ export const handler = async (event, context) => {
       }
 
       const user = users[0];
+
+      // Verify password
+      const isValidPassword = await bcrypt.compare(password, user.password);
+      if (!isValidPassword) {
+        return {
+          statusCode: 401,
+          headers,
+          body: JSON.stringify({ message: "Invalid email or password" })
+        };
+      }
 
       // Check if user has subscription
       const subscriptions = await sql`
@@ -76,7 +87,7 @@ export const handler = async (event, context) => {
         statusCode: 200,
         headers: {
           ...headers,
-          'Set-Cookie': `sessionId=${user.id}; Path=/; HttpOnly; SameSite=Lax; Max-Age=86400`
+          'Set-Cookie': `sessionId=${user.id}; Path=/; SameSite=Lax; Max-Age=86400; Secure`
         },
         body: JSON.stringify({ 
           message: "Login successful", 
@@ -128,7 +139,7 @@ export const handler = async (event, context) => {
         statusCode: 201,
         headers: {
           ...headers,
-          'Set-Cookie': `sessionId=${user.id}; Path=/; HttpOnly; SameSite=Lax; Max-Age=86400`
+          'Set-Cookie': `sessionId=${user.id}; Path=/; SameSite=Lax; Max-Age=86400; Secure`
         },
         body: JSON.stringify({ 
           message: "Registration successful", 
