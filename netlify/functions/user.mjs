@@ -61,6 +61,8 @@ export const handler = async (event, context) => {
 
       if (subscriptions.length === 0) {
         console.log('📋 No subscription found for user:', user.id);
+        // Admin users don't need subscriptions
+        const status = user.is_admin ? 'admin' : 'no_subscription';
         return {
           statusCode: 200,
           headers,
@@ -73,7 +75,8 @@ export const handler = async (event, context) => {
               isAdmin: user.is_admin
             },
             subscription: null,
-            status: 'no_subscription'
+            status: status,
+            statusDisplay: user.is_admin ? 'Admin' : 'No Subscription'
           })
         };
       }
@@ -102,7 +105,11 @@ export const handler = async (event, context) => {
       let statusDisplay = subscription.status;
       let actualStatus = subscription.status;
       
-      if (!isActive || daysLeft <= 0) {
+      // Admin users never expire - skip subscription status check for admins
+      if (user.is_admin) {
+        statusDisplay = 'Admin';
+        actualStatus = 'admin';
+      } else if (!isActive || daysLeft <= 0) {
         statusDisplay = 'Expired';
         actualStatus = 'expired';
       } else if (subscription.status === 'basic plan') {
