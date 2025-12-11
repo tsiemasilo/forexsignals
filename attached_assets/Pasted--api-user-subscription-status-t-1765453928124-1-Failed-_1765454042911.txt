@@ -1,0 +1,59 @@
+/api/user/subscription-status?t=1765453928124:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1765453929777:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1765453935417:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1765453937130:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1765453942791:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1765453944420:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1765453950225:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1765453951849:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1765453957518:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1765453959165:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1765453965006:1  Failed to load resource: the server responded with a status of 401 ()
+/api/user/subscription-status?t=1765453966654:1  Failed to load resource: the server responded with a status of 401 ()
+/api/login:1  Failed to load resource: the server responded with a status of 500 ()
+/api/login:1  Failed to load resource: the server responded with a status of 500 ()
+index-Bm5CHfiw.js:318  GET https://watchlistfx.netlify.app/api/user/subscription-status?t=1765454020124 401 (Unauthorized)
+queryFn @ index-Bm5CHfiw.js:318
+i @ index-Bm5CHfiw.js:40
+w @ index-Bm5CHfiw.js:40
+start @ index-Bm5CHfiw.js:40
+fetch @ index-Bm5CHfiw.js:40
+yo @ index-Bm5CHfiw.js:40
+onSubscribe @ index-Bm5CHfiw.js:40
+subscribe @ index-Bm5CHfiw.js:40
+(anonymous) @ index-Bm5CHfiw.js:40
+wg @ index-Bm5CHfiw.js:38
+il @ index-Bm5CHfiw.js:40
+ms @ index-Bm5CHfiw.js:40
+zh @ index-Bm5CHfiw.js:40
+mr @ index-Bm5CHfiw.js:38
+wb @ index-Bm5CHfiw.js:40
+yr @ index-Bm5CHfiw.js:40
+Zg @ index-Bm5CHfiw.js:40
+j @ index-Bm5CHfiw.js:25
+A @ index-Bm5CHfiw.js:25
+index-Bm5CHfiw.js:318  GET https://watchlistfx.netlify.app/api/user/subscription-status?t=1765454021748 401 (Unauthorized)
+queryFn @ index-Bm5CHfiw.js:318
+i @ index-Bm5CHfiw.js:40
+w @ index-Bm5CHfiw.js:40
+(anonymous) @ index-Bm5CHfiw.js:40
+Promise.then
+(anonymous) @ index-Bm5CHfiw.js:40
+Promise.catch
+w @ index-Bm5CHfiw.js:40
+start @ index-Bm5CHfiw.js:40
+fetch @ index-Bm5CHfiw.js:40
+yo @ index-Bm5CHfiw.js:40
+onSubscribe @ index-Bm5CHfiw.js:40
+subscribe @ index-Bm5CHfiw.js:40
+(anonymous) @ index-Bm5CHfiw.js:40
+wg @ index-Bm5CHfiw.js:38
+il @ index-Bm5CHfiw.js:40
+ms @ index-Bm5CHfiw.js:40
+zh @ index-Bm5CHfiw.js:40
+mr @ index-Bm5CHfiw.js:38
+wb @ index-Bm5CHfiw.js:40
+yr @ index-Bm5CHfiw.js:40
+Zg @ index-Bm5CHfiw.js:40
+j @ index-Bm5CHfiw.js:25
+A @ index-Bm5CHfiw.js:25

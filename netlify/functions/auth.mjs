@@ -49,14 +49,21 @@ export const handler = async (event, context) => {
 
       const user = users[0];
 
-      // Verify password
-      const isValidPassword = await bcrypt.compare(password, user.password);
-      if (!isValidPassword) {
-        return {
-          statusCode: 401,
-          headers,
-          body: JSON.stringify({ message: "Invalid email or password" })
-        };
+      // Verify password (handle users without passwords for backwards compatibility)
+      if (user.password) {
+        const isValidPassword = await bcrypt.compare(password, user.password);
+        if (!isValidPassword) {
+          return {
+            statusCode: 401,
+            headers,
+            body: JSON.stringify({ message: "Invalid email or password" })
+          };
+        }
+      } else {
+        // User doesn't have a password - set it now
+        const hashedPassword = await bcrypt.hash(password, 10);
+        await sql`UPDATE users SET password = ${hashedPassword} WHERE id = ${user.id}`;
+        console.log(`Password set for user ${user.email}`);
       }
 
       // Check if user has subscription
@@ -105,9 +112,9 @@ export const handler = async (event, context) => {
 
     // REGISTER
     if (path === '/api/register' && method === 'POST') {
-      const { email, firstName, lastName } = JSON.parse(event.body || '{}');
+      const { email, password, firstName, lastName } = JSON.parse(event.body || '{}');
       
-      if (!email || !firstName || !lastName) {
+      if (!email || !password || !firstName || !lastName) {
         return {
           statusCode: 400,
           headers,
@@ -126,10 +133,13 @@ export const handler = async (event, context) => {
         };
       }
 
-      // Create new user
+      // Hash password before saving
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      // Create new user with hashed password
       const newUsers = await sql`
-        INSERT INTO users (email, first_name, last_name, is_admin, created_at, updated_at)
-        VALUES (${email}, ${firstName}, ${lastName}, false, NOW(), NOW())
+        INSERT INTO users (email, password, first_name, last_name, is_admin, created_at, updated_at)
+        VALUES (${email}, ${hashedPassword}, ${firstName}, ${lastName}, false, NOW(), NOW())
         RETURNING *
       `;
 
